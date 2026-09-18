@@ -1,0 +1,97 @@
+import 'express-async-errors';
+import express from 'express';
+import helmet from 'helmet';
+import cors from 'cors';
+import compression from 'compression';
+import cookieParser from 'cookie-parser';
+import morgan from 'morgan';
+import hpp from 'hpp';
+import mongoSanitize from 'express-mongo-sanitize';
+import { generalLimiter } from './middleware/rateLimit.middleware';
+import { errorHandler } from './middleware/error.middleware';
+import { sanitizeBody } from './middleware/sanitize.middleware';
+import { logger } from './utils/logger';
+
+// Route imports (one per module)
+import authRoutes from './modules/auth/auth.routes';
+import userRoutes from './modules/users/user.routes';
+import brokerRoutes from './modules/brokers/broker.routes';
+import accountManagerRoutes from './modules/account-managers/am.routes';
+import signalProviderRoutes from './modules/signal-providers/sp.routes';
+import lmsRoutes from './modules/lms/lms.routes';
+import aiRoutes from './modules/ai-assistant/ai.routes';
+import blogRoutes from './modules/blog/blog.routes';
+import complaintRoutes from './modules/complaints/complaint.routes';
+import adRoutes from './modules/advertisements/ad.routes';
+import notificationRoutes from './modules/notifications/notification.routes';
+import adminRoutes from './modules/admin/admin.routes';
+
+const app = express();
+
+// ── SECURITY MIDDLEWARE ────────────────────────────
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', 'https:', 'res.cloudinary.com'],
+        scriptSrc: ["'self'"],
+      },
+    },
+    crossOriginEmbedderPolicy: false,
+  })
+);
+
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  })
+);
+
+app.use(mongoSanitize()); // Prevent NoSQL injection
+app.use(hpp()); // Prevent HTTP parameter pollution
+
+// ── GENERAL MIDDLEWARE ─────────────────────────────
+app.use(compression());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(cookieParser());
+app.use(sanitizeBody);
+app.use(
+  morgan('combined', {
+    stream: { write: (msg) => logger.http ? logger.http(msg.trim()) : logger.info(msg.trim()) },
+  })
+);
+app.use(generalLimiter);
+
+// ── ROUTES ─────────────────────────────────────────
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/brokers', brokerRoutes);
+app.use('/api/account-managers', accountManagerRoutes);
+app.use('/api/signal-providers', signalProviderRoutes);
+app.use('/api/lms', lmsRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/blog', blogRoutes);
+app.use('/api/complaints', complaintRoutes);
+app.use('/api/advertisements', adRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/admin', adminRoutes);
+
+// ── HEALTH CHECK ──────────────────────────────────
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    service: 'EdutradeFX Backend API',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// ── ERROR HANDLER (must be last) ──────────────────
+app.use(errorHandler);
+
+export default app;

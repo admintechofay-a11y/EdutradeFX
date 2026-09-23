@@ -28,8 +28,10 @@ export const AdminSidebar: React.FC = () => {
     { label: 'User Directory', href: '/admin/users', icon: Users },
     { label: 'Broker Audits & Approvals', href: '/admin/brokers', icon: Building2 },
     { label: 'Course Quality Control', href: '/admin/courses', icon: BookOpen },
+    { label: 'Tutor Payout Desk', href: '/admin/payouts', icon: DollarSign },
     { label: 'Trader Complaints Desk', href: '/admin/complaints', icon: MessageSquare },
     { label: 'Signal Providers', href: '/admin/signal-providers', icon: Radio },
+    { label: 'Audit & Governance Logs', href: '/admin/audit-logs', icon: TrendingUp },
     { label: 'Platform Settings', href: '/admin/settings', icon: Settings },
   ];
 

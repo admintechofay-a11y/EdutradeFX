@@ -4,7 +4,7 @@ import { lmsController } from './lms.controller';
 import { authenticate, optionalAuth } from '../../middleware/auth.middleware';
 import { authorize } from '../../middleware/role.middleware';
 import { validate } from '../../middleware/validate.middleware';
-import { generalLimiter, uploadLimiter } from '../../middleware/rateLimit.middleware';
+import { generalLimiter, uploadLimiter, paymentLimiter } from '../../middleware/rateLimit.middleware';
 import { uploadImage, uploadDocument, uploadCourseContent, imageStorage } from '../../middleware/upload.middleware';
 import {
   registerTutorSchema,
@@ -42,8 +42,8 @@ router.get('/courses/:slug', generalLimiter, optionalAuth, lmsController.getCour
 router.get('/courses/:id/reviews', generalLimiter, lmsController.getCourseReviews);
 
 // ── STUDENT ENROLLMENT & LEARNING ──────────────────
-router.post('/courses/:id/enroll', authenticate, lmsController.initiateEnrollment);
-router.post('/payments/verify', authenticate, validate(verifyPaymentSchema), lmsController.verifyPaymentAndEnroll);
+router.post('/courses/:id/enroll', authenticate, paymentLimiter, lmsController.initiateEnrollment);
+router.post('/payments/verify', authenticate, paymentLimiter, validate(verifyPaymentSchema), lmsController.verifyPaymentAndEnroll);
 router.get('/my/enrollments', authenticate, lmsController.getMyEnrollments);
 router.get('/learn/:lessonId', authenticate, lmsController.getLessonContent);
 router.post('/learn/:lessonId/complete', authenticate, lmsController.completeLesson);

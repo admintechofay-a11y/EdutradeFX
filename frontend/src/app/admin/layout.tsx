@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { AdminSidebar } from '../../components/layout/AdminSidebar';
 import { useAuthStore } from '../../store/authStore';
 import { ShieldAlert, Loader2 } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { user, isAuthenticated, isLoading } = useAuthStore();
   const [mounted, setMounted] = useState(false);
 
@@ -16,12 +17,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, []);
 
   useEffect(() => {
+    if (pathname === '/admin/login') return;
     if (mounted && !isLoading) {
       if (!isAuthenticated || user?.role !== 'ADMIN') {
-        router.push('/login?redirect=/admin');
+        router.push('/admin/login?redirect=' + encodeURIComponent(pathname));
       }
     }
-  }, [mounted, isLoading, isAuthenticated, user, router]);
+  }, [mounted, isLoading, isAuthenticated, user, router, pathname]);
+
+  if (pathname === '/admin/login') {
+    return <>{children}</>;
+  }
 
   if (!mounted || isLoading) {
     return (

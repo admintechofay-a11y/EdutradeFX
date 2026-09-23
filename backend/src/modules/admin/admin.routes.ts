@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { adminController } from './admin.controller';
 import { authenticate } from '../../middleware/auth.middleware';
 import { authorize } from '../../middleware/role.middleware';
+import { validate } from '../../middleware/validate.middleware';
+import { adminCreateUserSchema } from '../auth/auth.schemas';
 
 const router = Router();
 
@@ -12,6 +14,7 @@ router.use(authenticate, authorize('ADMIN'));
 router.get('/dashboard', adminController.getDashboardStats);
 
 // ── USERS ──────────────────────────────────────────
+router.post('/users', validate(adminCreateUserSchema), adminController.createUser);
 router.get('/users', adminController.getAllUsers);
 router.get('/users/:id', adminController.getUserById);
 router.patch('/users/:id/status', adminController.updateUserStatus);
@@ -46,6 +49,9 @@ router.patch('/courses/:id/status', adminController.updateCourseStatus);
 // ── PAYOUTS ────────────────────────────────────────
 router.get('/payouts', adminController.getAllPayouts);
 router.patch('/payouts/:id', adminController.processPayout);
+
+// ── AUDIT LOGS ─────────────────────────────────────
+router.get('/audit-logs', adminController.getAuditLogs);
 
 // ── SITE SETTINGS ──────────────────────────────────
 router.get('/settings', adminController.getSiteSettings);

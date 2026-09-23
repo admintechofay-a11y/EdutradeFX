@@ -54,3 +54,25 @@ export const uploadLimiter = rateLimit({
     message: 'Upload request limit reached. Please wait before uploading further media files.',
   },
 });
+
+export const paymentLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many payment/enrollment attempts. Please wait 15 minutes before trying again.',
+  },
+});
+
+export const refreshTokenLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many token refresh attempts. Please sign in again.',
+  },
+});

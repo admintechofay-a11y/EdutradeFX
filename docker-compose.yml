@@ -6,15 +6,15 @@ services:
     container_name: edutradefx_postgres
     restart: always
     environment:
-      POSTGRES_USER: edutrade_admin
-      POSTGRES_PASSWORD: edutrade_secure_password
-      POSTGRES_DB: edutradefx_db
+      POSTGRES_USER: ${POSTGRES_USER:-edutrade_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in root .env}
+      POSTGRES_DB: ${POSTGRES_DB:-edutradefx_db}
     ports:
       - '5432:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U edutrade_admin -d edutradefx_db"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-edutrade_admin} -d $${POSTGRES_DB:-edutradefx_db}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -26,12 +26,12 @@ services:
     container_name: edutradefx_backend
     restart: always
     environment:
-      PORT: 5000
-      NODE_ENV: production
-      DATABASE_URL: postgresql://edutrade_admin:edutrade_secure_password@postgres:5432/edutradefx_db?schema=public
-      JWT_ACCESS_SECRET: super_secure_access_jwt_secret_change_in_production_12345
-      JWT_REFRESH_SECRET: super_secure_refresh_jwt_secret_change_in_production_67890
-      CORS_ORIGIN: http://localhost:3000
+      PORT: ${PORT:-5000}
+      NODE_ENV: ${NODE_ENV:-production}
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL must be set in root .env}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?JWT_ACCESS_SECRET must be set in root .env}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?JWT_REFRESH_SECRET must be set in root .env}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
     ports:
       - '5000:5000'
     depends_on:
@@ -45,9 +45,9 @@ services:
     container_name: edutradefx_frontend
     restart: always
     environment:
-      NODE_ENV: production
-      NEXT_PUBLIC_API_URL: http://localhost:5000/api
-      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      NODE_ENV: ${NODE_ENV:-production}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:5000/api}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
     ports:
       - '3000:3000'
     depends_on:

@@ -12,8 +12,30 @@ export const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(50, 'Name cannot exceed 50 characters'),
   email: z.string().email('Please enter a valid email address'),
   password: passwordValidation,
-  role: z.nativeEnum(Role).default(Role.STUDENT),
   phone: z.string().optional(),
+});
+
+export const partnerRegisterSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters').max(50, 'Name cannot exceed 50 characters'),
+  email: z.string().email('Please enter a valid email address'),
+  password: passwordValidation,
+  role: z.enum([Role.BROKER, Role.SIGNAL_PROVIDER, Role.TUTOR, Role.ACCOUNT_MANAGER], {
+    errorMap: () => ({ message: 'Invalid partner role. Allowed: BROKER, SIGNAL_PROVIDER, TUTOR, ACCOUNT_MANAGER' }),
+  }),
+  phone: z.string().optional(),
+  companyName: z.string().optional(),
+  bio: z.string().optional(),
+  website: z.string().optional(),
+});
+
+export const adminCreateUserSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters').max(50, 'Name cannot exceed 50 characters'),
+  email: z.string().email('Please enter a valid email address'),
+  password: passwordValidation,
+  role: z.nativeEnum(Role),
+  phone: z.string().optional(),
+  isActive: z.boolean().default(true),
+  isEmailVerified: z.boolean().default(true),
 });
 
 export const loginSchema = z.object({

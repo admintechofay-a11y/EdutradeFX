@@ -10,6 +10,7 @@ import { BrokerFilters } from '../../../components/broker/BrokerFilters';
 import { Pagination } from '../../../components/common/Pagination';
 import { Skeleton } from '../../../components/common/Skeleton';
 import { EmptyState } from '../../../components/common/EmptyState';
+import { AdBanner } from '../../../components/common/AdBanner';
 import { useCompareStore } from '../../../store/compareStore';
 
 export default function BrokersDirectoryPage() {
@@ -115,6 +116,9 @@ export default function BrokersDirectoryPage() {
           </select>
         </div>
       </div>
+
+      {/* Sponsored Ad Banner with Telemetry Tracking */}
+      <AdBanner placement="BROKER_LISTING" className="mb-8" />
 
       {/* Main Content Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">

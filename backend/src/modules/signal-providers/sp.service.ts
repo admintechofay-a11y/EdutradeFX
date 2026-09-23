@@ -3,7 +3,7 @@ import { prisma } from '../../config/database';
 import { AppError } from '../../middleware/error.middleware';
 import { generateUniqueSlug } from '../../utils/slug.utils';
 import { parsePagination } from '../../utils/pagination.utils';
-import { ApprovalStatus, NotificationType, Prisma, SignalStatus } from '@prisma/client';
+import { ApprovalStatus, EnquiryTargetType, NotificationType, Prisma, SignalStatus } from '@prisma/client';
 import { transporter } from '../../config/email';
 
 export class SignalProviderService {
@@ -373,7 +373,7 @@ export class SignalProviderService {
       data: {
         userId: currentUserId,
         signalProviderId: sp.id,
-        targetType: 'SIGNAL_PROVIDER',
+        targetType: EnquiryTargetType.SIGNAL_PROVIDER,
         name: data.name,
         email: data.email,
         phone: data.phone,

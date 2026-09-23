@@ -9,6 +9,7 @@ import {
   ApprovalStatus,
   CourseStatus,
   NotificationType,
+  OrderStatus,
   PayoutStatus,
   Prisma,
 } from '@prisma/client';
@@ -582,7 +583,7 @@ export class LMSService {
         amount: activePrice,
         currency: course.currency,
         razorpayOrderId: order.id,
-        status: 'pending',
+        status: OrderStatus.PENDING,
       },
     });
 
@@ -591,7 +592,7 @@ export class LMSService {
       orderId: order.id,
       amount: activePrice,
       currency: course.currency,
-      keyId: process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder',
+      keyId: process.env.RAZORPAY_KEY_ID || '',
       courseTitle: course.title,
     };
   }
@@ -635,7 +636,7 @@ export class LMSService {
         update: {
           razorpayPaymentId: data.razorpayPaymentId,
           razorpaySignature: data.razorpaySignature,
-          status: 'paid',
+          status: OrderStatus.PAID,
         },
         create: {
           userId,
@@ -645,7 +646,7 @@ export class LMSService {
           razorpayOrderId: data.razorpayOrderId,
           razorpayPaymentId: data.razorpayPaymentId,
           razorpaySignature: data.razorpaySignature,
-          status: 'paid',
+          status: OrderStatus.PAID,
         },
       }),
       prisma.enrollment.create({

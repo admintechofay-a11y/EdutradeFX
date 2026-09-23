@@ -55,15 +55,6 @@ api.interceptors.response.use(
 
       originalRequest._retry = true;
 
-      const refreshToken =
-        useAuthStore.getState().refreshToken ||
-        (typeof window !== 'undefined' ? localStorage.getItem('edutrade_refresh_token') : null);
-
-      if (!refreshToken) {
-        useAuthStore.getState().logout();
-        return Promise.reject(formatApiError(error));
-      }
-
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -78,7 +69,11 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const { data } = await axios.post(`${API_URL}/auth/refresh-token`, { refreshToken });
+        const { data } = await axios.post(
+          `${API_URL}/auth/refresh-token`,
+          {},
+          { withCredentials: true }
+        );
         const newAccessToken = data.data.accessToken;
 
         useAuthStore.getState().setAccessToken(newAccessToken);
@@ -113,3 +108,14 @@ export function formatApiError(error: any): { message: string; errors?: any } {
     message: error.message || 'Network connection failed. Please check your internet.',
   };
 }
+
+export const adApi = {
+  getActiveAds: async (placement?: string) => {
+    const params = placement ? `?placement=${encodeURIComponent(placement)}` : '';
+    return api.get(`/advertisements${params}`);
+  },
+  trackClick: async (adId: string) => {
+    return api.post(`/advertisements/${adId}/click`);
+  },
+};
+

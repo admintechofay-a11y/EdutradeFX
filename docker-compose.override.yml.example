@@ -1,0 +1,19 @@
+# Local Development docker-compose override example
+# Copy this file to docker-compose.override.yml for local development
+version: '3.8'
+
+services:
+  postgres:
+    environment:
+      POSTGRES_USER: edutrade_dev_user
+      POSTGRES_PASSWORD: dev_insecure_local_only_password_1234
+      POSTGRES_DB: edutradefx_dev
+
+  backend:
+    environment:
+      NODE_ENV: development
+      ALLOW_MOCK_PAYMENTS: "true"
+      DATABASE_URL: postgresql://edutrade_dev_user:dev_insecure_local_only_password_1234@postgres:5432/edutradefx_dev?schema=public
+      JWT_ACCESS_SECRET: dev_only_access_secret_must_be_minimum_32_characters_long_for_security
+      JWT_REFRESH_SECRET: dev_only_refresh_secret_must_be_minimum_32_characters_long_for_security
+      CORS_ORIGIN: http://localhost:3000

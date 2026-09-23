@@ -21,16 +21,19 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   isLoading: true,
 
-  setAuth: (user, accessToken, refreshToken) => {
+  setAuth: (user, accessToken) => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('edutrade_user', JSON.stringify(user));
-      localStorage.setItem('edutrade_token', accessToken);
-      if (refreshToken) localStorage.setItem('edutrade_refresh_token', refreshToken);
+      // Clean up legacy refresh token storage from localStorage (strictly httpOnly cookies now)
+      localStorage.removeItem('edutrade_refresh_token');
+      // Synchronize cookie for server-side edge middleware protection
+      document.cookie = `edutrade_token=${accessToken}; path=/; max-age=86400; SameSite=Lax`;
+      document.cookie = `edutrade_role=${user.role}; path=/; max-age=86400; SameSite=Lax`;
     }
     set({
       user,
       accessToken,
-      refreshToken: refreshToken || null,
+      refreshToken: null,
       isAuthenticated: true,
       isLoading: false,
     });
@@ -38,14 +41,15 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   setAccessToken: (accessToken) => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('edutrade_token', accessToken);
+      document.cookie = `edutrade_token=${accessToken}; path=/; max-age=86400; SameSite=Lax`;
     }
-    set({ accessToken });
+    set({ accessToken, isAuthenticated: true });
   },
 
   setUser: (user) => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('edutrade_user', JSON.stringify(user));
+      document.cookie = `edutrade_role=${user.role}; path=/; max-age=86400; SameSite=Lax`;
     }
     set({ user });
   },
@@ -55,6 +59,9 @@ export const useAuthStore = create<AuthState>((set) => ({
       localStorage.removeItem('edutrade_user');
       localStorage.removeItem('edutrade_token');
       localStorage.removeItem('edutrade_refresh_token');
+      // Clear middleware auth cookies
+      document.cookie = 'edutrade_token=; path=/; max-age=0; SameSite=Lax';
+      document.cookie = 'edutrade_role=; path=/; max-age=0; SameSite=Lax';
     }
     set({
       user: null,
@@ -69,14 +76,16 @@ export const useAuthStore = create<AuthState>((set) => ({
     if (typeof window === 'undefined') return;
     try {
       const storedUser = localStorage.getItem('edutrade_user');
-      const storedToken = localStorage.getItem('edutrade_token');
-      const storedRefresh = localStorage.getItem('edutrade_refresh_token');
+      const legacyToken = localStorage.getItem('edutrade_token');
 
-      if (storedUser && storedToken) {
+      // Purge any lingering refresh token from localStorage for compliance
+      localStorage.removeItem('edutrade_refresh_token');
+
+      if (storedUser) {
         set({
           user: JSON.parse(storedUser),
-          accessToken: storedToken,
-          refreshToken: storedRefresh || null,
+          accessToken: legacyToken || null,
+          refreshToken: null,
           isAuthenticated: true,
           isLoading: false,
         });

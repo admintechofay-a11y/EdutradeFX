@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import { authService } from './auth.service';
 import { sendSuccess } from '../../utils/response.utils';
 import { AuthenticatedRequest } from '../../types';
+import { AppError } from '../../middleware/error.middleware';
 
 export class AuthController {
   register = async (req: Request, res: Response): Promise<void> => {
@@ -10,33 +11,59 @@ export class AuthController {
     sendSuccess(res, result.user, result.message, StatusCodes.CREATED);
   };
 
+  registerPartner = async (req: Request, res: Response): Promise<void> => {
+    const result = await authService.registerPartner(req.body);
+    sendSuccess(res, result.user, result.message, StatusCodes.CREATED);
+  };
+
   login = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
     const result = await authService.login(email, password);
 
-    // Set refresh token in secure HTTP-only cookie as well for web security
+    // Set refresh token in secure HTTP-only cookie ONLY
     res.cookie('refreshToken', result.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
     });
 
-    sendSuccess(res, result, 'Login successful', StatusCodes.OK);
+    // Strip refreshToken from response body (httpOnly cookie only)
+    const { refreshToken: _refreshToken, ...safeData } = result;
+
+    sendSuccess(res, safeData, 'Login successful', StatusCodes.OK);
   };
 
   refreshToken = async (req: Request, res: Response): Promise<void> => {
-    const token = req.body.refreshToken || req.cookies?.refreshToken;
+    const token = req.cookies?.refreshToken || req.body?.refreshToken;
+    if (!token) {
+      throw new AppError('No refresh token provided in cookie or payload.', StatusCodes.UNAUTHORIZED);
+    }
+
     const result = await authService.refreshToken(token);
-    sendSuccess(res, result, 'Access token refreshed', StatusCodes.OK);
+
+    // Set rotated refresh token in secure HTTP-only cookie
+    res.cookie('refreshToken', result.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
+    });
+
+    // Strip refreshToken from response body
+    const { refreshToken: _refreshToken, ...safeData } = result;
+
+    sendSuccess(res, safeData, 'Access token refreshed', StatusCodes.OK);
   };
 
   logout = async (req: Request, res: Response): Promise<void> => {
-    const token = req.body.refreshToken || req.cookies?.refreshToken;
+    const token = req.cookies?.refreshToken || req.body?.refreshToken;
     if (token) {
       await authService.logout(token);
     }
-    res.clearCookie('refreshToken');
+    res.clearCookie('refreshToken', { path: '/' });
     sendSuccess(res, null, 'Logged out successfully', StatusCodes.OK);
   };
 

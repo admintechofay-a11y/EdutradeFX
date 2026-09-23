@@ -18,6 +18,7 @@ import {
   FileText,
   MessageSquare,
   ShieldCheck,
+  ShieldAlert,
   ChevronRight,
   PlusCircle,
 } from 'lucide-react';
@@ -39,11 +40,11 @@ export const DashboardSidebar: React.FC = () => {
     switch (userRole) {
       case 'BROKER':
         return [
-          { label: 'Overview', href: '/dashboard', icon: LayoutDashboard },
-          { label: 'Firm Profile', href: '/dashboard/profile', icon: Building2 },
-          { label: 'Inbound Leads', href: '/dashboard/leads', icon: Users },
-          { label: 'Reviews & Reputation', href: '/dashboard/reviews', icon: MessageSquare },
-          { label: 'Account Settings', href: '/dashboard/settings', icon: Settings },
+          { label: 'Overview', href: '/dashboard/broker', icon: LayoutDashboard },
+          { label: 'Firm Profile', href: '/dashboard/broker/profile', icon: Building2 },
+          { label: 'Inbound Leads', href: '/dashboard/broker/leads', icon: Users },
+          { label: 'Reviews & Reputation', href: '/dashboard/broker/reviews', icon: MessageSquare },
+          { label: 'Account Settings', href: '/dashboard/broker/settings', icon: Settings },
         ];
       case 'ACCOUNT_MANAGER':
         return [
@@ -54,19 +55,19 @@ export const DashboardSidebar: React.FC = () => {
         ];
       case 'SIGNAL_PROVIDER':
         return [
-          { label: 'Overview', href: '/dashboard', icon: LayoutDashboard },
-          { label: 'Signals Terminal', href: '/dashboard/signals', icon: Radio },
-          { label: 'Subscribers / Enquiries', href: '/dashboard/enquiries', icon: Users },
-          { label: 'Provider Profile', href: '/dashboard/profile', icon: ShieldCheck },
-          { label: 'Account Settings', href: '/dashboard/settings', icon: Settings },
+          { label: 'Overview', href: '/dashboard/signal-provider', icon: LayoutDashboard },
+          { label: 'Signals Terminal', href: '/dashboard/signal-provider/signals', icon: Radio },
+          { label: 'Subscribers / Enquiries', href: '/dashboard/signal-provider/enquiries', icon: Users },
+          { label: 'Provider Profile', href: '/dashboard/signal-provider/profile', icon: ShieldCheck },
+          { label: 'Account Settings', href: '/dashboard/signal-provider/settings', icon: Settings },
         ];
       case 'TUTOR':
         return [
-          { label: 'Overview', href: '/dashboard', icon: LayoutDashboard },
-          { label: 'My Courses', href: '/dashboard/courses', icon: BookOpen },
-          { label: 'Sales & Earnings', href: '/dashboard/earnings', icon: DollarSign },
-          { label: 'Payout Requests', href: '/dashboard/payouts', icon: TrendingUp },
-          { label: 'Account Settings', href: '/dashboard/settings', icon: Settings },
+          { label: 'Overview', href: '/dashboard/tutor', icon: LayoutDashboard },
+          { label: 'My Courses', href: '/dashboard/tutor/courses', icon: BookOpen },
+          { label: 'Sales & Earnings', href: '/dashboard/tutor/earnings', icon: DollarSign },
+          { label: 'Payout Requests', href: '/dashboard/tutor/payouts', icon: TrendingUp },
+          { label: 'Account Settings', href: '/dashboard/tutor/settings', icon: Settings },
         ];
       case 'ADMIN':
         return [
@@ -74,7 +75,9 @@ export const DashboardSidebar: React.FC = () => {
           { label: 'User Management', href: '/admin/users', icon: Users },
           { label: 'Broker Approvals', href: '/admin/brokers', icon: Building2 },
           { label: 'Course Quality', href: '/admin/courses', icon: BookOpen },
+          { label: 'Tutor Payout Desk', href: '/admin/payouts', icon: DollarSign },
           { label: 'Complaints Desk', href: '/admin/complaints', icon: MessageSquare },
+          { label: 'Audit Logs', href: '/admin/audit-logs', icon: TrendingUp },
           { label: 'Settings', href: '/admin/settings', icon: Settings },
         ];
       case 'STUDENT':
@@ -84,6 +87,7 @@ export const DashboardSidebar: React.FC = () => {
           { label: 'Enrolled Courses', href: '/dashboard/enrollments', icon: BookOpen },
           { label: 'Certificates', href: '/dashboard/certificates', icon: Award },
           { label: 'Saved Brokers', href: '/dashboard/saved', icon: Bookmark },
+          { label: 'Dispute Desk', href: '/dashboard/complaints', icon: ShieldAlert },
           { label: 'Account Settings', href: '/dashboard/settings', icon: Settings },
         ];
     }

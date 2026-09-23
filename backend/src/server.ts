@@ -1,8 +1,4 @@
-import path from 'path';
-import dotenv from 'dotenv';
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
-dotenv.config();
-
+import './config/env'; // Validate environment variables on startup
 import app from './app';
 import { connectDB } from './config/database';
 import { verifyEmailConnection } from './config/email';

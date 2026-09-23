@@ -3,10 +3,21 @@ import { StatusCodes } from 'http-status-codes';
 import { AppError } from '../middleware/error.middleware';
 import { TokenPayload, RefreshTokenPayload } from '../types';
 
-const ACCESS_SECRET =
-  process.env.JWT_ACCESS_SECRET || 'edutrade_super_secret_access_key_minimum_64_characters_long_forex_platform_2025';
-const REFRESH_SECRET =
-  process.env.JWT_REFRESH_SECRET || 'edutrade_super_secret_refresh_key_minimum_64_characters_long_forex_platform_2025';
+const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
+const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+
+if (!ACCESS_SECRET || ACCESS_SECRET.length < 32) {
+  throw new Error(
+    'FATAL SECURITY CONFIGURATION ERROR: JWT_ACCESS_SECRET must be defined in environment variables and must be at least 32 characters long.'
+  );
+}
+
+if (!REFRESH_SECRET || REFRESH_SECRET.length < 32) {
+  throw new Error(
+    'FATAL SECURITY CONFIGURATION ERROR: JWT_REFRESH_SECRET must be defined in environment variables and must be at least 32 characters long.'
+  );
+}
+
 const ACCESS_EXPIRY = (process.env.JWT_ACCESS_EXPIRY || '15m') as any;
 const REFRESH_EXPIRY = (process.env.JWT_REFRESH_EXPIRY || '7d') as any;
 

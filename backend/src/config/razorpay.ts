@@ -3,12 +3,21 @@ import crypto from 'crypto';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const key_id = process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder';
-const key_secret = process.env.RAZORPAY_KEY_SECRET || 'rzp_test_placeholder_secret';
+const key_id = process.env.RAZORPAY_KEY_ID || '';
+const key_secret = process.env.RAZORPAY_KEY_SECRET || '';
+
+if (process.env.NODE_ENV === 'production') {
+  if (!key_id || key_id.includes('placeholder')) {
+    throw new Error('FATAL: RAZORPAY_KEY_ID is missing or contains placeholder in production environment.');
+  }
+  if (!key_secret || key_secret.includes('placeholder')) {
+    throw new Error('FATAL: RAZORPAY_KEY_SECRET is missing or contains placeholder in production environment.');
+  }
+}
 
 export const razorpayInstance = new Razorpay({
-  key_id,
-  key_secret,
+  key_id: key_id || 'dev_key_dummy',
+  key_secret: key_secret || 'dev_secret_dummy',
 });
 
 export interface CreateOrderParams {
@@ -28,8 +37,12 @@ export const createRazorpayOrder = async (params: CreateOrderParams) => {
     };
     return await razorpayInstance.orders.create(options);
   } catch (error: any) {
-    // If running in development without live keys, generate mock order response
-    if (process.env.NODE_ENV !== 'production' && key_id.includes('placeholder')) {
+    // ONLY allow mock order generation when explicitly in development AND ALLOW_MOCK_PAYMENTS=true
+    if (
+      process.env.NODE_ENV === 'development' &&
+      process.env.ALLOW_MOCK_PAYMENTS === 'true' &&
+      (!key_id || key_id.includes('placeholder'))
+    ) {
       return {
         id: `order_${Date.now()}_mock`,
         entity: 'order',
@@ -51,8 +64,18 @@ export const verifyRazorpaySignature = (
   paymentId: string,
   signature: string
 ): boolean => {
-  if (process.env.NODE_ENV !== 'production' && signature === 'mock_payment_signature') {
+  // Mock signature bypass is strictly prohibited in production and staging environments.
+  // It can ONLY ever trigger when NODE_ENV === 'development' AND an explicit ALLOW_MOCK_PAYMENTS=true env var is set.
+  if (
+    process.env.NODE_ENV === 'development' &&
+    process.env.ALLOW_MOCK_PAYMENTS === 'true' &&
+    signature === 'mock_payment_signature'
+  ) {
     return true;
+  }
+
+  if (!key_secret) {
+    throw new Error('RAZORPAY_KEY_SECRET is not configured.');
   }
 
   const generatedSignature = crypto

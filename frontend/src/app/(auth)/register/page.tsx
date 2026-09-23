@@ -76,21 +76,34 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const res = await api.post('/auth/register', {
+      const isPartner = role !== 'STUDENT';
+      const endpoint = isPartner ? '/auth/register-partner' : '/auth/register';
+      const payload: any = {
         name,
         email,
         password,
         phone: phone || undefined,
-        role,
-      });
+      };
 
-      const { user, accessToken, refreshToken } = res.data.data;
-      setAuth(user, accessToken, refreshToken);
+      if (isPartner) {
+        payload.role = role;
+      }
+
+      const res = await api.post(endpoint, payload);
+      const data = res.data?.data;
+
+      if (data?.accessToken && data?.user) {
+        setAuth(data.user, data.accessToken, data.refreshToken);
+      }
       setSuccess(true);
 
       setTimeout(() => {
-        router.push('/dashboard');
-      }, 1500);
+        if (isPartner) {
+          router.push('/login?registered=partner');
+        } else {
+          router.push('/login?registered=student');
+        }
+      }, 2000);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed. Please review your details.');
     } finally {

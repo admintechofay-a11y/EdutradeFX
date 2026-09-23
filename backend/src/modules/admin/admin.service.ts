@@ -13,6 +13,7 @@ import {
   ApprovalStatus,
   CourseStatus,
   NotificationType,
+  OrderStatus,
   PayoutStatus,
   Prisma,
   Role,
@@ -81,7 +82,7 @@ export class AdminService {
       prisma.course.count({ where: { status: CourseStatus.PUBLISHED } }),
       prisma.course.count({ where: { status: CourseStatus.ARCHIVED } }),
       prisma.order.count(),
-      prisma.order.findMany({ where: { status: 'paid' } }),
+      prisma.order.findMany({ where: { status: OrderStatus.PAID } }),
       prisma.enrollment.count(),
       prisma.enrollment.count({ where: { enrolledAt: { gte: firstDayThisMonth } } }),
       prisma.complaint.count({ where: { status: 'OPEN' } }),
@@ -100,7 +101,7 @@ export class AdminService {
       }),
       prisma.order.findMany({
         take: 5,
-        where: { status: 'paid' },
+        where: { status: OrderStatus.PAID },
         orderBy: { createdAt: 'desc' },
         include: {
           user: { select: { name: true, email: true } },
@@ -650,6 +651,49 @@ export class AdminService {
       update: { value },
       create: { key, value },
     });
+  }
+
+  // ── 9. AUDIT LOGS ──────────────────────────────────────────
+
+  async createAuditLog(data: {
+    actorId: string;
+    action: string;
+    targetType: string;
+    targetId: string;
+    metadata?: any;
+  }) {
+    return prisma.auditLog.create({
+      data: {
+        actorId: data.actorId,
+        action: data.action,
+        targetType: data.targetType,
+        targetId: data.targetId,
+        metadata: data.metadata ? JSON.parse(JSON.stringify(data.metadata)) : undefined,
+      },
+    });
+  }
+
+  async getAuditLogs(query: any) {
+    const { page, limit, skip } = parsePagination(query);
+    const where: any = {};
+    if (query.action) where.action = query.action;
+    if (query.targetType) where.targetType = query.targetType;
+    if (query.actorId) where.actorId = query.actorId;
+
+    const [logs, total] = await Promise.all([
+      prisma.auditLog.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          actor: { select: { id: true, name: true, email: true, role: true } },
+        },
+      }),
+      prisma.auditLog.count({ where }),
+    ]);
+
+    return { logs, total, page, limit };
   }
 }
 

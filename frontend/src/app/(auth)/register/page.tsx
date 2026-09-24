@@ -99,7 +99,7 @@ export default function RegisterPage() {
         }
       }, 1500);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed. Please review your details.');
+      setError(err.message || err.response?.data?.message || 'Registration failed. Please review your details.');
     } finally {
       setLoading(false);
     }

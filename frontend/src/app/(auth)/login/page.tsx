@@ -38,7 +38,7 @@ function LoginFormContent() {
         router.push('/dashboard');
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Invalid credentials. Please verify your email/phone and password.');
+      setError(err.message || err.response?.data?.message || 'Invalid credentials. Please verify your email/phone and password.');
     } finally {
       setLoading(false);
     }

@@ -23,6 +23,9 @@ router.post('/users/:id/reset-password', adminController.resetUserPassword);
 
 // ── BROKERS ────────────────────────────────────────
 router.get('/brokers', adminController.getAllBrokers);
+router.post('/brokers', adminController.createBroker);
+router.put('/brokers/:id', adminController.updateBroker);
+router.delete('/brokers/:id', adminController.deleteBroker);
 router.patch('/brokers/:id/status', adminController.updateBrokerStatus);
 router.patch('/brokers/:id/feature', adminController.toggleBrokerFeatured);
 router.patch('/reviews/broker/:id/approve', adminController.approveBrokerReview);
@@ -30,11 +33,17 @@ router.delete('/reviews/broker/:id', adminController.deleteBrokerReview);
 
 // ── ACCOUNT MANAGERS ───────────────────────────────
 router.get('/account-managers', adminController.getAllAMs);
+router.post('/account-managers', adminController.createAM);
+router.put('/account-managers/:id', adminController.updateAM);
+router.delete('/account-managers/:id', adminController.deleteAM);
 router.patch('/account-managers/:id/status', adminController.updateAMStatus);
 router.patch('/account-managers/:id/feature', adminController.toggleAMFeatured);
 
 // ── SIGNAL PROVIDERS ───────────────────────────────
 router.get('/signal-providers', adminController.getAllSPs);
+router.post('/signal-providers', adminController.createSP);
+router.put('/signal-providers/:id', adminController.updateSP);
+router.delete('/signal-providers/:id', adminController.deleteSP);
 router.patch('/signal-providers/:id/status', adminController.updateSPStatus);
 router.patch('/signal-providers/:id/verify', adminController.toggleSPVerification);
 router.patch('/signal-providers/:id/feature', adminController.toggleSPFeatured);
@@ -53,8 +62,10 @@ router.patch('/payouts/:id', adminController.processPayout);
 // ── AUDIT LOGS ─────────────────────────────────────
 router.get('/audit-logs', adminController.getAuditLogs);
 
-// ── SITE SETTINGS ──────────────────────────────────
+// ── SITE SETTINGS & CMS CONTENT ────────────────────
 router.get('/settings', adminController.getSiteSettings);
 router.patch('/settings', adminController.updateSiteSetting);
+router.get('/content', adminController.getWebsiteContent);
+router.put('/content', adminController.updateWebsiteContent);
 
 export default router;

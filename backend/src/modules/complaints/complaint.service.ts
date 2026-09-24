@@ -5,19 +5,25 @@ import { parsePagination } from '../../utils/pagination.utils';
 import { ComplaintStatus, NotificationType, Prisma } from '@prisma/client';
 
 export class ComplaintService {
-  async submitComplaint(userId: string, data: any, files?: Express.Multer.File[]) {
+  async submitComplaint(userId: string | null | undefined, data: any, files?: Express.Multer.File[]) {
     const attachmentUrls = files && files.length > 0
       ? files.map((f) => (f as any).path || (f as any).secure_url || f.filename)
       : [];
 
     const complaint = await prisma.complaint.create({
       data: {
-        userId,
+        userId: userId || null,
+        name: data.name,
+        email: data.email.toLowerCase(),
+        phone: data.phone || null,
+        companyName: data.companyName || null,
+        category: data.category || null,
         targetType: data.targetType,
         targetId: data.targetId || null,
         subject: data.subject,
         description: data.description,
         attachments: attachmentUrls,
+        declarationConsent: data.declarationConsent !== undefined ? Boolean(data.declarationConsent) : true,
         status: ComplaintStatus.OPEN,
       },
     });
@@ -97,16 +103,18 @@ export class ComplaintService {
       },
     });
 
-    // Notify user of update
-    await prisma.notification.create({
-      data: {
-        userId: complaint.userId,
-        type: data.status === ComplaintStatus.RESOLVED ? NotificationType.SUCCESS : NotificationType.INFO,
-        title: `Complaint Status Updated: ${data.status || 'Updated'}`,
-        message: `Your complaint "${complaint.subject}" status was changed to ${data.status}.`,
-        link: `/dashboard/complaints/${complaint.id}`,
-      },
-    });
+    // Notify user of update if registered
+    if (complaint.userId) {
+      await prisma.notification.create({
+        data: {
+          userId: complaint.userId,
+          type: data.status === ComplaintStatus.RESOLVED ? NotificationType.SUCCESS : NotificationType.INFO,
+          title: `Complaint Status Updated: ${data.status || 'Updated'}`,
+          message: `Your complaint "${complaint.subject}" status was changed to ${data.status}.`,
+          link: `/dashboard/complaints/${complaint.id}`,
+        },
+      });
+    }
 
     return updated;
   }

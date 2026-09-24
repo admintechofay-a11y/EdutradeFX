@@ -130,6 +130,43 @@ export class AdminController {
     sendSuccess(res, null, result.message, StatusCodes.OK);
   };
 
+  createBroker = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const broker = await adminService.createBrokerAdmin(req.body);
+    await adminService.createAuditLog({
+      actorId: req.user!.userId,
+      action: 'CREATE_BROKER',
+      targetType: 'BROKER',
+      targetId: broker.id,
+      metadata: { companyName: broker.companyName },
+    });
+    sendSuccess(res, broker, 'Broker created successfully', StatusCodes.CREATED);
+  };
+
+  updateBroker = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const broker = await adminService.updateBrokerAdmin(id as string, req.body);
+    await adminService.createAuditLog({
+      actorId: req.user!.userId,
+      action: 'UPDATE_BROKER',
+      targetType: 'BROKER',
+      targetId: id as string,
+      metadata: req.body,
+    });
+    sendSuccess(res, broker, 'Broker updated successfully', StatusCodes.OK);
+  };
+
+  deleteBroker = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const result = await adminService.deleteBrokerAdmin(id as string);
+    await adminService.createAuditLog({
+      actorId: req.user!.userId,
+      action: 'DELETE_BROKER',
+      targetType: 'BROKER',
+      targetId: id as string,
+    });
+    sendSuccess(res, null, result.message, StatusCodes.OK);
+  };
+
   // Account Managers
   getAllAMs = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     const result = await adminService.getAllAMsAdmin(req.query);
@@ -162,6 +199,43 @@ export class AdminController {
       metadata: { isFeatured },
     });
     sendSuccess(res, am, `Account Manager ${isFeatured ? 'featured' : 'unfeatured'}`, StatusCodes.OK);
+  };
+
+  createAM = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const am = await adminService.createAMAdmin(req.body);
+    await adminService.createAuditLog({
+      actorId: req.user!.userId,
+      action: 'CREATE_AM',
+      targetType: 'ACCOUNT_MANAGER',
+      targetId: am.id,
+      metadata: { fullName: am.fullName },
+    });
+    sendSuccess(res, am, 'Account Manager created successfully', StatusCodes.CREATED);
+  };
+
+  updateAM = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const am = await adminService.updateAMAdmin(id as string, req.body);
+    await adminService.createAuditLog({
+      actorId: req.user!.userId,
+      action: 'UPDATE_AM',
+      targetType: 'ACCOUNT_MANAGER',
+      targetId: id as string,
+      metadata: req.body,
+    });
+    sendSuccess(res, am, 'Account Manager updated successfully', StatusCodes.OK);
+  };
+
+  deleteAM = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const result = await adminService.deleteAMAdmin(id as string);
+    await adminService.createAuditLog({
+      actorId: req.user!.userId,
+      action: 'DELETE_AM',
+      targetType: 'ACCOUNT_MANAGER',
+      targetId: id as string,
+    });
+    sendSuccess(res, null, result.message, StatusCodes.OK);
   };
 
   // Signal Providers
@@ -210,6 +284,43 @@ export class AdminController {
       metadata: { isFeatured },
     });
     sendSuccess(res, sp, `Signal Provider ${isFeatured ? 'featured' : 'unfeatured'}`, StatusCodes.OK);
+  };
+
+  createSP = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const sp = await adminService.createSPAdmin(req.body);
+    await adminService.createAuditLog({
+      actorId: req.user!.userId,
+      action: 'CREATE_SP',
+      targetType: 'SIGNAL_PROVIDER',
+      targetId: sp.id,
+      metadata: { displayName: sp.displayName },
+    });
+    sendSuccess(res, sp, 'Signal Provider created successfully', StatusCodes.CREATED);
+  };
+
+  updateSP = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const sp = await adminService.updateSPAdmin(id as string, req.body);
+    await adminService.createAuditLog({
+      actorId: req.user!.userId,
+      action: 'UPDATE_SP',
+      targetType: 'SIGNAL_PROVIDER',
+      targetId: id as string,
+      metadata: req.body,
+    });
+    sendSuccess(res, sp, 'Signal Provider updated successfully', StatusCodes.OK);
+  };
+
+  deleteSP = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const result = await adminService.deleteSPAdmin(id as string);
+    await adminService.createAuditLog({
+      actorId: req.user!.userId,
+      action: 'DELETE_SP',
+      targetType: 'SIGNAL_PROVIDER',
+      targetId: id as string,
+    });
+    sendSuccess(res, null, result.message, StatusCodes.OK);
   };
 
   // Tutors & Courses
@@ -294,6 +405,26 @@ export class AdminController {
   getAuditLogs = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     const result = await adminService.getAuditLogs(req.query);
     sendPaginated(res, result.logs, result.total, result.page, result.limit, 'Audit logs retrieved');
+  };
+
+  // CMS Website Content
+  getWebsiteContent = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { section } = req.query;
+    const content = await adminService.getWebsiteContent(section as string);
+    sendSuccess(res, content, 'Website content retrieved', StatusCodes.OK);
+  };
+
+  updateWebsiteContent = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { section, content } = req.body;
+    const result = await adminService.updateWebsiteContent(section, content);
+    await adminService.createAuditLog({
+      actorId: req.user!.userId,
+      action: 'UPDATE_CMS_CONTENT',
+      targetType: 'CMS_CONTENT',
+      targetId: section,
+      metadata: { section },
+    });
+    sendSuccess(res, result, `Website content for '${section}' updated`, StatusCodes.OK);
   };
 }
 

@@ -12,7 +12,10 @@ export const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(50, 'Name cannot exceed 50 characters'),
   email: z.string().email('Please enter a valid email address'),
   password: passwordValidation,
-  phone: z.string().optional(),
+  phone: z.string().min(6, 'Please enter a valid mobile number').max(25),
+  consent: z.boolean().refine((val) => val === true, {
+    message: 'You must agree to the Terms of Service and Privacy Policy to register.',
+  }),
 });
 
 export const partnerRegisterSchema = z.object({
@@ -22,10 +25,13 @@ export const partnerRegisterSchema = z.object({
   role: z.enum([Role.BROKER, Role.SIGNAL_PROVIDER, Role.TUTOR, Role.ACCOUNT_MANAGER], {
     errorMap: () => ({ message: 'Invalid partner role. Allowed: BROKER, SIGNAL_PROVIDER, TUTOR, ACCOUNT_MANAGER' }),
   }),
-  phone: z.string().optional(),
+  phone: z.string().min(6, 'Please enter a valid phone number').max(25),
   companyName: z.string().optional(),
   bio: z.string().optional(),
   website: z.string().optional(),
+  consent: z.boolean().refine((val) => val === true, {
+    message: 'You must agree to the platform partnership terms.',
+  }),
 });
 
 export const adminCreateUserSchema = z.object({
@@ -38,10 +44,20 @@ export const adminCreateUserSchema = z.object({
   isEmailVerified: z.boolean().default(true),
 });
 
-export const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(1, 'Password is required'),
-});
+export const loginSchema = z
+  .object({
+    identifier: z.string().optional(),
+    email: z.string().optional(),
+    password: z.string().min(1, 'Password is required'),
+  })
+  .refine((data) => !!(data.identifier || data.email), {
+    message: 'Please provide your registered email address or mobile number',
+    path: ['identifier'],
+  })
+  .transform((data) => ({
+    identifier: (data.identifier || data.email)!.trim(),
+    password: data.password,
+  }));
 
 export const forgotPasswordSchema = z.object({
   email: z.string().email('Please enter a valid email address'),

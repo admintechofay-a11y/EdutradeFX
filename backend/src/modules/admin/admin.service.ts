@@ -365,6 +365,79 @@ export class AdminService {
     });
   }
 
+  async createBrokerAdmin(data: any) {
+    const slug = data.slug || `${data.companyName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now().toString().slice(-4)}`;
+    let userId = data.userId;
+    if (!userId) {
+      const admin = await prisma.user.findFirst({ where: { role: Role.ADMIN } });
+      userId = admin ? admin.id : (await prisma.user.findFirst())?.id;
+    }
+    return await prisma.broker.create({
+      data: {
+        userId,
+        companyName: data.companyName,
+        slug,
+        logo: data.logo || null,
+        website: data.website || null,
+        description: data.description || null,
+        headquarters: data.headquarters || null,
+        yearFounded: data.yearFounded ? parseInt(data.yearFounded) : null,
+        countries: Array.isArray(data.countries) ? data.countries : (data.countries ? String(data.countries).split(',').map((s: string) => s.trim()) : []),
+        regulation: Array.isArray(data.regulation) ? data.regulation : (data.regulation ? String(data.regulation).split(',').map((s: string) => s.trim()) : []),
+        tradingPlatforms: Array.isArray(data.tradingPlatforms) ? data.tradingPlatforms : (data.tradingPlatforms ? String(data.tradingPlatforms).split(',').map((s: string) => s.trim()) : ['MT4', 'MT5']),
+        accountTypes: Array.isArray(data.accountTypes) ? data.accountTypes : (data.accountTypes ? String(data.accountTypes).split(',').map((s: string) => s.trim()) : ['Standard', 'ECN']),
+        minDeposit: data.minDeposit ? parseFloat(data.minDeposit) : 0,
+        maxLeverage: data.maxLeverage || '1:500',
+        spreadsFrom: data.spreadsFrom || '0.0 Pips',
+        commissions: data.commissions || '$0',
+        executionType: data.executionType || 'ECN/STP',
+        riskDisclaimer: data.riskDisclaimer || null,
+        depositMethods: Array.isArray(data.depositMethods) ? data.depositMethods : (data.depositMethods ? String(data.depositMethods).split(',').map((s: string) => s.trim()) : ['Bank Wire', 'Credit Card', 'Crypto']),
+        withdrawMethods: Array.isArray(data.withdrawMethods) ? data.withdrawMethods : (data.withdrawMethods ? String(data.withdrawMethods).split(',').map((s: string) => s.trim()) : ['Bank Wire', 'Credit Card', 'Crypto']),
+        status: data.status || ApprovalStatus.APPROVED,
+        isFeatured: data.isFeatured === true || data.isFeatured === 'true',
+      },
+    });
+  }
+
+  async updateBrokerAdmin(brokerId: string, data: any) {
+    const broker = await prisma.broker.findUnique({ where: { id: brokerId } });
+    if (!broker) throw new AppError('Broker not found.', StatusCodes.NOT_FOUND);
+
+    return await prisma.broker.update({
+      where: { id: brokerId },
+      data: {
+        companyName: data.companyName !== undefined ? data.companyName : broker.companyName,
+        logo: data.logo !== undefined ? data.logo : broker.logo,
+        website: data.website !== undefined ? data.website : broker.website,
+        description: data.description !== undefined ? data.description : broker.description,
+        headquarters: data.headquarters !== undefined ? data.headquarters : broker.headquarters,
+        yearFounded: data.yearFounded !== undefined ? (data.yearFounded ? parseInt(data.yearFounded) : null) : broker.yearFounded,
+        countries: Array.isArray(data.countries) ? data.countries : (data.countries !== undefined ? String(data.countries).split(',').map((s: string) => s.trim()) : broker.countries),
+        regulation: Array.isArray(data.regulation) ? data.regulation : (data.regulation !== undefined ? String(data.regulation).split(',').map((s: string) => s.trim()) : broker.regulation),
+        tradingPlatforms: Array.isArray(data.tradingPlatforms) ? data.tradingPlatforms : (data.tradingPlatforms !== undefined ? String(data.tradingPlatforms).split(',').map((s: string) => s.trim()) : broker.tradingPlatforms),
+        accountTypes: Array.isArray(data.accountTypes) ? data.accountTypes : (data.accountTypes !== undefined ? String(data.accountTypes).split(',').map((s: string) => s.trim()) : broker.accountTypes),
+        minDeposit: data.minDeposit !== undefined ? (data.minDeposit ? parseFloat(data.minDeposit) : null) : broker.minDeposit,
+        maxLeverage: data.maxLeverage !== undefined ? data.maxLeverage : broker.maxLeverage,
+        spreadsFrom: data.spreadsFrom !== undefined ? data.spreadsFrom : broker.spreadsFrom,
+        commissions: data.commissions !== undefined ? data.commissions : broker.commissions,
+        executionType: data.executionType !== undefined ? data.executionType : broker.executionType,
+        riskDisclaimer: data.riskDisclaimer !== undefined ? data.riskDisclaimer : broker.riskDisclaimer,
+        depositMethods: Array.isArray(data.depositMethods) ? data.depositMethods : (data.depositMethods !== undefined ? String(data.depositMethods).split(',').map((s: string) => s.trim()) : broker.depositMethods),
+        withdrawMethods: Array.isArray(data.withdrawMethods) ? data.withdrawMethods : (data.withdrawMethods !== undefined ? String(data.withdrawMethods).split(',').map((s: string) => s.trim()) : broker.withdrawMethods),
+        status: data.status !== undefined ? data.status : broker.status,
+        isFeatured: data.isFeatured !== undefined ? Boolean(data.isFeatured) : broker.isFeatured,
+      },
+    });
+  }
+
+  async deleteBrokerAdmin(brokerId: string) {
+    const broker = await prisma.broker.findUnique({ where: { id: brokerId } });
+    if (!broker) throw new AppError('Broker not found.', StatusCodes.NOT_FOUND);
+    await prisma.broker.delete({ where: { id: brokerId } });
+    return { message: 'Broker deleted successfully.' };
+  }
+
   async approveBrokerReview(reviewId: string) {
     const review = await prisma.brokerReview.update({
       where: { id: reviewId },
@@ -455,6 +528,79 @@ export class AdminService {
     });
   }
 
+  async createAMAdmin(data: any) {
+    const slug = data.slug || `${data.fullName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now().toString().slice(-4)}`;
+    let userId = data.userId;
+    if (!userId) {
+      const admin = await prisma.user.findFirst({ where: { role: Role.ADMIN } });
+      userId = admin ? admin.id : (await prisma.user.findFirst())?.id;
+    }
+    return await prisma.accountManager.create({
+      data: {
+        userId,
+        fullName: data.fullName,
+        slug,
+        photo: data.photo || null,
+        tagline: data.tagline || null,
+        bio: data.bio || null,
+        expertise: Array.isArray(data.expertise) ? data.expertise : (data.expertise ? String(data.expertise).split(',').map((s: string) => s.trim()) : []),
+        languages: Array.isArray(data.languages) ? data.languages : (data.languages ? String(data.languages).split(',').map((s: string) => s.trim()) : ['English']),
+        country: data.country || null,
+        city: data.city || null,
+        yearsExperience: data.yearsExperience ? parseInt(data.yearsExperience) : null,
+        services: Array.isArray(data.services) ? data.services : (data.services ? String(data.services).split(',').map((s: string) => s.trim()) : ['PAMM', 'MAM']),
+        availability: data.availability || 'Accepting New Clients',
+        strategy: data.strategy || null,
+        minInvestment: data.minInvestment ? parseFloat(data.minInvestment) : null,
+        historicalPerformance: data.historicalPerformance || null,
+        riskInfo: data.riskInfo || null,
+        tradingStyle: data.tradingStyle || null,
+        website: data.website || null,
+        disclaimer: data.disclaimer || null,
+        status: data.status || ApprovalStatus.APPROVED,
+        isFeatured: data.isFeatured === true || data.isFeatured === 'true',
+      },
+    });
+  }
+
+  async updateAMAdmin(amId: string, data: any) {
+    const am = await prisma.accountManager.findUnique({ where: { id: amId } });
+    if (!am) throw new AppError('Account manager not found.', StatusCodes.NOT_FOUND);
+
+    return await prisma.accountManager.update({
+      where: { id: amId },
+      data: {
+        fullName: data.fullName !== undefined ? data.fullName : am.fullName,
+        photo: data.photo !== undefined ? data.photo : am.photo,
+        tagline: data.tagline !== undefined ? data.tagline : am.tagline,
+        bio: data.bio !== undefined ? data.bio : am.bio,
+        expertise: Array.isArray(data.expertise) ? data.expertise : (data.expertise !== undefined ? String(data.expertise).split(',').map((s: string) => s.trim()) : am.expertise),
+        languages: Array.isArray(data.languages) ? data.languages : (data.languages !== undefined ? String(data.languages).split(',').map((s: string) => s.trim()) : am.languages),
+        country: data.country !== undefined ? data.country : am.country,
+        city: data.city !== undefined ? data.city : am.city,
+        yearsExperience: data.yearsExperience !== undefined ? (data.yearsExperience ? parseInt(data.yearsExperience) : null) : am.yearsExperience,
+        services: Array.isArray(data.services) ? data.services : (data.services !== undefined ? String(data.services).split(',').map((s: string) => s.trim()) : am.services),
+        availability: data.availability !== undefined ? data.availability : am.availability,
+        strategy: data.strategy !== undefined ? data.strategy : am.strategy,
+        minInvestment: data.minInvestment !== undefined ? (data.minInvestment ? parseFloat(data.minInvestment) : null) : am.minInvestment,
+        historicalPerformance: data.historicalPerformance !== undefined ? data.historicalPerformance : am.historicalPerformance,
+        riskInfo: data.riskInfo !== undefined ? data.riskInfo : am.riskInfo,
+        tradingStyle: data.tradingStyle !== undefined ? data.tradingStyle : am.tradingStyle,
+        website: data.website !== undefined ? data.website : am.website,
+        disclaimer: data.disclaimer !== undefined ? data.disclaimer : am.disclaimer,
+        status: data.status !== undefined ? data.status : am.status,
+        isFeatured: data.isFeatured !== undefined ? Boolean(data.isFeatured) : am.isFeatured,
+      },
+    });
+  }
+
+  async deleteAMAdmin(amId: string) {
+    const am = await prisma.accountManager.findUnique({ where: { id: amId } });
+    if (!am) throw new AppError('Account manager not found.', StatusCodes.NOT_FOUND);
+    await prisma.accountManager.delete({ where: { id: amId } });
+    return { message: 'Account manager deleted successfully.' };
+  }
+
   async getAllSPsAdmin(query: any) {
     const { skip, take, page, limit } = parsePagination(query);
     const where: Prisma.SignalProviderWhereInput = {};
@@ -497,6 +643,67 @@ export class AdminService {
       where: { id: spId },
       data: { isFeatured },
     });
+  }
+
+  async createSPAdmin(data: any) {
+    const slug = data.slug || `${data.displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now().toString().slice(-4)}`;
+    let userId = data.userId;
+    if (!userId) {
+      const admin = await prisma.user.findFirst({ where: { role: Role.ADMIN } });
+      userId = admin ? admin.id : (await prisma.user.findFirst())?.id;
+    }
+    return await prisma.signalProvider.create({
+      data: {
+        userId,
+        displayName: data.displayName,
+        slug,
+        photo: data.photo || null,
+        bio: data.bio || null,
+        instruments: Array.isArray(data.instruments) ? data.instruments : (data.instruments ? String(data.instruments).split(',').map((s: string) => s.trim()) : ['EUR/USD', 'GBP/USD']),
+        strategy: data.strategy || null,
+        riskCategory: data.riskCategory || 'Medium',
+        winRate: data.winRate ? parseFloat(data.winRate) : 75,
+        subscriptionPrice: data.subscriptionPrice ? parseFloat(data.subscriptionPrice) : 0,
+        historicalPerformance: data.historicalPerformance || null,
+        website: data.website || null,
+        disclaimer: data.disclaimer || null,
+        verificationStatus: data.verificationStatus === true || data.verificationStatus === 'true',
+        status: data.status || ApprovalStatus.APPROVED,
+        isFeatured: data.isFeatured === true || data.isFeatured === 'true',
+      },
+    });
+  }
+
+  async updateSPAdmin(spId: string, data: any) {
+    const sp = await prisma.signalProvider.findUnique({ where: { id: spId } });
+    if (!sp) throw new AppError('Signal provider not found.', StatusCodes.NOT_FOUND);
+
+    return await prisma.signalProvider.update({
+      where: { id: spId },
+      data: {
+        displayName: data.displayName !== undefined ? data.displayName : sp.displayName,
+        photo: data.photo !== undefined ? data.photo : sp.photo,
+        bio: data.bio !== undefined ? data.bio : sp.bio,
+        instruments: Array.isArray(data.instruments) ? data.instruments : (data.instruments !== undefined ? String(data.instruments).split(',').map((s: string) => s.trim()) : sp.instruments),
+        strategy: data.strategy !== undefined ? data.strategy : sp.strategy,
+        riskCategory: data.riskCategory !== undefined ? data.riskCategory : sp.riskCategory,
+        winRate: data.winRate !== undefined ? (data.winRate ? parseFloat(data.winRate) : null) : sp.winRate,
+        subscriptionPrice: data.subscriptionPrice !== undefined ? (data.subscriptionPrice ? parseFloat(data.subscriptionPrice) : null) : sp.subscriptionPrice,
+        historicalPerformance: data.historicalPerformance !== undefined ? data.historicalPerformance : sp.historicalPerformance,
+        website: data.website !== undefined ? data.website : sp.website,
+        disclaimer: data.disclaimer !== undefined ? data.disclaimer : sp.disclaimer,
+        verificationStatus: data.verificationStatus !== undefined ? Boolean(data.verificationStatus) : sp.verificationStatus,
+        status: data.status !== undefined ? data.status : sp.status,
+        isFeatured: data.isFeatured !== undefined ? Boolean(data.isFeatured) : sp.isFeatured,
+      },
+    });
+  }
+
+  async deleteSPAdmin(spId: string) {
+    const sp = await prisma.signalProvider.findUnique({ where: { id: spId } });
+    if (!sp) throw new AppError('Signal provider not found.', StatusCodes.NOT_FOUND);
+    await prisma.signalProvider.delete({ where: { id: spId } });
+    return { message: 'Signal provider deleted successfully.' };
   }
 
   // ── 5. LMS TUTORS & COURSES ────────────────────────────────
@@ -646,6 +853,38 @@ export class AdminService {
   }
 
   async updateSiteSetting(key: string, value: string) {
+    return await prisma.siteSettings.upsert({
+      where: { key },
+      update: { value },
+      create: { key, value },
+    });
+  }
+
+  // ── 7. CMS WEBSITE CONTENT (LITE CMS) ─────────────────────
+
+  async getWebsiteContent(section?: string) {
+    const where: any = {};
+    if (section) {
+      where.key = `cms_${section}`;
+    } else {
+      where.key = { startsWith: 'cms_' };
+    }
+    const settings = await prisma.siteSettings.findMany({ where });
+    const contentMap: Record<string, any> = {};
+    settings.forEach((s) => {
+      const cleanKey = s.key.replace(/^cms_/, '');
+      try {
+        contentMap[cleanKey] = JSON.parse(s.value);
+      } catch {
+        contentMap[cleanKey] = s.value;
+      }
+    });
+    return contentMap;
+  }
+
+  async updateWebsiteContent(sectionKey: string, content: any) {
+    const key = sectionKey.startsWith('cms_') ? sectionKey : `cms_${sectionKey}`;
+    const value = typeof content === 'string' ? content : JSON.stringify(content);
     return await prisma.siteSettings.upsert({
       where: { key },
       update: { value },

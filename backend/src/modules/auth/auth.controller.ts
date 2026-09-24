@@ -17,8 +17,8 @@ export class AuthController {
   };
 
   login = async (req: Request, res: Response): Promise<void> => {
-    const { email, password } = req.body;
-    const result = await authService.login(email, password);
+    const { identifier, email, password } = req.body;
+    const result = await authService.login(identifier || email, password);
 
     // Set refresh token in secure HTTP-only cookie ONLY
     res.cookie('refreshToken', result.refreshToken, {

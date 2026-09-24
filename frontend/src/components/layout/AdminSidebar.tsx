@@ -16,6 +16,10 @@ import {
   LayoutDashboard,
   ChevronRight,
   TrendingUp,
+  Briefcase,
+  GraduationCap,
+  Mail,
+  Layout,
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 
@@ -26,11 +30,15 @@ export const AdminSidebar: React.FC = () => {
   const navItems = [
     { label: 'Admin Command Center', href: '/admin', icon: LayoutDashboard },
     { label: 'User Directory', href: '/admin/users', icon: Users },
-    { label: 'Broker Audits & Approvals', href: '/admin/brokers', icon: Building2 },
+    { label: 'Broker Directory & Audits', href: '/admin/brokers', icon: Building2 },
+    { label: 'Account Managers', href: '/admin/account-managers', icon: Briefcase },
+    { label: 'Signal Providers', href: '/admin/signal-providers', icon: Radio },
     { label: 'Course Quality Control', href: '/admin/courses', icon: BookOpen },
+    { label: 'Instructors & Tutors', href: '/admin/tutors', icon: GraduationCap },
     { label: 'Tutor Payout Desk', href: '/admin/payouts', icon: DollarSign },
     { label: 'Trader Complaints Desk', href: '/admin/complaints', icon: MessageSquare },
-    { label: 'Signal Providers', href: '/admin/signal-providers', icon: Radio },
+    { label: 'Contact & Ad Inquiries', href: '/admin/enquiries', icon: Mail },
+    { label: 'Website Content (CMS)', href: '/admin/content', icon: Layout },
     { label: 'Audit & Governance Logs', href: '/admin/audit-logs', icon: TrendingUp },
     { label: 'Platform Settings', href: '/admin/settings', icon: Settings },
   ];

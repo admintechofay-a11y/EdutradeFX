@@ -155,6 +155,10 @@ model User {
   comparisons       BrokerComparison[]
   orders            Order[]
   auditLogs         AuditLog[]
+
+  @@index([email])
+  @@index([phone])
+  @@index([role])
 }
 
 model RefreshToken {
@@ -194,6 +198,8 @@ model Broker {
   instruments      String[]
   depositMethods   String[]
   withdrawMethods  String[]
+  executionType    String?
+  riskDisclaimer   String?        @db.Text
   avgRating        Float          @default(0)
   totalReviews     Int            @default(0)
   totalLeads       Int            @default(0)
@@ -310,6 +316,13 @@ model AccountManager {
   yearsExperience  Int?
   services         String[]
   availability     String?
+  strategy         String?
+  minInvestment    Float?
+  historicalPerformance String? @db.Text
+  riskInfo         String?
+  tradingStyle     String?
+  website          String?
+  disclaimer       String?        @db.Text
   avgRating        Float          @default(0)
   totalReviews     Int            @default(0)
   status           ApprovalStatus @default(PENDING)
@@ -369,6 +382,10 @@ model SignalProvider {
   riskCategory     String?
   winRate          Float?
   totalSignals     Int            @default(0)
+  subscriptionPrice Float?
+  historicalPerformance String?   @db.Text
+  website          String?
+  disclaimer       String?        @db.Text
   avgRating        Float          @default(0)
   totalReviews     Int            @default(0)
   verificationStatus Boolean      @default(false)
@@ -662,25 +679,59 @@ model Enquiry {
 // ─── COMPLAINT BOX ───────────────────────────────────
 
 model Complaint {
-  id           String              @id @default(uuid())
-  userId       String
-  targetType   ComplaintTargetType
-  targetId     String?
-  subject      String
-  description  String              @db.Text
-  attachments  String[]
-  status       ComplaintStatus     @default(OPEN)
-  assignedTo   String?
-  adminNotes   String?             @db.Text
-  resolution   String?             @db.Text
-  resolvedAt   DateTime?
-  createdAt    DateTime            @default(now())
-  updatedAt    DateTime            @updatedAt
-  user         User                @relation(fields: [userId], references: [id], onDelete: Restrict)
+  id                 String              @id @default(uuid())
+  userId             String?
+  name               String
+  email              String
+  phone              String?
+  companyName        String?
+  category           String?
+  targetType         ComplaintTargetType
+  targetId           String?
+  subject            String
+  description        String              @db.Text
+  attachments        String[]
+  declarationConsent Boolean             @default(false)
+  status             ComplaintStatus     @default(OPEN)
+  assignedTo         String?
+  adminNotes         String?             @db.Text
+  resolution         String?             @db.Text
+  resolvedAt         DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  user               User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([status])
   @@index([targetType])
+  @@index([createdAt])
+  @@index([email])
+}
+
+// ─── CONTACT ENQUIRIES ───────────────────────────────
+
+enum ContactEnquiryStatus {
+  PENDING
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+model ContactEnquiry {
+  id         String               @id @default(uuid())
+  name       String
+  email      String
+  phone      String?
+  category   String
+  subject    String
+  message    String               @db.Text
+  status     ContactEnquiryStatus @default(PENDING)
+  adminNotes String?              @db.Text
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+
+  @@index([status])
+  @@index([category])
   @@index([createdAt])
 }
 

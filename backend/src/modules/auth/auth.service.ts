@@ -214,15 +214,21 @@ export class AuthService {
   }
 
   /**
-   * Login existing user
+   * Login existing user with email or mobile phone
    */
-  async login(email: string, password: string) {
-    const user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase() },
+  async login(identifier: string, password: string) {
+    const cleanId = (identifier || '').trim();
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: cleanId.toLowerCase() },
+          { phone: cleanId },
+        ],
+      },
     });
 
     if (!user) {
-      throw new AppError('Invalid email or password credentials.', StatusCodes.UNAUTHORIZED);
+      throw new AppError('Invalid email/mobile or password credentials.', StatusCodes.UNAUTHORIZED);
     }
 
     if (!user.isActive) {

@@ -7,7 +7,8 @@ import { AuthenticatedRequest } from '../../types';
 export class ComplaintController {
   submitComplaint = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     const files = req.files as Express.Multer.File[] | undefined;
-    const complaint = await complaintService.submitComplaint(req.user!.userId, req.body, files);
+    const userId = req.user ? req.user.userId : null;
+    const complaint = await complaintService.submitComplaint(userId, req.body, files);
     sendSuccess(res, complaint, 'Complaint submitted successfully', StatusCodes.CREATED);
   };
 

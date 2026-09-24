@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { complaintController } from './complaint.controller';
-import { authenticate } from '../../middleware/auth.middleware';
+import { authenticate, optionalAuth } from '../../middleware/auth.middleware';
 import { authorize } from '../../middleware/role.middleware';
 import { validate } from '../../middleware/validate.middleware';
 import { uploadLimiter } from '../../middleware/rateLimit.middleware';
@@ -9,10 +9,10 @@ import { createComplaintSchema, updateComplaintSchema } from './complaint.schema
 
 const router = Router();
 
-// ── USER DISPUTES ──────────────────────────────────
+// ── USER / PUBLIC DISPUTES ─────────────────────────
 router.post(
   '/',
-  authenticate,
+  optionalAuth,
   uploadLimiter,
   uploadDocument.array('attachments', 5),
   validate(createComplaintSchema),

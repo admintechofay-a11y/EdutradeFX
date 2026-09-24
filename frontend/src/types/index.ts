@@ -46,6 +46,8 @@ export interface Broker {
   instruments: string[];
   depositMethods: string[];
   withdrawMethods: string[];
+  executionType?: string | null;
+  riskDisclaimer?: string | null;
   avgRating: number;
   totalReviews: number;
   totalLeads: number;
@@ -101,6 +103,13 @@ export interface AccountManager {
   yearsExperience?: number | null;
   services: string[];
   availability?: string | null;
+  strategy?: string | null;
+  minInvestment?: number | null;
+  historicalPerformance?: string | null;
+  riskInfo?: string | null;
+  tradingStyle?: string | null;
+  website?: string | null;
+  disclaimer?: string | null;
   avgRating: number;
   totalReviews: number;
   status: ApprovalStatus;
@@ -134,6 +143,10 @@ export interface SignalProvider {
   riskCategory?: string | null;
   winRate?: number | null;
   totalSignals: number;
+  subscriptionPrice?: number | null;
+  historicalPerformance?: string | null;
+  website?: string | null;
+  disclaimer?: string | null;
   avgRating: number;
   totalReviews: number;
   verificationStatus: boolean;
@@ -285,18 +298,40 @@ export interface BlogPost {
 
 export interface Complaint {
   id: string;
-  userId: string;
+  userId?: string | null;
+  name: string;
+  email: string;
+  phone?: string | null;
+  companyName?: string | null;
+  category?: string | null;
   targetType: ComplaintTargetType;
   targetId?: string | null;
   title?: string;
   subject: string;
   description: string;
   attachments: string[];
+  declarationConsent?: boolean;
   status: ComplaintStatus;
   adminNotes?: string | null;
   resolution?: string | null;
   createdAt: string;
   user?: { name: string; email: string };
+}
+
+export type ContactEnquiryStatus = 'PENDING' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
+
+export interface ContactEnquiry {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  category: string;
+  subject: string;
+  message: string;
+  status: ContactEnquiryStatus;
+  adminNotes?: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Advertisement {

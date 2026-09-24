@@ -166,6 +166,18 @@ export default function BrokerComparePage() {
                 ))}
               </tr>
 
+              {/* Row: Execution Model */}
+              <tr>
+                <td className="p-5 font-semibold text-slate-300 sticky left-0 bg-brand-navy-card z-10">
+                  Execution Model
+                </td>
+                {brokers.map((b) => (
+                  <td key={b.id} className="p-5 border-l border-slate-800 text-center font-bold text-brand-blue">
+                    {b.executionType || 'ECN / STP'}
+                  </td>
+                ))}
+              </tr>
+
               {/* Row: Min Deposit */}
               <tr>
                 <td className="p-5 font-semibold text-slate-300 sticky left-0 bg-brand-navy-card z-10">

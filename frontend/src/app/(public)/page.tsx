@@ -17,37 +17,50 @@ import {
   Zap,
   ChevronRight,
   BookOpen,
+  Scale,
+  ShieldAlert,
+  Megaphone,
+  LineChart,
+  Compass,
+  AlertTriangle
 } from 'lucide-react';
 import { api } from '../../lib/api';
-import { Broker, Course, BlogPost } from '../../types';
+import { Broker, Course, BlogPost, AccountManager, SignalProvider } from '../../types';
 import { BrokerCard } from '../../components/broker/BrokerCard';
+import { AMCard } from '../../components/am/AMCard';
+import { SPCard } from '../../components/sp/SPCard';
 import { Skeleton } from '../../components/common/Skeleton';
 import { AIAssistant } from '../../components/common/AIAssistant';
 
 export default function HomePage() {
   const [featuredBrokers, setFeaturedBrokers] = useState<Broker[]>([]);
+  const [featuredAMs, setFeaturedAMs] = useState<AccountManager[]>([]);
+  const [featuredSPs, setFeaturedSPs] = useState<SignalProvider[]>([]);
   const [featuredCourses, setFeaturedCourses] = useState<Course[]>([]);
-  const [latestBlogs, setLatestBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     async function loadHomeData() {
       try {
-        const [brokersRes, coursesRes, blogsRes] = await Promise.allSettled([
+        const [brokersRes, amRes, spRes, coursesRes] = await Promise.allSettled([
           api.get('/brokers?limit=3&sortBy=avgRating'),
+          api.get('/account-managers?limit=3'),
+          api.get('/signal-providers?limit=3'),
           api.get('/courses?limit=3&sortBy=rating'),
-          api.get('/blog?limit=3'),
         ]);
 
         if (brokersRes.status === 'fulfilled') {
           setFeaturedBrokers(brokersRes.value.data?.data || []);
         }
+        if (amRes.status === 'fulfilled') {
+          setFeaturedAMs(amRes.value.data?.data || []);
+        }
+        if (spRes.status === 'fulfilled') {
+          setFeaturedSPs(spRes.value.data?.data || []);
+        }
         if (coursesRes.status === 'fulfilled') {
           setFeaturedCourses(coursesRes.value.data?.data || []);
-        }
-        if (blogsRes.status === 'fulfilled') {
-          setLatestBlogs(blogsRes.value.data?.data || []);
         }
       } catch (err) {
         console.error('Failed to load homepage data', err);
@@ -62,7 +75,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen text-slate-100 selection:bg-brand-blue selection:text-white">
       {/* ─── Hero Section ────────────────────────────────────────── */}
-      <section className="relative pt-16 pb-24 md:pt-24 md:pb-32 overflow-hidden">
+      <section className="relative pt-16 pb-20 md:pt-24 md:pb-28 overflow-hidden">
         {/* Background glow effects */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-brand-blue/15 rounded-full blur-[140px] pointer-events-none" />
         <div className="absolute top-1/3 right-10 w-[400px] h-[300px] bg-brand-amber/10 rounded-full blur-[120px] pointer-events-none" />
@@ -82,12 +95,12 @@ export default function HomePage() {
               & Masterclass Education
             </h1>
 
-            <p className="text-lg sm:text-xl text-slate-300 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Compare tier-1 regulated Forex brokers, learn structured institutional strategies from veteran mentors, and discover audited signal providers.
+            <p className="text-base sm:text-lg text-slate-300 mb-8 max-w-2xl mx-auto leading-relaxed">
+              Compare tier-1 regulated Forex brokers, learn structured institutional strategies from veteran mentors, connect with audited account managers, and safeguard your capital.
             </p>
 
             {/* Universal Search Bar */}
-            <div className="max-w-xl mx-auto mb-10">
+            <div className="max-w-xl mx-auto mb-8">
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -114,73 +127,37 @@ export default function HomePage() {
               </form>
             </div>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-wrap items-center justify-center gap-4">
-              <Link
-                href="/brokers"
-                className="px-7 py-3.5 rounded-xl bg-gradient-to-r from-brand-blue to-blue-600 text-white font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all flex items-center gap-2"
-              >
-                <span>Find Regulated Broker</span>
-                <ArrowRight className="w-4 h-4" />
+            {/* Quick Action Badges */}
+            <div className="flex flex-wrap items-center justify-center gap-3 text-xs">
+              <Link href="/compare" className="px-4 py-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-brand-blue text-slate-300 hover:text-white transition flex items-center gap-1.5">
+                <Scale className="w-3.5 h-3.5 text-brand-blue" />
+                <span>Side-by-Side Comparison</span>
               </Link>
-              <Link
-                href="/courses"
-                className="px-7 py-3.5 rounded-xl bg-brand-navy-light/90 hover:bg-brand-navy-lighter border border-slate-700 text-slate-200 font-semibold hover:border-slate-500 transition-all flex items-center gap-2"
-              >
-                <GraduationCap className="w-4 h-4 text-brand-amber" />
-                <span>Explore Academy</span>
+              <Link href="/complaint-box" className="px-4 py-2 rounded-xl bg-red-950/40 border border-red-500/30 hover:border-red-500/60 text-red-300 hover:text-white transition flex items-center gap-1.5">
+                <ShieldAlert className="w-3.5 h-3.5 text-red-400" />
+                <span>Complaint Box & Dispute Desk</span>
+              </Link>
+              <Link href="/courses" className="px-4 py-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-brand-amber text-slate-300 hover:text-white transition flex items-center gap-1.5">
+                <GraduationCap className="w-3.5 h-3.5 text-brand-amber" />
+                <span>Free Academy Courses</span>
               </Link>
             </div>
           </div>
 
-          {/* Live Trust / Metrics Bar */}
-          <div className="mt-16 sm:mt-20 pt-10 border-t border-slate-800/80 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div className="p-4 rounded-xl bg-brand-navy-card/40 border border-slate-800/60 backdrop-blur-sm">
-              <div className="text-2xl sm:text-3xl font-extrabold text-white">500+</div>
-              <div className="text-xs sm:text-sm text-slate-400 mt-1">Verified Brokers</div>
-            </div>
-            <div className="p-4 rounded-xl bg-brand-navy-card/40 border border-slate-800/60 backdrop-blur-sm">
-              <div className="text-2xl sm:text-3xl font-extrabold text-brand-amber">45,000+</div>
-              <div className="text-xs sm:text-sm text-slate-400 mt-1">Active Students</div>
-            </div>
-            <div className="p-4 rounded-xl bg-brand-navy-card/40 border border-slate-800/60 backdrop-blur-sm">
-              <div className="text-2xl sm:text-3xl font-extrabold text-emerald-400">99.8%</div>
-              <div className="text-xs sm:text-sm text-slate-400 mt-1">Audited Compliance</div>
-            </div>
-            <div className="p-4 rounded-xl bg-brand-navy-card/40 border border-slate-800/60 backdrop-blur-sm">
-              <div className="text-2xl sm:text-3xl font-extrabold text-brand-blue">24/7</div>
-              <div className="text-xs sm:text-sm text-slate-400 mt-1">AI Forex Mentor</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── Core Platform Pillars Grid ──────────────────────────── */}
-      <section className="py-16 bg-brand-navy/60 relative border-t border-b border-slate-800/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-              An All-in-One Professional Trading Ecosystem
-            </h2>
-            <p className="text-slate-400 text-sm sm:text-base">
-              Whether you are a beginner seeking structured guidance or an experienced trader comparing raw spreads, we provide trusted infrastructure.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Card 1: Broker Directory */}
+          {/* 4 Pillars Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-16">
             <Link
               href="/brokers"
-              className="group p-6 rounded-2xl bg-brand-navy-card border border-slate-800/80 hover:border-brand-blue/50 transition-all duration-300 hover:-translate-y-1.5 shadow-lg relative overflow-hidden"
+              className="group p-6 rounded-2xl bg-brand-navy-card border border-slate-800/80 hover:border-brand-blue/50 transition-all duration-300 hover:-translate-y-1.5 shadow-lg"
             >
-              <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-brand-blue mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-brand-blue/10 border border-brand-blue/20 flex items-center justify-center text-brand-blue mb-4 group-hover:scale-110 transition-transform">
                 <ShieldCheck className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-white mb-2 group-hover:text-brand-blue transition-colors">
                 Regulated Brokers
               </h3>
               <p className="text-sm text-slate-400 leading-relaxed mb-4">
-                Transparent ratings, FCA/CySEC licenses, raw spread analysis, and side-by-side comparison matrix.
+                Tier-1 verified licenses (FCA, CySEC, ASIC), live spread monitoring, deposit minimums, and trader reviews.
               </p>
               <div className="text-xs font-semibold text-brand-blue flex items-center gap-1 group-hover:gap-2 transition-all">
                 <span>Explore directory</span>
@@ -188,19 +165,18 @@ export default function HomePage() {
               </div>
             </Link>
 
-            {/* Card 2: LMS Academy */}
             <Link
               href="/courses"
-              className="group p-6 rounded-2xl bg-brand-navy-card border border-slate-800/80 hover:border-brand-amber/50 transition-all duration-300 hover:-translate-y-1.5 shadow-lg relative overflow-hidden"
+              className="group p-6 rounded-2xl bg-brand-navy-card border border-slate-800/80 hover:border-brand-amber/50 transition-all duration-300 hover:-translate-y-1.5 shadow-lg"
             >
-              <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-brand-amber mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-brand-amber/10 border border-brand-amber/20 flex items-center justify-center text-brand-amber mb-4 group-hover:scale-110 transition-transform">
                 <GraduationCap className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-white mb-2 group-hover:text-brand-amber transition-colors">
                 Forex Academy
               </h3>
               <p className="text-sm text-slate-400 leading-relaxed mb-4">
-                Structured video courses from beginner price action to institutional Smart Money Concepts with verified completion certificates.
+                Structured video courses from beginner price action to institutional Smart Money Concepts with certificates.
               </p>
               <div className="text-xs font-semibold text-brand-amber flex items-center gap-1 group-hover:gap-2 transition-all">
                 <span>View courses</span>
@@ -208,10 +184,9 @@ export default function HomePage() {
               </div>
             </Link>
 
-            {/* Card 3: Account Managers */}
             <Link
               href="/account-managers"
-              className="group p-6 rounded-2xl bg-brand-navy-card border border-slate-800/80 hover:border-emerald-500/50 transition-all duration-300 hover:-translate-y-1.5 shadow-lg relative overflow-hidden"
+              className="group p-6 rounded-2xl bg-brand-navy-card border border-slate-800/80 hover:border-emerald-500/50 transition-all duration-300 hover:-translate-y-1.5 shadow-lg"
             >
               <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-4 group-hover:scale-110 transition-transform">
                 <Users className="w-6 h-6" />
@@ -220,7 +195,7 @@ export default function HomePage() {
                 Account Managers
               </h3>
               <p className="text-sm text-slate-400 leading-relaxed mb-4">
-                Connect with accredited MAM/PAMM portfolio specialists, verify trading strategies, and manage risk parameters.
+                Connect with accredited MAM/PAMM portfolio specialists, verify trading strategies, and inspect historical track records.
               </p>
               <div className="text-xs font-semibold text-emerald-400 flex items-center gap-1 group-hover:gap-2 transition-all">
                 <span>Find managers</span>
@@ -228,10 +203,9 @@ export default function HomePage() {
               </div>
             </Link>
 
-            {/* Card 4: Signal Providers */}
             <Link
               href="/signal-providers"
-              className="group p-6 rounded-2xl bg-brand-navy-card border border-slate-800/80 hover:border-purple-500/50 transition-all duration-300 hover:-translate-y-1.5 shadow-lg relative overflow-hidden"
+              className="group p-6 rounded-2xl bg-brand-navy-card border border-slate-800/80 hover:border-purple-500/50 transition-all duration-300 hover:-translate-y-1.5 shadow-lg"
             >
               <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 mb-4 group-hover:scale-110 transition-transform">
                 <Radio className="w-6 h-6" />
@@ -240,7 +214,7 @@ export default function HomePage() {
                 Signals & Analytics
               </h3>
               <p className="text-sm text-slate-400 leading-relaxed mb-4">
-                Real-time trade signals with audited pips, win rates, stop-loss ratios, and direct Telegram channel alerts.
+                Real-time trade signals with audited win rates, stop-loss ratios, risk categories, and direct execution alerts.
               </p>
               <div className="text-xs font-semibold text-purple-400 flex items-center gap-1 group-hover:gap-2 transition-all">
                 <span>Browse signals</span>
@@ -252,8 +226,8 @@ export default function HomePage() {
       </section>
 
       {/* ─── Featured Brokers Showcase ───────────────────────────── */}
-      <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+      <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
           <div>
             <div className="text-xs font-bold text-brand-blue uppercase tracking-wider mb-1">
               Top Rated & Audited
@@ -266,7 +240,7 @@ export default function HomePage() {
             href="/brokers"
             className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-blue hover:text-blue-400 transition"
           >
-            <span>View all 500+ brokers</span>
+            <span>View all brokers</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -290,46 +264,142 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* ─── AI Trading Assistant Interactive Feature Box ─────────── */}
-      <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative rounded-3xl bg-gradient-to-r from-blue-900/40 via-brand-navy-card to-indigo-950/40 border border-brand-blue/30 p-8 sm:p-12 overflow-hidden shadow-2xl">
-          <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-brand-blue/20 rounded-full blur-[100px] pointer-events-none" />
-          <div className="relative z-10 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-blue/20 text-brand-blue text-xs font-semibold mb-4 border border-brand-blue/30">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>AI-Powered Financial Education</span>
+      {/* ─── Broker Comparison Matrix Teaser ─────────────────────── */}
+      <section className="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-slate-900 via-brand-navy-card to-blue-950/40 border border-slate-800 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-2xl">
+          <div className="space-y-3 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-blue/15 text-brand-blue text-xs font-bold border border-brand-blue/30">
+              <Scale className="w-3.5 h-3.5" />
+              <span>Empirical Side-by-Side Engine</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white mb-4">
-              Have Questions About Risk, Spreads or Technical Indicators?
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+              Can't Decide Between Multiple Brokerages?
             </h2>
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed mb-8">
-              Ask our 24/7 AI Forex Mentor. Get instant explanations on position sizing, margin calls, interest rate parity, and institutional order blocks.
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Launch our side-by-side comparison engine to analyze up to 4 brokers simultaneously. Compare real raw spreads, ECN/STP execution models, maximum leverage, regulatory licensing bodies, and funding methods.
             </p>
-            <div className="flex flex-wrap gap-4">
-              <button
-                onClick={() => {
-                  const trigger = document.getElementById('ai-assistant-toggle');
-                  if (trigger) trigger.click();
-                }}
-                className="px-6 py-3 rounded-xl bg-brand-blue hover:bg-blue-600 text-white font-semibold text-sm transition-all shadow-lg shadow-blue-500/25 flex items-center gap-2"
-              >
-                <Zap className="w-4 h-4 text-brand-amber" />
-                <span>Launch Assistant Now</span>
-              </button>
-              <Link
-                href="/courses"
-                className="px-6 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 font-semibold text-sm transition-all border border-slate-700"
-              >
-                Browse Curriculum
-              </Link>
+          </div>
+          <Link
+            href="/compare"
+            className="px-8 py-3.5 rounded-xl bg-brand-blue hover:bg-blue-600 text-white font-bold text-sm tracking-wide shadow-lg shadow-blue-500/25 transition shrink-0 flex items-center gap-2"
+          >
+            <span>Launch Comparison Engine</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </section>
+
+      {/* ─── Featured Account Managers Showcase ──────────────────── */}
+      {featuredAMs.length > 0 && (
+        <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+            <div>
+              <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">
+                Audited Portfolio Specialists
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+                Verified Account Managers (PAMM / MAM)
+              </h2>
             </div>
+            <Link
+              href="/account-managers"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition"
+            >
+              <span>View all managers</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredAMs.map((am) => (
+              <AMCard key={am.id} am={am} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ─── Featured Signal Providers Showcase ──────────────────── */}
+      {featuredSPs.length > 0 && (
+        <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+            <div>
+              <div className="text-xs font-bold text-purple-400 uppercase tracking-wider mb-1">
+                Quantitative Trading Calls
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+                Audited Signal Providers
+              </h2>
+            </div>
+            <Link
+              href="/signal-providers"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-purple-400 hover:text-purple-300 transition"
+            >
+              <span>View all signal providers</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredSPs.map((sp) => (
+              <SPCard key={sp.id} provider={sp} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ─── How EduTradeFX Works (4-Step Roadmap) ────────────────── */}
+      <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-xs font-semibold mb-3">
+            <Compass className="w-3.5 h-3.5" />
+            <span>Trader Ecosystem</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+            How EduTradeFX Works
+          </h2>
+          <p className="text-sm text-slate-400 mt-2">
+            A comprehensive, transparent pathway designed to protect your capital and accelerate your trading journey.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="p-6 rounded-3xl bg-brand-navy-card border border-slate-800 space-y-3">
+            <span className="text-2xl font-black font-mono text-brand-blue">01</span>
+            <h3 className="text-base font-bold text-white">Learn Institutional Edge</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Study risk sizing, order blocks, and market microstructure through our interactive Academy courses and quizzes.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-3xl bg-brand-navy-card border border-slate-800 space-y-3">
+            <span className="text-2xl font-black font-mono text-brand-blue">02</span>
+            <h3 className="text-base font-bold text-white">Audit & Select Brokers</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Examine tier-1 licensing, ECN execution models, raw spread markups, and verified real trader reviews.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-3xl bg-brand-navy-card border border-slate-800 space-y-3">
+            <span className="text-2xl font-black font-mono text-brand-blue">03</span>
+            <h3 className="text-base font-bold text-white">Discover Managers & Signals</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Access audited PAMM/MAM managers and signal providers with empirical drawdown statistics.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-3xl bg-brand-navy-card border border-slate-800 space-y-3">
+            <span className="text-2xl font-black font-mono text-brand-blue">04</span>
+            <h3 className="text-base font-bold text-white">Grievance Protection</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Encountered withdrawal delays or slippage? Log an official dispute case to our forensic Complaint Box for mediation.
+            </p>
           </div>
         </div>
       </section>
 
       {/* ─── Top Courses Preview ──────────────────────────────────── */}
-      <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+      <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
           <div>
             <div className="text-xs font-bold text-brand-amber uppercase tracking-wider mb-1">
               Learn From Certified Mentors
@@ -405,46 +475,63 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* ─── Trust, Security & Complaints Banner ──────────────────── */}
-      <section className="py-16 bg-brand-navy-card/40 border-t border-b border-slate-800/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-brand-blue/10 border border-brand-blue/20 flex items-center justify-center text-brand-blue shrink-0">
-                <CheckCircle2 className="w-6 h-6" />
-              </div>
-              <div>
-                <h4 className="text-base font-bold text-white mb-1">Independent Verification</h4>
-                <p className="text-sm text-slate-400 leading-relaxed">
-                  We cross-verify regulatory licenses across FCA, CySEC, ASIC, and FSCA registries to protect traders from unregulated scams.
-                </p>
-              </div>
+      {/* ─── Dedicated Complaint Box Banner ──────────────────────── */}
+      <section className="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-red-950/40 via-brand-navy-card to-rose-950/30 border border-red-500/30 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-2xl">
+          <div className="space-y-3 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs font-bold border border-red-500/30">
+              <ShieldAlert className="w-3.5 h-3.5" />
+              <span>Official Trader Dispute & Grievance Registry</span>
             </div>
-
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-              <div>
-                <h4 className="text-base font-bold text-white mb-1">Trader Dispute Resolution</h4>
-                <p className="text-sm text-slate-400 leading-relaxed">
-                  Experienced withdrawal delays or slippage? Submit a formal ticket through our transparent Complaints Board.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-brand-amber shrink-0">
-                <Award className="w-6 h-6" />
-              </div>
-              <div>
-                <h4 className="text-base font-bold text-white mb-1">Authentic Community Reviews</h4>
-                <p className="text-sm text-slate-400 leading-relaxed">
-                  Reviews are strictly verified with live trading proofs to prevent astroturfing and biased broker marketing.
-                </p>
-              </div>
-            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+              Encountered a Rogue Broker or Withheld Withdrawal?
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Submit a formal dispute case. EduTradeFX conducts compliance inquiries, demands mediation from accused institutions, and publishes non-confidential findings to our global community scam watch.
+            </p>
           </div>
+          <Link
+            href="/complaint-box"
+            className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:opacity-95 text-white font-bold text-sm tracking-wide shadow-lg shadow-red-900/30 transition shrink-0 flex items-center gap-2"
+          >
+            <ShieldAlert className="w-4 h-4" />
+            <span>File a Dispute Case</span>
+          </Link>
+        </div>
+      </section>
+
+      {/* ─── Advertise With Us Banner ────────────────────────────── */}
+      <section className="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="p-8 sm:p-10 rounded-3xl bg-brand-navy-card border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 text-xs font-bold text-brand-gold uppercase tracking-wider">
+              <Megaphone className="w-4 h-4" />
+              <span>Institutional Media Kit</span>
+            </div>
+            <h3 className="text-xl sm:text-2xl font-bold text-white">
+              Reach 120,000+ Active Retail & Professional Traders
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-400 max-w-xl">
+              Showcase your brokerage, liquidity solution, or trading software with sponsored directory placements, high-CTR hero banners, and newsletter features.
+            </p>
+          </div>
+          <Link
+            href="/advertise"
+            className="px-6 py-3 rounded-xl bg-slate-900 border border-slate-700 hover:border-brand-gold text-white font-semibold text-xs sm:text-sm transition shrink-0 flex items-center gap-2"
+          >
+            <span>View Advertising Options</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </section>
+
+      {/* ─── High-Risk Warning Footer Note ───────────────────────── */}
+      <section className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90 leading-relaxed flex items-start gap-3">
+          <AlertTriangle className="w-4 h-4 text-brand-amber shrink-0 mt-0.5" />
+          <span>
+            <strong>High-Risk Investment Warning:</strong> CFDs and Forex are complex leveraged financial instruments carrying a high risk of losing capital rapidly. Between 74% and 89% of retail investor accounts lose money trading CFDs. EduTradeFX operates strictly as an educational community and directory. Read our <Link href="/risk-disclaimer" className="underline font-bold text-white hover:text-brand-amber">Risk Disclaimer</Link> and <Link href="/terms" className="underline font-bold text-white hover:text-brand-amber">Terms of Service</Link>.
+          </span>
         </div>
       </section>
 

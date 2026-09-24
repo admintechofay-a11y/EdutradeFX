@@ -3,10 +3,13 @@ export const SITE_NAME = 'EdutradeFX';
 
 export const NAV_LINKS = [
   { label: 'Brokers', href: '/brokers' },
+  { label: 'Compare', href: '/compare' },
   { label: 'Account Managers', href: '/account-managers' },
-  { label: 'Signal Providers', href: '/signal-providers' },
+  { label: 'Signals', href: '/signal-providers' },
   { label: 'Courses', href: '/courses' },
-  { label: 'Blog', href: '/blog' },
+  { label: 'Complaint Box', href: '/complaint-box' },
+  { label: 'About', href: '/about' },
+  { label: 'Contact', href: '/contact' },
 ];
 
 export const ROLE_LABELS: Record<string, string> = {

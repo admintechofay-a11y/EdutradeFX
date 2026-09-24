@@ -14,6 +14,14 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/compare',
+        destination: '/brokers/compare',
+      },
+    ];
+  },
   async headers() {
     return [
       {

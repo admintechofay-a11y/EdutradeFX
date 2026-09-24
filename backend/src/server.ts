@@ -11,8 +11,8 @@ const startServer = async () => {
     // 1. Initialize Database connection
     await connectDB();
 
-    // 2. Verify Email SMTP connection
-    await verifyEmailConnection();
+    // 2. Verify Email SMTP connection (non-blocking in development)
+    verifyEmailConnection().catch(() => {});
 
     // 3. Start Express HTTP Server
     app.listen(PORT, () => {

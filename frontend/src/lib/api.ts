@@ -99,9 +99,20 @@ api.interceptors.response.use(
 
 export function formatApiError(error: any): { message: string; errors?: any } {
   if (error.response?.data) {
+    const data = error.response.data;
+    if (Array.isArray(data.errors) && data.errors.length > 0) {
+      const detailed = data.errors
+        .map((err: any) => err.message)
+        .filter(Boolean)
+        .join('. ');
+      return {
+        message: detailed || data.message || 'Validation failed. Please check your inputs.',
+        errors: data.errors,
+      };
+    }
     return {
-      message: error.response.data.message || 'An unexpected error occurred.',
-      errors: error.response.data.errors,
+      message: data.message || 'An unexpected error occurred.',
+      errors: data.errors,
     };
   }
   return {

@@ -66,6 +66,14 @@ export default function RegisterPage() {
       return;
     }
 
+    const hasUpper = /[A-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecial = /[^A-Za-z0-9]/.test(password);
+    if (password.length < 8 || !hasUpper || !hasNumber || !hasSpecial) {
+      setError('Password must be at least 8 characters and contain at least 1 uppercase letter, 1 number, and 1 special symbol (e.g. Password@123).');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -264,7 +272,7 @@ export default function RegisterPage() {
 
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
-              Password (Min 8 characters) *
+              Password * <span className="text-[10px] text-slate-400 lowercase font-normal">(min 8 chars, 1 uppercase, 1 number, 1 symbol)</span>
             </label>
             <div className="relative">
               <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />

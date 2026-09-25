@@ -73,7 +73,8 @@ app.use(
 
       if (
         allowedOrigins.includes(origin) ||
-        /^https:\/\/edutrade-fx-frontend[a-zA-Z0-9-]*\.vercel\.app$/.test(origin)
+        /^https:\/\/([a-zA-Z0-9_-]+\.)?vercel\.app$/.test(origin) ||
+        /^https:\/\/([a-zA-Z0-9_-]+\.)?edutradefx\.com$/.test(origin)
       ) {
         return callback(null, true);
       }

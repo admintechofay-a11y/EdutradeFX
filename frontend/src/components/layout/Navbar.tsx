@@ -67,6 +67,9 @@ export const Navbar: React.FC = () => {
   const getDashboardHref = () => {
     if (!user) return '/dashboard';
     if (user.role === 'ADMIN') return '/admin';
+    if (user.role === 'TUTOR') return '/dashboard/tutor';
+    if (user.role === 'SIGNAL_PROVIDER') return '/dashboard/signal-provider';
+    if (user.role === 'BROKER') return '/dashboard/broker';
     return '/dashboard';
   };
 

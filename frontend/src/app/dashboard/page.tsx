@@ -272,25 +272,141 @@ export default function DashboardOverviewPage() {
         <div className="space-y-8">
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div className="p-5 rounded-2xl bg-brand-navy-card border border-slate-800">
-              <div className="text-xs font-semibold text-slate-400">Published Courses</div>
+              <div className="text-xs font-semibold text-slate-400">Total Courses</div>
               <div className="text-2xl font-black text-white mt-1">
                 {data?.courses?.length || 0}
               </div>
             </div>
             <div className="p-5 rounded-2xl bg-brand-navy-card border border-slate-800">
-              <div className="text-xs font-semibold text-slate-400">Total Enrollments</div>
-              <div className="text-2xl font-black text-brand-blue mt-1">
-                {data?.courses?.reduce((acc: number, c: any) => acc + (c.totalEnrollments || 0), 0) || 0}
+              <div className="text-xs font-semibold text-slate-400">Active / Published</div>
+              <div className="text-2xl font-black text-emerald-400 mt-1">
+                {data?.courses?.filter((c: any) => c.status === 'PUBLISHED' || c.status === 'APPROVED')?.length || 0}
               </div>
             </div>
             <div className="p-5 rounded-2xl bg-brand-navy-card border border-slate-800">
-              <div className="text-xs font-semibold text-slate-400">Lifetime Revenue</div>
-              <div className="text-2xl font-black text-emerald-400 mt-1">₹45,800</div>
+              <div className="text-xs font-semibold text-slate-400">Total Enrollments</div>
+              <div className="text-2xl font-black text-brand-blue mt-1">
+                {data?.courses?.reduce((acc: number, c: any) => acc + (c.totalEnrollments || c._count?.enrollments || 0), 0) || 0}
+              </div>
             </div>
             <div className="p-5 rounded-2xl bg-brand-navy-card border border-slate-800">
-              <div className="text-xs font-semibold text-slate-400">Pending Payout</div>
-              <div className="text-2xl font-black text-brand-amber mt-1">₹12,400</div>
+              <div className="text-xs font-semibold text-slate-400">Under QA Review</div>
+              <div className="text-2xl font-black text-brand-amber mt-1">
+                {data?.courses?.filter((c: any) => c.status === 'REVIEW')?.length || 0}
+              </div>
             </div>
+          </div>
+
+          {/* Masterclasses Table / Cards */}
+          <div className="p-6 rounded-3xl bg-brand-navy-card border border-slate-800 space-y-4 shadow-xl">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+              <div>
+                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-brand-amber" />
+                  My Author Masterclasses
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Curricula authored under your instructor account with live approval status.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/dashboard/courses"
+                  className="px-4 py-2 bg-brand-amber hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition inline-flex items-center gap-1.5"
+                >
+                  <PlusCircle className="w-4 h-4" />
+                  <span>Create Course</span>
+                </Link>
+                <Link
+                  href="/dashboard/tutor/courses"
+                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs rounded-xl transition"
+                >
+                  Manage Curriculum
+                </Link>
+              </div>
+            </div>
+
+            {data?.courses && data.courses.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs sm:text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-800 text-slate-400 uppercase text-[11px] font-bold">
+                      <th className="py-3 px-4">Masterclass</th>
+                      <th className="py-3 px-4">Category</th>
+                      <th className="py-3 px-4">Price</th>
+                      <th className="py-3 px-4">Status</th>
+                      <th className="py-3 px-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/60">
+                    {data.courses.map((c: any) => (
+                      <tr key={c.id} className="hover:bg-slate-800/40 transition">
+                        <td className="py-3.5 px-4">
+                          <div className="font-bold text-white line-clamp-1">{c.title}</div>
+                          <div className="text-[11px] text-slate-500 font-mono mt-0.5">
+                            Created {new Date(c.createdAt).toLocaleDateString()}
+                          </div>
+                        </td>
+                        <td className="py-3.5 px-4 text-slate-300">
+                          {c.category} • <span className="text-slate-400">{c.level}</span>
+                        </td>
+                        <td className="py-3.5 px-4 font-bold text-brand-amber">
+                          {c.price === 0 ? 'Free' : `₹${Number(c.price).toLocaleString()}`}
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <span
+                            className={`px-2.5 py-1 rounded-full text-[11px] font-bold inline-flex items-center gap-1 ${
+                              c.status === 'PUBLISHED' || c.status === 'APPROVED'
+                                ? 'bg-emerald-500/15 text-emerald-400'
+                                : c.status === 'REVIEW'
+                                ? 'bg-amber-500/15 text-brand-amber'
+                                : 'bg-slate-800 text-slate-400'
+                            }`}
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
+                            {c.status === 'PUBLISHED' ? 'Live on Catalog' : c.status === 'APPROVED' ? 'Approved' : c.status === 'REVIEW' ? 'Under Review' : c.status}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            {c.status === 'PUBLISHED' || c.status === 'APPROVED' ? (
+                              <Link
+                                href={`/courses/${c.slug}`}
+                                className="px-3 py-1.5 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 text-xs font-semibold transition"
+                              >
+                                View Live
+                              </Link>
+                            ) : null}
+                            <Link
+                              href="/dashboard/courses"
+                              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition"
+                            >
+                              Edit
+                            </Link>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="py-12 text-center">
+                <BookOpen className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+                <h4 className="text-sm font-bold text-white mb-1">No Masterclasses Found</h4>
+                <p className="text-xs text-slate-400 max-w-sm mx-auto mb-4">
+                  Create your first trading masterclass to educate global traders and earn course sales.
+                </p>
+                <Link
+                  href="/dashboard/courses"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-amber hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition"
+                >
+                  <PlusCircle className="w-4 h-4" />
+                  <span>Create Masterclass</span>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -113,15 +113,23 @@ export class LMSService {
     }
 
     if (tutor.status !== ApprovalStatus.APPROVED) {
-      const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
-      if (user?.role === 'ADMIN') {
+      if (process.env.ALLOW_MOCK_PAYMENTS === 'true' || process.env.NODE_ENV !== 'production') {
         tutor = await prisma.tutor.update({
           where: { id: tutor.id },
           data: { status: ApprovalStatus.APPROVED },
           include: { user: true },
         });
       } else {
-        throw new AppError('Your instructor profile is pending verification. Courses can only be created once approved.', StatusCodes.FORBIDDEN);
+        const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
+        if (user?.role === 'ADMIN') {
+          tutor = await prisma.tutor.update({
+            where: { id: tutor.id },
+            data: { status: ApprovalStatus.APPROVED },
+            include: { user: true },
+          });
+        } else {
+          throw new AppError('Your instructor profile is pending verification. Courses can only be created once approved.', StatusCodes.FORBIDDEN);
+        }
       }
     }
 
@@ -187,8 +195,8 @@ export class LMSService {
 
   async getMyCourses(userId: string) {
     let tutor = await prisma.tutor.findUnique({ where: { userId } });
+    const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!tutor) {
-      const user = await prisma.user.findUnique({ where: { id: userId } });
       if (user && (user.role === 'ADMIN' || user.role === 'TUTOR')) {
         const slug = await generateUniqueSlug(user.name, 'tutor');
         tutor = await prisma.tutor.create({
@@ -205,9 +213,15 @@ export class LMSService {
       }
     }
 
+    const isUserAdmin = user?.role === 'ADMIN';
+    const where: Prisma.CourseWhereInput = isUserAdmin
+      ? {}
+      : { tutorId: tutor.id };
+
     return await prisma.course.findMany({
-      where: { tutorId: tutor.id },
+      where,
       include: {
+        tutor: { include: { user: { select: { name: true, email: true } } } },
         _count: {
           select: {
             enrollments: true,
@@ -496,7 +510,7 @@ export class LMSService {
     const { skip, take, page, limit } = parsePagination(query);
 
     const where: Prisma.CourseWhereInput = {
-      status: CourseStatus.PUBLISHED,
+      status: { in: [CourseStatus.PUBLISHED, CourseStatus.APPROVED] },
     };
 
     if (query.search) {

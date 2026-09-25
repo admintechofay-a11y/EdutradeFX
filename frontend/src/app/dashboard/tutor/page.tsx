@@ -169,6 +169,90 @@ export default function TutorOverviewPage() {
           </p>
         </Link>
       </div>
+
+      {/* Live Courses Section */}
+      <div className="p-6 rounded-3xl bg-brand-navy-card border border-slate-800 space-y-4 shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+          <div>
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-brand-blue" />
+              Masterclass Curriculum Portfolio
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Live status and enrollment engagement across your published trading curricula.
+            </p>
+          </div>
+
+          <Link
+            href="/dashboard/tutor/courses"
+            className="px-4 py-2 bg-brand-blue hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition inline-flex items-center gap-1.5 self-start sm:self-auto"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span>Manage All Courses</span>
+          </Link>
+        </div>
+
+        {courses.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {courses.map((course: any) => (
+              <div
+                key={course.id}
+                className="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col justify-between hover:border-slate-700 transition"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">
+                      {course.category}
+                    </span>
+                    <span
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                        course.status === 'PUBLISHED' || course.status === 'APPROVED'
+                          ? 'bg-emerald-500/15 text-emerald-400'
+                          : course.status === 'REVIEW'
+                          ? 'bg-amber-500/15 text-brand-amber'
+                          : 'bg-slate-800 text-slate-400'
+                      }`}
+                    >
+                      {course.status === 'PUBLISHED' ? 'Live' : course.status === 'APPROVED' ? 'Approved' : course.status}
+                    </span>
+                  </div>
+
+                  <h3 className="text-sm font-bold text-white mb-1.5 line-clamp-1">{course.title}</h3>
+                  <p className="text-xs text-slate-400 line-clamp-2 mb-3">
+                    {course.shortDescription || course.description}
+                  </p>
+                </div>
+
+                <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
+                  <span className="font-extrabold text-white">
+                    {course.price === 0 ? 'Free' : `₹${course.price.toLocaleString()}`}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    {course.status === 'PUBLISHED' || course.status === 'APPROVED' ? (
+                      <Link
+                        href={`/courses/${course.slug}`}
+                        className="text-brand-blue hover:underline font-semibold text-xs"
+                      >
+                        Public Page →
+                      </Link>
+                    ) : null}
+                    <Link
+                      href="/dashboard/tutor/courses"
+                      className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[11px] font-medium transition"
+                    >
+                      Edit
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="py-8 text-center text-xs text-slate-400">
+            No courses authored yet. Click "Manage All Courses" to create your first trading masterclass.
+          </div>
+        )}
+      </div>
     </div>
   );
 }

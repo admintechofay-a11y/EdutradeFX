@@ -18,6 +18,8 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
+RUN mkdir -p /app/logs && chown -R node:node /app
+
 COPY --chown=node:node --from=builder /app/package*.json ./
 COPY --chown=node:node --from=builder /app/node_modules ./node_modules
 COPY --chown=node:node --from=builder /app/dist ./dist

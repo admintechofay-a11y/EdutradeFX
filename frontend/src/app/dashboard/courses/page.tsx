@@ -176,7 +176,7 @@ export default function TutorCoursesPage() {
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   placeholder="e.g. Masterclass: Smart Money Liquidity Concepts"
-                  className="w-full px-3.5 py-2.5 bg-brand-navy-light border border-slate-700 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:ring-1 focus:ring-brand-blue"
+                  className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs sm:text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-brand-blue transition"
                 />
               </div>
 
@@ -186,7 +186,7 @@ export default function TutorCoursesPage() {
                   <select
                     value={form.category}
                     onChange={(e) => setForm({ ...form, category: e.target.value })}
-                    className="w-full px-3 py-2 bg-brand-navy-light border border-slate-700 rounded-xl text-xs text-white"
+                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white transition"
                   >
                     <option value="Price Action">Price Action</option>
                     <option value="Smart Money Concepts (SMC)">Smart Money Concepts</option>
@@ -200,7 +200,7 @@ export default function TutorCoursesPage() {
                   <select
                     value={form.level}
                     onChange={(e) => setForm({ ...form, level: e.target.value })}
-                    className="w-full px-3 py-2 bg-brand-navy-light border border-slate-700 rounded-xl text-xs text-white"
+                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white transition"
                   >
                     <option value="BEGINNER">Beginner</option>
                     <option value="INTERMEDIATE">Intermediate</option>
@@ -219,7 +219,7 @@ export default function TutorCoursesPage() {
                   required
                   value={form.price}
                   onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
-                  className="w-full px-3 py-2 bg-brand-navy-light border border-slate-700 rounded-xl text-xs text-white"
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white transition"
                 />
               </div>
 
@@ -231,7 +231,7 @@ export default function TutorCoursesPage() {
                   value={form.shortDescription}
                   onChange={(e) => setForm({ ...form, shortDescription: e.target.value })}
                   placeholder="One sentence summary of what students will achieve..."
-                  className="w-full px-3.5 py-2 bg-brand-navy-light border border-slate-700 rounded-xl text-xs text-white"
+                  className="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 transition"
                 />
               </div>
 
@@ -243,7 +243,7 @@ export default function TutorCoursesPage() {
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   placeholder="Detailed outline of modules, requirements, and outcomes..."
-                  className="w-full px-3.5 py-2 bg-brand-navy-light border border-slate-700 rounded-xl text-xs text-white resize-none"
+                  className="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 resize-none transition"
                 />
               </div>
 

@@ -175,7 +175,7 @@ export default function BrokerReviewsPage() {
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
                         placeholder="Write a formal corporate reply to this trader..."
-                        className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                        className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
                       />
                       <div className="flex justify-end gap-2">
                         <button

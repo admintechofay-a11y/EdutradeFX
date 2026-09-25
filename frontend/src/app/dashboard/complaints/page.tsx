@@ -157,7 +157,7 @@ export default function StudentComplaintsPage() {
                 <select
                   value={targetType}
                   onChange={(e) => setTargetType(e.target.value as any)}
-                  className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-rose-500"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-rose-500 transition"
                 >
                   <option value="BROKER">Forex Broker</option>
                   <option value="ACCOUNT_MANAGER">Fund / Account Manager</option>
@@ -175,7 +175,7 @@ export default function StudentComplaintsPage() {
                   placeholder="e.g. Acme Capital Markets Ltd."
                   value={targetName}
                   onChange={(e) => setTargetName(e.target.value)}
-                  className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-rose-500"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-rose-500 transition"
                 />
               </div>
             </div>
@@ -191,7 +191,7 @@ export default function StudentComplaintsPage() {
                   placeholder="e.g. Unauthorized withdrawal refusal / account freeze"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-rose-500"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-rose-500 transition"
                 />
               </div>
 
@@ -200,14 +200,14 @@ export default function StudentComplaintsPage() {
                   Financial Loss (USD, Optional)
                 </label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <DollarSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input
                     type="number"
                     step="any"
                     placeholder="e.g. 2500"
                     value={lossAmount}
                     onChange={(e) => setLossAmount(e.target.value)}
-                    className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-rose-500"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-rose-500 transition"
                   />
                 </div>
               </div>
@@ -223,7 +223,7 @@ export default function StudentComplaintsPage() {
                 placeholder="Describe what occurred, dates, account numbers, and attempts to resolve with the firm directly..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-rose-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-rose-500 transition"
               />
             </div>
 
@@ -236,7 +236,7 @@ export default function StudentComplaintsPage() {
                 placeholder="e.g. Full refund of $2,500 deposit and closure of account"
                 value={desiredResolution}
                 onChange={(e) => setDesiredResolution(e.target.value)}
-                className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-rose-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-rose-500 transition"
               />
             </div>
 

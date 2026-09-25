@@ -133,7 +133,7 @@ export default function SignalProviderProfilePage() {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="e.g. Apex Alpha FX Signals"
-                className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition"
               />
             </div>
 
@@ -144,7 +144,7 @@ export default function SignalProviderProfilePage() {
               <select
                 value={tradingStyle}
                 onChange={(e) => setTradingStyle(e.target.value)}
-                className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500 transition"
               >
                 <option value="Day Trading & Scalping">Day Trading & Scalping</option>
                 <option value="Day Trading & Swing">Day Trading & Swing</option>
@@ -161,7 +161,7 @@ export default function SignalProviderProfilePage() {
                 type="number"
                 value={experienceYears}
                 onChange={(e) => setExperienceYears(e.target.value)}
-                className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500 transition"
               />
             </div>
 
@@ -174,7 +174,7 @@ export default function SignalProviderProfilePage() {
                 value={telegramLink}
                 onChange={(e) => setTelegramLink(e.target.value)}
                 placeholder="https://t.me/your_signals"
-                className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition"
               />
             </div>
           </div>
@@ -188,7 +188,7 @@ export default function SignalProviderProfilePage() {
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="Summary of trading background, market philosophy, and edge..."
-              className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500"
+              className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition"
             />
           </div>
 
@@ -201,7 +201,7 @@ export default function SignalProviderProfilePage() {
               value={strategy}
               onChange={(e) => setStrategy(e.target.value)}
               placeholder="Explain how stop losses are calculated, max risk per trade (e.g. 1-2%), and take-profit scaling..."
-              className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500"
+              className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition"
             />
           </div>
         </div>

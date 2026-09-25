@@ -193,7 +193,7 @@ export default function TutorPayoutsPage() {
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     placeholder="Min 500"
-                    className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-brand-blue"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-blue transition"
                   />
                 </div>
               </div>
@@ -205,7 +205,7 @@ export default function TutorPayoutsPage() {
                 <select
                   value={method}
                   onChange={(e) => setMethod(e.target.value)}
-                  className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-brand-blue"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-brand-blue transition"
                 >
                   <option value="BANK_TRANSFER">Direct Bank Wire / ACH</option>
                   <option value="UPI">UPI Remittance (India)</option>
@@ -225,7 +225,7 @@ export default function TutorPayoutsPage() {
                   value={beneficiaryName}
                   onChange={(e) => setBeneficiaryName(e.target.value)}
                   placeholder="Official name on account"
-                  className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-brand-blue"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-blue transition"
                 />
               </div>
 
@@ -239,7 +239,7 @@ export default function TutorPayoutsPage() {
                   value={bankName}
                   onChange={(e) => setBankName(e.target.value)}
                   placeholder="e.g. JPMorgan Chase or HDFC"
-                  className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-brand-blue"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-blue transition"
                 />
               </div>
 
@@ -253,7 +253,7 @@ export default function TutorPayoutsPage() {
                   value={accountNumber}
                   onChange={(e) => setAccountNumber(e.target.value)}
                   placeholder="Account or IBAN string"
-                  className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-brand-blue"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-blue transition"
                 />
               </div>
 
@@ -267,7 +267,7 @@ export default function TutorPayoutsPage() {
                   value={routingNumber}
                   onChange={(e) => setRoutingNumber(e.target.value)}
                   placeholder="SWIFT / Routing / IFSC"
-                  className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-brand-blue"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-blue transition"
                 />
               </div>
             </div>

@@ -88,7 +88,7 @@ export default function AdminAMManagementPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by manager name, email, or strategy..."
-            className="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none"
+            className="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-blue transition"
           />
         </div>
         <div className="sm:col-span-4">

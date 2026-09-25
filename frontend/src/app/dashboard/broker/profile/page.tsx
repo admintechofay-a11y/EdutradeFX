@@ -166,7 +166,7 @@ export default function BrokerProfileEditorPage() {
                 required
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
-                className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
               />
             </div>
 
@@ -180,7 +180,7 @@ export default function BrokerProfileEditorPage() {
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
                 placeholder="https://example.com"
-                className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
               />
             </div>
 
@@ -193,7 +193,7 @@ export default function BrokerProfileEditorPage() {
                 value={headquarters}
                 onChange={(e) => setHeadquarters(e.target.value)}
                 placeholder="e.g. Sydney, Australia"
-                className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
               />
             </div>
 
@@ -206,7 +206,7 @@ export default function BrokerProfileEditorPage() {
                 value={yearFounded}
                 onChange={(e) => setYearFounded(e.target.value)}
                 placeholder="2010"
-                className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
               />
             </div>
           </div>
@@ -220,7 +220,7 @@ export default function BrokerProfileEditorPage() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Highlight liquidity depth, execution speed, institutional features..."
-              className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+              className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
             />
           </div>
         </div>
@@ -241,7 +241,7 @@ export default function BrokerProfileEditorPage() {
                 type="number"
                 value={minDeposit}
                 onChange={(e) => setMinDeposit(e.target.value)}
-                className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500 transition"
               />
             </div>
 
@@ -254,7 +254,7 @@ export default function BrokerProfileEditorPage() {
                 value={maxLeverage}
                 onChange={(e) => setMaxLeverage(e.target.value)}
                 placeholder="1:500"
-                className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
               />
             </div>
 
@@ -267,7 +267,7 @@ export default function BrokerProfileEditorPage() {
                 value={spreadsFrom}
                 onChange={(e) => setSpreadsFrom(e.target.value)}
                 placeholder="0.0 pips"
-                className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
               />
             </div>
 
@@ -280,7 +280,7 @@ export default function BrokerProfileEditorPage() {
                 value={commissions}
                 onChange={(e) => setCommissions(e.target.value)}
                 placeholder="$3.50 per lot"
-                className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
               />
             </div>
           </div>
@@ -295,7 +295,7 @@ export default function BrokerProfileEditorPage() {
                 value={regulation}
                 onChange={(e) => setRegulation(e.target.value)}
                 placeholder="FCA, ASIC, CySEC, DFSA"
-                className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
               />
             </div>
 
@@ -308,7 +308,7 @@ export default function BrokerProfileEditorPage() {
                 value={tradingPlatforms}
                 onChange={(e) => setTradingPlatforms(e.target.value)}
                 placeholder="MetaTrader 4, MetaTrader 5, cTrader, TradingView"
-                className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
               />
             </div>
 
@@ -321,7 +321,7 @@ export default function BrokerProfileEditorPage() {
                 value={accountTypes}
                 onChange={(e) => setAccountTypes(e.target.value)}
                 placeholder="Razor Account, Standard Account, Islamic Swap-Free"
-                className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
               />
             </div>
 
@@ -334,7 +334,7 @@ export default function BrokerProfileEditorPage() {
                 value={depositMethods}
                 onChange={(e) => setDepositMethods(e.target.value)}
                 placeholder="Visa/Mastercard, Wire Transfer, Neteller, Skrill"
-                className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
               />
             </div>
           </div>

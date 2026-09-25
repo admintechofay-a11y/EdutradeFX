@@ -227,7 +227,7 @@ export default function SPSignalsTerminalPage() {
                     value={newForm.instrument}
                     onChange={(e) => setNewForm({ ...newForm, instrument: e.target.value.toUpperCase() })}
                     placeholder="e.g. XAUUSD"
-                    className="w-full px-3 py-2 bg-brand-navy-light border border-slate-700 rounded-xl text-xs font-bold text-white uppercase"
+                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs font-bold text-white placeholder-slate-400 uppercase transition"
                   />
                 </div>
                 <div>
@@ -235,7 +235,7 @@ export default function SPSignalsTerminalPage() {
                   <select
                     value={newForm.direction}
                     onChange={(e) => setNewForm({ ...newForm, direction: e.target.value as SignalDirection })}
-                    className="w-full px-3 py-2 bg-brand-navy-light border border-slate-700 rounded-xl text-xs font-bold text-white"
+                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs font-bold text-white transition"
                   >
                     <option value="BUY">BUY / LONG</option>
                     <option value="SELL">SELL / SHORT</option>
@@ -253,7 +253,7 @@ export default function SPSignalsTerminalPage() {
                     value={newForm.entryPrice}
                     onChange={(e) => setNewForm({ ...newForm, entryPrice: e.target.value })}
                     placeholder="1.0850"
-                    className="w-full px-3 py-2 bg-brand-navy-light border border-slate-700 rounded-xl text-xs text-white font-mono"
+                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 font-mono transition"
                   />
                 </div>
                 <div>
@@ -265,7 +265,7 @@ export default function SPSignalsTerminalPage() {
                     value={newForm.stopLoss}
                     onChange={(e) => setNewForm({ ...newForm, stopLoss: e.target.value })}
                     placeholder="1.0820"
-                    className="w-full px-3 py-2 bg-brand-navy-light border border-slate-700 rounded-xl text-xs text-white font-mono"
+                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 font-mono transition"
                   />
                 </div>
                 <div>
@@ -277,7 +277,7 @@ export default function SPSignalsTerminalPage() {
                     value={newForm.takeProfit}
                     onChange={(e) => setNewForm({ ...newForm, takeProfit: e.target.value })}
                     placeholder="1.0920"
-                    className="w-full px-3 py-2 bg-brand-navy-light border border-slate-700 rounded-xl text-xs text-white font-mono"
+                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 font-mono transition"
                   />
                 </div>
               </div>
@@ -289,7 +289,7 @@ export default function SPSignalsTerminalPage() {
                   value={newForm.description}
                   onChange={(e) => setNewForm({ ...newForm, description: e.target.value })}
                   placeholder="e.g. 15m Liquidity grab of Asian session low with Bullish BOS..."
-                  className="w-full px-3 py-2 bg-brand-navy-light border border-slate-700 rounded-xl text-xs text-white resize-none"
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 resize-none transition"
                 />
               </div>
 
@@ -330,7 +330,8 @@ export default function SPSignalsTerminalPage() {
                   required
                   value={closeForm.closedPrice}
                   onChange={(e) => setCloseForm({ ...closeForm, closedPrice: e.target.value })}
-                  className="w-full px-3 py-2 bg-brand-navy-light border border-slate-700 rounded-xl text-xs text-white font-mono"
+                  placeholder="e.g. 1.0890"
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 font-mono transition"
                 />
               </div>
 
@@ -343,7 +344,7 @@ export default function SPSignalsTerminalPage() {
                   value={closeForm.pipsGained}
                   onChange={(e) => setCloseForm({ ...closeForm, pipsGained: e.target.value })}
                   placeholder="e.g. 45 or -20"
-                  className="w-full px-3 py-2 bg-brand-navy-light border border-slate-700 rounded-xl text-xs text-white font-mono"
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 font-mono transition"
                 />
               </div>
 

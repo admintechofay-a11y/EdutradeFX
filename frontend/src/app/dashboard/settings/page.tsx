@@ -138,7 +138,7 @@ export default function AccountSettingsPage() {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-brand-blue"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-blue transition"
               />
             </div>
 
@@ -150,7 +150,7 @@ export default function AccountSettingsPage() {
                 type="email"
                 disabled
                 value={email}
-                className="w-full bg-brand-navy-light/30 border border-slate-800/60 rounded-xl px-3.5 py-2.5 text-xs text-slate-400 cursor-not-allowed"
+                className="w-full bg-slate-800/80 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-xs text-slate-300 cursor-not-allowed"
               />
             </div>
           </div>
@@ -199,7 +199,7 @@ export default function AccountSettingsPage() {
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               placeholder="••••••••••••"
-              className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-brand-blue max-w-md"
+              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-blue max-w-md transition"
             />
           </div>
 
@@ -214,7 +214,7 @@ export default function AccountSettingsPage() {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="At least 8 characters"
-                className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-brand-blue"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-blue transition"
               />
             </div>
 
@@ -228,7 +228,7 @@ export default function AccountSettingsPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Re-enter password"
-                className="w-full bg-brand-navy-light/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-brand-blue"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-blue transition"
               />
             </div>
           </div>

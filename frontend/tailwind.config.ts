@@ -10,6 +10,12 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        'brand-navy': '#0A0F1E',
+        'brand-navy-card': '#111827',
+        'brand-navy-light': '#1C2333',
+        'brand-blue': '#3B82F6',
+        'brand-cyan': '#06B6D4',
+        'brand-amber': '#F59E0B',
         background: {
           DEFAULT: '#0A0F1E',
           secondary: '#111827',

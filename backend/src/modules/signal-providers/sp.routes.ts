@@ -27,8 +27,8 @@ const spRegistrationUpload = multer({
 
 // ── PUBLIC ─────────────────────────────────────────
 router.get('/', generalLimiter, signalProviderController.getSignalProviders);
-router.get('/my/profile', authenticate, authorize('SIGNAL_PROVIDER'), signalProviderController.getMySPProfile);
-router.get('/my/signals', authenticate, authorize('SIGNAL_PROVIDER'), signalProviderController.getMySignals);
+router.get('/my/profile', authenticate, authorize('SIGNAL_PROVIDER', 'ADMIN'), signalProviderController.getMySPProfile);
+router.get('/my/signals', authenticate, authorize('SIGNAL_PROVIDER', 'ADMIN'), signalProviderController.getMySignals);
 router.get('/:slug', generalLimiter, optionalAuth, signalProviderController.getSignalProviderBySlug);
 router.get('/:id/reviews', generalLimiter, signalProviderController.getReviews);
 router.get('/:id/signals', generalLimiter, signalProviderController.getSignals);
@@ -41,7 +41,7 @@ router.post('/:id/reviews', authenticate, reviewLimiter, validate(spReviewSchema
 router.post(
   '/register',
   authenticate,
-  authorize('SIGNAL_PROVIDER'),
+  authorize('SIGNAL_PROVIDER', 'ADMIN'),
   uploadLimiter,
   spRegistrationUpload,
   validate(registerSPSchema),
@@ -51,7 +51,7 @@ router.post(
 router.put(
   '/my/profile',
   authenticate,
-  authorize('SIGNAL_PROVIDER'),
+  authorize('SIGNAL_PROVIDER', 'ADMIN'),
   uploadLimiter,
   uploadImage.single('photo'),
   validate(updateSPSchema),
@@ -61,7 +61,7 @@ router.put(
 router.post(
   '/my/signals',
   authenticate,
-  authorize('SIGNAL_PROVIDER'),
+  authorize('SIGNAL_PROVIDER', 'ADMIN'),
   validate(signalSchema),
   signalProviderController.createSignal
 );
@@ -69,22 +69,37 @@ router.post(
 router.put(
   '/my/signals/:id',
   authenticate,
-  authorize('SIGNAL_PROVIDER'),
+  authorize('SIGNAL_PROVIDER', 'ADMIN'),
   validate(updateSignalSchema),
   signalProviderController.updateSignal
+);
+
+router.patch(
+  '/my/signals/:id',
+  authenticate,
+  authorize('SIGNAL_PROVIDER', 'ADMIN'),
+  validate(updateSignalSchema),
+  signalProviderController.updateSignal
+);
+
+router.patch(
+  '/my/signals/:id/close',
+  authenticate,
+  authorize('SIGNAL_PROVIDER', 'ADMIN'),
+  signalProviderController.closeSignal
 );
 
 router.delete(
   '/my/signals/:id',
   authenticate,
-  authorize('SIGNAL_PROVIDER'),
+  authorize('SIGNAL_PROVIDER', 'ADMIN'),
   signalProviderController.deleteSignal
 );
 
 router.post(
   '/my/documents',
   authenticate,
-  authorize('SIGNAL_PROVIDER'),
+  authorize('SIGNAL_PROVIDER', 'ADMIN'),
   uploadLimiter,
   uploadDocument.array('docs', 5),
   signalProviderController.uploadDocuments

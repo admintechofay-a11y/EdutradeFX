@@ -47,6 +47,15 @@ export class SignalProviderController {
     sendSuccess(res, signal, 'Signal updated successfully', StatusCodes.OK);
   };
 
+  closeSignal = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const signal = await signalProviderService.updateSignal(id as string, req.user!.userId, {
+      ...req.body,
+      status: 'CLOSED',
+    });
+    sendSuccess(res, signal, 'Signal closed successfully', StatusCodes.OK);
+  };
+
   deleteSignal = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     const { id } = req.params;
     const result = await signalProviderService.deleteSignal(id as string, req.user!.userId);

@@ -14,6 +14,7 @@ export default function SPSignalsTerminalPage() {
   // New Signal Modal
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
   const [newForm, setNewForm] = useState({
+    title: '',
     instrument: 'EURUSD',
     direction: 'BUY' as SignalDirection,
     entryPrice: '',
@@ -51,14 +52,19 @@ export default function SPSignalsTerminalPage() {
     e.preventDefault();
     setSubmitting(true);
     try {
+      const title = newForm.title?.trim() || `${newForm.direction} ${newForm.instrument.toUpperCase()} Signal`;
       await api.post('/signal-providers/my/signals', {
-        ...newForm,
+        title,
+        instrument: newForm.instrument.toUpperCase(),
+        direction: newForm.direction,
         entryPrice: newForm.entryPrice ? parseFloat(newForm.entryPrice) : undefined,
         takeProfit: newForm.takeProfit ? parseFloat(newForm.takeProfit) : undefined,
         stopLoss: newForm.stopLoss ? parseFloat(newForm.stopLoss) : undefined,
+        description: newForm.description?.trim() || undefined,
       });
       setIsNewModalOpen(false);
       setNewForm({
+        title: '',
         instrument: 'EURUSD',
         direction: 'BUY',
         entryPrice: '',
@@ -68,7 +74,12 @@ export default function SPSignalsTerminalPage() {
       });
       fetchSignals();
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to broadcast signal.');
+      const errorMsg =
+        err.response?.data?.errors?.[0]?.message ||
+        err.response?.data?.message ||
+        err.message ||
+        'Failed to broadcast signal.';
+      alert(errorMsg);
     } finally {
       setSubmitting(false);
     }
@@ -216,6 +227,19 @@ export default function SPSignalsTerminalPage() {
               <div>
                 <h3 className="text-xl font-bold text-white">Broadcast New Trade Signal</h3>
                 <p className="text-xs text-slate-400 mt-0.5">Parameters will be audited and broadcast instantly.</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Setup Title <span className="text-slate-500 font-normal">(Optional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={newForm.title}
+                  onChange={(e) => setNewForm({ ...newForm, title: e.target.value })}
+                  placeholder={`e.g. ${newForm.direction} ${newForm.instrument} Breakout Setup`}
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 transition"
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-3">

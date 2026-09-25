@@ -16,7 +16,7 @@ export const registerSPSchema = z.object({
 export const updateSPSchema = registerSPSchema.partial();
 
 export const signalSchema = z.object({
-  title: z.string().min(3, 'Title must be at least 3 characters').max(100),
+  title: z.string().max(100).optional(),
   instrument: z.string().min(2, 'Trading instrument (e.g., EUR/USD, XAU/USD) is required'),
   direction: z.nativeEnum(SignalDirection),
   entryPrice: z.coerce.number().positive().optional(),

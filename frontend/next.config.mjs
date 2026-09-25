@@ -18,7 +18,7 @@ const nextConfig = {
     const rawBackendUrl =
       process.env.BACKEND_URL ||
       process.env.NEXT_PUBLIC_API_URL ||
-      'http://localhost:5000/api';
+      'https://edutradefx.onrender.com/api';
     const backendBase = rawBackendUrl.replace(/\/api\/?$/, '');
 
     return [

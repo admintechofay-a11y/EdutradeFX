@@ -3,7 +3,7 @@ const isRemoteHost = isBrowser && !['localhost', '127.0.0.1'].includes(window.lo
 
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL ||
-  (isRemoteHost ? '/api' : 'http://localhost:5000/api');
+  (isRemoteHost ? 'https://edutradefx.onrender.com/api' : 'http://localhost:5000/api');
 export const SITE_NAME = 'EdutradeFX';
 
 export const NAV_LINKS = [

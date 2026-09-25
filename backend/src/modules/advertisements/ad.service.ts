@@ -45,6 +45,11 @@ export class AdvertisementService {
   }
 
   async trackImpression(adId: string) {
+    const ad = await prisma.advertisement.findUnique({ where: { id: adId } });
+    if (!ad || !ad.isActive) {
+      throw new AppError('Advertisement not found or inactive.', StatusCodes.NOT_FOUND);
+    }
+
     return await prisma.advertisement.update({
       where: { id: adId },
       data: { impressions: { increment: 1 } },
@@ -52,6 +57,11 @@ export class AdvertisementService {
   }
 
   async trackClick(adId: string) {
+    const ad = await prisma.advertisement.findUnique({ where: { id: adId } });
+    if (!ad || !ad.isActive) {
+      throw new AppError('Advertisement not found or inactive.', StatusCodes.NOT_FOUND);
+    }
+
     return await prisma.advertisement.update({
       where: { id: adId },
       data: { clicks: { increment: 1 } },

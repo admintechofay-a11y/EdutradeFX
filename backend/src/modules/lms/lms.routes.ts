@@ -4,7 +4,7 @@ import { lmsController } from './lms.controller';
 import { authenticate, optionalAuth } from '../../middleware/auth.middleware';
 import { authorize } from '../../middleware/role.middleware';
 import { validate } from '../../middleware/validate.middleware';
-import { generalLimiter, uploadLimiter, paymentLimiter } from '../../middleware/rateLimit.middleware';
+import { generalLimiter, uploadLimiter, paymentLimiter, reviewLimiter } from '../../middleware/rateLimit.middleware';
 import { uploadImage, uploadDocument, uploadCourseContent, imageStorage } from '../../middleware/upload.middleware';
 import {
   registerTutorSchema,
@@ -47,7 +47,7 @@ router.post('/payments/verify', authenticate, paymentLimiter, validate(verifyPay
 router.get('/my/enrollments', authenticate, lmsController.getMyEnrollments);
 router.get('/learn/:lessonId', authenticate, lmsController.getLessonContent);
 router.post('/learn/:lessonId/complete', authenticate, lmsController.completeLesson);
-router.post('/courses/:id/reviews', authenticate, validate(courseReviewSchema), lmsController.addCourseReview);
+router.post('/courses/:id/reviews', authenticate, reviewLimiter, validate(courseReviewSchema), lmsController.addCourseReview);
 router.post('/courses/:id/wishlist', authenticate, lmsController.toggleWishlist);
 router.get('/my/wishlist', authenticate, lmsController.getWishlist);
 

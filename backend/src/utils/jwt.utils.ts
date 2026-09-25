@@ -21,8 +21,14 @@ if (!REFRESH_SECRET || REFRESH_SECRET.length < 32) {
 const ACCESS_EXPIRY = (process.env.JWT_ACCESS_EXPIRY || '15m') as any;
 const REFRESH_EXPIRY = (process.env.JWT_REFRESH_EXPIRY || '7d') as any;
 
+const JWT_ISSUER = 'edutradefx';
+const JWT_AUDIENCE = 'edutradefx-app';
+
 export const generateAccessToken = (payload: TokenPayload): string => {
   const options: SignOptions = {
+    algorithm: 'HS256',
+    issuer: JWT_ISSUER,
+    audience: JWT_AUDIENCE,
     expiresIn: ACCESS_EXPIRY,
   };
   return jwt.sign(payload, ACCESS_SECRET, options);
@@ -30,6 +36,9 @@ export const generateAccessToken = (payload: TokenPayload): string => {
 
 export const generateRefreshToken = (payload: RefreshTokenPayload): string => {
   const options: SignOptions = {
+    algorithm: 'HS256',
+    issuer: JWT_ISSUER,
+    audience: JWT_AUDIENCE,
     expiresIn: REFRESH_EXPIRY,
   };
   return jwt.sign(payload, REFRESH_SECRET, options);
@@ -37,7 +46,11 @@ export const generateRefreshToken = (payload: RefreshTokenPayload): string => {
 
 export const verifyAccessToken = (token: string): TokenPayload => {
   try {
-    return jwt.verify(token, ACCESS_SECRET) as TokenPayload;
+    return jwt.verify(token, ACCESS_SECRET, {
+      algorithms: ['HS256'],
+      issuer: JWT_ISSUER,
+      audience: JWT_AUDIENCE,
+    }) as TokenPayload;
   } catch (error: any) {
     if (error.name === 'TokenExpiredError') {
       throw new AppError('Access token has expired', StatusCodes.UNAUTHORIZED);
@@ -48,7 +61,11 @@ export const verifyAccessToken = (token: string): TokenPayload => {
 
 export const verifyRefreshToken = (token: string): RefreshTokenPayload => {
   try {
-    return jwt.verify(token, REFRESH_SECRET) as RefreshTokenPayload;
+    return jwt.verify(token, REFRESH_SECRET, {
+      algorithms: ['HS256'],
+      issuer: JWT_ISSUER,
+      audience: JWT_AUDIENCE,
+    }) as RefreshTokenPayload;
   } catch (error: any) {
     if (error.name === 'TokenExpiredError') {
       throw new AppError('Refresh token has expired. Please log in again.', StatusCodes.UNAUTHORIZED);

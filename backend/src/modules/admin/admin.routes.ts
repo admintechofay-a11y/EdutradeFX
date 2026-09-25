@@ -38,6 +38,8 @@ router.put('/account-managers/:id', adminController.updateAM);
 router.delete('/account-managers/:id', adminController.deleteAM);
 router.patch('/account-managers/:id/status', adminController.updateAMStatus);
 router.patch('/account-managers/:id/feature', adminController.toggleAMFeatured);
+router.patch('/reviews/am/:id/approve', adminController.approveAccountManagerReview);
+router.delete('/reviews/am/:id', adminController.deleteAccountManagerReview);
 
 // ── SIGNAL PROVIDERS ───────────────────────────────
 router.get('/signal-providers', adminController.getAllSPs);
@@ -47,6 +49,8 @@ router.delete('/signal-providers/:id', adminController.deleteSP);
 router.patch('/signal-providers/:id/status', adminController.updateSPStatus);
 router.patch('/signal-providers/:id/verify', adminController.toggleSPVerification);
 router.patch('/signal-providers/:id/feature', adminController.toggleSPFeatured);
+router.patch('/reviews/sp/:id/approve', adminController.approveSignalProviderReview);
+router.delete('/reviews/sp/:id', adminController.deleteSignalProviderReview);
 
 // ── LMS TUTORS & COURSES ───────────────────────────
 router.get('/tutors', adminController.getAllTutors);
@@ -54,6 +58,8 @@ router.patch('/tutors/:id/status', adminController.updateTutorStatus);
 
 router.get('/courses', adminController.getAllCourses);
 router.patch('/courses/:id/status', adminController.updateCourseStatus);
+router.patch('/reviews/course/:id/approve', adminController.approveCourseReview);
+router.delete('/reviews/course/:id', adminController.deleteCourseReview);
 
 // ── PAYOUTS ────────────────────────────────────────
 router.get('/payouts', adminController.getAllPayouts);

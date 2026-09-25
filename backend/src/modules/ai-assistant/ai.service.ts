@@ -1,3 +1,5 @@
+import { StatusCodes } from 'http-status-codes';
+import { AppError } from '../../middleware/error.middleware';
 import Anthropic from '@anthropic-ai/sdk';
 import { prisma } from '../../config/database';
 import { logger } from '../../utils/logger';
@@ -95,15 +97,37 @@ export class AIService {
     };
   }
 
-  async getChatHistory(sessionId: string) {
-    return await prisma.aIChatHistory.findMany({
+  async getChatHistory(sessionId: string, userId?: string) {
+    const history = await prisma.aIChatHistory.findMany({
       where: { sessionId },
       orderBy: { createdAt: 'asc' },
-      take: 20,
+      take: 50,
     });
+
+    if (history.length > 0) {
+      // If messages are tied to a user account, enforce strict ownership
+      const sessionOwner = history.find((h) => h.userId)?.userId;
+      if (sessionOwner && sessionOwner !== userId) {
+        throw new AppError('Unauthorized: You do not have permission to view this chat history.', StatusCodes.FORBIDDEN);
+      }
+    }
+
+    return history;
   }
 
-  async clearHistory(sessionId: string) {
+  async clearHistory(sessionId: string, userId?: string) {
+    const history = await prisma.aIChatHistory.findMany({
+      where: { sessionId },
+      take: 1,
+    });
+
+    if (history.length > 0) {
+      const sessionOwner = history[0].userId;
+      if (sessionOwner && sessionOwner !== userId) {
+        throw new AppError('Unauthorized: You do not have permission to delete this chat session.', StatusCodes.FORBIDDEN);
+      }
+    }
+
     await prisma.aIChatHistory.deleteMany({
       where: { sessionId },
     });

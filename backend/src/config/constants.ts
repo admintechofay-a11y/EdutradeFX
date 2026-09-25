@@ -14,10 +14,13 @@ export const APP_CONSTANTS = {
     VIDEO: 500 * 1024 * 1024, // 500MB
   },
   ALLOWED_IMAGE_TYPES: ['image/jpeg', 'image/png', 'image/webp'],
+  ALLOWED_IMAGE_EXTENSIONS: ['.jpg', '.jpeg', '.png', '.webp'],
   ALLOWED_DOC_TYPES: [
     'application/pdf',
     'application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   ],
+  ALLOWED_DOC_EXTENSIONS: ['.pdf', '.doc', '.docx'],
   ALLOWED_VIDEO_TYPES: ['video/mp4', 'video/quicktime', 'video/x-msvideo'],
+  ALLOWED_VIDEO_EXTENSIONS: ['.mp4', '.mov', '.avi'],
 };

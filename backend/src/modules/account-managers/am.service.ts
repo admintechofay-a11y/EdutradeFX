@@ -3,7 +3,7 @@ import { prisma } from '../../config/database';
 import { AppError } from '../../middleware/error.middleware';
 import { generateUniqueSlug } from '../../utils/slug.utils';
 import { parsePagination } from '../../utils/pagination.utils';
-import { ApprovalStatus, EnquiryTargetType, NotificationType, Prisma } from '@prisma/client';
+import { ApprovalStatus, EnquiryTargetType, NotificationType, Prisma, Role } from '@prisma/client';
 import { transporter } from '../../config/email';
 
 export class AccountManagerService {
@@ -138,11 +138,21 @@ export class AccountManagerService {
       throw new AppError('Account Manager not found.', StatusCodes.NOT_FOUND);
     }
 
-    if (am.status !== ApprovalStatus.APPROVED && am.userId !== currentUserId) {
-      const viewer = currentUserId ? await prisma.user.findUnique({ where: { id: currentUserId } }) : null;
-      if (!viewer || viewer.role !== 'ADMIN') {
-        throw new AppError('Profile is currently unavailable.', StatusCodes.NOT_FOUND);
-      }
+    const isOwner = currentUserId && am.userId === currentUserId;
+    let isAdmin = false;
+    if (currentUserId && !isOwner) {
+      const viewer = await prisma.user.findUnique({ where: { id: currentUserId }, select: { role: true } });
+      isAdmin = viewer?.role === Role.ADMIN;
+    }
+
+    if (am.status !== ApprovalStatus.APPROVED && !isOwner && !isAdmin) {
+      throw new AppError('Profile is currently unavailable.', StatusCodes.NOT_FOUND);
+    }
+
+    // Never leak private compliance documents to public visitors
+    if (!isOwner && !isAdmin) {
+      const { documents: _docs, ...publicAm } = am as any;
+      return publicAm;
     }
 
     return am;
@@ -156,9 +166,21 @@ export class AccountManagerService {
 
     const photoUrl = photoFile ? (photoFile as any).path || (photoFile as any).secure_url : am.photo;
 
+    // Compliance Re-Review: If sensitive service qualifications or experience are changed, revert APPROVED to PENDING
+    const hasSensitiveChanges = Boolean(
+      (data.services && JSON.stringify(data.services) !== JSON.stringify(am.services)) ||
+      (data.yearsExperience !== undefined && parseInt(data.yearsExperience, 10) !== am.yearsExperience) ||
+      (data.expertise && JSON.stringify(data.expertise) !== JSON.stringify(am.expertise))
+    );
+
+    const newStatus = (am.status === ApprovalStatus.APPROVED && hasSensitiveChanges)
+      ? ApprovalStatus.PENDING
+      : am.status;
+
     return await prisma.accountManager.update({
       where: { id: am.id },
       data: {
+        status: newStatus,
         ...(photoUrl && { photo: photoUrl }),
         ...(data.fullName && { fullName: data.fullName }),
         ...(data.tagline !== undefined && { tagline: data.tagline }),
@@ -182,7 +204,7 @@ export class AccountManagerService {
       throw new AppError('Account Manager profile not found.', StatusCodes.NOT_FOUND);
     }
 
-    return await prisma.accountManagerDocument.createMany({
+    const created = await prisma.accountManagerDocument.createMany({
       data: files.map((f) => ({
         accountManagerId: am.id,
         fileUrl: (f as any).path || (f as any).secure_url || f.filename,
@@ -190,6 +212,16 @@ export class AccountManagerService {
         docType: 'CREDENTIAL_DOCUMENT',
       })),
     });
+
+    // Submitting new compliance documents moves profile back to PENDING for admin review
+    if (am.status === ApprovalStatus.APPROVED) {
+      await prisma.accountManager.update({
+        where: { id: am.id },
+        data: { status: ApprovalStatus.PENDING },
+      });
+    }
+
+    return created;
   }
 
   async addReview(amId: string, userId: string, data: { rating: number; comment: string }) {

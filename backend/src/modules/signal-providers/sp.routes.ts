@@ -4,7 +4,7 @@ import { signalProviderController } from './sp.controller';
 import { authenticate, optionalAuth } from '../../middleware/auth.middleware';
 import { authorize } from '../../middleware/role.middleware';
 import { validate } from '../../middleware/validate.middleware';
-import { generalLimiter, uploadLimiter } from '../../middleware/rateLimit.middleware';
+import { generalLimiter, uploadLimiter, reviewLimiter } from '../../middleware/rateLimit.middleware';
 import { uploadImage, uploadDocument, imageStorage } from '../../middleware/upload.middleware';
 import {
   registerSPSchema,
@@ -35,7 +35,7 @@ router.get('/:id/signals', generalLimiter, signalProviderController.getSignals);
 router.post('/:id/enquiry', generalLimiter, optionalAuth, validate(spEnquirySchema), signalProviderController.sendEnquiry);
 
 // ── AUTHENTICATED USER ─────────────────────────────
-router.post('/:id/reviews', authenticate, validate(spReviewSchema), signalProviderController.addReview);
+router.post('/:id/reviews', authenticate, reviewLimiter, validate(spReviewSchema), signalProviderController.addReview);
 
 // ── SIGNAL PROVIDER DASHBOARD & SIGNALS ────────────
 router.post(

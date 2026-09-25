@@ -53,7 +53,9 @@ export const errorHandler = (
       default:
         if (err.code.startsWith('P')) {
           statusCode = StatusCodes.BAD_REQUEST;
-          message = `Database operation error: ${err.message}`;
+          message = process.env.NODE_ENV === 'production'
+            ? 'A database constraint or validation error occurred.'
+            : `Database operation error: ${err.message}`;
         }
     }
   }
@@ -94,6 +96,11 @@ export const errorHandler = (
     logger.error(`[${req.method} ${req.originalUrl}] - 500 Error: ${err.message} \nStack: ${err.stack}`);
   } else {
     logger.warn(`[${req.method} ${req.originalUrl}] - ${statusCode}: ${message}`);
+  }
+
+  // Sanitize internal server errors in production
+  if (statusCode >= 500 && process.env.NODE_ENV === 'production' && !err.isOperational) {
+    message = 'An unexpected server error occurred. Please try again later.';
   }
 
   res.status(statusCode).json({

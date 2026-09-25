@@ -76,3 +76,25 @@ export const refreshTokenLimiter = rateLimit({
     message: 'Too many token refresh attempts. Please sign in again.',
   },
 });
+
+export const adTrackingLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Rate limit exceeded for ad metrics tracking.',
+  },
+});
+
+export const reviewLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many reviews submitted from this connection. Please wait before submitting another review.',
+  },
+});

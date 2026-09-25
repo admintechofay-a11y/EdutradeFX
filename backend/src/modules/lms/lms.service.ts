@@ -144,9 +144,22 @@ export class LMSService {
     const thumbnailUrl = thumbFile ? (thumbFile as any).path || (thumbFile as any).secure_url : course.thumbnail;
     const promoVideoUrl = promoFile ? (promoFile as any).path || (promoFile as any).secure_url : course.promoVideo;
 
+    // Course Content Moderation: If a published course alters sensitive content (title, price, description, promo), move to REVIEW
+    const hasSensitiveChanges = Boolean(
+      (data.title && data.title !== course.title) ||
+      (data.price !== undefined && parseFloat(data.price) !== course.price) ||
+      (data.description !== undefined && data.description !== course.description) ||
+      (promoVideoUrl && promoVideoUrl !== course.promoVideo)
+    );
+
+    const newStatus = (course.status === CourseStatus.PUBLISHED && hasSensitiveChanges)
+      ? CourseStatus.REVIEW
+      : course.status;
+
     return await prisma.course.update({
       where: { id: courseId },
       data: {
+        status: newStatus,
         ...(thumbnailUrl && { thumbnail: thumbnailUrl }),
         ...(promoVideoUrl && { promoVideo: promoVideoUrl }),
         ...(data.title && { title: data.title }),
@@ -603,6 +616,7 @@ export class LMSService {
     razorpayPaymentId: string;
     razorpaySignature: string;
   }) {
+    // 1. Cryptographic Gateway Signature Verification
     const isValid = verifyRazorpaySignature(
       data.razorpayOrderId,
       data.razorpayPaymentId,
@@ -610,40 +624,59 @@ export class LMSService {
     );
 
     if (!isValid) {
-      throw new AppError('Payment signature verification failed.', StatusCodes.BAD_REQUEST);
+      throw new AppError('Payment signature verification failed. Invalid gateway signature.', StatusCodes.BAD_REQUEST);
     }
 
-    const course = await prisma.course.findUnique({
-      where: { id: data.courseId },
-      include: { tutor: true },
+    // 2. Fetch local pending order
+    const existingOrder = await prisma.order.findUnique({
+      where: { razorpayOrderId: data.razorpayOrderId },
+      include: { course: { include: { tutor: true } } },
     });
 
-    if (!course) {
-      throw new AppError('Course not found.', StatusCodes.NOT_FOUND);
+    if (!existingOrder) {
+      throw new AppError('Order not found for this transaction reference.', StatusCodes.NOT_FOUND);
     }
 
-    const activePrice =
-      course.discountPrice && (!course.discountUntil || new Date(course.discountUntil) > new Date())
-        ? course.discountPrice
-        : course.price;
+    // 3. Verify order ownership
+    if (existingOrder.userId !== userId) {
+      throw new AppError('Unauthorized: Order belongs to another account.', StatusCodes.FORBIDDEN);
+    }
 
+    // 4. Verify order matches requested course
+    if (existingOrder.courseId !== data.courseId) {
+      throw new AppError('Course mismatch for this payment order.', StatusCodes.BAD_REQUEST);
+    }
+
+    // 5. Idempotency: If already marked as PAID, return existing enrollment
+    if (existingOrder.status === OrderStatus.PAID) {
+      const existingEnrollment = await prisma.enrollment.findUnique({
+        where: { courseId_userId: { courseId: data.courseId, userId } },
+      });
+      if (existingEnrollment) {
+        return { isFree: false, enrollment: existingEnrollment, alreadyProcessed: true };
+      }
+    }
+
+    if (existingOrder.status !== OrderStatus.PENDING) {
+      throw new AppError(`Order cannot be processed (current status: ${existingOrder.status}).`, StatusCodes.BAD_REQUEST);
+    }
+
+    // 6. Check duplicate enrollment
+    const existingEnrollment = await prisma.enrollment.findUnique({
+      where: { courseId_userId: { courseId: data.courseId, userId } },
+    });
+    if (existingEnrollment) {
+      throw new AppError('You are already enrolled in this course.', StatusCodes.CONFLICT);
+    }
+
+    const course = existingOrder.course;
     const commissionPercent = course.platformCommission || 20;
-    const tutorEarnings = (activePrice * (100 - commissionPercent)) / 100;
+    const tutorEarnings = (existingOrder.amount * (100 - commissionPercent)) / 100;
 
     const [order, enrollment] = await prisma.$transaction([
-      prisma.order.upsert({
-        where: { razorpayOrderId: data.razorpayOrderId },
-        update: {
-          razorpayPaymentId: data.razorpayPaymentId,
-          razorpaySignature: data.razorpaySignature,
-          status: OrderStatus.PAID,
-        },
-        create: {
-          userId,
-          courseId: data.courseId,
-          amount: activePrice,
-          currency: course.currency,
-          razorpayOrderId: data.razorpayOrderId,
+      prisma.order.update({
+        where: { id: existingOrder.id },
+        data: {
           razorpayPaymentId: data.razorpayPaymentId,
           razorpaySignature: data.razorpaySignature,
           status: OrderStatus.PAID,
@@ -930,38 +963,64 @@ export class LMSService {
   }
 
   async requestPayout(userId: string, data: { amount: number; notes?: string }) {
+    if (!data.amount || !Number.isFinite(data.amount) || data.amount < 500) {
+      throw new AppError('Minimum payout withdrawal amount is ₹500.', StatusCodes.BAD_REQUEST);
+    }
+
+    if (data.amount > 10000000) {
+      throw new AppError('Payout request exceeds single withdrawal limit.', StatusCodes.BAD_REQUEST);
+    }
+
     const tutor = await prisma.tutor.findUnique({
       where: { userId },
-      include: { payouts: true },
     });
 
     if (!tutor) throw new AppError('Tutor not found.', StatusCodes.NOT_FOUND);
 
-    const paidPayouts = tutor.payouts
-      .filter((p) => p.status === PayoutStatus.PAID)
-      .reduce((acc, p) => acc + p.amount, 0);
+    // Atomic transaction prevents concurrent race-condition withdrawals
+    const payout = await prisma.$transaction(async (tx) => {
+      // 1. Ensure no other pending payout is active for this tutor
+      const pendingExisting = await tx.payout.findFirst({
+        where: { tutorId: tutor.id, status: PayoutStatus.PENDING },
+      });
 
-    const pendingPayouts = tutor.payouts
-      .filter((p) => p.status === PayoutStatus.PENDING)
-      .reduce((acc, p) => acc + p.amount, 0);
+      if (pendingExisting) {
+        throw new AppError(
+          'You already have a payout request pending review. Please wait for it to be processed.',
+          StatusCodes.CONFLICT
+        );
+      }
 
-    const availableBalance = tutor.totalEarned - paidPayouts - pendingPayouts;
+      // 2. Fetch all historical payouts inside transaction
+      const tutorPayouts = await tx.payout.findMany({
+        where: { tutorId: tutor.id },
+      });
 
-    if (data.amount < 500) {
-      throw new AppError('Minimum payout withdrawal amount is ₹500.', StatusCodes.BAD_REQUEST);
-    }
+      const paidPayouts = tutorPayouts
+        .filter((p) => p.status === PayoutStatus.PAID)
+        .reduce((acc, p) => acc + p.amount, 0);
 
-    if (data.amount > availableBalance) {
-      throw new AppError(`Requested amount exceeds available balance (₹${availableBalance}).`, StatusCodes.BAD_REQUEST);
-    }
+      const pendingPayouts = tutorPayouts
+        .filter((p) => p.status === PayoutStatus.PENDING)
+        .reduce((acc, p) => acc + p.amount, 0);
 
-    const payout = await prisma.payout.create({
-      data: {
-        tutorId: tutor.id,
-        amount: data.amount,
-        status: PayoutStatus.PENDING,
-        notes: data.notes,
-      },
+      const availableBalance = tutor.totalEarned - paidPayouts - pendingPayouts;
+
+      if (data.amount > availableBalance) {
+        throw new AppError(
+          `Requested amount (₹${data.amount}) exceeds available balance (₹${availableBalance}).`,
+          StatusCodes.BAD_REQUEST
+        );
+      }
+
+      return await tx.payout.create({
+        data: {
+          tutorId: tutor.id,
+          amount: data.amount,
+          status: PayoutStatus.PENDING,
+          notes: data.notes,
+        },
+      });
     });
 
     // Notify admins

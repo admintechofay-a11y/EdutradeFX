@@ -4,7 +4,7 @@ import { brokerController } from './broker.controller';
 import { authenticate, optionalAuth } from '../../middleware/auth.middleware';
 import { authorize } from '../../middleware/role.middleware';
 import { validate, validateQuery } from '../../middleware/validate.middleware';
-import { generalLimiter, uploadLimiter } from '../../middleware/rateLimit.middleware';
+import { generalLimiter, uploadLimiter, reviewLimiter } from '../../middleware/rateLimit.middleware';
 import { uploadImage, uploadDocument, imageStorage } from '../../middleware/upload.middleware';
 import {
   registerBrokerSchema,
@@ -35,7 +35,7 @@ router.get('/:id/reviews', generalLimiter, brokerController.getReviews);
 router.post('/:id/lead', generalLimiter, validate(brokerLeadSchema), brokerController.submitLead);
 
 // ── PROTECTED (AUTHENTICATED USERS) ───────────────
-router.post('/:id/reviews', authenticate, validate(brokerReviewSchema), brokerController.addReview);
+router.post('/:id/reviews', authenticate, reviewLimiter, validate(brokerReviewSchema), brokerController.addReview);
 router.post('/:id/save', authenticate, brokerController.saveBroker);
 
 // ── BROKER SPECIFIC PROFILE & MANAGEMENT ───────────

@@ -36,9 +36,9 @@ export class AuthController {
   };
 
   refreshToken = async (req: Request, res: Response): Promise<void> => {
-    const token = req.cookies?.refreshToken || req.body?.refreshToken;
+    const token = req.cookies?.refreshToken;
     if (!token) {
-      throw new AppError('No refresh token provided in cookie or payload.', StatusCodes.UNAUTHORIZED);
+      throw new AppError('No refresh token provided in secure HttpOnly cookie.', StatusCodes.UNAUTHORIZED);
     }
 
     const result = await authService.refreshToken(token);
@@ -59,11 +59,16 @@ export class AuthController {
   };
 
   logout = async (req: Request, res: Response): Promise<void> => {
-    const token = req.cookies?.refreshToken || req.body?.refreshToken;
+    const token = req.cookies?.refreshToken;
     if (token) {
       await authService.logout(token);
     }
-    res.clearCookie('refreshToken', { path: '/' });
+    res.clearCookie('refreshToken', {
+      path: '/',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
     sendSuccess(res, null, 'Logged out successfully', StatusCodes.OK);
   };
 

@@ -3,7 +3,7 @@ import { advertisementController } from './ad.controller';
 import { authenticate } from '../../middleware/auth.middleware';
 import { authorize } from '../../middleware/role.middleware';
 import { validate } from '../../middleware/validate.middleware';
-import { generalLimiter, uploadLimiter } from '../../middleware/rateLimit.middleware';
+import { generalLimiter, uploadLimiter, adTrackingLimiter } from '../../middleware/rateLimit.middleware';
 import { uploadImage } from '../../middleware/upload.middleware';
 import { createAdSchema, updateAdSchema } from './ad.schemas';
 
@@ -11,8 +11,8 @@ const router = Router();
 
 // ── PUBLIC ─────────────────────────────────────────
 router.get('/active', generalLimiter, advertisementController.getActiveAds);
-router.post('/:id/impression', generalLimiter, advertisementController.trackImpression);
-router.post('/:id/click', generalLimiter, advertisementController.trackClick);
+router.post('/:id/impression', adTrackingLimiter, advertisementController.trackImpression);
+router.post('/:id/click', adTrackingLimiter, advertisementController.trackClick);
 
 // ── ADMIN ──────────────────────────────────────────
 router.get('/admin', authenticate, authorize('ADMIN'), advertisementController.getAdsAdmin);

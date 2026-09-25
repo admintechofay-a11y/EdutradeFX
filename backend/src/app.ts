@@ -29,6 +29,9 @@ import contactRoutes from './modules/contact/contact.routes';
 
 const app = express();
 
+// Trust first proxy (necessary for secure cookies, rate limiting, and client IP detection)
+app.set('trust proxy', 1);
+
 // ── SECURITY MIDDLEWARE ────────────────────────────
 app.use(
   helmet({
@@ -44,13 +47,22 @@ app.use(
   })
 );
 
-const allowedOrigins = [
+const envOrigins = [
   process.env.FRONTEND_URL,
+  process.env.CORS_ORIGIN,
   process.env.NEXT_PUBLIC_APP_URL,
-  'http://localhost:3000',
-  'http://127.0.0.1:3000',
-  'http://localhost:3001',
-].filter(Boolean) as string[];
+]
+  .filter(Boolean)
+  .flatMap((url) => (url as string).split(',').map((u) => u.trim()));
+
+const allowedOrigins = Array.from(
+  new Set([
+    ...envOrigins,
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:3001',
+  ])
+);
 
 app.use(
   cors({
@@ -58,7 +70,10 @@ app.use(
       // Allow requests with no origin (such as mobile apps, curl, server-to-server)
       if (!origin) return callback(null, true);
 
-      if (allowedOrigins.includes(origin)) {
+      if (
+        allowedOrigins.includes(origin) ||
+        /^https:\/\/edutrade-fx-frontend[a-zA-Z0-9-]*\.vercel\.app$/.test(origin)
+      ) {
         return callback(null, true);
       }
 

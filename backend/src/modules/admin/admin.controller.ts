@@ -50,7 +50,7 @@ export class AdminController {
 
   deleteUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     const { id } = req.params;
-    const result = await adminService.deleteUser(id as string);
+    const result = await adminService.deleteUser(id as string, req.user!.userId);
     await adminService.createAuditLog({
       actorId: req.user!.userId,
       action: 'DELETE_USER',
@@ -125,6 +125,78 @@ export class AdminController {
       actorId: req.user!.userId,
       action: 'DELETE_REVIEW',
       targetType: 'BROKER_REVIEW',
+      targetId: id as string,
+    });
+    sendSuccess(res, null, result.message, StatusCodes.OK);
+  };
+
+  approveAccountManagerReview = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const review = await adminService.approveAccountManagerReview(id as string);
+    await adminService.createAuditLog({
+      actorId: req.user!.userId,
+      action: 'APPROVE_REVIEW',
+      targetType: 'AM_REVIEW',
+      targetId: id as string,
+    });
+    sendSuccess(res, review, 'Account manager review approved and published', StatusCodes.OK);
+  };
+
+  deleteAccountManagerReview = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const result = await adminService.deleteAccountManagerReview(id as string);
+    await adminService.createAuditLog({
+      actorId: req.user!.userId,
+      action: 'DELETE_REVIEW',
+      targetType: 'AM_REVIEW',
+      targetId: id as string,
+    });
+    sendSuccess(res, null, result.message, StatusCodes.OK);
+  };
+
+  approveSignalProviderReview = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const review = await adminService.approveSignalProviderReview(id as string);
+    await adminService.createAuditLog({
+      actorId: req.user!.userId,
+      action: 'APPROVE_REVIEW',
+      targetType: 'SP_REVIEW',
+      targetId: id as string,
+    });
+    sendSuccess(res, review, 'Signal provider review approved and published', StatusCodes.OK);
+  };
+
+  deleteSignalProviderReview = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const result = await adminService.deleteSignalProviderReview(id as string);
+    await adminService.createAuditLog({
+      actorId: req.user!.userId,
+      action: 'DELETE_REVIEW',
+      targetType: 'SP_REVIEW',
+      targetId: id as string,
+    });
+    sendSuccess(res, null, result.message, StatusCodes.OK);
+  };
+
+  approveCourseReview = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const review = await adminService.approveCourseReview(id as string);
+    await adminService.createAuditLog({
+      actorId: req.user!.userId,
+      action: 'APPROVE_REVIEW',
+      targetType: 'COURSE_REVIEW',
+      targetId: id as string,
+    });
+    sendSuccess(res, review, 'Course review approved and published', StatusCodes.OK);
+  };
+
+  deleteCourseReview = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const result = await adminService.deleteCourseReview(id as string);
+    await adminService.createAuditLog({
+      actorId: req.user!.userId,
+      action: 'DELETE_REVIEW',
+      targetType: 'COURSE_REVIEW',
       targetId: id as string,
     });
     sendSuccess(res, null, result.message, StatusCodes.OK);

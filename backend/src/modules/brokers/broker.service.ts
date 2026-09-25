@@ -3,7 +3,7 @@ import { prisma } from '../../config/database';
 import { AppError } from '../../middleware/error.middleware';
 import { generateUniqueSlug } from '../../utils/slug.utils';
 import { parsePagination } from '../../utils/pagination.utils';
-import { ApprovalStatus, NotificationType, Prisma } from '@prisma/client';
+import { ApprovalStatus, NotificationType, Prisma, Role } from '@prisma/client';
 import { transporter } from '../../config/email';
 
 export class BrokerService {
@@ -177,12 +177,22 @@ export class BrokerService {
       throw new AppError('Broker profile not found.', StatusCodes.NOT_FOUND);
     }
 
+    const isOwner = currentUserId && broker.userId === currentUserId;
+    let isAdmin = false;
+    if (currentUserId && !isOwner) {
+      const viewer = await prisma.user.findUnique({ where: { id: currentUserId }, select: { role: true } });
+      isAdmin = viewer?.role === Role.ADMIN;
+    }
+
     // Allow owner or admins to view non-approved profile
-    if (broker.status !== ApprovalStatus.APPROVED && broker.userId !== currentUserId) {
-      const viewer = currentUserId ? await prisma.user.findUnique({ where: { id: currentUserId } }) : null;
-      if (!viewer || viewer.role !== 'ADMIN') {
-        throw new AppError('Broker profile is currently under review or unavailable.', StatusCodes.NOT_FOUND);
-      }
+    if (broker.status !== ApprovalStatus.APPROVED && !isOwner && !isAdmin) {
+      throw new AppError('Broker profile is currently under review or unavailable.', StatusCodes.NOT_FOUND);
+    }
+
+    // Never leak private compliance documents to public visitors
+    if (!isOwner && !isAdmin) {
+      const { documents: _docs, ...publicBroker } = broker as any;
+      return publicBroker;
     }
 
     return broker;
@@ -199,9 +209,26 @@ export class BrokerService {
 
     const logoUrl = logoFile ? (logoFile as any).path || (logoFile as any).secure_url : broker.logo;
 
+    // Compliance Re-Review: If sensitive regulatory/trading fields are changed, revert APPROVED to PENDING
+    const hasSensitiveChanges = Boolean(
+      (data.regulation && JSON.stringify(data.regulation) !== JSON.stringify(broker.regulation)) ||
+      (data.maxLeverage !== undefined && data.maxLeverage !== broker.maxLeverage) ||
+      (data.spreadsFrom !== undefined && data.spreadsFrom !== broker.spreadsFrom) ||
+      (data.commissions !== undefined && data.commissions !== broker.commissions) ||
+      (data.minDeposit !== undefined && parseFloat(data.minDeposit) !== broker.minDeposit) ||
+      (data.accountTypes && JSON.stringify(data.accountTypes) !== JSON.stringify(broker.accountTypes)) ||
+      (data.depositMethods && JSON.stringify(data.depositMethods) !== JSON.stringify(broker.depositMethods)) ||
+      (data.withdrawMethods && JSON.stringify(data.withdrawMethods) !== JSON.stringify(broker.withdrawMethods))
+    );
+
+    const newStatus = (broker.status === ApprovalStatus.APPROVED && hasSensitiveChanges)
+      ? ApprovalStatus.PENDING
+      : broker.status;
+
     return await prisma.broker.update({
       where: { id: broker.id },
       data: {
+        status: newStatus,
         ...(logoUrl && { logo: logoUrl }),
         ...(data.website !== undefined && { website: data.website }),
         ...(data.description !== undefined && { description: data.description }),
@@ -244,7 +271,7 @@ export class BrokerService {
       throw new AppError('No files uploaded.', StatusCodes.BAD_REQUEST);
     }
 
-    return await prisma.brokerDocument.createMany({
+    const created = await prisma.brokerDocument.createMany({
       data: files.map((f) => ({
         brokerId: broker.id,
         fileUrl: (f as any).path || (f as any).secure_url || f.filename,
@@ -253,6 +280,16 @@ export class BrokerService {
         docType: 'REGULATORY_DOCUMENT',
       })),
     });
+
+    // Submitting new compliance documents moves profile back to PENDING for admin review
+    if (broker.status === ApprovalStatus.APPROVED) {
+      await prisma.broker.update({
+        where: { id: broker.id },
+        data: { status: ApprovalStatus.PENDING },
+      });
+    }
+
+    return created;
   }
 
   /**

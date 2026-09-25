@@ -4,7 +4,7 @@ import { accountManagerController } from './am.controller';
 import { authenticate, optionalAuth } from '../../middleware/auth.middleware';
 import { authorize } from '../../middleware/role.middleware';
 import { validate } from '../../middleware/validate.middleware';
-import { generalLimiter, uploadLimiter } from '../../middleware/rateLimit.middleware';
+import { generalLimiter, uploadLimiter, reviewLimiter } from '../../middleware/rateLimit.middleware';
 import { uploadImage, uploadDocument, imageStorage } from '../../middleware/upload.middleware';
 import {
   registerAMSchema,
@@ -32,7 +32,7 @@ router.get('/:id/reviews', generalLimiter, accountManagerController.getReviews);
 router.post('/:id/enquiry', generalLimiter, optionalAuth, validate(amEnquirySchema), accountManagerController.sendEnquiry);
 
 // ── AUTHENTICATED USER ─────────────────────────────
-router.post('/:id/reviews', authenticate, validate(amReviewSchema), accountManagerController.addReview);
+router.post('/:id/reviews', authenticate, reviewLimiter, validate(amReviewSchema), accountManagerController.addReview);
 
 // ── ACCOUNT MANAGER DASHBOARD & PROFILE ────────────
 router.post(

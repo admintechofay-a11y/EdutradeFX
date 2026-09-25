@@ -462,12 +462,18 @@ export class AuthService {
 
     const hashedPassword = await hashPassword(newPass);
 
-    await prisma.user.update({
-      where: { id: userId },
-      data: { password: hashedPassword },
-    });
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: userId },
+        data: { password: hashedPassword },
+      }),
+      prisma.refreshToken.updateMany({
+        where: { userId },
+        data: { isRevoked: true },
+      }),
+    ]);
 
-    return { message: 'Password changed successfully.' };
+    return { message: 'Password changed successfully. All previous sessions have been logged out.' };
   }
 
   /**

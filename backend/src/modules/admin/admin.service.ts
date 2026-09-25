@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import { prisma } from '../../config/database';
 import { AppError } from '../../middleware/error.middleware';
 import { parsePagination } from '../../utils/pagination.utils';
-import { hashPassword, generateSecureToken } from '../../utils/bcrypt.utils';
+import { hashPassword, generateSecureToken, hashToken } from '../../utils/bcrypt.utils';
 import {
   sendApprovalEmail,
   sendRejectionEmail,
@@ -280,7 +280,25 @@ export class AdminService {
     });
   }
 
-  async deleteUser(id: string) {
+  async deleteUser(id: string, actorId?: string) {
+    if (actorId && actorId === id) {
+      throw new AppError('Admins cannot delete their own account.', StatusCodes.BAD_REQUEST);
+    }
+
+    const targetUser = await prisma.user.findUnique({ where: { id } });
+    if (!targetUser) {
+      throw new AppError('User not found.', StatusCodes.NOT_FOUND);
+    }
+
+    if (targetUser.role === Role.ADMIN) {
+      const activeAdminCount = await prisma.user.count({
+        where: { role: Role.ADMIN, isActive: true },
+      });
+      if (activeAdminCount <= 1) {
+        throw new AppError('Cannot delete the final active administrator on the system.', StatusCodes.BAD_REQUEST);
+      }
+    }
+
     await prisma.user.delete({ where: { id } });
     return { message: 'User deleted successfully.' };
   }
@@ -290,12 +308,19 @@ export class AdminService {
     if (!user) throw new AppError('User not found.', StatusCodes.NOT_FOUND);
 
     const rawToken = generateSecureToken();
+    const hashed = hashToken(rawToken);
     const expiry = new Date(Date.now() + 60 * 60 * 1000);
 
-    await prisma.user.update({
-      where: { id },
-      data: { resetToken: rawToken, resetTokenExpiry: expiry },
-    });
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id },
+        data: { resetToken: hashed, resetTokenExpiry: expiry },
+      }),
+      prisma.refreshToken.updateMany({
+        where: { userId: id },
+        data: { isRevoked: true },
+      }),
+    ]);
 
     sendPasswordResetEmail(user.email, user.name, rawToken).catch(() => {});
     return { message: 'Password reset dispatch sent to user email.' };
@@ -367,10 +392,13 @@ export class AdminService {
 
   async createBrokerAdmin(data: any) {
     const slug = data.slug || `${data.companyName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now().toString().slice(-4)}`;
-    let userId = data.userId;
+    const userId = data.userId;
     if (!userId) {
-      const admin = await prisma.user.findFirst({ where: { role: Role.ADMIN } });
-      userId = admin ? admin.id : (await prisma.user.findFirst())?.id;
+      throw new AppError('Explicit userId is required to associate this broker profile.', StatusCodes.BAD_REQUEST);
+    }
+    const targetUser = await prisma.user.findUnique({ where: { id: userId } });
+    if (!targetUser) {
+      throw new AppError('The specified user account (userId) does not exist.', StatusCodes.NOT_FOUND);
     }
     return await prisma.broker.create({
       data: {
@@ -489,6 +517,147 @@ export class AdminService {
     return { message: 'Review removed.' };
   }
 
+  async approveAccountManagerReview(reviewId: string) {
+    const review = await prisma.accountManagerReview.update({
+      where: { id: reviewId },
+      data: { isApproved: true },
+    });
+
+    const approvedReviews = await prisma.accountManagerReview.findMany({
+      where: { accountManagerId: review.accountManagerId, isApproved: true },
+      select: { rating: true },
+    });
+
+    const avgRating =
+      approvedReviews.reduce((sum, r) => sum + r.rating, 0) / (approvedReviews.length || 1);
+
+    await prisma.accountManager.update({
+      where: { id: review.accountManagerId },
+      data: {
+        avgRating: parseFloat(avgRating.toFixed(1)),
+        totalReviews: approvedReviews.length,
+      },
+    });
+
+    return review;
+  }
+
+  async deleteAccountManagerReview(reviewId: string) {
+    const review = await prisma.accountManagerReview.delete({ where: { id: reviewId } });
+    const approvedReviews = await prisma.accountManagerReview.findMany({
+      where: { accountManagerId: review.accountManagerId, isApproved: true },
+      select: { rating: true },
+    });
+
+    const avgRating = approvedReviews.length
+      ? approvedReviews.reduce((sum, r) => sum + r.rating, 0) / approvedReviews.length
+      : 0;
+
+    await prisma.accountManager.update({
+      where: { id: review.accountManagerId },
+      data: {
+        avgRating: parseFloat(avgRating.toFixed(1)),
+        totalReviews: approvedReviews.length,
+      },
+    });
+
+    return { message: 'Review deleted successfully.' };
+  }
+
+  async approveSignalProviderReview(reviewId: string) {
+    const review = await prisma.signalProviderReview.update({
+      where: { id: reviewId },
+      data: { isApproved: true },
+    });
+
+    const approvedReviews = await prisma.signalProviderReview.findMany({
+      where: { signalProviderId: review.signalProviderId, isApproved: true },
+      select: { rating: true },
+    });
+
+    const avgRating =
+      approvedReviews.reduce((sum, r) => sum + r.rating, 0) / (approvedReviews.length || 1);
+
+    await prisma.signalProvider.update({
+      where: { id: review.signalProviderId },
+      data: {
+        avgRating: parseFloat(avgRating.toFixed(1)),
+        totalReviews: approvedReviews.length,
+      },
+    });
+
+    return review;
+  }
+
+  async deleteSignalProviderReview(reviewId: string) {
+    const review = await prisma.signalProviderReview.delete({ where: { id: reviewId } });
+    const approvedReviews = await prisma.signalProviderReview.findMany({
+      where: { signalProviderId: review.signalProviderId, isApproved: true },
+      select: { rating: true },
+    });
+
+    const avgRating = approvedReviews.length
+      ? approvedReviews.reduce((sum, r) => sum + r.rating, 0) / approvedReviews.length
+      : 0;
+
+    await prisma.signalProvider.update({
+      where: { id: review.signalProviderId },
+      data: {
+        avgRating: parseFloat(avgRating.toFixed(1)),
+        totalReviews: approvedReviews.length,
+      },
+    });
+
+    return { message: 'Review deleted successfully.' };
+  }
+
+  async approveCourseReview(reviewId: string) {
+    const review = await prisma.courseReview.update({
+      where: { id: reviewId },
+      data: { isApproved: true },
+    });
+
+    const approvedReviews = await prisma.courseReview.findMany({
+      where: { courseId: review.courseId, isApproved: true },
+      select: { rating: true },
+    });
+
+    const avgRating =
+      approvedReviews.reduce((sum, r) => sum + r.rating, 0) / (approvedReviews.length || 1);
+
+    await prisma.course.update({
+      where: { id: review.courseId },
+      data: {
+        avgRating: parseFloat(avgRating.toFixed(1)),
+        totalReviews: approvedReviews.length,
+      },
+    });
+
+    return review;
+  }
+
+  async deleteCourseReview(reviewId: string) {
+    const review = await prisma.courseReview.delete({ where: { id: reviewId } });
+    const approvedReviews = await prisma.courseReview.findMany({
+      where: { courseId: review.courseId, isApproved: true },
+      select: { rating: true },
+    });
+
+    const avgRating = approvedReviews.length
+      ? approvedReviews.reduce((sum, r) => sum + r.rating, 0) / approvedReviews.length
+      : 0;
+
+    await prisma.course.update({
+      where: { id: review.courseId },
+      data: {
+        avgRating: parseFloat(avgRating.toFixed(1)),
+        totalReviews: approvedReviews.length,
+      },
+    });
+
+    return { message: 'Review deleted successfully.' };
+  }
+
   // ── 4. ACCOUNT MANAGERS & SIGNAL PROVIDERS ─────────────────
 
   async getAllAMsAdmin(query: any) {
@@ -530,10 +699,13 @@ export class AdminService {
 
   async createAMAdmin(data: any) {
     const slug = data.slug || `${data.fullName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now().toString().slice(-4)}`;
-    let userId = data.userId;
+    const userId = data.userId;
     if (!userId) {
-      const admin = await prisma.user.findFirst({ where: { role: Role.ADMIN } });
-      userId = admin ? admin.id : (await prisma.user.findFirst())?.id;
+      throw new AppError('Explicit userId is required to associate this account manager profile.', StatusCodes.BAD_REQUEST);
+    }
+    const targetUser = await prisma.user.findUnique({ where: { id: userId } });
+    if (!targetUser) {
+      throw new AppError('The specified user account (userId) does not exist.', StatusCodes.NOT_FOUND);
     }
     return await prisma.accountManager.create({
       data: {
@@ -647,10 +819,13 @@ export class AdminService {
 
   async createSPAdmin(data: any) {
     const slug = data.slug || `${data.displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now().toString().slice(-4)}`;
-    let userId = data.userId;
+    const userId = data.userId;
     if (!userId) {
-      const admin = await prisma.user.findFirst({ where: { role: Role.ADMIN } });
-      userId = admin ? admin.id : (await prisma.user.findFirst())?.id;
+      throw new AppError('Explicit userId is required to associate this signal provider profile.', StatusCodes.BAD_REQUEST);
+    }
+    const targetUser = await prisma.user.findUnique({ where: { id: userId } });
+    if (!targetUser) {
+      throw new AppError('The specified user account (userId) does not exist.', StatusCodes.NOT_FOUND);
     }
     return await prisma.signalProvider.create({
       data: {
@@ -817,6 +992,10 @@ export class AdminService {
     });
 
     if (!payout) throw new AppError('Payout record not found.', StatusCodes.NOT_FOUND);
+
+    if (payout.status !== PayoutStatus.PENDING) {
+      throw new AppError(`Only pending payouts can be processed. Current status is ${payout.status}.`, StatusCodes.BAD_REQUEST);
+    }
 
     const updated = await prisma.payout.update({
       where: { id: payoutId },

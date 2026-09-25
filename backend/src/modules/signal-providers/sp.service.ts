@@ -3,7 +3,7 @@ import { prisma } from '../../config/database';
 import { AppError } from '../../middleware/error.middleware';
 import { generateUniqueSlug } from '../../utils/slug.utils';
 import { parsePagination } from '../../utils/pagination.utils';
-import { ApprovalStatus, EnquiryTargetType, NotificationType, Prisma, SignalStatus } from '@prisma/client';
+import { ApprovalStatus, EnquiryTargetType, NotificationType, Prisma, Role, SignalStatus } from '@prisma/client';
 import { transporter } from '../../config/email';
 
 export class SignalProviderService {
@@ -144,11 +144,21 @@ export class SignalProviderService {
       throw new AppError('Signal Provider not found.', StatusCodes.NOT_FOUND);
     }
 
-    if (sp.status !== ApprovalStatus.APPROVED && sp.userId !== currentUserId) {
-      const viewer = currentUserId ? await prisma.user.findUnique({ where: { id: currentUserId } }) : null;
-      if (!viewer || viewer.role !== 'ADMIN') {
-        throw new AppError('Signal Provider profile is currently unavailable.', StatusCodes.NOT_FOUND);
-      }
+    const isOwner = currentUserId && sp.userId === currentUserId;
+    let isAdmin = false;
+    if (currentUserId && !isOwner) {
+      const viewer = await prisma.user.findUnique({ where: { id: currentUserId }, select: { role: true } });
+      isAdmin = viewer?.role === Role.ADMIN;
+    }
+
+    if (sp.status !== ApprovalStatus.APPROVED && !isOwner && !isAdmin) {
+      throw new AppError('Signal Provider profile is currently unavailable.', StatusCodes.NOT_FOUND);
+    }
+
+    // Never leak private compliance documents to public visitors
+    if (!isOwner && !isAdmin) {
+      const { documents: _docs, ...publicSp } = sp as any;
+      return publicSp;
     }
 
     return sp;
@@ -162,9 +172,21 @@ export class SignalProviderService {
 
     const photoUrl = photoFile ? (photoFile as any).path || (photoFile as any).secure_url : sp.photo;
 
+    // Compliance Re-Review: If sensitive strategy/risk fields are changed, revert APPROVED to PENDING
+    const hasSensitiveChanges = Boolean(
+      (data.strategy !== undefined && data.strategy !== sp.strategy) ||
+      (data.riskCategory !== undefined && data.riskCategory !== sp.riskCategory) ||
+      (data.instruments && JSON.stringify(data.instruments) !== JSON.stringify(sp.instruments))
+    );
+
+    const newStatus = (sp.status === ApprovalStatus.APPROVED && hasSensitiveChanges)
+      ? ApprovalStatus.PENDING
+      : sp.status;
+
     return await prisma.signalProvider.update({
       where: { id: sp.id },
       data: {
+        status: newStatus,
         ...(photoUrl && { photo: photoUrl }),
         ...(data.displayName && { displayName: data.displayName }),
         ...(data.bio !== undefined && { bio: data.bio }),
@@ -175,6 +197,35 @@ export class SignalProviderService {
         ...(data.seoDescription !== undefined && { seoDescription: data.seoDescription }),
       },
     });
+  }
+
+  async uploadDocuments(userId: string, files: Express.Multer.File[]) {
+    const sp = await prisma.signalProvider.findUnique({ where: { userId } });
+    if (!sp) {
+      throw new AppError('Signal Provider profile not found.', StatusCodes.NOT_FOUND);
+    }
+
+    if (!files || files.length === 0) {
+      throw new AppError('No files uploaded.', StatusCodes.BAD_REQUEST);
+    }
+
+    const created = await prisma.signalProviderDocument.createMany({
+      data: files.map((f) => ({
+        signalProviderId: sp.id,
+        fileUrl: (f as any).path || (f as any).secure_url || f.filename,
+        fileName: f.originalname,
+        docType: 'PERFORMANCE_DOCUMENT',
+      })),
+    });
+
+    if (sp.status === ApprovalStatus.APPROVED) {
+      await prisma.signalProvider.update({
+        where: { id: sp.id },
+        data: { status: ApprovalStatus.PENDING },
+      });
+    }
+
+    return created;
   }
 
   async createSignal(userId: string, data: any) {
@@ -445,22 +496,6 @@ export class SignalProviderService {
 
     const totalPages = Math.ceil(total / limit) || 1;
     return { signals, total, page, limit, totalPages };
-  }
-
-  async uploadDocuments(userId: string, files: Express.Multer.File[]) {
-    const sp = await prisma.signalProvider.findUnique({ where: { userId } });
-    if (!sp) {
-      throw new AppError('Signal Provider profile not found.', StatusCodes.NOT_FOUND);
-    }
-
-    return await prisma.signalProviderDocument.createMany({
-      data: files.map((f) => ({
-        signalProviderId: sp.id,
-        fileUrl: (f as any).path || (f as any).secure_url || f.filename,
-        fileName: f.originalname,
-        docType: 'PERFORMANCE_VERIFICATION',
-      })),
-    });
   }
 }
 

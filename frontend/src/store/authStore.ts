@@ -24,6 +24,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   setAuth: (user, accessToken) => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('edutrade_user', JSON.stringify(user));
+      localStorage.setItem('edutrade_token', accessToken);
       // Clean up legacy refresh token storage from localStorage (strictly httpOnly cookies now)
       localStorage.removeItem('edutrade_refresh_token');
       // Synchronize cookie for server-side edge middleware protection
@@ -41,6 +42,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   setAccessToken: (accessToken) => {
     if (typeof window !== 'undefined') {
+      localStorage.setItem('edutrade_token', accessToken);
       document.cookie = `edutrade_token=${accessToken}; path=/; max-age=86400; SameSite=Lax`;
     }
     set({ accessToken, isAuthenticated: true });
@@ -76,7 +78,11 @@ export const useAuthStore = create<AuthState>((set) => ({
     if (typeof window === 'undefined') return;
     try {
       const storedUser = localStorage.getItem('edutrade_user');
-      const legacyToken = localStorage.getItem('edutrade_token');
+      let token = localStorage.getItem('edutrade_token');
+      if (!token && typeof document !== 'undefined') {
+        const match = document.cookie.match(/(^|;\s*)edutrade_token=([^;]*)/);
+        if (match) token = decodeURIComponent(match[2]);
+      }
 
       // Purge any lingering refresh token from localStorage for compliance
       localStorage.removeItem('edutrade_refresh_token');
@@ -84,7 +90,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       if (storedUser) {
         set({
           user: JSON.parse(storedUser),
-          accessToken: legacyToken || null,
+          accessToken: token || null,
           refreshToken: null,
           isAuthenticated: true,
           isLoading: false,

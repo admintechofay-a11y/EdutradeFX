@@ -129,7 +129,7 @@ export default function BrokerDetailPage() {
         setReviewForm({ rating: 5, title: '', comment: '', pros: '', cons: '' });
       }, 2000);
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to submit review. Please ensure you are logged in.');
+      alert(err.message || err.response?.data?.message || 'Failed to submit review.');
     } finally {
       setReviewSubmitting(false);
     }

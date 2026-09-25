@@ -16,6 +16,10 @@ api.interceptors.request.use(
     let token = useAuthStore.getState().accessToken;
     if (!token && typeof window !== 'undefined') {
       token = localStorage.getItem('edutrade_token');
+      if (!token && typeof document !== 'undefined') {
+        const match = document.cookie.match(/(^|;\s*)edutrade_token=([^;]*)/);
+        if (match) token = decodeURIComponent(match[2]);
+      }
     }
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

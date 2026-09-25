@@ -41,8 +41,8 @@ export const updateBrokerSchema = registerBrokerSchema.partial();
 
 export const brokerReviewSchema = z.object({
   rating: z.coerce.number().min(1).max(5),
-  title: z.string().min(3, 'Review title must be at least 3 characters').max(100),
-  comment: z.string().min(20, 'Comment must be at least 20 characters').max(2000),
+  title: z.string().min(2, 'Review title must be at least 2 characters').max(100),
+  comment: z.string().min(3, 'Comment must be at least 3 characters').max(2000),
   pros: z.string().max(500).optional(),
   cons: z.string().max(500).optional(),
 });

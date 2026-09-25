@@ -20,7 +20,7 @@ export default function CoursesDirectoryPage() {
     search: '',
     category: '',
     level: '',
-    sortBy: 'totalEnrollments',
+    sortBy: 'createdAt',
   });
 
   const categories = [
@@ -28,8 +28,10 @@ export default function CoursesDirectoryPage() {
     'Smart Money Concepts (SMC)',
     'Technical Analysis',
     'Fundamental & Macroeconomics',
+    'Risk Management',
     'Risk Management & Psychology',
     'Algorithmic & EA Trading',
+    'Forex Basics',
   ];
 
   const levels = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
@@ -153,9 +155,9 @@ export default function CoursesDirectoryPage() {
               }}
               className="bg-brand-navy-light border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none"
             >
+              <option value="createdAt">Newest Releases</option>
               <option value="totalEnrollments">Most Popular</option>
               <option value="avgRating">Highest Rated</option>
-              <option value="createdAt">Newest Releases</option>
               <option value="price">Price</option>
             </select>
           </div>

@@ -39,8 +39,8 @@ export const updateTutorSchema = registerTutorSchema.partial();
 
 export const courseSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters').max(100),
-  shortDescription: z.string().min(10, 'Short description must be at least 10 characters').max(300),
-  description: z.string().min(20, 'Description must be at least 20 characters').max(10000),
+  shortDescription: z.string().min(3, 'Short description must be at least 3 characters').max(500),
+  description: z.string().min(5, 'Description must be at least 5 characters').max(10000),
   category: z.string().min(1, 'Category is required'),
   level: z.string().transform((lvl) => {
     const upper = (lvl || '').toUpperCase().trim();

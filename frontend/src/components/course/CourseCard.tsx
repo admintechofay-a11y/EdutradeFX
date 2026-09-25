@@ -11,8 +11,10 @@ interface CourseCardProps {
 }
 
 export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
-  const isDiscounted = course.discountPrice && course.discountPrice < course.price;
-  const displayPrice = isDiscounted ? course.discountPrice! : course.price;
+  const priceNum = typeof course.price === 'number' ? course.price : parseFloat(course.price as any) || 0;
+  const discountNum = course.discountPrice != null ? (typeof course.discountPrice === 'number' ? course.discountPrice : parseFloat(course.discountPrice as any)) : undefined;
+  const isDiscounted = discountNum != null && discountNum < priceNum;
+  const displayPrice = isDiscounted ? discountNum : priceNum;
 
   return (
     <div className="group rounded-2xl bg-brand-navy-card border border-slate-800 hover:border-slate-700/80 transition-all duration-300 hover:-translate-y-1 shadow-lg flex flex-col justify-between overflow-hidden">
@@ -47,13 +49,13 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
         <div className="p-5 space-y-3">
           <div className="flex items-center justify-between text-xs text-slate-400">
             <div className="flex items-center gap-1.5">
-              <StarRating rating={course.avgRating} />
-              <span className="font-bold text-white ml-1">{course.avgRating.toFixed(1)}</span>
-              <span>({course.totalReviews})</span>
+              <StarRating rating={course.avgRating || 0} />
+              <span className="font-bold text-white ml-1">{(course.avgRating || 0).toFixed(1)}</span>
+              <span>({course.totalReviews || 0})</span>
             </div>
             <div className="flex items-center gap-1 text-slate-400">
               <Users className="w-3.5 h-3.5" />
-              <span>{course.totalEnrollments} enrolled</span>
+              <span>{course.totalEnrollments || 0} enrolled</span>
             </div>
           </div>
 
@@ -101,7 +103,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
             </span>
             {isDiscounted && (
               <span className="text-xs text-slate-500 line-through">
-                ₹{course.price.toLocaleString()}
+                ₹{priceNum.toLocaleString()}
               </span>
             )}
           </div>

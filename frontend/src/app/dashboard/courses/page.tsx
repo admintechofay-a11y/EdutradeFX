@@ -194,9 +194,12 @@ export default function TutorCoursesPage() {
                     className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white transition"
                   >
                     <option value="Price Action">Price Action</option>
-                    <option value="Smart Money Concepts (SMC)">Smart Money Concepts</option>
+                    <option value="Smart Money Concepts (SMC)">Smart Money Concepts (SMC)</option>
                     <option value="Technical Analysis">Technical Analysis</option>
+                    <option value="Fundamental & Macroeconomics">Fundamental & Macroeconomics</option>
                     <option value="Risk Management">Risk Management</option>
+                    <option value="Algorithmic & EA Trading">Algorithmic & EA Trading</option>
+                    <option value="Forex Basics">Forex Basics</option>
                   </select>
                 </div>
 

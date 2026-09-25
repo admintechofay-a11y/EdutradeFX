@@ -170,25 +170,9 @@ export class LMSService {
         language: data.language || 'English',
         seoTitle: data.seoTitle,
         seoDescription: data.seoDescription,
-        status: isCreatorAdmin ? CourseStatus.PUBLISHED : CourseStatus.REVIEW,
+        status: CourseStatus.PUBLISHED,
       },
     });
-
-    // Notify admins if course is awaiting review
-    if (newCourse.status === CourseStatus.REVIEW) {
-      const admins = await prisma.user.findMany({ where: { role: 'ADMIN' } });
-      if (admins.length > 0) {
-        await prisma.notification.createMany({
-          data: admins.map((admin) => ({
-            userId: admin.id,
-            type: NotificationType.APPROVAL,
-            title: 'Course Awaiting Review',
-            message: `"${data.title}" was submitted for publication approval.`,
-            link: `/admin/courses`,
-          })),
-        });
-      }
-    }
 
     return newCourse;
   }
@@ -258,9 +242,7 @@ export class LMSService {
       (promoVideoUrl && promoVideoUrl !== course.promoVideo)
     );
 
-    const newStatus = (course.status === CourseStatus.PUBLISHED && hasSensitiveChanges)
-      ? CourseStatus.REVIEW
-      : course.status;
+    const newStatus = course.status === CourseStatus.ARCHIVED ? CourseStatus.PUBLISHED : course.status;
 
     return await prisma.course.update({
       where: { id: courseId },
@@ -510,26 +492,28 @@ export class LMSService {
     const { skip, take, page, limit } = parsePagination(query);
 
     const where: Prisma.CourseWhereInput = {
-      status: { in: [CourseStatus.PUBLISHED, CourseStatus.APPROVED] },
+      status: { not: CourseStatus.ARCHIVED },
     };
 
     if (query.search) {
       where.OR = [
         { title: { contains: query.search as string, mode: 'insensitive' } },
         { shortDescription: { contains: query.search as string, mode: 'insensitive' } },
+        { description: { contains: query.search as string, mode: 'insensitive' } },
+        { category: { contains: query.search as string, mode: 'insensitive' } },
       ];
     }
 
     if (query.category) {
-      where.category = query.category as string;
+      where.category = { equals: query.category as string, mode: 'insensitive' };
     }
 
     if (query.level) {
-      where.level = query.level as string;
+      where.level = { equals: query.level as string, mode: 'insensitive' };
     }
 
     if (query.language) {
-      where.language = query.language as string;
+      where.language = { equals: query.language as string, mode: 'insensitive' };
     }
 
     if (query.isFree === 'true') {
@@ -551,13 +535,17 @@ export class LMSService {
       where.avgRating = { gte: parseFloat(query.minRating as string) };
     }
 
-    let orderBy: Prisma.CourseOrderByWithRelationInput = { createdAt: 'desc' };
+    let orderBy: Prisma.CourseOrderByWithRelationInput | Prisma.CourseOrderByWithRelationInput[] = [
+      { createdAt: 'desc' },
+    ];
     if (query.sortBy === 'price') {
-      orderBy = { price: query.sortOrder === 'desc' ? 'desc' : 'asc' };
+      orderBy = [{ price: query.sortOrder === 'desc' ? 'desc' : 'asc' }, { createdAt: 'desc' }];
     } else if (query.sortBy === 'avgRating') {
-      orderBy = { avgRating: 'desc' };
+      orderBy = [{ avgRating: 'desc' }, { createdAt: 'desc' }];
     } else if (query.sortBy === 'totalEnrollments') {
-      orderBy = { totalEnrollments: 'desc' };
+      orderBy = [{ totalEnrollments: 'desc' }, { createdAt: 'desc' }];
+    } else {
+      orderBy = [{ createdAt: 'desc' }];
     }
 
     const [courses, total] = await Promise.all([
@@ -645,7 +633,7 @@ export class LMSService {
       include: { tutor: true },
     });
 
-    if (!course || course.status !== CourseStatus.PUBLISHED) {
+    if (!course || course.status === CourseStatus.ARCHIVED) {
       throw new AppError('Course is not available for enrollment.', StatusCodes.NOT_FOUND);
     }
 

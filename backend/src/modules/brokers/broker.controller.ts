@@ -43,10 +43,11 @@ export class BrokerController {
   };
 
   compareBrokers = async (req: Request, res: Response): Promise<void> => {
-    const ids = Array.isArray(req.query.brokerIds)
-      ? (req.query.brokerIds as string[])
-      : typeof req.query.brokerIds === 'string'
-      ? req.query.brokerIds.split(',')
+    const raw = req.query.brokerIds || req.query.ids;
+    const ids = Array.isArray(raw)
+      ? (raw as string[])
+      : typeof raw === 'string'
+      ? raw.split(',').map((s) => s.trim()).filter(Boolean)
       : [];
     const comparison = await brokerService.compareBrokers(ids);
     sendSuccess(res, comparison, 'Broker comparison data retrieved', StatusCodes.OK);

@@ -55,9 +55,25 @@ export const brokerLeadSchema = z.object({
   source: z.string().max(50).optional(),
 });
 
-export const compareBrokersSchema = z.object({
-  brokerIds: z.union([
-    z.array(z.string()).min(2, 'Select at least 2 brokers to compare').max(4, 'Maximum 4 brokers can be compared at once'),
-    z.string().transform((val) => val.split(',').map((s) => s.trim()).filter(Boolean)),
-  ]),
-});
+export const compareBrokersSchema = z
+  .object({
+    brokerIds: z
+      .union([
+        z.array(z.string()),
+        z.string().transform((val) => val.split(',').map((s) => s.trim()).filter(Boolean)),
+      ])
+      .optional(),
+    ids: z
+      .union([
+        z.array(z.string()),
+        z.string().transform((val) => val.split(',').map((s) => s.trim()).filter(Boolean)),
+      ])
+      .optional(),
+  })
+  .refine(
+    (data) => {
+      const list = data.brokerIds || data.ids;
+      return Array.isArray(list) && list.length >= 2 && list.length <= 4;
+    },
+    { message: 'Select between 2 and 4 brokers to compare' }
+  );

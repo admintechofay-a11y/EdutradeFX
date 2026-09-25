@@ -325,10 +325,6 @@ export class BrokerService {
       },
     });
 
-    if (brokers.length < 2) {
-      throw new AppError('At least 2 approved brokers are required for comparison.', StatusCodes.BAD_REQUEST);
-    }
-
     return brokers;
   }
 

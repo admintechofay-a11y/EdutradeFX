@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 interface CompareState {
   selectedBrokerIds: string[];
@@ -9,37 +10,44 @@ interface CompareState {
   isSelected: (id: string) => boolean;
 }
 
-export const useCompareStore = create<CompareState>((set, get) => ({
-  selectedBrokerIds: [],
+export const useCompareStore = create<CompareState>()(
+  persist(
+    (set, get) => ({
+      selectedBrokerIds: [],
 
-  addBroker: (id: string) => {
-    const { selectedBrokerIds } = get();
-    if (selectedBrokerIds.includes(id)) return false;
-    if (selectedBrokerIds.length >= 4) return false;
-    set({ selectedBrokerIds: [...selectedBrokerIds, id] });
-    return true;
-  },
+      addBroker: (id: string) => {
+        const { selectedBrokerIds } = get();
+        if (selectedBrokerIds.includes(id)) return false;
+        if (selectedBrokerIds.length >= 4) return false;
+        set({ selectedBrokerIds: [...selectedBrokerIds, id] });
+        return true;
+      },
 
-  removeBroker: (id: string) => {
-    set({
-      selectedBrokerIds: get().selectedBrokerIds.filter((item) => item !== id),
-    });
-  },
+      removeBroker: (id: string) => {
+        set({
+          selectedBrokerIds: get().selectedBrokerIds.filter((item) => item !== id),
+        });
+      },
 
-  toggleBroker: (id: string) => {
-    const { selectedBrokerIds, addBroker, removeBroker } = get();
-    if (selectedBrokerIds.includes(id)) {
-      removeBroker(id);
-    } else {
-      addBroker(id);
+      toggleBroker: (id: string) => {
+        const { selectedBrokerIds, addBroker, removeBroker } = get();
+        if (selectedBrokerIds.includes(id)) {
+          removeBroker(id);
+        } else {
+          addBroker(id);
+        }
+      },
+
+      clearBrokers: () => {
+        set({ selectedBrokerIds: [] });
+      },
+
+      isSelected: (id: string) => {
+        return get().selectedBrokerIds.includes(id);
+      },
+    }),
+    {
+      name: 'edutrade_compare_brokers',
     }
-  },
-
-  clearBrokers: () => {
-    set({ selectedBrokerIds: [] });
-  },
-
-  isSelected: (id: string) => {
-    return get().selectedBrokerIds.includes(id);
-  },
-}));
+  )
+);

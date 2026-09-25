@@ -28,11 +28,25 @@ export const Navbar: React.FC = () => {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [notifications, setNotifications] = useState<any[]>([]);
 
   useEffect(() => {
     hydrate();
   }, [hydrate]);
+
+  const loadNotifications = () => {
+    if (!isAuthenticated) return;
+    api
+      .get('/notifications')
+      .then((res) => {
+        if (res.data?.success && res.data?.data) {
+          setNotifications(res.data.data.slice(0, 5));
+        }
+      })
+      .catch(() => {});
+  };
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -40,6 +54,7 @@ export const Navbar: React.FC = () => {
         .get('/notifications/unread-count')
         .then((res) => setUnreadCount(res.data?.data?.unreadCount || 0))
         .catch(() => {});
+      loadNotifications();
     }
   }, [isAuthenticated]);
 
@@ -104,18 +119,89 @@ export const Navbar: React.FC = () => {
           {isAuthenticated && user ? (
             <div className="flex items-center gap-3 relative">
               {/* Notifications */}
-              <Link
-                href="/dashboard/notifications"
-                className="relative p-2 rounded-full text-gray-400 hover:text-white hover:bg-slate-800 transition-colors"
-                aria-label="Notifications"
-              >
-                <Bell size={18} />
-                {unreadCount > 0 && (
-                  <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white">
-                    {unreadCount > 9 ? '9+' : unreadCount}
-                  </span>
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    setNotifDropdownOpen(!notifDropdownOpen);
+                    setDropdownOpen(false);
+                    if (!notifDropdownOpen) loadNotifications();
+                  }}
+                  className="relative p-2 rounded-full text-gray-400 hover:text-white hover:bg-slate-800 transition-colors"
+                  aria-label="Notifications"
+                >
+                  <Bell size={18} />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                </button>
+
+                {notifDropdownOpen && (
+                  <div
+                    className="absolute right-0 mt-2 w-80 rounded-2xl glass-modal shadow-2xl border border-slate-700 p-3 z-50 animate-in fade-in zoom-in-95 duration-100"
+                    onMouseLeave={() => setNotifDropdownOpen(false)}
+                  >
+                    <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800">
+                      <span className="text-xs font-bold text-white">Notifications</span>
+                      <Link
+                        href="/dashboard/notifications"
+                        onClick={() => setNotifDropdownOpen(false)}
+                        className="text-[10px] font-semibold text-brand-blue hover:underline"
+                      >
+                        View All
+                      </Link>
+                    </div>
+
+                    {notifications.length > 0 ? (
+                      <div className="space-y-1.5 max-h-64 overflow-y-auto">
+                        {notifications.map((n) => (
+                          <Link
+                            key={n.id}
+                            href={n.link || '/dashboard/notifications'}
+                            onClick={() => {
+                              setNotifDropdownOpen(false);
+                              api.patch(`/notifications/${n.id}/read`).catch(() => {});
+                            }}
+                            className={`block p-2.5 rounded-xl transition ${
+                              n.isRead
+                                ? 'hover:bg-slate-800/50 text-slate-400'
+                                : 'bg-slate-800/60 hover:bg-slate-800 text-white'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between gap-1 mb-0.5">
+                              <span className="text-xs font-bold truncate">{n.title}</span>
+                              <span className="text-[9px] text-slate-500 shrink-0">
+                                {new Date(n.createdAt).toLocaleDateString(undefined, {
+                                  month: 'short',
+                                  day: 'numeric',
+                                })}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
+                              {n.message}
+                            </p>
+                          </Link>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="py-6 text-center text-xs text-slate-400">
+                        No notifications found.
+                      </div>
+                    )}
+
+                    <div className="pt-2 mt-2 border-t border-slate-800 text-center">
+                      <Link
+                        href="/dashboard/notifications"
+                        onClick={() => setNotifDropdownOpen(false)}
+                        className="block w-full py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-[11px] font-bold text-slate-200 transition"
+                      >
+                        Open Notification Center
+                      </Link>
+                    </div>
+                  </div>
                 )}
-              </Link>
+              </div>
 
               {/* User Dropdown */}
               <div className="relative">

@@ -75,7 +75,7 @@ export default function AdminCommandCenterPage() {
 
   const handleApproveCourse = async (id: string) => {
     try {
-      await api.patch(`/admin/courses/${id}/status`, { status: 'APPROVED' });
+      await api.patch(`/admin/courses/${id}/status`, { status: 'PUBLISHED' });
       setPendingCourses(pendingCourses.filter((c) => c.id !== id));
     } catch (err: any) {
       alert(err.response?.data?.message || 'Approval failed');
@@ -99,7 +99,7 @@ export default function AdminCommandCenterPage() {
             <span>Total Traders</span>
             <Users className="w-4 h-4 text-brand-blue" />
           </div>
-          <div className="text-2xl font-black text-white">{stats?.totalUsers || 248}</div>
+          <div className="text-2xl font-black text-white">{stats?.totalUsers ?? 0}</div>
         </div>
 
         <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800">
@@ -107,7 +107,7 @@ export default function AdminCommandCenterPage() {
             <span>Verified Brokers</span>
             <Building2 className="w-4 h-4 text-emerald-400" />
           </div>
-          <div className="text-2xl font-black text-white">{stats?.totalBrokers || 14}</div>
+          <div className="text-2xl font-black text-white">{stats?.totalBrokers ?? 0}</div>
         </div>
 
         <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800">
@@ -115,7 +115,7 @@ export default function AdminCommandCenterPage() {
             <span>Academy Courses</span>
             <BookOpen className="w-4 h-4 text-brand-amber" />
           </div>
-          <div className="text-2xl font-black text-white">{stats?.totalCourses || 32}</div>
+          <div className="text-2xl font-black text-white">{stats?.totalCourses ?? 0}</div>
         </div>
 
         <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800">
@@ -123,7 +123,7 @@ export default function AdminCommandCenterPage() {
             <span>Platform Disputes</span>
             <MessageSquare className="w-4 h-4 text-rose-400" />
           </div>
-          <div className="text-2xl font-black text-rose-400">{stats?.openComplaints || 2}</div>
+          <div className="text-2xl font-black text-rose-400">{stats?.openComplaints ?? 0}</div>
         </div>
 
         <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800">
@@ -131,7 +131,7 @@ export default function AdminCommandCenterPage() {
             <span>Platform Revenue</span>
             <DollarSign className="w-4 h-4 text-emerald-400" />
           </div>
-          <div className="text-2xl font-black text-emerald-400">₹{stats?.totalRevenue?.toLocaleString() || '184,500'}</div>
+          <div className="text-2xl font-black text-emerald-400">₹{(stats?.totalRevenue ?? 0).toLocaleString()}</div>
         </div>
       </div>
 

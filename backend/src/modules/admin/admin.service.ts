@@ -144,6 +144,11 @@ export class AdminService {
     }
 
     return {
+      totalUsers,
+      totalBrokers,
+      totalCourses,
+      openComplaints,
+      totalRevenue,
       users: {
         total: totalUsers,
         students: studentUsers,
@@ -327,6 +332,17 @@ export class AdminService {
   }
 
   // ── 3. BROKER COMPLIANCE & REVIEWS ─────────────────────────
+
+  async getPendingBrokersAdmin() {
+    return await prisma.broker.findMany({
+      where: { status: ApprovalStatus.PENDING },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+        _count: { select: { reviews: true, leads: true, documents: true } },
+      },
+    });
+  }
 
   async getAllBrokersAdmin(query: any) {
     const { skip, take, page, limit } = parsePagination(query);
@@ -938,7 +954,22 @@ export class AdminService {
     return { courses, total, page, limit, totalPages };
   }
 
-  async updateCourseStatus(courseId: string, status: CourseStatus, rejectionReason?: string) {
+  async getPendingCoursesAdmin() {
+    return await prisma.course.findMany({
+      where: {
+        status: { in: [CourseStatus.REVIEW, CourseStatus.DRAFT] },
+      },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        tutor: {
+          include: { user: { select: { name: true, email: true } } },
+        },
+        _count: { select: { enrollments: true, reviews: true, sections: true } },
+      },
+    });
+  }
+
+  async updateCourseStatus(courseId: string, status: any, rejectionReason?: string) {
     const course = await prisma.course.findUnique({
       where: { id: courseId },
       include: { tutor: { include: { user: true } } },
@@ -946,15 +977,18 @@ export class AdminService {
 
     if (!course) throw new AppError('Course not found.', StatusCodes.NOT_FOUND);
 
+    // Map APPROVED to PUBLISHED for seamless publication
+    const targetStatus = status === 'APPROVED' ? CourseStatus.PUBLISHED : (status as CourseStatus);
+
     const updated = await prisma.course.update({
       where: { id: courseId },
       data: {
-        status,
-        rejectionReason: status === CourseStatus.DRAFT ? rejectionReason : null,
+        status: targetStatus,
+        rejectionReason: targetStatus === CourseStatus.DRAFT ? rejectionReason : null,
       },
     });
 
-    if (status === CourseStatus.PUBLISHED) {
+    if (targetStatus === CourseStatus.PUBLISHED) {
       sendApprovalEmail(course.tutor.user.email, course.tutor.user.name, `Course: ${course.title}`).catch(() => {});
     }
 

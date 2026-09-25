@@ -92,7 +92,7 @@ export class LMSService {
   // ── COURSE MANAGEMENT ──────────────────────────────────────
 
   async createCourse(userId: string, data: any, thumbFile?: Express.Multer.File, promoFile?: Express.Multer.File) {
-    let tutor = await prisma.tutor.findUnique({ where: { userId } });
+    let tutor = await prisma.tutor.findUnique({ where: { userId }, include: { user: true } });
     if (!tutor) {
       const user = await prisma.user.findUnique({ where: { id: userId } });
       if (user && (user.role === 'ADMIN' || user.role === 'TUTOR')) {
@@ -105,6 +105,7 @@ export class LMSService {
             expertise: [data.category || 'Forex Trading'],
             status: ApprovalStatus.APPROVED,
           },
+          include: { user: true },
         });
       } else {
         throw new AppError('Tutor profile not found. Please register as a tutor first.', StatusCodes.FORBIDDEN);
@@ -117,19 +118,26 @@ export class LMSService {
         tutor = await prisma.tutor.update({
           where: { id: tutor.id },
           data: { status: ApprovalStatus.APPROVED },
+          include: { user: true },
         });
       } else {
         throw new AppError('Your instructor profile is pending verification. Courses can only be created once approved.', StatusCodes.FORBIDDEN);
       }
     }
 
+    if (!tutor) {
+      throw new AppError('Tutor profile not found.', StatusCodes.FORBIDDEN);
+    }
+
+    const currentTutor = tutor;
+    const isCreatorAdmin = currentTutor.user?.role === 'ADMIN';
     const slug = await generateUniqueSlug(data.title, 'course');
     const thumbnailUrl = thumbFile ? (thumbFile as any).path || (thumbFile as any).secure_url : undefined;
     const promoVideoUrl = promoFile ? (promoFile as any).path || (promoFile as any).secure_url : undefined;
 
-    return await prisma.course.create({
+    const newCourse = await prisma.course.create({
       data: {
-        tutorId: tutor.id,
+        tutorId: currentTutor.id,
         title: data.title,
         slug,
         shortDescription: data.shortDescription,
@@ -154,9 +162,27 @@ export class LMSService {
         language: data.language || 'English',
         seoTitle: data.seoTitle,
         seoDescription: data.seoDescription,
-        status: CourseStatus.DRAFT,
+        status: isCreatorAdmin ? CourseStatus.PUBLISHED : CourseStatus.REVIEW,
       },
     });
+
+    // Notify admins if course is awaiting review
+    if (newCourse.status === CourseStatus.REVIEW) {
+      const admins = await prisma.user.findMany({ where: { role: 'ADMIN' } });
+      if (admins.length > 0) {
+        await prisma.notification.createMany({
+          data: admins.map((admin) => ({
+            userId: admin.id,
+            type: NotificationType.APPROVAL,
+            title: 'Course Awaiting Review',
+            message: `"${data.title}" was submitted for publication approval.`,
+            link: `/admin/courses`,
+          })),
+        });
+      }
+    }
+
+    return newCourse;
   }
 
   async getMyCourses(userId: string) {

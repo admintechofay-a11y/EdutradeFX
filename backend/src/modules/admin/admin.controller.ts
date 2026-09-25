@@ -73,6 +73,11 @@ export class AdminController {
   };
 
   // Brokers
+  getPendingBrokers = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const brokers = await adminService.getPendingBrokersAdmin();
+    sendSuccess(res, brokers, 'Pending brokers retrieved', StatusCodes.OK);
+  };
+
   getAllBrokers = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     const result = await adminService.getAllBrokersAdmin(req.query);
     sendPaginated(res, result.brokers, result.total, result.page, result.limit, 'Brokers retrieved');
@@ -413,6 +418,11 @@ export class AdminController {
       metadata: { status },
     });
     sendSuccess(res, tutor, `Tutor status set to ${status}`, StatusCodes.OK);
+  };
+
+  getPendingCourses = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const courses = await adminService.getPendingCoursesAdmin();
+    sendSuccess(res, courses, 'Pending courses retrieved', StatusCodes.OK);
   };
 
   getAllCourses = async (req: AuthenticatedRequest, res: Response): Promise<void> => {

@@ -12,6 +12,7 @@ router.use(authenticate, authorize('ADMIN'));
 
 // ── DASHBOARD ──────────────────────────────────────
 router.get('/dashboard', adminController.getDashboardStats);
+router.get('/stats', adminController.getDashboardStats);
 
 // ── USERS ──────────────────────────────────────────
 router.post('/users', validate(adminCreateUserSchema), adminController.createUser);
@@ -22,6 +23,7 @@ router.delete('/users/:id', adminController.deleteUser);
 router.post('/users/:id/reset-password', adminController.resetUserPassword);
 
 // ── BROKERS ────────────────────────────────────────
+router.get('/brokers/pending', adminController.getPendingBrokers);
 router.get('/brokers', adminController.getAllBrokers);
 router.post('/brokers', adminController.createBroker);
 router.put('/brokers/:id', adminController.updateBroker);
@@ -56,6 +58,7 @@ router.delete('/reviews/sp/:id', adminController.deleteSignalProviderReview);
 router.get('/tutors', adminController.getAllTutors);
 router.patch('/tutors/:id/status', adminController.updateTutorStatus);
 
+router.get('/courses/pending', adminController.getPendingCourses);
 router.get('/courses', adminController.getAllCourses);
 router.patch('/courses/:id/status', adminController.updateCourseStatus);
 router.patch('/reviews/course/:id/approve', adminController.approveCourseReview);

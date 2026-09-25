@@ -9,7 +9,11 @@ export const COURSE_CATEGORIES = [
   'Trading Psychology',
   'Algorithmic Trading',
   'Price Action',
+  'Smart Money Concepts (SMC)',
+  'Smart Money Concepts',
   'Advanced Strategies',
+  'Crypto Trading',
+  'Options & Derivatives',
 ] as const;
 
 export const COURSE_LEVELS = ['Beginner', 'Intermediate', 'Advanced', 'All Levels'] as const;
@@ -37,18 +41,33 @@ export const courseSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters').max(100),
   shortDescription: z.string().min(10, 'Short description must be at least 10 characters').max(300),
   description: z.string().min(20, 'Description must be at least 20 characters').max(10000),
-  category: z.enum(COURSE_CATEGORIES),
-  level: z.enum(COURSE_LEVELS),
+  category: z.string().min(1, 'Category is required'),
+  level: z.string().transform((lvl) => {
+    const upper = (lvl || '').toUpperCase().trim();
+    if (upper === 'BEGINNER') return 'Beginner';
+    if (upper === 'INTERMEDIATE') return 'Intermediate';
+    if (upper === 'ADVANCED') return 'Advanced';
+    if (upper === 'ALL LEVELS' || upper === 'ALL_LEVELS') return 'All Levels';
+    return lvl;
+  }),
   price: z.coerce.number().min(0, 'Price cannot be negative'),
   discountPrice: z.coerce.number().min(0).optional(),
   discountUntil: z.coerce.date().optional(),
   currency: z.string().default('INR'),
-  prerequisites: z.array(z.string()).optional().or(
-    z.string().transform((s) => s.split(',').map((x) => x.trim()).filter(Boolean))
-  ),
-  learningOutcomes: z.array(z.string()).min(3, 'Provide at least 3 key learning outcomes').or(
-    z.string().transform((s) => s.split(',').map((x) => x.trim()).filter(Boolean))
-  ),
+  prerequisites: z
+    .array(z.string())
+    .optional()
+    .or(z.string().transform((s) => s.split(',').map((x) => x.trim()).filter(Boolean)))
+    .default([]),
+  learningOutcomes: z
+    .array(z.string())
+    .optional()
+    .or(z.string().transform((s) => s.split(',').map((x) => x.trim()).filter(Boolean)))
+    .default([
+      'Master key chart analysis and market structure execution',
+      'Implement sound risk management and capital preservation',
+      'Develop trading discipline and strategic consistency',
+    ]),
   language: z.string().default('English'),
   seoTitle: z.string().max(100).optional(),
   seoDescription: z.string().max(250).optional(),

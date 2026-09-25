@@ -29,6 +29,11 @@ export class LMSController {
     sendSuccess(res, course, 'Course created as draft', StatusCodes.CREATED);
   };
 
+  getMyCourses = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const courses = await lmsService.getMyCourses(req.user!.userId);
+    sendSuccess(res, courses, 'Tutor courses retrieved', StatusCodes.OK);
+  };
+
   updateCourse = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     const { id } = req.params;
     const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;

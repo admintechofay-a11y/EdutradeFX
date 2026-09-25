@@ -115,6 +115,20 @@ export function formatApiError(error: any): { message: string; errors?: any } {
       errors: data.errors,
     };
   }
+
+  // Handle network / offline / CORS / unreachable backend errors
+  if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+    if (typeof window !== 'undefined' && !['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+      return {
+        message:
+          'Backend API is unreachable. Please verify NEXT_PUBLIC_API_URL or BACKEND_URL is configured in your Vercel project environment variables.',
+      };
+    }
+    return {
+      message: 'Network connection failed. Please ensure the backend server is running on port 5000.',
+    };
+  }
+
   return {
     message: error.message || 'Network connection failed. Please check your internet.',
   };

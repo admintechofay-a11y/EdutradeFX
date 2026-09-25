@@ -6,9 +6,18 @@ declare global {
   var prismaClientGlobal: PrismaClient | undefined;
 }
 
+const getSanitizedDbUrl = (): string | undefined => {
+  const url = process.env.DATABASE_URL;
+  if (!url) return undefined;
+  return url.replace(/[?&]channel_binding=[^&]+/, (match) => (match.startsWith('?') ? '?' : '')).replace(/\?&/, '?').replace(/[?&]$/, '');
+};
+
+const sanitizedUrl = getSanitizedDbUrl();
+
 export const prisma =
   globalThis.prismaClientGlobal ||
   new PrismaClient({
+    datasources: sanitizedUrl ? { db: { url: sanitizedUrl } } : undefined,
     log:
       process.env.NODE_ENV === 'development'
         ? [

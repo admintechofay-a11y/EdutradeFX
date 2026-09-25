@@ -15,10 +15,20 @@ const nextConfig = {
     ],
   },
   async rewrites() {
+    const rawBackendUrl =
+      process.env.BACKEND_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      'http://localhost:5000/api';
+    const backendBase = rawBackendUrl.replace(/\/api\/?$/, '');
+
     return [
       {
         source: '/compare',
         destination: '/brokers/compare',
+      },
+      {
+        source: '/api/:path*',
+        destination: `${backendBase}/api/:path*`,
       },
     ];
   },

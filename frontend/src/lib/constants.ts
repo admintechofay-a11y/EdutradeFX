@@ -1,4 +1,9 @@
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const isBrowser = typeof window !== 'undefined';
+const isRemoteHost = isBrowser && !['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+export const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  (isRemoteHost ? '/api' : 'http://localhost:5000/api');
 export const SITE_NAME = 'EdutradeFX';
 
 export const NAV_LINKS = [

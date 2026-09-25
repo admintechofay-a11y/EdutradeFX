@@ -92,13 +92,35 @@ export class LMSService {
   // ── COURSE MANAGEMENT ──────────────────────────────────────
 
   async createCourse(userId: string, data: any, thumbFile?: Express.Multer.File, promoFile?: Express.Multer.File) {
-    const tutor = await prisma.tutor.findUnique({ where: { userId } });
+    let tutor = await prisma.tutor.findUnique({ where: { userId } });
     if (!tutor) {
-      throw new AppError('Tutor profile not found. Please register as a tutor first.', StatusCodes.FORBIDDEN);
+      const user = await prisma.user.findUnique({ where: { id: userId } });
+      if (user && (user.role === 'ADMIN' || user.role === 'TUTOR')) {
+        const slug = await generateUniqueSlug(user.name, 'tutor');
+        tutor = await prisma.tutor.create({
+          data: {
+            userId,
+            slug,
+            bio: `${user.name} - Trading Instructor`,
+            expertise: [data.category || 'Forex Trading'],
+            status: ApprovalStatus.APPROVED,
+          },
+        });
+      } else {
+        throw new AppError('Tutor profile not found. Please register as a tutor first.', StatusCodes.FORBIDDEN);
+      }
     }
 
     if (tutor.status !== ApprovalStatus.APPROVED) {
-      throw new AppError('Your instructor profile is pending verification. Courses can only be created once approved.', StatusCodes.FORBIDDEN);
+      const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
+      if (user?.role === 'ADMIN') {
+        tutor = await prisma.tutor.update({
+          where: { id: tutor.id },
+          data: { status: ApprovalStatus.APPROVED },
+        });
+      } else {
+        throw new AppError('Your instructor profile is pending verification. Courses can only be created once approved.', StatusCodes.FORBIDDEN);
+      }
     }
 
     const slug = await generateUniqueSlug(data.title, 'course');
@@ -121,7 +143,14 @@ export class LMSService {
         discountUntil: data.discountUntil ? new Date(data.discountUntil) : undefined,
         currency: data.currency || 'INR',
         prerequisites: data.prerequisites ? (Array.isArray(data.prerequisites) ? data.prerequisites : [data.prerequisites]) : [],
-        learningOutcomes: Array.isArray(data.learningOutcomes) ? data.learningOutcomes : [data.learningOutcomes],
+        learningOutcomes:
+          Array.isArray(data.learningOutcomes) && data.learningOutcomes.length > 0
+            ? data.learningOutcomes
+            : [
+                'Master key chart analysis and market structure execution',
+                'Implement sound risk management and capital preservation',
+                'Develop trading discipline and strategic consistency',
+              ],
         language: data.language || 'English',
         seoTitle: data.seoTitle,
         seoDescription: data.seoDescription,
@@ -130,14 +159,51 @@ export class LMSService {
     });
   }
 
-  async updateCourse(courseId: string, userId: string, data: any, thumbFile?: Express.Multer.File, promoFile?: Express.Multer.File) {
-    const tutor = await prisma.tutor.findUnique({ where: { userId } });
+  async getMyCourses(userId: string) {
+    let tutor = await prisma.tutor.findUnique({ where: { userId } });
     if (!tutor) {
+      const user = await prisma.user.findUnique({ where: { id: userId } });
+      if (user && (user.role === 'ADMIN' || user.role === 'TUTOR')) {
+        const slug = await generateUniqueSlug(user.name, 'tutor');
+        tutor = await prisma.tutor.create({
+          data: {
+            userId,
+            slug,
+            bio: `${user.name} - Trading Instructor`,
+            expertise: ['Forex Trading'],
+            status: ApprovalStatus.APPROVED,
+          },
+        });
+      } else {
+        return [];
+      }
+    }
+
+    return await prisma.course.findMany({
+      where: { tutorId: tutor.id },
+      include: {
+        _count: {
+          select: {
+            enrollments: true,
+            sections: true,
+            reviews: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async updateCourse(courseId: string, userId: string, data: any, thumbFile?: Express.Multer.File, promoFile?: Express.Multer.File) {
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
+    const isAdmin = user?.role === 'ADMIN';
+    const tutor = await prisma.tutor.findUnique({ where: { userId } });
+    if (!tutor && !isAdmin) {
       throw new AppError('Unauthorized.', StatusCodes.FORBIDDEN);
     }
 
     const course = await prisma.course.findUnique({ where: { id: courseId } });
-    if (!course || course.tutorId !== tutor.id) {
+    if (!course || (!isAdmin && course.tutorId !== tutor?.id)) {
       throw new AppError('Course not found or unauthorized.', StatusCodes.FORBIDDEN);
     }
 
@@ -184,8 +250,10 @@ export class LMSService {
   }
 
   async deleteCourse(courseId: string, userId: string) {
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
+    const isAdmin = user?.role === 'ADMIN';
     const tutor = await prisma.tutor.findUnique({ where: { userId } });
-    if (!tutor) {
+    if (!tutor && !isAdmin) {
       throw new AppError('Unauthorized.', StatusCodes.FORBIDDEN);
     }
 
@@ -194,7 +262,7 @@ export class LMSService {
       include: { _count: { select: { enrollments: true } } },
     });
 
-    if (!course || course.tutorId !== tutor.id) {
+    if (!course || (!isAdmin && course.tutorId !== tutor?.id)) {
       throw new AppError('Course not found or unauthorized.', StatusCodes.FORBIDDEN);
     }
 

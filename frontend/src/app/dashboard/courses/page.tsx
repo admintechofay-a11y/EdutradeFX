@@ -47,6 +47,11 @@ export default function TutorCoursesPage() {
       await api.post('/courses', {
         ...form,
         price: Number(form.price),
+        learningOutcomes: [
+          'Master practical strategies and chart execution',
+          'Understand risk management and capital preservation',
+          'Apply disciplined analysis in live market sessions',
+        ],
       });
       setIsModalOpen(false);
       setForm({
@@ -59,7 +64,7 @@ export default function TutorCoursesPage() {
       });
       fetchCourses();
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to create course.');
+      alert(err.message || err.response?.data?.message || 'Failed to create course.');
     } finally {
       setSubmitting(false);
     }

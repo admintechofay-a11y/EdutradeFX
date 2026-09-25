@@ -673,7 +673,7 @@ export class LMSService {
       orderId: order.id,
       amount: activePrice,
       currency: course.currency,
-      keyId: process.env.RAZORPAY_KEY_ID || '',
+      keyId: process.env.RAZORPAY_KEY_ID || 'rzp_test_demo12345',
       courseTitle: course.title,
     };
   }

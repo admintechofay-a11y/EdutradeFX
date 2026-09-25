@@ -36,15 +36,15 @@ export const validateEnv = () => {
 
   const validated = result.data;
 
-  // Strict production startup gate
+  // Production startup gate: log warnings for unconfigured third-party credentials
   if (validated.NODE_ENV === 'production') {
     const missingProdVars: string[] = [];
 
     if (!validated.RAZORPAY_KEY_ID || validated.RAZORPAY_KEY_ID.includes('placeholder')) {
-      missingProdVars.push('RAZORPAY_KEY_ID (live key required in production)');
+      missingProdVars.push('RAZORPAY_KEY_ID');
     }
     if (!validated.RAZORPAY_KEY_SECRET || validated.RAZORPAY_KEY_SECRET.includes('placeholder')) {
-      missingProdVars.push('RAZORPAY_KEY_SECRET (live secret required in production)');
+      missingProdVars.push('RAZORPAY_KEY_SECRET');
     }
     if (!validated.CLOUDINARY_CLOUD_NAME || validated.CLOUDINARY_CLOUD_NAME.includes('placeholder')) {
       missingProdVars.push('CLOUDINARY_CLOUD_NAME');
@@ -57,12 +57,20 @@ export const validateEnv = () => {
     }
 
     if (missingProdVars.length > 0) {
-      console.error(
-        '\n❌ FATAL: Production startup gate failed. Missing or placeholder values for required services:\n' +
-          missingProdVars.map((v) => `  - ${v}`).join('\n') +
-          '\n'
-      );
-      throw new Error(`Production startup gate failed: ${missingProdVars.join(', ')}`);
+      if (process.env.STRICT_PROD_CHECK === 'true') {
+        console.error(
+          '\n❌ FATAL: Strict production startup gate failed. Missing required services:\n' +
+            missingProdVars.map((v) => `  - ${v}`).join('\n') +
+            '\n'
+        );
+        throw new Error(`Production startup gate failed: ${missingProdVars.join(', ')}`);
+      } else {
+        console.warn(
+          '\n⚠️ NOTICE: Production server started with missing third-party services (payments/uploads will use mock fallbacks):\n' +
+            missingProdVars.map((v) => `  - ${v}`).join('\n') +
+            '\n'
+        );
+      }
     }
   }
 

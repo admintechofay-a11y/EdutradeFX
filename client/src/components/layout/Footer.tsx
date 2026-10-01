@@ -247,10 +247,24 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-navy-border pt-6 mt-12 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="font-sans text-[12px] text-text-muted-dark">
-            © 2025 EduTradeFX. All rights reserved.
-          </p>
+        <div className="border-t border-navy-border pt-6 mt-12 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-center sm:text-left">
+            <p className="font-sans text-[12px] text-text-muted-dark">
+              © {new Date().getFullYear()} EduTradeFX. All rights reserved.
+            </p>
+            <span className="hidden sm:inline text-navy-border">|</span>
+            <p className="font-sans text-[12px] text-text-muted-dark">
+              Design and developed by{' '}
+              <a
+                href="https://techofay-global-ventures.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gold-primary hover:text-gold-light hover:underline transition-colors font-medium"
+              >
+                Techofay Global Ventures
+              </a>
+            </p>
+          </div>
           <div className="flex items-center gap-3 font-sans text-[12px] text-text-muted-dark">
             <Link href="/about#risk" className="hover:text-text-on-dark transition-colors">
               Risk Disclaimer

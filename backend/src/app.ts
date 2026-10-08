@@ -27,6 +27,7 @@ import adRoutes from './modules/advertisements/ad.routes';
 import notificationRoutes from './modules/notifications/notification.routes';
 import adminRoutes from './modules/admin/admin.routes';
 import contactRoutes from './modules/contact/contact.routes';
+import optionsRoutes from './modules/options/options.routes';
 
 const app = express();
 
@@ -126,6 +127,7 @@ app.use('/api/advertisements', adRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/options', optionsRoutes);
 
 // ── HEALTH CHECK ──────────────────────────────────
 app.get('/api/health', (req, res) => {

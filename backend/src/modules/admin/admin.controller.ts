@@ -83,18 +83,54 @@ export class AdminController {
     sendPaginated(res, result.brokers, result.total, result.page, result.limit, 'Brokers retrieved');
   };
 
+  getBrokerById = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const broker = await adminService.getBrokerByIdAdmin(id as string);
+    sendSuccess(res, broker, 'Broker full audit details retrieved', StatusCodes.OK);
+  };
+
   updateBrokerStatus = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     const { id } = req.params;
-    const { status, rejectionReason } = req.body;
-    const broker = await adminService.updateBrokerStatus(id as string, status, rejectionReason);
+    const { status, rejectionReason, reviewNote, onboardingStatus } = req.body;
+    const broker = await adminService.updateBrokerStatus(
+      id as string,
+      status,
+      rejectionReason,
+      reviewNote,
+      onboardingStatus
+    );
     await adminService.createAuditLog({
       actorId: req.user!.userId,
       action: `UPDATE_STATUS_${status}`,
       targetType: 'BROKER',
       targetId: id as string,
-      metadata: { status, rejectionReason },
+      metadata: { status, rejectionReason, reviewNote, onboardingStatus },
     });
     sendSuccess(res, broker, `Broker status updated to ${status}`, StatusCodes.OK);
+  };
+
+  verifyBrokerLicense = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id, licenseId } = req.params;
+    const { verified } = req.body;
+    const updated = await adminService.verifyBrokerLicense(id as string, licenseId as string, verified === true);
+    await adminService.createAuditLog({
+      actorId: req.user!.userId,
+      action: verified ? 'VERIFY_LICENSE' : 'UNVERIFY_LICENSE',
+      targetType: 'BROKER_LICENSE',
+      targetId: licenseId as string,
+      metadata: { brokerId: id, verified },
+    });
+    sendSuccess(res, updated, `License ${verified ? 'verified' : 'unverified'} successfully`, StatusCodes.OK);
+  };
+
+  revealBrokerAccountCredentials = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id, groupId } = req.params;
+    const creds = await adminService.revealBrokerAccountCredentials(
+      id as string,
+      groupId as string,
+      req.user!.userId
+    );
+    sendSuccess(res, creds, 'Test account credentials revealed and logged', StatusCodes.OK);
   };
 
   toggleBrokerFeatured = async (req: AuthenticatedRequest, res: Response): Promise<void> => {

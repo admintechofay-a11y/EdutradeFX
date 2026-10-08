@@ -11,6 +11,7 @@ import {
 } from '../../utils/email.utils';
 import {
   ApprovalStatus,
+  BrokerOnboardingStatus,
   CourseStatus,
   NotificationType,
   OrderStatus,
@@ -18,6 +19,7 @@ import {
   Prisma,
   Role,
 } from '@prisma/client';
+import { decryptBrokerCredential } from '../../utils/crypto.utils';
 
 export class AdminService {
   // ── 1. DASHBOARD OVERVIEW & KPIS ───────────────────────────
@@ -374,7 +376,150 @@ export class AdminService {
     return { brokers, total, page, limit, totalPages };
   }
 
-  async updateBrokerStatus(brokerId: string, status: ApprovalStatus, rejectionReason?: string) {
+  async getBrokerByIdAdmin(brokerId: string) {
+    const broker = await prisma.broker.findUnique({
+      where: { id: brokerId },
+      include: {
+        user: { select: { id: true, name: true, email: true, phone: true, avatar: true } },
+        licenses: { orderBy: { sortOrder: 'asc' } },
+        servers: { orderBy: { sortOrder: 'asc' } },
+        boardMembers: { orderBy: { sortOrder: 'asc' } },
+        accountGroups: {
+          orderBy: { sortOrder: 'asc' },
+          select: {
+            id: true,
+            name: true,
+            demoAvailable: true,
+            currency: true,
+            spreadTypesLabel: true,
+            spreadFrom: true,
+            minDeposit: true,
+            depositBonusPctUpTo: true,
+            leverageUpTo: true,
+            leverageNum: true,
+            minTradeVolume: true,
+            hasCommissionPerLot: true,
+            feesPerLot: true,
+            commissionStructureUrl: true,
+            spreadType: true,
+            orderTypes: true,
+            swapFree: true,
+            swapLong: true,
+            swapShort: true,
+            orderExecution: true,
+            gtcMode: true,
+            eaAllowed: true,
+            hedgingAllowed: true,
+            nettingAllowed: true,
+            scalpingAllowed: true,
+            hasSwapCharges: true,
+            swapStructureUrl: true,
+            slippage: true,
+            slippagePoints: true,
+            markups: true,
+            forexCommission: true,
+            cryptoCommission: true,
+            commoditiesCommission: true,
+            metalsCommission: true,
+            indexCommission: true,
+            stocksCommission: true,
+            testLogin: true,
+            testServer: true,
+            sortOrder: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        ibPlans: { orderBy: { sortOrder: 'asc' } },
+        depositMethodItems: { orderBy: { sortOrder: 'asc' } },
+        withdrawalMethodItems: { orderBy: { sortOrder: 'asc' } },
+        symbolSpecs: { orderBy: { sortOrder: 'asc' } },
+        fundingYears: { orderBy: { sortOrder: 'asc' } },
+        clientActivity: true,
+        businessAreas: { orderBy: { sortOrder: 'asc' } },
+        awards: { orderBy: { sortOrder: 'asc' } },
+        documents: { orderBy: { createdAt: 'desc' } },
+        reviews: {
+          take: 10,
+          orderBy: { createdAt: 'desc' },
+          include: { user: { select: { id: true, name: true, avatar: true } } },
+        },
+        leads: { take: 10, orderBy: { createdAt: 'desc' } },
+      },
+    });
+
+    if (!broker) {
+      throw new AppError('Broker profile not found.', StatusCodes.NOT_FOUND);
+    }
+
+    return broker;
+  }
+
+  async verifyBrokerLicense(brokerId: string, licenseId: string, verified: boolean) {
+    const license = await prisma.brokerLicense.findFirst({
+      where: { id: licenseId, brokerId },
+    });
+    if (!license) {
+      throw new AppError('Broker license not found.', StatusCodes.NOT_FOUND);
+    }
+
+    return await prisma.brokerLicense.update({
+      where: { id: licenseId },
+      data: { verifiedByAdmin: verified },
+    });
+  }
+
+  async revealBrokerAccountCredentials(brokerId: string, accountGroupId: string, adminUserId: string) {
+    const group = await prisma.brokerAccountGroup.findFirst({
+      where: { id: accountGroupId, brokerId },
+      select: {
+        id: true,
+        name: true,
+        testLogin: true,
+        testServer: true,
+        testPasswordEnc: true,
+      },
+    });
+
+    if (!group) {
+      throw new AppError('Broker account group not found.', StatusCodes.NOT_FOUND);
+    }
+
+    let plaintextPassword = '';
+    if (group.testPasswordEnc) {
+      try {
+        plaintextPassword = decryptBrokerCredential(group.testPasswordEnc);
+      } catch {
+        plaintextPassword = 'DECRYPTION_ERROR';
+      }
+    }
+
+    await prisma.auditLog.create({
+      data: {
+        actorId: adminUserId,
+        action: 'REVEAL_TEST_CREDENTIALS',
+        targetType: 'BROKER_ACCOUNT_GROUP',
+        targetId: accountGroupId,
+        metadata: { brokerId, groupName: group.name },
+      },
+    });
+
+    return {
+      accountGroupId: group.id,
+      name: group.name,
+      testLogin: group.testLogin || null,
+      testServer: group.testServer || null,
+      testPassword: plaintextPassword,
+    };
+  }
+
+  async updateBrokerStatus(
+    brokerId: string,
+    status: ApprovalStatus,
+    rejectionReason?: string,
+    reviewNote?: string,
+    onboardingStatus?: BrokerOnboardingStatus
+  ) {
     const broker = await prisma.broker.findUnique({
       where: { id: brokerId },
       include: { user: true },
@@ -382,10 +527,53 @@ export class AdminService {
 
     if (!broker) throw new AppError('Broker not found.', StatusCodes.NOT_FOUND);
 
+    let targetOnboardingStatus = onboardingStatus;
+    if (!targetOnboardingStatus) {
+      if (status === ApprovalStatus.APPROVED) {
+        targetOnboardingStatus = BrokerOnboardingStatus.VERIFIED;
+      } else if (status === ApprovalStatus.PENDING && reviewNote) {
+        targetOnboardingStatus = BrokerOnboardingStatus.CHANGES_REQUESTED;
+      }
+    }
+
     const updated = await prisma.broker.update({
       where: { id: brokerId },
-      data: { status },
+      data: {
+        status,
+        ...(targetOnboardingStatus ? { onboardingStatus: targetOnboardingStatus } : {}),
+        ...(rejectionReason !== undefined ? { rejectionReason } : {}),
+        ...(reviewNote !== undefined ? { reviewNote } : {}),
+      },
     });
+
+    // In-app notification
+    let notifTitle = 'Broker Application Update';
+    let notifMessage = `Your broker account status was updated to ${status}.`;
+    if (status === ApprovalStatus.APPROVED) {
+      notifTitle = 'Broker Application Approved!';
+      notifMessage = 'Congratulations! Your broker profile has been verified and published on EdutradeFX.';
+    } else if (targetOnboardingStatus === BrokerOnboardingStatus.CHANGES_REQUESTED) {
+      notifTitle = 'Action Required: Changes Requested on Broker Profile';
+      notifMessage = reviewNote || 'Compliance audit requested modifications before your profile can be approved.';
+    } else if (status === ApprovalStatus.REJECTED) {
+      notifTitle = 'Broker Application Rejected';
+      notifMessage = rejectionReason || 'Your broker profile application did not meet compliance requirements.';
+    }
+
+    await prisma.notification.create({
+      data: {
+        userId: broker.userId,
+        type:
+          status === ApprovalStatus.APPROVED
+            ? NotificationType.APPROVAL
+            : status === ApprovalStatus.REJECTED
+            ? NotificationType.REJECTION
+            : NotificationType.WARNING,
+        title: notifTitle,
+        message: notifMessage,
+        link: '/dashboard/broker/onboarding',
+      },
+    }).catch(() => {});
 
     if (status === ApprovalStatus.APPROVED) {
       sendApprovalEmail(broker.user.email, broker.user.name, 'Broker Profile').catch(() => {});

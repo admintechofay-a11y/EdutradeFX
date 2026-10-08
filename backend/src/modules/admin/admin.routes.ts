@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { adminController } from './admin.controller';
+import { optionsController } from '../options/options.controller';
 import { authenticate } from '../../middleware/auth.middleware';
 import { authorize } from '../../middleware/role.middleware';
 import { validate } from '../../middleware/validate.middleware';
@@ -25,11 +26,14 @@ router.post('/users/:id/reset-password', adminController.resetUserPassword);
 // ── BROKERS ────────────────────────────────────────
 router.get('/brokers/pending', adminController.getPendingBrokers);
 router.get('/brokers', adminController.getAllBrokers);
+router.get('/brokers/:id', adminController.getBrokerById);
 router.post('/brokers', adminController.createBroker);
 router.put('/brokers/:id', adminController.updateBroker);
 router.delete('/brokers/:id', adminController.deleteBroker);
 router.patch('/brokers/:id/status', adminController.updateBrokerStatus);
 router.patch('/brokers/:id/feature', adminController.toggleBrokerFeatured);
+router.patch('/brokers/:id/license/:licenseId/verify', adminController.verifyBrokerLicense);
+router.post('/brokers/:id/account-group/:groupId/reveal-credentials', adminController.revealBrokerAccountCredentials);
 router.patch('/reviews/broker/:id/approve', adminController.approveBrokerReview);
 router.delete('/reviews/broker/:id', adminController.deleteBrokerReview);
 
@@ -76,5 +80,10 @@ router.get('/settings', adminController.getSiteSettings);
 router.patch('/settings', adminController.updateSiteSetting);
 router.get('/content', adminController.getWebsiteContent);
 router.put('/content', adminController.updateWebsiteContent);
+
+// ── BROKER OPTIONS ─────────────────────────────────
+router.get('/broker-options', (req, res, next) => optionsController.getAdminOptions(req, res).catch(next));
+router.post('/broker-options', (req, res, next) => optionsController.createOption(req, res).catch(next));
+router.patch('/broker-options/:id', (req, res, next) => optionsController.updateOption(req, res).catch(next));
 
 export default router;

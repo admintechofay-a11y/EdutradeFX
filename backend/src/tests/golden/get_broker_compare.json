@@ -1,0 +1,1119 @@
+{
+  "success": true,
+  "message": "Broker comparison data retrieved",
+  "data": [
+    {
+      "id": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
+      "companyName": "Pepperstone Global Markets",
+      "registeredName": "Pepperstone Group Limited",
+      "slug": "pepperstone-global-markets",
+      "logo": null,
+      "website": "https://pepperstone.com",
+      "description": "Pepperstone is an internationally regulated Tier-1 Forex and CFD broker offering razor-thin spreads, institutional liquidity, lightning-fast execution under 30ms, and award-winning customer support.",
+      "platformDescription": "Pepperstone provides access to raw interbank pricing across MetaTrader 4, MetaTrader 5, cTrader, and TradingView with institutional-grade low-latency bridge infrastructure hosted at Equinix LD4 London.",
+      "yearFounded": 2010,
+      "headquarters": "Melbourne, Australia",
+      "address": "Level 16, Tower 1, 727 Collins Street",
+      "city": "Melbourne",
+      "state": "Victoria",
+      "postalCode": "3008",
+      "country": "Australia",
+      "phone": "+61 3 9020 0155",
+      "email": "support@pepperstone.com",
+      "mtRegisteredCountryRegion": "Melbourne, Australia",
+      "isRegulated": true,
+      "totalTradableSymbols": 1200,
+      "accountCurrencies": [
+        "USD",
+        "EUR",
+        "GBP",
+        "AUD",
+        "JPY",
+        "CHF",
+        "SGD"
+      ],
+      "negativeBalanceProtection": true,
+      "availablePlatforms": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "cTrader",
+        "TradingView"
+      ],
+      "platformLinks": {
+        "mt4": "https://pepperstone.com/en/trading-platforms/mt4",
+        "mt5": "https://pepperstone.com/en/trading-platforms/mt5",
+        "ctrader": "https://pepperstone.com/en/trading-platforms/ctrader",
+        "tradingview": "https://pepperstone.com/en/trading-platforms/tradingview"
+      },
+      "deviceSupport": [
+        "Windows",
+        "macOS",
+        "iOS",
+        "Android",
+        "Web"
+      ],
+      "businessType": "ECN",
+      "officeContactNumber": "+61 3 9020 0155",
+      "officeContactEmail": "corporate@pepperstone.com",
+      "countryRestrictions": [
+        "United States",
+        "North Korea",
+        "Iran",
+        "Syria"
+      ],
+      "supportPhone": "+61 3 9020 0155",
+      "supportWhatsapp": "+61 400 123 456",
+      "supportEmail": "support@pepperstone.com",
+      "supportAvailability": "24/5 Multilingual Support",
+      "languagesSupported": [
+        "English",
+        "Spanish",
+        "German",
+        "Chinese",
+        "Arabic",
+        "Russian",
+        "French",
+        "Vietnamese"
+      ],
+      "fundsSecurity": "Client funds are held in segregated trust accounts at Tier-1 Australian banks (National Australia Bank) and covered by the UK Financial Services Compensation Scheme (FSCS) up to £85,000 where applicable. We maintain full negative balance protection.",
+      "liquidityProvider": "Barclays, JPMorgan Chase, Citi, UBS, HSBC, Deutsche Bank",
+      "personalBookSize": "$50,000,000+ Institutional Reserve Tier",
+      "prosList": [
+        "Raw ECN spreads from 0.0 pips on EUR/USD and major currency pairs",
+        "Institutional liquidity with sub-30ms average order execution latency at Equinix LD4",
+        "Regulated by top-tier authorities: ASIC, FCA, CySEC, BaFin, and DFSA",
+        "Zero fee deposits and withdrawals across all major domestic & international payment gateways",
+        "Full unhindered support for Algorithmic Trading, Expert Advisors (EAs), and Scalping"
+      ],
+      "consList": [
+        "US residents cannot register due to CFTC regulatory restrictions",
+        "No proprietary trading terminal, relies on industry-standard platforms"
+      ],
+      "promoVideoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "socialLinks": {
+        "twitter": "https://twitter.com/PepperstoneFX",
+        "youtube": "https://youtube.com/PepperstoneFX",
+        "facebook": "https://facebook.com/PepperstoneFX",
+        "linkedin": "https://linkedin.com/company/pepperstone"
+      },
+      "avgRating": 4.8,
+      "totalReviews": 42,
+      "totalLeads": 128,
+      "status": "APPROVED",
+      "isFeatured": true,
+      "isPremium": true,
+      "featuredUntil": null,
+      "seoTitle": null,
+      "seoDescription": null,
+      "regulation": [
+        "ASIC",
+        "FCA",
+        "CySEC",
+        "DFSA"
+      ],
+      "tradingPlatforms": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "cTrader",
+        "TradingView"
+      ],
+      "accountTypes": [
+        "Razor Account",
+        "Standard Account"
+      ],
+      "minDeposit": 0,
+      "maxLeverage": "1:500",
+      "spreadsFrom": "From 0 pips",
+      "commissions": "$3.5 per lot",
+      "executionType": "Instant / STP",
+      "depositMethods": [
+        "Visa / Mastercard",
+        "Bank Wire Transfer",
+        "Neteller / Skrill",
+        "USDT (Tether)"
+      ],
+      "withdrawMethods": [
+        "Visa / Mastercard",
+        "Bank Wire Transfer",
+        "Neteller / Skrill"
+      ],
+      "instruments": [
+        "Forex (60+ pairs)",
+        "Indices",
+        "Commodities",
+        "Metals",
+        "Cryptos",
+        "Shares"
+      ],
+      "countries": [
+        "Australia"
+      ],
+      "completenessPct": 100,
+      "createdAt": "2026-09-24T23:14:54.902Z",
+      "updatedAt": "2026-10-08T05:42:16.011Z",
+      "licenses": [
+        {
+          "id": "3a3fbd98-3e73-46a4-97e5-e0e39ddb3b42",
+          "regulatoryBody": "ASIC",
+          "licenseNumber": "414530",
+          "licenseStatus": "Active",
+          "companyAddress": "Level 16, Tower 1, 727 Collins Street, Melbourne VIC 3008, Australia",
+          "proofLink": "https://connectonline.asic.gov.au",
+          "verifiedByAdmin": true,
+          "verifiedAt": "2026-10-08T05:41:53.794Z",
+          "sortOrder": 0
+        },
+        {
+          "id": "ffa68240-9315-45b0-97e1-5179ab3dd4cd",
+          "regulatoryBody": "FCA",
+          "licenseNumber": "684312",
+          "licenseStatus": "Active",
+          "companyAddress": "70 Gracechurch Street, London EC3V 0HR, United Kingdom",
+          "proofLink": "https://register.fca.org.uk",
+          "verifiedByAdmin": true,
+          "verifiedAt": "2026-10-08T05:41:53.794Z",
+          "sortOrder": 1
+        },
+        {
+          "id": "b85f9b99-0c9d-437c-9cc1-f71ef0518a60",
+          "regulatoryBody": "CySEC",
+          "licenseNumber": "388/20",
+          "licenseStatus": "Active",
+          "companyAddress": "195 Makarios III Avenue, Neapolis, Limassol 3030, Cyprus",
+          "proofLink": "https://cysec.gov.cy",
+          "verifiedByAdmin": true,
+          "verifiedAt": "2026-10-08T05:41:53.794Z",
+          "sortOrder": 2
+        },
+        {
+          "id": "23ae6f3b-e99c-4602-93ff-6b4374a671e6",
+          "regulatoryBody": "DFSA",
+          "licenseNumber": "F004356",
+          "licenseStatus": "Active",
+          "companyAddress": "Al Fattan Currency House, DIFC, Dubai, UAE",
+          "proofLink": "https://dfsa.ae",
+          "verifiedByAdmin": true,
+          "verifiedAt": "2026-10-08T05:41:53.794Z",
+          "sortOrder": 3
+        }
+      ],
+      "servers": [
+        {
+          "id": "5303ab52-8870-4382-a8f7-fed1c77a6a21",
+          "name": "Pepperstone-Live01",
+          "location": "LD4 London (Equinix)",
+          "sortOrder": 0
+        },
+        {
+          "id": "e3213535-8eee-4cf0-aec9-1535c2ec5a48",
+          "name": "Pepperstone-Live02",
+          "location": "NY4 New York (Equinix)",
+          "sortOrder": 1
+        },
+        {
+          "id": "d4d1afee-2003-47c3-9860-3d16db51b1fb",
+          "name": "Pepperstone-Demo01",
+          "location": "TY3 Tokyo (Equinix)",
+          "sortOrder": 2
+        }
+      ],
+      "boardMembers": [
+        {
+          "id": "a7172369-6a48-4f62-af17-bee852e98a98",
+          "name": "Tamas Szabo",
+          "designation": "Group Chief Executive Officer",
+          "experience": "25+ years in global capital markets and fintech leadership",
+          "photoUrl": null,
+          "description": "Leads Pepperstone global strategic direction and international expansion.",
+          "sortOrder": 0
+        },
+        {
+          "id": "1ae0d332-404e-4165-a7bc-a5b8e9b72279",
+          "name": "Gordon Ketelbey",
+          "designation": "Non-Executive Director & Co-Founder",
+          "experience": "20+ years in financial derivatives & online brokerage",
+          "photoUrl": null,
+          "description": "Co-founded Pepperstone with a mission to bring institutional liquidity to retail traders.",
+          "sortOrder": 1
+        },
+        {
+          "id": "bcb6eecb-1686-481a-a4ca-42489f9c9362",
+          "name": "Fiona Simpson",
+          "designation": "Chief Financial Officer",
+          "experience": "18 years senior financial management and tier-1 banking",
+          "photoUrl": null,
+          "description": "Oversees financial governance, capital adequacy, and regulatory treasury.",
+          "sortOrder": 2
+        }
+      ],
+      "accountGroups": [
+        {
+          "id": "b8555d1b-ba13-449f-8e2d-8b7d28d7280b",
+          "name": "Razor Account",
+          "demoAvailable": true,
+          "currency": "USD",
+          "spreadTypesLabel": "Raw Floating Spreads",
+          "spreadFrom": "0",
+          "minDeposit": "0",
+          "depositBonusPctUpTo": "0",
+          "leverageUpTo": "1:500",
+          "leverageNum": 500,
+          "minTradeVolume": "0.01",
+          "hasCommissionPerLot": true,
+          "feesPerLot": "3.5",
+          "commissionStructureUrl": "https://pepperstone.com/en/commissions",
+          "spreadType": "FLOATING",
+          "orderTypes": [
+            "Market",
+            "Limit",
+            "Stop",
+            "Stop-Loss",
+            "Take-Profit",
+            "Trailing Stop"
+          ],
+          "swapFree": false,
+          "swapLong": null,
+          "swapShort": null,
+          "orderExecution": "INSTANT",
+          "gtcMode": "AVAILABLE",
+          "eaAllowed": true,
+          "hedgingAllowed": true,
+          "nettingAllowed": false,
+          "scalpingAllowed": true,
+          "hasSwapCharges": true,
+          "swapStructureUrl": null,
+          "slippage": true,
+          "slippagePoints": "0.1 - 0.3 pips under standard liquidity",
+          "markups": null,
+          "forexCommission": null,
+          "cryptoCommission": null,
+          "commoditiesCommission": null,
+          "metalsCommission": null,
+          "indexCommission": null,
+          "stocksCommission": null,
+          "sortOrder": 0
+        },
+        {
+          "id": "358d1e91-d184-4f62-86ea-164e1e50967d",
+          "name": "Standard Account",
+          "demoAvailable": true,
+          "currency": "USD",
+          "spreadTypesLabel": "All-inclusive Spreads",
+          "spreadFrom": "0.6",
+          "minDeposit": "0",
+          "depositBonusPctUpTo": "0",
+          "leverageUpTo": "1:500",
+          "leverageNum": 500,
+          "minTradeVolume": "0.01",
+          "hasCommissionPerLot": false,
+          "feesPerLot": "0",
+          "commissionStructureUrl": null,
+          "spreadType": "FLOATING",
+          "orderTypes": [
+            "Market",
+            "Limit",
+            "Stop",
+            "Stop-Loss",
+            "Take-Profit"
+          ],
+          "swapFree": false,
+          "swapLong": null,
+          "swapShort": null,
+          "orderExecution": "INSTANT",
+          "gtcMode": "AVAILABLE",
+          "eaAllowed": true,
+          "hedgingAllowed": true,
+          "nettingAllowed": false,
+          "scalpingAllowed": true,
+          "hasSwapCharges": true,
+          "swapStructureUrl": null,
+          "slippage": false,
+          "slippagePoints": null,
+          "markups": null,
+          "forexCommission": null,
+          "cryptoCommission": null,
+          "commoditiesCommission": null,
+          "metalsCommission": null,
+          "indexCommission": null,
+          "stocksCommission": null,
+          "sortOrder": 1
+        }
+      ],
+      "ibPlans": [
+        {
+          "id": "0285c4e1-1bda-4c7a-942e-dd73a50564b2",
+          "accountGroupName": "Razor Account",
+          "settlement": [
+            "DAILY",
+            "MONTHLY"
+          ],
+          "rebatePerLot": "1.5",
+          "levelsUpTo": 3,
+          "customizable": true,
+          "sortOrder": 0
+        },
+        {
+          "id": "32eb0a8d-0dc1-427b-8cba-e057ec09e372",
+          "accountGroupName": "Standard Account",
+          "settlement": [
+            "DAILY",
+            "MONTHLY"
+          ],
+          "rebatePerLot": "3",
+          "levelsUpTo": 3,
+          "customizable": true,
+          "sortOrder": 1
+        }
+      ],
+      "depositMethodItems": [
+        {
+          "id": "714d77a1-7726-4054-ad40-1989ed39a41e",
+          "method": "Visa / Mastercard",
+          "charges": "Zero / 0%",
+          "exchangeRate": "Interbank Live",
+          "timeTaken": "Instant",
+          "extraFacilities": "Apple Pay & Google Pay supported",
+          "sortOrder": 0
+        },
+        {
+          "id": "c2206afd-3720-446b-a1e2-8b3f3da1ad2a",
+          "method": "Bank Wire Transfer",
+          "charges": "Zero broker fee",
+          "exchangeRate": "Central Bank fixing",
+          "timeTaken": "1-3 Business Days",
+          "extraFacilities": "SEPA & SWIFT supported",
+          "sortOrder": 1
+        },
+        {
+          "id": "770c85c3-165b-449a-95b6-c5ca4ddc15bc",
+          "method": "Neteller / Skrill",
+          "charges": "Zero / 0%",
+          "exchangeRate": "Live market rate",
+          "timeTaken": "Instant",
+          "extraFacilities": "VIP fast-track available",
+          "sortOrder": 2
+        },
+        {
+          "id": "b1615a63-27a7-412b-acfd-6b22b82d72c4",
+          "method": "USDT (Tether)",
+          "charges": "Network miner fee only",
+          "exchangeRate": "1.00 USD peg",
+          "timeTaken": "10-30 Minutes",
+          "extraFacilities": "ERC-20 & TRC-20 supported",
+          "sortOrder": 3
+        }
+      ],
+      "withdrawalMethodItems": [
+        {
+          "id": "af087ab8-93f4-4a98-99c8-a70c5390d7e7",
+          "method": "Visa / Mastercard",
+          "charges": "Free / $0",
+          "exchangeRate": "Interbank Live",
+          "timeTaken": "1-3 Business Days",
+          "extraFacilities": "Same-day card refund priority",
+          "delayCompensation": "Guaranteed 24-hour dispatch or $50 trading credit",
+          "sortOrder": 0
+        },
+        {
+          "id": "7a6f6635-2f73-4764-ae82-a6de69e210cd",
+          "method": "Bank Wire Transfer",
+          "charges": "Free domestic, $20 international",
+          "exchangeRate": "Central Bank rate",
+          "timeTaken": "2-5 Business Days",
+          "extraFacilities": "Direct SWIFT tracking MT103",
+          "delayCompensation": "Same-day SWIFT broadcast guarantee",
+          "sortOrder": 1
+        },
+        {
+          "id": "7d854f8e-d7cb-4a45-a89d-61d926b22d2f",
+          "method": "Neteller / Skrill",
+          "charges": "Free / $0",
+          "exchangeRate": "Live market rate",
+          "timeTaken": "Instant to 2 Hours",
+          "extraFacilities": "Priority e-wallet processing",
+          "delayCompensation": null,
+          "sortOrder": 2
+        }
+      ],
+      "symbolSpecs": [
+        {
+          "id": "1c1717a6-57be-4dae-ba00-f2295678cf2b",
+          "accountGroupId": "b8555d1b-ba13-449f-8e2d-8b7d28d7280b",
+          "symbol": "EURUSD",
+          "contractSize": "100000",
+          "digits": 5,
+          "stopLevel": "0",
+          "stopOutPct": "20%",
+          "commission": "$3.50/lot",
+          "spreadType": "FLOATING",
+          "spreadFrom": "0.0 pips",
+          "minVolume": "0.01",
+          "maxVolume": "100",
+          "swapLong": "-5.2",
+          "swapShort": "2.1",
+          "sortOrder": 0
+        },
+        {
+          "id": "f68c4076-6915-4556-9956-f69fdb033916",
+          "accountGroupId": "b8555d1b-ba13-449f-8e2d-8b7d28d7280b",
+          "symbol": "GBPUSD",
+          "contractSize": "100000",
+          "digits": 5,
+          "stopLevel": "0",
+          "stopOutPct": "20%",
+          "commission": "$3.50/lot",
+          "spreadType": "FLOATING",
+          "spreadFrom": "0.2 pips",
+          "minVolume": "0.01",
+          "maxVolume": "100",
+          "swapLong": "-4.8",
+          "swapShort": "1.8",
+          "sortOrder": 1
+        },
+        {
+          "id": "d59ee681-fe08-48da-91a5-1fb4a0bf2a9a",
+          "accountGroupId": "b8555d1b-ba13-449f-8e2d-8b7d28d7280b",
+          "symbol": "USDJPY",
+          "contractSize": "100000",
+          "digits": 3,
+          "stopLevel": "0",
+          "stopOutPct": "20%",
+          "commission": "$3.50/lot",
+          "spreadType": "FLOATING",
+          "spreadFrom": "0.1 pips",
+          "minVolume": "0.01",
+          "maxVolume": "100",
+          "swapLong": "8.4",
+          "swapShort": "-14.2",
+          "sortOrder": 2
+        },
+        {
+          "id": "ebe9dda1-d88b-4985-98b4-adc8316f6fb5",
+          "accountGroupId": "b8555d1b-ba13-449f-8e2d-8b7d28d7280b",
+          "symbol": "XAUUSD",
+          "contractSize": "100 oz",
+          "digits": 2,
+          "stopLevel": "0",
+          "stopOutPct": "20%",
+          "commission": "$3.50/lot",
+          "spreadType": "FLOATING",
+          "spreadFrom": "0.08 points",
+          "minVolume": "0.01",
+          "maxVolume": "50",
+          "swapLong": "-18.5",
+          "swapShort": "9.2",
+          "sortOrder": 3
+        },
+        {
+          "id": "2ae4cb00-567d-4a5e-9865-2d81b079f4e6",
+          "accountGroupId": "b8555d1b-ba13-449f-8e2d-8b7d28d7280b",
+          "symbol": "BTCUSD",
+          "contractSize": "1 BTC",
+          "digits": 2,
+          "stopLevel": "0",
+          "stopOutPct": "20%",
+          "commission": "$0",
+          "spreadType": "FLOATING",
+          "spreadFrom": "15.00 points",
+          "minVolume": "0.01",
+          "maxVolume": "10",
+          "swapLong": "-22.0",
+          "swapShort": "-15.0",
+          "sortOrder": 4
+        }
+      ],
+      "awards": [
+        {
+          "id": "1ffd0861-3904-47ce-9ba7-03bfd51c563c",
+          "year": 2024,
+          "awardFor": "Best Overall Global Forex Broker",
+          "expo": "Ultimate Fintech Awards",
+          "expoLocation": "London, United Kingdom",
+          "expoDate": "2024-06-18T00:00:00.000Z",
+          "sortOrder": 0
+        },
+        {
+          "id": "4033d62e-c925-4ebd-994d-4638c36bf3b5",
+          "year": 2023,
+          "awardFor": "Best ECN Broker & Lowest Spreads",
+          "expo": "Finance Magnates London Summit",
+          "expoLocation": "London, United Kingdom",
+          "expoDate": "2023-11-21T00:00:00.000Z",
+          "sortOrder": 1
+        },
+        {
+          "id": "994dd09a-b2e0-409e-bddc-afd6b97ca887",
+          "year": 2022,
+          "awardFor": "Best Customer Service Provider",
+          "expo": "Investment Trends Report",
+          "expoLocation": "Sydney, Australia",
+          "expoDate": "2022-10-15T00:00:00.000Z",
+          "sortOrder": 2
+        }
+      ],
+      "documents": [
+        {
+          "id": "0e1377b1-7b5a-4645-8447-00ad108ab47c",
+          "fileUrl": "https://res.cloudinary.com/demo/image/upload/sample.pdf",
+          "fileName": "ASIC_AFSL_414530_License_Certificate.pdf",
+          "fileType": "application/pdf",
+          "docType": "REGULATORY_LICENSE",
+          "createdAt": "2026-10-08T05:42:07.265Z"
+        },
+        {
+          "id": "ae9763d2-aaf0-42ab-922a-9532e143931c",
+          "fileUrl": "https://res.cloudinary.com/demo/image/upload/sample.pdf",
+          "fileName": "FCA_Firm_Reference_684312_Certificate.pdf",
+          "fileType": "application/pdf",
+          "docType": "REGULATORY_LICENSE",
+          "createdAt": "2026-10-08T05:42:07.265Z"
+        },
+        {
+          "id": "badf0abb-31ca-4bda-8c1b-e45cef7b63a1",
+          "fileUrl": "https://res.cloudinary.com/demo/image/upload/sample.pdf",
+          "fileName": "PwC_Audited_Client_Fund_Segregation_2024.pdf",
+          "fileType": "application/pdf",
+          "docType": "POLICY_CLIENT",
+          "createdAt": "2026-10-08T05:42:07.265Z"
+        },
+        {
+          "id": "049af2f7-7622-49fd-8011-c1d191842f7a",
+          "fileUrl": "https://res.cloudinary.com/demo/image/upload/sample.pdf",
+          "fileName": "AML_CTF_Corporate_Governance_Policy.pdf",
+          "fileType": "application/pdf",
+          "docType": "POLICY_AML",
+          "createdAt": "2026-10-08T05:42:07.265Z"
+        },
+        {
+          "id": "fa9aee56-067e-43cb-a837-b3dc5a03ff4c",
+          "fileUrl": "https://res.cloudinary.com/demo/image/upload/sample.pdf",
+          "fileName": "Order_Execution_Policy_RTS27_RTS28.pdf",
+          "fileType": "application/pdf",
+          "docType": "POLICY_OTHER",
+          "createdAt": "2026-10-08T05:42:07.265Z"
+        }
+      ]
+    },
+    {
+      "id": "2c2fff28-bdfc-4316-8530-1046ccb68cf7",
+      "companyName": "IC Markets Global",
+      "registeredName": "Raw Trading Ltd",
+      "slug": "ic-markets-global",
+      "logo": null,
+      "website": "https://icmarkets.com",
+      "description": "IC Markets is one of the world's premier True ECN Forex and CFD providers, offering raw spreads from 0.0 pips, institutional liquidity from 25+ providers, and ultra-fast optical fiber connectivity to the NY4 and LD4 financial exchanges.",
+      "platformDescription": "Engineered specifically for day traders, scalpers, and algorithmic EA strategies with direct fiber links to Equinix NY4 and LD4 financial data centers.",
+      "yearFounded": 2007,
+      "headquarters": "Sydney, Australia",
+      "address": "Level 6, 309 Kent Street",
+      "city": "Sydney",
+      "state": "NSW",
+      "postalCode": "2000",
+      "country": "Australia",
+      "phone": "+61 2 8014 4280",
+      "email": "support@icmarkets.com",
+      "mtRegisteredCountryRegion": "Sydney, Australia",
+      "isRegulated": true,
+      "totalTradableSymbols": 2250,
+      "accountCurrencies": [
+        "USD",
+        "AUD",
+        "EUR",
+        "GBP",
+        "SGD",
+        "NZD",
+        "JPY",
+        "CHF"
+      ],
+      "negativeBalanceProtection": true,
+      "availablePlatforms": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "cTrader"
+      ],
+      "platformLinks": {
+        "mt4": "https://icmarkets.com/en/trading-platforms/mt4",
+        "mt5": "https://icmarkets.com/en/trading-platforms/mt5",
+        "ctrader": "https://icmarkets.com/en/trading-platforms/ctrader"
+      },
+      "deviceSupport": [
+        "Windows",
+        "macOS",
+        "iOS",
+        "Android",
+        "Web"
+      ],
+      "businessType": "RETAIL",
+      "officeContactNumber": "+61 2 8014 4280",
+      "officeContactEmail": "corporate@icmarkets.com",
+      "countryRestrictions": [
+        "United States",
+        "Canada",
+        "Iran",
+        "North Korea"
+      ],
+      "supportPhone": "+61 2 8014 4280",
+      "supportWhatsapp": "+61 400 987 654",
+      "supportEmail": "support@icmarkets.com",
+      "supportAvailability": "24/7 Dedicated Client Support",
+      "languagesSupported": [
+        "English",
+        "Chinese",
+        "Spanish",
+        "Portuguese",
+        "Arabic",
+        "Russian",
+        "Italian"
+      ],
+      "fundsSecurity": "Client money is held in segregated client trust accounts at Tier-1 Australian banks (National Australia Bank and Westpac Banking Corporation). ASIC regulatory oversight with strict net capital compliance.",
+      "liquidityProvider": "BNP Paribas, Goldman Sachs, Morgan Stanley, Citadel, Virtu Financial",
+      "personalBookSize": "$40,000,000+ Liquidity Buffer",
+      "prosList": [
+        "True ECN trading environment with 0.0 pip spreads on major currency pairs",
+        "High leverage up to 1:500 available for non-EU/AU eligible entities",
+        "Massive liquidity aggregated from over 25 Tier-1 tier banks and dark pools",
+        "Diverse selection of advanced platforms: MT4, MT5, and cTrader"
+      ],
+      "consList": [
+        "Minimum deposit of $200 required to activate live trading account",
+        "Proprietary mobile application not available, relies on MetaQuotes & Spotware"
+      ],
+      "promoVideoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "socialLinks": {
+        "twitter": "https://twitter.com/ICMarkets",
+        "facebook": "https://facebook.com/ICMarkets",
+        "linkedin": "https://linkedin.com/company/ic-markets"
+      },
+      "avgRating": 4.7,
+      "totalReviews": 35,
+      "totalLeads": 110,
+      "status": "APPROVED",
+      "isFeatured": true,
+      "isPremium": false,
+      "featuredUntil": null,
+      "seoTitle": null,
+      "seoDescription": null,
+      "regulation": [
+        "ASIC",
+        "CySEC",
+        "FSA"
+      ],
+      "tradingPlatforms": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "cTrader"
+      ],
+      "accountTypes": [
+        "Raw Spread",
+        "Standard Account"
+      ],
+      "minDeposit": 200,
+      "maxLeverage": "1:500",
+      "spreadsFrom": "From 0 pips",
+      "commissions": "$3.5 per lot",
+      "executionType": "Instant / STP",
+      "depositMethods": [
+        "Visa / Mastercard",
+        "Bank Wire",
+        "PayPal",
+        "Neteller / Skrill"
+      ],
+      "withdrawMethods": [
+        "Visa / Mastercard",
+        "Bank Wire",
+        "PayPal"
+      ],
+      "instruments": [
+        "Forex (61 pairs)",
+        "Commodities",
+        "Indices",
+        "Bonds",
+        "Cryptos",
+        "Futures"
+      ],
+      "countries": [
+        "Australia"
+      ],
+      "completenessPct": 100,
+      "createdAt": "2026-10-08T05:42:19.045Z",
+      "updatedAt": "2026-10-08T05:42:38.448Z",
+      "licenses": [
+        {
+          "id": "02146388-e0c2-4d12-939d-44f41699ff42",
+          "regulatoryBody": "ASIC",
+          "licenseNumber": "335692",
+          "licenseStatus": "Active",
+          "companyAddress": "Level 6, 309 Kent Street, Sydney NSW 2000, Australia",
+          "proofLink": "https://connectonline.asic.gov.au",
+          "verifiedByAdmin": true,
+          "verifiedAt": "2026-10-08T05:42:22.920Z",
+          "sortOrder": 0
+        },
+        {
+          "id": "d563c320-c9e8-482e-9969-9a10540921ca",
+          "regulatoryBody": "CySEC",
+          "licenseNumber": "362/18",
+          "licenseStatus": "Active",
+          "companyAddress": "Omonoias 141, The Maritime Centre, Block B, 1st Floor, 3045 Limassol, Cyprus",
+          "proofLink": "https://cysec.gov.cy",
+          "verifiedByAdmin": true,
+          "verifiedAt": "2026-10-08T05:42:22.920Z",
+          "sortOrder": 1
+        },
+        {
+          "id": "2cbdf417-e66f-4c1b-b5af-7930a5da3d81",
+          "regulatoryBody": "FSA",
+          "licenseNumber": "SD018",
+          "licenseStatus": "Active",
+          "companyAddress": "Eden Plaza, Office 209, Eden Island, Seychelles",
+          "proofLink": "https://fsaseychelles.sc",
+          "verifiedByAdmin": true,
+          "verifiedAt": "2026-10-08T05:42:22.920Z",
+          "sortOrder": 2
+        }
+      ],
+      "servers": [
+        {
+          "id": "38598d7c-7ce0-4145-8668-c4b4c55df63f",
+          "name": "ICMarketsSC-Live01",
+          "location": "LD4 London (Equinix)",
+          "sortOrder": 0
+        },
+        {
+          "id": "3d2f3d8b-d625-4fcd-9a53-78fe6f142be2",
+          "name": "ICMarketsSC-Live02",
+          "location": "NY4 New York (Equinix)",
+          "sortOrder": 1
+        },
+        {
+          "id": "99743521-24c9-4df6-8b16-5e10e92de38d",
+          "name": "ICMarketsSC-Demo01",
+          "location": "LD4 London (Equinix)",
+          "sortOrder": 2
+        }
+      ],
+      "boardMembers": [
+        {
+          "id": "a05464e9-3405-4a89-af56-30cda1c27fb3",
+          "name": "Andrew Budzinski",
+          "designation": "Executive Director & Founder",
+          "experience": "22+ years in financial services, FX trading infrastructure, and institutional brokerage",
+          "photoUrl": null,
+          "description": "Founded IC Markets in 2007 with the vision of closing the gap between retail and institutional traders.",
+          "sortOrder": 0
+        },
+        {
+          "id": "9ca66ca5-e380-47b4-89ed-e6808e1725ed",
+          "name": "Angus Walker",
+          "designation": "Chief Risk Officer",
+          "experience": "17 years risk governance, derivatives settlement, and regulatory reporting",
+          "photoUrl": null,
+          "description": "Supervises risk policies, capital adequacy ratios, and market abuse surveillance.",
+          "sortOrder": 1
+        }
+      ],
+      "accountGroups": [
+        {
+          "id": "5f5d2799-c19c-4287-b6ba-d6a4337b29c0",
+          "name": "Raw Spread",
+          "demoAvailable": true,
+          "currency": "USD",
+          "spreadTypesLabel": "Raw ECN Spreads",
+          "spreadFrom": "0",
+          "minDeposit": "200",
+          "depositBonusPctUpTo": "0",
+          "leverageUpTo": "1:500",
+          "leverageNum": 500,
+          "minTradeVolume": "0.01",
+          "hasCommissionPerLot": true,
+          "feesPerLot": "3.5",
+          "commissionStructureUrl": "https://icmarkets.com/en/pricing",
+          "spreadType": "FLOATING",
+          "orderTypes": [
+            "Market",
+            "Limit",
+            "Stop",
+            "Stop-Loss",
+            "Take-Profit"
+          ],
+          "swapFree": false,
+          "swapLong": null,
+          "swapShort": null,
+          "orderExecution": "INSTANT",
+          "gtcMode": "AVAILABLE",
+          "eaAllowed": true,
+          "hedgingAllowed": true,
+          "nettingAllowed": false,
+          "scalpingAllowed": true,
+          "hasSwapCharges": true,
+          "swapStructureUrl": null,
+          "slippage": true,
+          "slippagePoints": "0.1 - 0.2 pips",
+          "markups": null,
+          "forexCommission": null,
+          "cryptoCommission": null,
+          "commoditiesCommission": null,
+          "metalsCommission": null,
+          "indexCommission": null,
+          "stocksCommission": null,
+          "sortOrder": 0
+        },
+        {
+          "id": "02d5e7ae-f626-47f7-8d9d-f2e73ed30cc7",
+          "name": "Standard Account",
+          "demoAvailable": true,
+          "currency": "USD",
+          "spreadTypesLabel": "Standard Floating Spreads",
+          "spreadFrom": "0.8",
+          "minDeposit": "200",
+          "depositBonusPctUpTo": "0",
+          "leverageUpTo": "1:500",
+          "leverageNum": 500,
+          "minTradeVolume": "0.01",
+          "hasCommissionPerLot": false,
+          "feesPerLot": "0",
+          "commissionStructureUrl": null,
+          "spreadType": "FLOATING",
+          "orderTypes": [
+            "Market",
+            "Limit",
+            "Stop",
+            "Stop-Loss",
+            "Take-Profit"
+          ],
+          "swapFree": false,
+          "swapLong": null,
+          "swapShort": null,
+          "orderExecution": "INSTANT",
+          "gtcMode": "AVAILABLE",
+          "eaAllowed": true,
+          "hedgingAllowed": true,
+          "nettingAllowed": false,
+          "scalpingAllowed": true,
+          "hasSwapCharges": true,
+          "swapStructureUrl": null,
+          "slippage": false,
+          "slippagePoints": null,
+          "markups": null,
+          "forexCommission": null,
+          "cryptoCommission": null,
+          "commoditiesCommission": null,
+          "metalsCommission": null,
+          "indexCommission": null,
+          "stocksCommission": null,
+          "sortOrder": 1
+        }
+      ],
+      "ibPlans": [
+        {
+          "id": "72f24397-2497-4367-b1e8-d5ebeea50371",
+          "accountGroupName": "Raw Spread",
+          "settlement": [
+            "DAILY"
+          ],
+          "rebatePerLot": "1.5",
+          "levelsUpTo": 2,
+          "customizable": true,
+          "sortOrder": 0
+        },
+        {
+          "id": "cc036629-7210-4e12-a905-6a67ad31fa60",
+          "accountGroupName": "Standard Account",
+          "settlement": [
+            "DAILY"
+          ],
+          "rebatePerLot": "3",
+          "levelsUpTo": 2,
+          "customizable": true,
+          "sortOrder": 1
+        }
+      ],
+      "depositMethodItems": [
+        {
+          "id": "809a314a-6ad1-4111-b70f-80fb05d92507",
+          "method": "Visa / Mastercard",
+          "charges": "Free / 0%",
+          "exchangeRate": "Live market rate",
+          "timeTaken": "Instant",
+          "extraFacilities": "Instant credit card verification",
+          "sortOrder": 0
+        },
+        {
+          "id": "57f726b9-403f-4c91-8023-92740ee27921",
+          "method": "Bank Wire",
+          "charges": "Free broker side",
+          "exchangeRate": "Central bank fixing",
+          "timeTaken": "2-3 Business Days",
+          "extraFacilities": "Multi-currency international wire",
+          "sortOrder": 1
+        },
+        {
+          "id": "b22697c8-e096-4193-9d5b-6149c4047056",
+          "method": "PayPal",
+          "charges": "Free / 0%",
+          "exchangeRate": "Live market rate",
+          "timeTaken": "Instant",
+          "extraFacilities": "One-click wallet authorization",
+          "sortOrder": 2
+        },
+        {
+          "id": "ee63ab9f-f02c-43af-962a-e49e278678e9",
+          "method": "Neteller / Skrill",
+          "charges": "Free / 0%",
+          "exchangeRate": "Live market rate",
+          "timeTaken": "Instant",
+          "extraFacilities": "Fast-track e-wallet funding",
+          "sortOrder": 3
+        }
+      ],
+      "withdrawalMethodItems": [
+        {
+          "id": "b9b13da0-efe4-44f5-9e75-a7c1553d0d2b",
+          "method": "Visa / Mastercard",
+          "charges": "Free / 0%",
+          "exchangeRate": "Live market rate",
+          "timeTaken": "1-3 Business Days",
+          "extraFacilities": "Original funding source return",
+          "delayCompensation": null,
+          "sortOrder": 0
+        },
+        {
+          "id": "71299fbc-66c2-4f26-9d17-d25fe8e13c81",
+          "method": "Bank Wire",
+          "charges": "AUD 20 for international wires",
+          "exchangeRate": "Central bank fixing",
+          "timeTaken": "2-4 Business Days",
+          "extraFacilities": "Swift confirmation MT103",
+          "delayCompensation": null,
+          "sortOrder": 1
+        },
+        {
+          "id": "f12eeee3-208f-449a-b191-b341ed8621b6",
+          "method": "PayPal",
+          "charges": "Free / 0%",
+          "exchangeRate": "Live market rate",
+          "timeTaken": "Instant to 24 Hours",
+          "extraFacilities": "Direct PayPal balance transfer",
+          "delayCompensation": null,
+          "sortOrder": 2
+        }
+      ],
+      "symbolSpecs": [
+        {
+          "id": "286e7d2f-b7ea-48e3-9bc2-fdd368d49a9f",
+          "accountGroupId": "5f5d2799-c19c-4287-b6ba-d6a4337b29c0",
+          "symbol": "EURUSD",
+          "contractSize": "100000",
+          "digits": 5,
+          "stopLevel": "0",
+          "stopOutPct": "50%",
+          "commission": "$3.50/lot",
+          "spreadType": "FLOATING",
+          "spreadFrom": "0.0 pips",
+          "minVolume": "0.01",
+          "maxVolume": "100",
+          "swapLong": "-5.1",
+          "swapShort": "2.0",
+          "sortOrder": 0
+        },
+        {
+          "id": "6bba7143-5347-4195-b18d-8343b700e8e2",
+          "accountGroupId": "5f5d2799-c19c-4287-b6ba-d6a4337b29c0",
+          "symbol": "GBPUSD",
+          "contractSize": "100000",
+          "digits": 5,
+          "stopLevel": "0",
+          "stopOutPct": "50%",
+          "commission": "$3.50/lot",
+          "spreadType": "FLOATING",
+          "spreadFrom": "0.1 pips",
+          "minVolume": "0.01",
+          "maxVolume": "100",
+          "swapLong": "-4.6",
+          "swapShort": "1.7",
+          "sortOrder": 1
+        },
+        {
+          "id": "f34e4c97-0798-4f92-84fa-8a46787330c2",
+          "accountGroupId": "5f5d2799-c19c-4287-b6ba-d6a4337b29c0",
+          "symbol": "USDJPY",
+          "contractSize": "100000",
+          "digits": 3,
+          "stopLevel": "0",
+          "stopOutPct": "50%",
+          "commission": "$3.50/lot",
+          "spreadType": "FLOATING",
+          "spreadFrom": "0.1 pips",
+          "minVolume": "0.01",
+          "maxVolume": "100",
+          "swapLong": "8.2",
+          "swapShort": "-14.0",
+          "sortOrder": 2
+        },
+        {
+          "id": "3a920d7b-1efc-490c-ade8-e1a3b8cabadd",
+          "accountGroupId": "5f5d2799-c19c-4287-b6ba-d6a4337b29c0",
+          "symbol": "XAUUSD",
+          "contractSize": "100 oz",
+          "digits": 2,
+          "stopLevel": "0",
+          "stopOutPct": "50%",
+          "commission": "$3.50/lot",
+          "spreadType": "FLOATING",
+          "spreadFrom": "0.09 points",
+          "minVolume": "0.01",
+          "maxVolume": "50",
+          "swapLong": "-18.1",
+          "swapShort": "8.9",
+          "sortOrder": 3
+        }
+      ],
+      "awards": [
+        {
+          "id": "b37362f9-7bfc-4ef8-88ae-8d9bb06a3dc1",
+          "year": 2023,
+          "awardFor": "Best True ECN Forex Broker",
+          "expo": "Global Forex Awards",
+          "expoLocation": "Limassol, Cyprus",
+          "expoDate": "2023-09-20T00:00:00.000Z",
+          "sortOrder": 0
+        },
+        {
+          "id": "94fd4884-996d-47fd-a511-747f9079281c",
+          "year": 2022,
+          "awardFor": "Best Execution Broker",
+          "expo": "Finance Magnates Summit",
+          "expoLocation": "London, UK",
+          "expoDate": "2022-11-20T00:00:00.000Z",
+          "sortOrder": 1
+        }
+      ],
+      "documents": [
+        {
+          "id": "7c49ff55-c1cb-48ec-81a6-7f3fb41548d8",
+          "fileUrl": "https://res.cloudinary.com/demo/image/upload/sample.pdf",
+          "fileName": "ASIC_AFSL_335692_Certificate.pdf",
+          "fileType": "application/pdf",
+          "docType": "REGULATORY_LICENSE",
+          "createdAt": "2026-10-08T05:42:33.546Z"
+        },
+        {
+          "id": "565316b2-1757-4970-9254-2ecad197de7d",
+          "fileUrl": "https://res.cloudinary.com/demo/image/upload/sample.pdf",
+          "fileName": "CySEC_CIF_362_18_Certificate.pdf",
+          "fileType": "application/pdf",
+          "docType": "REGULATORY_LICENSE",
+          "createdAt": "2026-10-08T05:42:33.546Z"
+        },
+        {
+          "id": "ce404804-f942-43e1-a1cc-a548b93cc507",
+          "fileUrl": "https://res.cloudinary.com/demo/image/upload/sample.pdf",
+          "fileName": "Client_Money_Handling_Policy_2024.pdf",
+          "fileType": "application/pdf",
+          "docType": "POLICY_AML",
+          "createdAt": "2026-10-08T05:42:33.546Z"
+        }
+      ]
+    }
+  ]
+}

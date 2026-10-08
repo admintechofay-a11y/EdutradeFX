@@ -26,6 +26,91 @@ enum ApprovalStatus {
   SUSPENDED
 }
 
+enum BrokerBusinessType {
+  RETAIL
+  ECN
+  STP
+  NDD
+  MARKET_MAKER
+  INSTITUTIONAL
+  OTHER
+}
+
+enum BrokerOnboardingStatus {
+  DRAFT
+  SUBMITTED
+  CHANGES_REQUESTED
+  VERIFIED
+}
+
+enum BrokerDocType {
+  REGULATORY_LICENSE
+  LICENSE_PROOF
+  OFFICE_IMAGE
+  COMMISSION_STRUCTURE
+  SWAP_STRUCTURE
+  PROMO_VIDEO
+  POLICY_CLIENT
+  POLICY_AML
+  POLICY_RISK_DISCLOSURE
+  POLICY_DEPOSIT
+  POLICY_WITHDRAWAL
+  POLICY_TERMS
+  POLICY_IB_REBATE
+  POLICY_SCALPING
+  POLICY_SLIPPAGE_MARKUP
+  POLICY_SERVICE
+  POLICY_SERVER
+  POLICY_OTHER
+}
+
+enum SpreadType {
+  FLOATING
+  FIXED
+}
+
+enum OrderExecution {
+  INSTANT
+  REQUEST
+}
+
+enum GtcMode {
+  AVAILABLE
+  UNAVAILABLE
+}
+
+enum IbSettlement {
+  INSTANT
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+enum BrokerOptionGroup {
+  REGULATOR
+  LANGUAGE
+  CURRENCY
+  LICENSE_STATUS
+  DEPOSIT_BONUS
+  LEVERAGE
+  TIMEFRAME
+}
+
+model BrokerOption {
+  id        String            @id @default(uuid())
+  group     BrokerOptionGroup
+  code      String
+  label     String
+  meta      Json?
+  sortOrder Int               @default(0)
+  isActive  Boolean           @default(true)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@unique([group, code])
+  @@index([group, isActive])
+}
+
 enum CourseStatus {
   DRAFT
   REVIEW
@@ -210,31 +295,352 @@ model Broker {
   featuredUntil    DateTime?
   seoTitle         String?
   seoDescription   String?
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
 
-  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  documents        BrokerDocument[]
-  reviews          BrokerReview[]
-  savedBy          SavedBroker[]
-  comparisons      BrokerComparisonItem[]
-  advertisements   Advertisement[]
-  leads            BrokerLead[]
+  // ── Extended Onboarding V2 Fields ──
+  registeredName             String?
+  businessType               BrokerBusinessType?
+  platformDescription        String?                @db.Text
+  address                    String?                @db.Text
+  city                       String?
+  state                      String?
+  postalCode                 String?
+  country                    String?
+  phone                      String?
+  email                      String?
+  mtRegisteredCountryRegion  String?
+  isRegulated                Boolean?
+  totalTradableSymbols       Int?
+  accountCurrencies          String[]               @default([])
+  negativeBalanceProtection Boolean?
+  availablePlatforms         String[]               @default([])
+  platformLinks              Json?
+  deviceSupport              String[]               @default([])
+  availableTimeframes        String[]               @default([])
+
+  // Company
+  officeContactNumber        String?
+  officeContactEmail         String?
+
+  // Services
+  countryRestrictions        String[]               @default([])
+  supportPhone               String?
+  supportWhatsapp            String?
+  supportEmail               String?
+  supportAvailability        String?
+  languagesSupported         String[]               @default([])
+
+  // Security
+  clientLossPercentage       Decimal?               @db.Decimal(5, 2)
+  fundsSecurity              String?                @db.Text
+
+  // Dealing & Business
+  liquidityProvider          String?
+  personalBookSize           String?
+
+  // Content
+  prosList                   String[]               @default([])
+  consList                   String[]               @default([])
+  promoVideoUrl              String?
+  socialLinks                Json?
+
+  // Workflow
+  onboardingStatus           BrokerOnboardingStatus @default(DRAFT)
+  submittedAt                DateTime?
+  reviewedAt                 DateTime?
+  reviewNote                 String?                @db.Text
+  rejectionReason            String?                @db.Text
+  completenessPct            Int                    @default(0)
+
+  createdAt                  DateTime               @default(now())
+  updatedAt                  DateTime               @updatedAt
+
+  user                       User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documents                  BrokerDocument[]
+  reviews                    BrokerReview[]
+  savedBy                    SavedBroker[]
+  comparisons                BrokerComparisonItem[]
+  advertisements             Advertisement[]
+  leads                      BrokerLead[]
+
+  // Child Relations V2
+  servers                    BrokerServer[]
+  licenses                   BrokerLicense[]
+  boardMembers               BrokerBoardMember[]
+  accountGroups              BrokerAccountGroup[]
+  ibPlans                    BrokerIbPlan[]
+  depositMethodItems         BrokerDepositMethod[]
+  withdrawalMethodItems      BrokerWithdrawalMethod[]
+  symbolSpecs                BrokerSymbolSpec[]
+  fundingYears               BrokerFundingYear[]
+  clientActivity             BrokerClientActivity?
+  businessAreas              BrokerBusinessArea[]
+  awards                     BrokerAward[]
 
   @@index([status])
   @@index([isFeatured])
   @@index([avgRating])
+  @@index([isRegulated])
+  @@index([businessType])
+  @@index([country])
+  @@index([onboardingStatus])
 }
 
 model BrokerDocument {
+  id              String        @id @default(uuid())
+  brokerId        String
+  fileUrl         String
+  fileName        String
+  fileType        String
+  docType         BrokerDocType @default(REGULATORY_LICENSE)
+  isPrivate       Boolean       @default(false)
+  verifiedByAdmin Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+  broker          Broker        @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+
+  @@index([brokerId])
+  @@index([docType])
+}
+
+model BrokerServer {
   id        String   @id @default(uuid())
   brokerId  String
-  fileUrl   String
-  fileName  String
-  fileType  String
-  docType   String
+  name      String
+  ip        String?
+  location  String?
+  sortOrder Int      @default(0)
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   broker    Broker   @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+
+  @@index([brokerId])
+}
+
+model BrokerLicense {
+  id              String    @id @default(uuid())
+  brokerId        String
+  regulatoryBody  String
+  regulatorCode   String?
+  regulatorOther  String?
+  licenseNumber   String
+  licenseStatus   String    @default("Active")
+  companyAddress  String?   @db.Text
+  licensePdfUrl   String?
+  proofUrl        String?
+  proofLink       String?
+  verifiedByAdmin Boolean   @default(false)
+  verifiedAt      DateTime?
+  sortOrder       Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  broker          Broker    @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+
+  @@index([brokerId])
+  @@index([regulatoryBody])
+  @@index([licenseStatus])
+  @@index([regulatorCode])
+}
+
+model BrokerBoardMember {
+  id          String   @id @default(uuid())
+  brokerId    String
+  name        String
+  designation String
+  experience  String?
+  photoUrl    String?
+  description String?  @db.Text
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  broker      Broker   @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+
+  @@index([brokerId])
+}
+
+model BrokerAccountGroup {
+  id                     String             @id @default(uuid())
+  brokerId               String
+  name                   String
+  demoAvailable          Boolean            @default(false)
+  currency               String             @default("USD")
+  spreadTypesLabel       String?
+  spreadFrom             Decimal            @default(0) @db.Decimal(6, 2)
+  minDeposit             Decimal            @default(0) @db.Decimal(10, 2)
+  depositBonusPctUpTo    Decimal            @default(0) @db.Decimal(5, 2)
+  depositBonusCode       String?
+  depositBonusNum        Int?
+  leverageUpTo           String             @default("1:500")
+  leverageNum            Int?
+  minTradeVolume         Decimal            @default(0.01) @db.Decimal(8, 2)
+  hasCommissionPerLot    Boolean            @default(false)
+  feesPerLot             Decimal?           @db.Decimal(8, 2)
+  commissionStructureUrl String?
+  spreadType             SpreadType         @default(FLOATING)
+  orderTypes             String[]           @default([])
+  swapFree               Boolean            @default(false)
+  swapLong               String?
+  swapShort              String?
+  orderExecution         OrderExecution     @default(INSTANT)
+  gtcMode                GtcMode            @default(AVAILABLE)
+  eaAllowed              Boolean            @default(true)
+  hedgingAllowed         Boolean            @default(true)
+  nettingAllowed         Boolean            @default(false)
+  scalpingAllowed        Boolean            @default(true)
+  hasSwapCharges         Boolean            @default(true)
+  swapStructureUrl       String?
+  slippage               Boolean            @default(false)
+  slippagePoints         String?
+  markups                String?
+  forexCommission        Json?
+  cryptoCommission       String?
+  commoditiesCommission  String?
+  metalsCommission       String?
+  indexCommission        String?
+  stocksCommission       String?
+  testLogin              String?
+  testPasswordEnc        String?
+  testServer             String?
+  sortOrder              Int                @default(0)
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+  broker                 Broker             @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+  symbolSpecs            BrokerSymbolSpec[]
+
+  @@index([brokerId])
+}
+
+model BrokerIbPlan {
+  id               String   @id @default(uuid())
+  brokerId         String
+  accountGroupName String
+  settlement       String[] @default([])
+  rebatePerLot     Decimal  @default(0) @db.Decimal(10, 2)
+  levelsUpTo       Int      @default(1)
+  customizable     Boolean  @default(false)
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  broker           Broker   @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+
+  @@index([brokerId])
+}
+
+model BrokerDepositMethod {
+  id              String   @id @default(uuid())
+  brokerId        String
+  method          String
+  charges         String?
+  exchangeRate    String?
+  timeTaken       String?
+  extraFacilities String?
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  broker          Broker   @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+
+  @@index([brokerId])
+}
+
+model BrokerWithdrawalMethod {
+  id                String   @id @default(uuid())
+  brokerId          String
+  method            String
+  charges           String?
+  exchangeRate      String?
+  timeTaken         String?
+  extraFacilities   String?
+  delayCompensation String?  @db.Text
+  sortOrder         Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  broker            Broker   @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+
+  @@index([brokerId])
+}
+
+model BrokerSymbolSpec {
+  id             String              @id @default(uuid())
+  brokerId       String
+  accountGroupId String?
+  symbol         String
+  contractSize   String?
+  digits         Int                 @default(5)
+  stopLevel      String?
+  stopOutPct     String?
+  commission     String?
+  spreadType     String?
+  spreadFrom     String?
+  minVolume      Decimal             @default(0.01) @db.Decimal(8, 2)
+  maxVolume      Decimal             @default(100.00) @db.Decimal(8, 2)
+  swapLong       String?
+  swapShort      String?
+  sortOrder      Int                 @default(0)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  broker         Broker              @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+  accountGroup   BrokerAccountGroup? @relation(fields: [accountGroupId], references: [id], onDelete: SetNull)
+
+  @@index([brokerId])
+  @@index([accountGroupId])
+  @@index([symbol])
+}
+
+model BrokerFundingYear {
+  id             String   @id @default(uuid())
+  brokerId       String
+  year           Int
+  netDepositUsd  Decimal  @default(0) @db.Decimal(20, 2)
+  netWithdrawUsd Decimal  @default(0) @db.Decimal(20, 2)
+  netLots        Decimal  @default(0) @db.Decimal(20, 2)
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  broker         Broker   @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+
+  @@unique([brokerId, year])
+  @@index([brokerId])
+}
+
+model BrokerClientActivity {
+  id                          String   @id @default(uuid())
+  brokerId                    String   @unique
+  avgNewClientDeposit         Decimal  @default(0) @db.Decimal(12, 2)
+  avgExistingClientDeposit    Decimal  @default(0) @db.Decimal(12, 2)
+  avgNewClientWithdrawal      Decimal  @default(0) @db.Decimal(12, 2)
+  avgExistingClientWithdrawal Decimal  @default(0) @db.Decimal(12, 2)
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+  broker                      Broker   @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+
+  @@index([brokerId])
+}
+
+model BrokerBusinessArea {
+  id              String   @id @default(uuid())
+  brokerId        String
+  countryOrRegion String
+  clientsNote     String?  @db.Text
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  broker          Broker   @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+
+  @@index([brokerId])
+}
+
+model BrokerAward {
+  id           String    @id @default(uuid())
+  brokerId     String
+  year         Int
+  awardFor     String
+  expo         String?
+  expoLocation String?
+  expoDate     DateTime?
+  sortOrder    Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  broker       Broker    @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+
+  @@index([brokerId])
 }
 
 model BrokerReview {

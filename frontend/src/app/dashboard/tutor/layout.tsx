@@ -28,18 +28,18 @@ export default function TutorDashboardLayout({ children }: { children: React.Rea
   ];
 
   return (
-    <div className="min-h-screen bg-brand-navy-dark flex">
+    <div className="min-h-screen bg-surface flex">
       {/* Tutor Sidebar */}
-      <aside className="w-64 bg-brand-navy-card border-r border-slate-800 flex flex-col justify-between shrink-0 min-h-[calc(100vh-64px)] p-4">
+      <aside className="w-64 bg-white border-r border-border flex flex-col justify-between shrink-0 min-h-[calc(100vh-64px)] p-4">
         <div className="space-y-6">
           {/* Tutor Tag */}
-          <div className="p-3.5 rounded-2xl bg-brand-navy-light/60 border border-slate-800 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-brand-blue flex items-center justify-center font-bold text-sm">
+          <div className="p-3.5 rounded-2xl bg-surface-tint border border-border flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-blue/10 text-blue flex items-center justify-center font-bold text-sm">
               <GraduationCap className="w-5 h-5" />
             </div>
             <div className="overflow-hidden">
-              <div className="text-sm font-bold text-white truncate">{user?.name || 'Tutor'}</div>
-              <div className="text-[10px] uppercase font-bold text-brand-blue tracking-wider">
+              <div className="text-sm font-bold text-navy truncate">{user?.name || 'Tutor'}</div>
+              <div className="text-[10px] uppercase font-bold text-blue tracking-wider">
                 Instructor Desk
               </div>
             </div>
@@ -54,10 +54,10 @@ export default function TutorDashboardLayout({ children }: { children: React.Rea
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition ${
+                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-full text-xs font-semibold transition ${
                     isActive
-                      ? 'bg-brand-blue text-white shadow-md shadow-blue-500/20'
-                      : 'text-slate-400 hover:text-white hover:bg-brand-navy-light/40'
+                      ? 'bg-blue text-white shadow-sm'
+                      : 'text-text-muted hover:text-navy hover:bg-surface-tint'
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -72,10 +72,10 @@ export default function TutorDashboardLayout({ children }: { children: React.Rea
         </div>
 
         {/* Exit */}
-        <div className="pt-4 border-t border-slate-800">
+        <div className="pt-4 border-t border-border">
           <button
             onClick={logout}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-rose-400 hover:bg-rose-500/10 transition"
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-full text-xs font-semibold text-rose-500 hover:bg-rose-50 transition"
           >
             <LogOut className="w-4 h-4" />
             <span>Sign Out</span>
@@ -84,7 +84,7 @@ export default function TutorDashboardLayout({ children }: { children: React.Rea
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-6 sm:p-8 bg-brand-navy-dark text-slate-100">
+      <main className="flex-1 overflow-y-auto p-6 sm:p-8 bg-surface text-text-body">
         {children}
       </main>
     </div>

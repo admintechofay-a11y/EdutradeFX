@@ -104,11 +104,11 @@ export default function SPDetailPage() {
   if (!provider) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-24 text-center">
-        <h2 className="text-2xl font-bold text-white mb-2">Signal Provider Not Found</h2>
-        <p className="text-slate-400 mb-6">This provider is unavailable or has closed public signals.</p>
+        <h2 className="text-2xl font-bold text-text-heading mb-2">Signal Provider Not Found</h2>
+        <p className="text-text-muted mb-6">This provider is unavailable or has closed public signals.</p>
         <Link
           href="/signal-providers"
-          className="px-6 py-2.5 bg-brand-blue text-white rounded-xl text-sm font-semibold"
+          className="px-6 py-2.5 bg-blue text-white rounded-full text-sm font-semibold hover:bg-blue-hover transition"
         >
           Back to Directory
         </Link>
@@ -120,40 +120,40 @@ export default function SPDetailPage() {
   const closedSignals = signals.filter((s) => s.status !== 'ACTIVE');
 
   return (
-    <div className="min-h-screen pb-24 text-slate-100">
+    <div className="min-h-screen pb-24 text-text-body bg-white">
       {/* ─── Header ──────────────────────────────────────────────── */}
-      <div className="bg-brand-navy-card/80 border-b border-slate-800 backdrop-blur-md pt-10 pb-12">
+      <div className="bg-surface-tint border-b border-border pt-10 pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-center gap-6">
-              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-brand-navy-light border border-slate-700 flex items-center justify-center overflow-hidden shrink-0 shadow-2xl">
+              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-white border border-border flex items-center justify-center overflow-hidden shrink-0 shadow-soft">
                 {provider.photo ? (
                   <img src={provider.photo} alt={provider.displayName} className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-3xl font-extrabold text-purple-400">
+                  <span className="text-3xl font-extrabold text-blue">
                     {provider.displayName[0].toUpperCase()}
                   </span>
                 )}
               </div>
               <div>
                 <div className="flex items-center gap-3 flex-wrap mb-1">
-                  <h1 className="text-2xl sm:text-3xl font-extrabold text-white">{provider.displayName}</h1>
+                  <h1 className="text-2xl sm:text-3xl font-extrabold text-text-heading">{provider.displayName}</h1>
                   {provider.verificationStatus && (
-                    <span className="px-2.5 py-0.5 rounded-full bg-purple-500/15 text-purple-400 text-xs font-bold border border-purple-500/30 flex items-center gap-1">
+                    <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue text-xs font-bold border border-blue-200 flex items-center gap-1">
                       <ShieldCheck className="w-3.5 h-3.5" />
                       Audited Channel
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-slate-300 mb-2">{provider.strategy || 'Multi-Asset Swing Alerts'}</p>
+                <p className="text-sm text-text-body mb-2">{provider.strategy || 'Multi-Asset Swing Alerts'}</p>
 
-                <div className="flex items-center gap-4 text-xs sm:text-sm text-slate-400 flex-wrap">
+                <div className="flex items-center gap-4 text-xs sm:text-sm text-text-muted flex-wrap">
                   <div className="flex items-center gap-1.5">
                     <StarRating rating={provider.avgRating} />
-                    <span className="font-bold text-white ml-1">{provider.avgRating.toFixed(1)}</span>
+                    <span className="font-bold text-text-heading ml-1">{provider.avgRating.toFixed(1)}</span>
                     <span>({provider.totalReviews} reviews)</span>
                   </div>
-                  <span className="text-emerald-400 font-bold">
+                  <span className="text-green font-bold">
                     {provider.winRate ? `${provider.winRate}% Win Rate` : '78.4% Win Rate'}
                   </span>
                   <span>{provider.totalSignals} signals issued</span>
@@ -164,7 +164,7 @@ export default function SPDetailPage() {
             <div>
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="px-6 py-3.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm shadow-lg shadow-purple-600/25 transition flex items-center gap-2"
+                className="px-6 py-3.5 rounded-full bg-orange hover:bg-orange-hover text-white font-bold text-sm shadow-soft transition flex items-center gap-2"
               >
                 <Radio className="w-4 h-4" />
                 <span>Subscribe to Signals Feed</span>
@@ -181,8 +181,8 @@ export default function SPDetailPage() {
             {/* Active Signals Section */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+                <h3 className="text-lg font-bold text-text-heading flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-green animate-ping" />
                   <span>Active Live Signals ({activeSignals.length})</span>
                 </h3>
               </div>
@@ -194,22 +194,22 @@ export default function SPDetailPage() {
                   ))}
                 </div>
               ) : (
-                <div className="p-8 text-center bg-brand-navy-card rounded-2xl border border-slate-800 text-slate-400 text-xs">
+                <div className="p-8 text-center bg-white rounded-2xl border border-border text-text-muted text-xs shadow-soft">
                   No active orders right now. Provider is awaiting optimal high-probability market setups.
                 </div>
               )}
             </div>
 
             {/* Strategy & Overview */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-brand-navy-card border border-slate-800 space-y-4">
-              <h3 className="text-lg font-bold text-white">Strategy Architecture</h3>
-              <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-line">
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-border shadow-soft space-y-4">
+              <h3 className="text-lg font-bold text-text-heading">Strategy Architecture</h3>
+              <p className="text-sm text-text-body leading-relaxed whitespace-pre-line">
                 {provider.bio ||
                   `${provider.displayName} leverages London & New York session liquidity sweeps combined with 4-Hour order block confirmations. Risk per trade is strictly capped at 1.0% with a minimum 1:2.5 Risk-to-Reward ratio.`}
               </p>
 
-              <div className="pt-4 border-t border-slate-800">
-                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+              <div className="pt-4 border-t border-border">
+                <h4 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-2">
                   Pairs & Instruments Covered
                 </h4>
                 <div className="flex flex-wrap gap-2">
@@ -217,7 +217,7 @@ export default function SPDetailPage() {
                     provider.instruments.map((inst, i) => (
                       <span
                         key={i}
-                        className="px-3 py-1 rounded-lg bg-brand-navy-light border border-slate-700 text-xs font-semibold text-slate-200"
+                        className="px-3 py-1 rounded-lg bg-surface-tint border border-border text-xs font-semibold text-text-body"
                       >
                         {inst}
                       </span>
@@ -226,7 +226,7 @@ export default function SPDetailPage() {
                     ['EURUSD', 'GBPUSD', 'XAUUSD', 'US30'].map((inst, i) => (
                       <span
                         key={i}
-                        className="px-3 py-1 rounded-lg bg-brand-navy-light border border-slate-700 text-xs font-semibold text-slate-200"
+                        className="px-3 py-1 rounded-lg bg-surface-tint border border-border text-xs font-semibold text-text-body"
                       >
                         {inst}
                       </span>
@@ -238,7 +238,7 @@ export default function SPDetailPage() {
 
             {/* Historical Closed Signals */}
             <div className="space-y-4">
-              <h3 className="text-lg font-bold text-white">Recent Completed Trades</h3>
+              <h3 className="text-lg font-bold text-text-heading">Recent Completed Trades</h3>
               {closedSignals.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {closedSignals.slice(0, 6).map((signal) => (
@@ -246,7 +246,7 @@ export default function SPDetailPage() {
                   ))}
                 </div>
               ) : (
-                <div className="p-6 text-center bg-brand-navy-card rounded-2xl border border-slate-800 text-slate-400 text-xs">
+                <div className="p-6 text-center bg-white rounded-2xl border border-border text-text-muted text-xs shadow-soft">
                   Historical closed trades will populate here.
                 </div>
               )}
@@ -255,32 +255,32 @@ export default function SPDetailPage() {
 
           {/* Right Col Subscription Card */}
           <div className="space-y-6">
-            <div className="p-6 rounded-3xl bg-brand-navy-card border border-slate-800 space-y-4">
-              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <div className="p-6 rounded-3xl bg-white border border-border shadow-soft space-y-4">
+              <h4 className="text-xs font-bold text-text-muted uppercase tracking-wider">
                 Audited Key Stats
               </h4>
               <div className="space-y-3 text-xs sm:text-sm">
-                <div className="flex justify-between pb-2 border-b border-slate-800">
-                  <span className="text-slate-400">Audited Win Rate</span>
-                  <span className="font-bold text-emerald-400">{provider.winRate || 78.4}%</span>
+                <div className="flex justify-between pb-2 border-b border-border">
+                  <span className="text-text-muted">Audited Win Rate</span>
+                  <span className="font-bold text-green">{provider.winRate || 78.4}%</span>
                 </div>
-                <div className="flex justify-between pb-2 border-b border-slate-800">
-                  <span className="text-slate-400">Risk Profile</span>
-                  <span className="font-semibold text-white">{provider.riskCategory || 'Medium Risk'}</span>
+                <div className="flex justify-between pb-2 border-b border-border">
+                  <span className="text-text-muted">Risk Profile</span>
+                  <span className="font-semibold text-text-heading">{provider.riskCategory || 'Medium Risk'}</span>
                 </div>
-                <div className="flex justify-between pb-2 border-b border-slate-800">
-                  <span className="text-slate-400">Signal Delivery</span>
-                  <span className="font-semibold text-purple-400">Telegram Instant Alerts</span>
+                <div className="flex justify-between pb-2 border-b border-border">
+                  <span className="text-text-muted">Signal Delivery</span>
+                  <span className="font-semibold text-blue">Telegram Instant Alerts</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Avg Monthly Pips</span>
-                  <span className="font-bold text-white">+850 Pips</span>
+                  <span className="text-text-muted">Avg Monthly Pips</span>
+                  <span className="font-bold text-text-heading">+850 Pips</span>
                 </div>
               </div>
 
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="w-full mt-4 py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl transition shadow"
+                className="w-full mt-4 py-3 bg-orange hover:bg-orange-hover text-white font-bold text-xs rounded-full transition shadow-soft"
               >
                 Join VIP Signal Channel
               </button>
@@ -291,73 +291,73 @@ export default function SPDetailPage() {
 
       {/* Enquiry Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-brand-navy-card border border-slate-700 rounded-3xl p-6 sm:p-8 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-deep/60 backdrop-blur-sm">
+          <div className="w-full max-w-lg bg-white border border-border rounded-3xl p-6 sm:p-8 shadow-lift relative">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-5 right-5 text-slate-400 hover:text-white"
+              className="absolute top-5 right-5 text-text-muted hover:text-text-heading"
             >
               <X className="w-5 h-5" />
             </button>
 
             {success ? (
               <div className="text-center py-8">
-                <CheckCircle className="w-14 h-14 text-emerald-400 mx-auto mb-3" />
-                <h3 className="text-xl font-bold text-white mb-2">Subscription Request Sent!</h3>
-                <p className="text-xs text-slate-300">
+                <CheckCircle className="w-14 h-14 text-green mx-auto mb-3" />
+                <h3 className="text-xl font-bold text-text-heading mb-2">Subscription Request Sent!</h3>
+                <p className="text-xs text-text-body">
                   The provider has received your details and will invite you to the private channel.
                 </p>
               </div>
             ) : (
               <form onSubmit={handleEnquirySubmit} className="space-y-4">
                 <div>
-                  <h3 className="text-xl font-bold text-white">Join {provider.displayName}'s Signals</h3>
-                  <p className="text-xs text-slate-400 mt-0.5">Receive real-time trade alerts with SL, TP and trailing guidance.</p>
+                  <h3 className="text-xl font-bold text-text-heading">Join {provider.displayName}'s Signals</h3>
+                  <p className="text-xs text-text-muted mt-0.5">Receive real-time trade alerts with SL, TP and trailing guidance.</p>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Your Name</label>
+                  <label className="block text-xs font-semibold text-text-heading mb-1">Your Name</label>
                   <input
                     type="text"
                     required
                     value={enquiryForm.name}
                     onChange={(e) => setEnquiryForm({ ...enquiryForm, name: e.target.value })}
                     placeholder="Full name"
-                    className="w-full px-3.5 py-2.5 bg-brand-navy-light border border-slate-700 rounded-xl text-xs text-white"
+                    className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading focus:outline-none focus:ring-1 focus:ring-blue"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Email</label>
+                    <label className="block text-xs font-semibold text-text-heading mb-1">Email</label>
                     <input
                       type="email"
                       required
                       value={enquiryForm.email}
                       onChange={(e) => setEnquiryForm({ ...enquiryForm, email: e.target.value })}
                       placeholder="name@example.com"
-                      className="w-full px-3.5 py-2.5 bg-brand-navy-light border border-slate-700 rounded-xl text-xs text-white"
+                      className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading focus:outline-none focus:ring-1 focus:ring-blue"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Telegram / Phone</label>
+                    <label className="block text-xs font-semibold text-text-heading mb-1">Telegram / Phone</label>
                     <input
                       type="text"
                       required
                       value={enquiryForm.phone}
                       onChange={(e) => setEnquiryForm({ ...enquiryForm, phone: e.target.value })}
                       placeholder="@telegram_handle"
-                      className="w-full px-3.5 py-2.5 bg-brand-navy-light border border-slate-700 rounded-xl text-xs text-white"
+                      className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading focus:outline-none focus:ring-1 focus:ring-blue"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Select Subscription Plan</label>
+                  <label className="block text-xs font-semibold text-text-heading mb-1">Select Subscription Plan</label>
                   <select
                     value={enquiryForm.plan}
                     onChange={(e) => setEnquiryForm({ ...enquiryForm, plan: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-brand-navy-light border border-slate-700 rounded-xl text-xs text-white"
+                    className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading focus:outline-none focus:ring-1 focus:ring-blue"
                   >
                     <option value="MONTHLY_VIP">1 Month VIP Access ($49 / mo)</option>
                     <option value="QUARTERLY_VIP">3 Months VIP Access ($129 / quarter)</option>
@@ -366,20 +366,20 @@ export default function SPDetailPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Message (Optional)</label>
+                  <label className="block text-xs font-semibold text-text-heading mb-1">Message (Optional)</label>
                   <textarea
                     rows={2}
                     value={enquiryForm.message}
                     onChange={(e) => setEnquiryForm({ ...enquiryForm, message: e.target.value })}
                     placeholder="Any specific questions about broker compatibility or copy-trading?"
-                    className="w-full px-3.5 py-2.5 bg-brand-navy-light border border-slate-700 rounded-xl text-xs text-white resize-none"
+                    className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading focus:outline-none focus:ring-1 focus:ring-blue resize-none"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full py-3 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white font-bold text-xs rounded-xl transition"
+                  className="w-full py-3 bg-orange hover:bg-orange-hover disabled:opacity-50 text-white font-bold text-xs rounded-full transition shadow-soft"
                 >
                   {submitting ? 'Submitting...' : 'Confirm Subscription Request'}
                 </button>

@@ -84,6 +84,60 @@ export class BrokerController {
     sendSuccess(res, lead, 'Inquiry sent to broker successfully', StatusCodes.CREATED);
   };
 
+  getMyOnboarding = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const draft = await brokerService.getMyOnboarding(req.user!.userId);
+    sendSuccess(res, draft, 'Broker onboarding profile retrieved', StatusCodes.OK);
+  };
+
+  updateOnboardingSection = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { section } = req.params;
+    const updated = await brokerService.updateOnboardingSection(
+      req.user!.userId,
+      section as any,
+      req.body
+    );
+    sendSuccess(res, updated, `Section ${section} saved successfully`, StatusCodes.OK);
+  };
+
+  submitOnboarding = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const result = await brokerService.submitOnboarding(req.user!.userId);
+    sendSuccess(res, result, 'Application submitted for compliance review', StatusCodes.OK);
+  };
+
+  uploadSingleFile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const file = req.file;
+    if (!file) {
+      sendSuccess(res, null, 'No file provided', StatusCodes.BAD_REQUEST);
+      return;
+    }
+    sendSuccess(
+      res,
+      {
+        url: file.path,
+        fileName: file.originalname,
+        fileType: file.mimetype,
+        size: file.size,
+      },
+      'File uploaded successfully',
+      StatusCodes.OK
+    );
+  };
+
+  uploadMultipleFiles = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const files = (req.files as Express.Multer.File[]) || [];
+    if (files.length === 0) {
+      sendSuccess(res, [], 'No files provided', StatusCodes.BAD_REQUEST);
+      return;
+    }
+    const uploaded = files.map((f) => ({
+      url: f.path,
+      fileName: f.originalname,
+      fileType: f.mimetype,
+      size: f.size,
+    }));
+    sendSuccess(res, uploaded, 'Files uploaded successfully', StatusCodes.OK);
+  };
+
   getMyBrokerProfile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     const profile = await brokerService.getMyBrokerProfile(req.user!.userId);
     sendSuccess(res, profile, 'Broker dashboard data retrieved', StatusCodes.OK);

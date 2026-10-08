@@ -10,7 +10,7 @@ import {
   CheckCircle, 
   AlertTriangle, 
   Clock, 
-  ShieldAlert,
+  ShieldAlert, 
   ArrowRight,
   Headphones
 } from 'lucide-react';
@@ -52,19 +52,19 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen py-12 md:py-20 text-slate-100">
+    <div className="min-h-screen py-12 md:py-20 text-text-body bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-xs font-semibold mb-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface-tint border border-blue/20 text-blue text-xs font-bold uppercase tracking-wider mb-4">
             <Headphones className="w-3.5 h-3.5" />
             <span>Dedicated Support & Institutional Desk</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-text-heading tracking-tight mb-4">
             Contact EduTradeFX
           </h1>
-          <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
+          <p className="text-sm sm:text-base text-text-muted leading-relaxed">
             Have a question about a broker listing, course curriculum, partnership opportunities, or media kits? Our operations team responds within 24 hours.
           </p>
         </div>
@@ -75,41 +75,41 @@ export default function ContactPage() {
           <div className="lg:col-span-4 space-y-6">
             
             {/* Global HQ Info */}
-            <div className="p-6 rounded-3xl bg-brand-navy-card border border-slate-800 space-y-4">
-              <h3 className="text-base font-bold text-white">Global Operations Office</h3>
-              <div className="space-y-4 text-xs sm:text-sm text-slate-300">
+            <div className="p-6 rounded-2xl bg-white border border-border shadow-soft space-y-4">
+              <h3 className="text-base font-bold text-text-heading">Global Operations Office</h3>
+              <div className="space-y-4 text-xs sm:text-sm text-text-body">
                 <div className="flex items-start gap-3">
-                  <MapPin className="w-4 h-4 text-brand-blue shrink-0 mt-0.5" />
+                  <MapPin className="w-4 h-4 text-blue shrink-0 mt-0.5" />
                   <span>Level 24, One Financial Tower, Canary Wharf, London, E14 5AB, United Kingdom</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Mail className="w-4 h-4 text-brand-blue shrink-0" />
+                  <Mail className="w-4 h-4 text-blue shrink-0" />
                   <span>support@edutradefx.com</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Phone className="w-4 h-4 text-brand-blue shrink-0" />
+                  <Phone className="w-4 h-4 text-blue shrink-0" />
                   <span>+44 20 7946 0912</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Clock className="w-4 h-4 text-brand-blue shrink-0" />
+                  <Clock className="w-4 h-4 text-blue shrink-0" />
                   <span>Mon – Fri: 08:00 – 18:00 GMT</span>
                 </div>
               </div>
             </div>
 
             {/* Trader Grievance Box CTA Callout */}
-            <div className="p-6 rounded-3xl bg-red-950/30 border border-red-500/30 space-y-3">
-              <div className="flex items-center gap-2 text-red-400 font-bold text-sm">
+            <div className="p-6 rounded-2xl bg-red-50 border border-red-200 space-y-3">
+              <div className="flex items-center gap-2 text-red-600 font-bold text-sm">
                 <ShieldAlert className="w-5 h-5 shrink-0" />
                 <span>Broker Dispute or Fraud Report?</span>
               </div>
-              <p className="text-xs text-red-200/90 leading-relaxed">
+              <p className="text-xs text-red-800 leading-relaxed">
                 If a broker is withholding your withdrawal, manipulating spreads, or refusing to honor profits, do not use general contact. Submit a formal dispute case to our dedicated compliance desk.
               </p>
               <div className="pt-1">
                 <Link
                   href="/complaint-box"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-red-300 hover:text-white transition"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-red-600 hover:text-red-700 transition"
                 >
                   <span>Go to Complaint Box Desk</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -118,22 +118,22 @@ export default function ContactPage() {
             </div>
 
             {/* Direct Department Emails */}
-            <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-3 text-xs">
-              <h4 className="font-bold text-slate-200 uppercase tracking-wider">
+            <div className="p-6 rounded-2xl bg-surface-tint border border-border space-y-3 text-xs">
+              <h4 className="font-bold text-text-heading uppercase tracking-wider">
                 Direct Department Inboxes
               </h4>
-              <div className="space-y-2 text-slate-400">
+              <div className="space-y-2.5 text-text-muted">
                 <div>
-                  <div className="text-white font-medium">Advertising & Broker Directory</div>
-                  <span className="font-mono text-brand-blue">partners@edutradefx.com</span>
+                  <div className="text-text-heading font-semibold">Advertising & Broker Directory</div>
+                  <span className="font-mono text-blue font-bold">partners@edutradefx.com</span>
                 </div>
                 <div>
-                  <div className="text-white font-medium">LMS Academy & Course Mentors</div>
-                  <span className="font-mono text-brand-blue">academy@edutradefx.com</span>
+                  <div className="text-text-heading font-semibold">LMS Academy & Course Mentors</div>
+                  <span className="font-mono text-blue font-bold">academy@edutradefx.com</span>
                 </div>
                 <div>
-                  <div className="text-white font-medium">Compliance & Legal Affairs</div>
-                  <span className="font-mono text-brand-blue">legal@edutradefx.com</span>
+                  <div className="text-text-heading font-semibold">Compliance & Legal Affairs</div>
+                  <span className="font-mono text-blue font-bold">legal@edutradefx.com</span>
                 </div>
               </div>
             </div>
@@ -142,14 +142,14 @@ export default function ContactPage() {
 
           {/* Right Contact Form (8 cols) */}
           <div className="lg:col-span-8">
-            <div className="p-6 sm:p-10 rounded-3xl bg-brand-navy-card border border-slate-800 shadow-xl">
+            <div className="p-6 sm:p-10 rounded-2xl bg-white border border-border shadow-soft">
               {submitted ? (
                 <div className="text-center py-12 space-y-4">
-                  <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto">
+                  <div className="w-16 h-16 rounded-full bg-green-50 border border-green-200 text-green flex items-center justify-center mx-auto">
                     <CheckCircle className="w-8 h-8" />
                   </div>
-                  <h3 className="text-2xl font-bold text-white">Inquiry Received Successfully</h3>
-                  <p className="text-sm text-slate-300 max-w-md mx-auto leading-relaxed">
+                  <h3 className="text-2xl font-bold text-text-heading">Inquiry Received Successfully</h3>
+                  <p className="text-sm text-text-muted max-w-md mx-auto leading-relaxed">
                     Thank you for contacting EduTradeFX. Your inquiry has been routed to our operations team. We will review your message and reply within 1 business day.
                   </p>
                   <div className="pt-4">
@@ -165,7 +165,7 @@ export default function ContactPage() {
                           message: '',
                         });
                       }}
-                      className="px-6 py-2.5 rounded-xl border border-slate-700 hover:border-slate-500 text-sm font-semibold text-slate-200 transition"
+                      className="px-6 py-2.5 rounded-full border border-border hover:bg-surface-tint text-sm font-bold text-text-heading transition shadow-sm"
                     >
                       Send Another Message
                     </button>
@@ -173,14 +173,14 @@ export default function ContactPage() {
                 </div>
               ) : (
                 <div>
-                  <h2 className="text-xl font-bold text-white mb-2">Send Us a Direct Message</h2>
-                  <p className="text-xs sm:text-sm text-slate-400 mb-6">
+                  <h2 className="text-xl font-bold text-text-heading mb-2">Send Us a Direct Message</h2>
+                  <p className="text-xs sm:text-sm text-text-muted mb-6">
                     Fill in the form below and an EduTradeFX specialist will get back to you promptly.
                   </p>
 
                   {errorMessage && (
-                    <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-xs sm:text-sm flex items-center gap-2">
-                      <AlertTriangle className="w-4 h-4 shrink-0 text-red-400" />
+                    <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 shrink-0 text-red-500" />
                       <span>{errorMessage}</span>
                     </div>
                   )}
@@ -188,7 +188,7 @@ export default function ContactPage() {
                   <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+                        <label className="block text-xs font-bold text-text-heading mb-1.5 uppercase tracking-wider">
                           Full Name *
                         </label>
                         <input
@@ -197,11 +197,11 @@ export default function ContactPage() {
                           value={form.name}
                           onChange={(e) => setForm({ ...form, name: e.target.value })}
                           placeholder="e.g. Alex Morgan"
-                          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-brand-blue"
+                          className="w-full px-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue shadow-sm"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+                        <label className="block text-xs font-bold text-text-heading mb-1.5 uppercase tracking-wider">
                           Email Address *
                         </label>
                         <input
@@ -210,14 +210,14 @@ export default function ContactPage() {
                           value={form.email}
                           onChange={(e) => setForm({ ...form, email: e.target.value })}
                           placeholder="alex@example.com"
-                          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-brand-blue"
+                          className="w-full px-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue shadow-sm"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+                        <label className="block text-xs font-bold text-text-heading mb-1.5 uppercase tracking-wider">
                           Mobile Phone (Optional)
                         </label>
                         <input
@@ -225,17 +225,17 @@ export default function ContactPage() {
                           value={form.phone}
                           onChange={(e) => setForm({ ...form, phone: e.target.value })}
                           placeholder="+44 7911 123456"
-                          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-brand-blue"
+                          className="w-full px-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue shadow-sm"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+                        <label className="block text-xs font-bold text-text-heading mb-1.5 uppercase tracking-wider">
                           Inquiry Category *
                         </label>
                         <select
                           value={form.category}
                           onChange={(e) => setForm({ ...form, category: e.target.value })}
-                          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-brand-blue"
+                          className="w-full px-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading focus:outline-none focus:border-blue shadow-sm"
                         >
                           <option value="GENERAL">General Inquiries & Support</option>
                           <option value="ADVERTISING">Advertising & Media Kit</option>
@@ -247,7 +247,7 @@ export default function ContactPage() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+                      <label className="block text-xs font-bold text-text-heading mb-1.5 uppercase tracking-wider">
                         Subject Line *
                       </label>
                       <input
@@ -256,12 +256,12 @@ export default function ContactPage() {
                         value={form.subject}
                         onChange={(e) => setForm({ ...form, subject: e.target.value })}
                         placeholder="Brief summary of your inquiry"
-                        className="w-full px-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-brand-blue"
+                        className="w-full px-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue shadow-sm"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+                      <label className="block text-xs font-bold text-text-heading mb-1.5 uppercase tracking-wider">
                         Message Details *
                       </label>
                       <textarea
@@ -270,14 +270,14 @@ export default function ContactPage() {
                         value={form.message}
                         onChange={(e) => setForm({ ...form, message: e.target.value })}
                         placeholder="Provide full context, question, or proposal details..."
-                        className="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-brand-blue resize-y"
+                        className="w-full px-4 py-3 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue resize-y shadow-sm"
                       />
                     </div>
 
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="w-full py-3.5 bg-gradient-to-r from-brand-blue to-brand-cyan hover:opacity-95 disabled:opacity-50 text-white font-bold text-sm rounded-xl transition shadow-lg shadow-brand-blue/20 flex items-center justify-center gap-2"
+                      className="w-full py-3.5 bg-orange hover:bg-orange-hover disabled:opacity-50 text-white font-bold text-sm rounded-full transition shadow-soft hover:shadow-lift flex items-center justify-center gap-2"
                     >
                       {submitting ? (
                         <>

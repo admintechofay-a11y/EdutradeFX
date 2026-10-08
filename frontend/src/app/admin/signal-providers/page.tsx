@@ -52,34 +52,34 @@ export default function AdminSPManagementPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-black text-white">Signal Provider Verification</h1>
-        <p className="text-xs sm:text-sm text-slate-400 mt-1">
+        <h1 className="text-2xl sm:text-3xl font-black text-navy">Signal Provider Verification</h1>
+        <p className="text-xs sm:text-sm text-text-muted mt-1">
           Audit provider track records, grant verified badges, and moderate trading channels.
         </p>
       </div>
 
       {/* Search */}
-      <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800">
+      <div className="p-4 rounded-3xl bg-white border border-border shadow-soft">
         <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search provider channel name..."
-            className="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none"
+            className="w-full pl-10 pr-4 py-2.5 bg-surface-tint border border-border rounded-xl text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
           />
         </div>
       </div>
 
       {/* Table */}
       {loading ? (
-        <Skeleton className="h-96 rounded-3xl" />
+        <Skeleton className="h-96 rounded-3xl bg-border/40" />
       ) : (
-        <div className="overflow-x-auto rounded-3xl border border-slate-800 bg-slate-900 shadow-xl">
+        <div className="overflow-x-auto rounded-3xl border border-border bg-white shadow-soft">
           <table className="w-full text-left border-collapse text-xs sm:text-sm">
             <thead>
-              <tr className="border-b border-slate-800 bg-slate-850 text-slate-400 text-xs uppercase font-bold">
+              <tr className="border-b border-border bg-surface-tint text-text-muted text-xs uppercase font-bold">
                 <th className="p-4">Channel / Provider</th>
                 <th className="p-4">Strategy</th>
                 <th className="p-4">Win Rate</th>
@@ -88,23 +88,23 @@ export default function AdminSPManagementPage() {
                 <th className="p-4 text-right">Audit Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/80">
+            <tbody className="divide-y divide-border">
               {filtered.map((p) => (
-                <tr key={p.id} className="hover:bg-slate-800/30">
+                <tr key={p.id} className="hover:bg-surface-tint/60 transition">
                   <td className="p-4">
-                    <div className="font-bold text-white">{p.displayName}</div>
-                    <div className="text-slate-500 text-xs">{p.user?.email || 'Provider User'}</div>
+                    <div className="font-bold text-navy">{p.displayName}</div>
+                    <div className="text-text-muted text-xs">{p.user?.email || 'Provider User'}</div>
                   </td>
-                  <td className="p-4 text-slate-300">{p.strategy || 'Price Action'}</td>
-                  <td className="p-4 font-bold text-emerald-400">{p.winRate || 75}%</td>
-                  <td className="p-4 text-slate-400">{p.totalSignals} signals</td>
+                  <td className="p-4 text-text-body text-xs">{p.strategy || 'Price Action'}</td>
+                  <td className="p-4 font-bold text-green">{p.winRate || 75}%</td>
+                  <td className="p-4 text-text-muted text-xs">{p.totalSignals} signals</td>
                   <td className="p-4">
                     <button
                       onClick={() => toggleVerification(p.id, p.verificationStatus)}
-                      className={`px-2.5 py-1 rounded-full text-xs font-bold transition flex items-center gap-1 ${
+                      className={`px-3 py-1 rounded-full text-xs font-bold transition flex items-center gap-1 ${
                         p.verificationStatus
-                          ? 'bg-purple-500/15 text-purple-400 border border-purple-500/30'
-                          : 'bg-slate-800 text-slate-500'
+                          ? 'bg-blue/10 text-blue border border-blue/20'
+                          : 'bg-surface-tint text-text-muted border border-border'
                       }`}
                     >
                       <ShieldCheck className="w-3.5 h-3.5" />
@@ -115,14 +115,14 @@ export default function AdminSPManagementPage() {
                     {p.status !== 'APPROVED' ? (
                       <button
                         onClick={() => updateStatus(p.id, 'APPROVED')}
-                        className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold"
+                        className="px-3.5 py-1 bg-green hover:bg-green-hover text-white rounded-full text-xs font-bold transition shadow-sm"
                       >
                         Approve
                       </button>
                     ) : (
                       <button
                         onClick={() => updateStatus(p.id, 'SUSPENDED')}
-                        className="px-3 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-bold"
+                        className="px-3.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-full text-xs font-bold transition"
                       >
                         Suspend
                       </button>

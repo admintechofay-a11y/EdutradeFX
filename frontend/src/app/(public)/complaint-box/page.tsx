@@ -9,14 +9,12 @@ import {
   AlertTriangle, 
   FileText, 
   Clock, 
-  HelpCircle,
-  Building2,
-  User,
-  Mail,
-  Phone,
-  FileCheck,
-  ChevronRight,
-  Info
+  Building2, 
+  User, 
+  Mail, 
+  Phone, 
+  FileCheck, 
+  Info 
 } from 'lucide-react';
 import { api } from '../../../lib/api';
 
@@ -50,7 +48,7 @@ export default function ComplaintBoxPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
-      setFiles((prev) => [...prev, ...selectedFiles].slice(0, 5)); // Limit up to 5 files
+      setFiles((prev) => [...prev, ...selectedFiles].slice(0, 5));
     }
   };
 
@@ -69,7 +67,6 @@ export default function ComplaintBoxPage() {
 
     setSubmitting(true);
     try {
-      // Build complaint submission payload
       const payload = {
         name: form.name.trim(),
         email: form.email.trim(),
@@ -80,7 +77,7 @@ export default function ComplaintBoxPage() {
         description: form.description.trim(),
         declarationConsent: true,
         targetType: form.category.includes('BROKER') || form.category.includes('WITHDRAWAL') ? 'BROKER' : 'PLATFORM',
-        evidence: files.map((f) => f.name), // File names as evidence markers
+        evidence: files.map((f) => f.name),
       };
 
       const res = await api.post('/complaints', payload);
@@ -100,67 +97,67 @@ export default function ComplaintBoxPage() {
   };
 
   return (
-    <div className="min-h-screen py-12 md:py-20 text-slate-100">
+    <div className="min-h-screen py-12 md:py-20 text-text-body bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header Breadcrumbs & Banner */}
         <div className="mb-10 text-center max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold mb-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50 border border-red-200 text-red-600 text-xs font-bold uppercase tracking-wider mb-4">
             <ShieldAlert className="w-3.5 h-3.5" />
             <span>Official Trader Dispute & Grievance Desk</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-text-heading tracking-tight mb-4">
             EduTradeFX Complaint Box
           </h1>
-          <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
+          <p className="text-sm sm:text-base text-text-muted leading-relaxed">
             Report fraudulent brokers, unauthorized PAMM losses, scam signal providers, or withheld withdrawals. We investigate, demand mediation from entities, and protect the global trading community through transparent grievance reporting.
           </p>
         </div>
 
         {submittedData ? (
           /* SUCCESS CASE SUBMITTED VIEW */
-          <div className="max-w-2xl mx-auto bg-brand-navy-card border border-emerald-500/30 rounded-3xl p-8 sm:p-12 text-center shadow-2xl space-y-6">
-            <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto">
+          <div className="max-w-2xl mx-auto bg-white border border-green-200 rounded-3xl p-8 sm:p-12 text-center shadow-lift space-y-6">
+            <div className="w-16 h-16 rounded-full bg-green-50 border border-green-200 text-green flex items-center justify-center mx-auto">
               <CheckCircle2 className="w-8 h-8" />
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-2xl font-bold text-white">Dispute Case Successfully Logged</h2>
-              <p className="text-sm text-slate-400">
+              <h2 className="text-2xl font-bold text-text-heading">Dispute Case Successfully Logged</h2>
+              <p className="text-sm text-text-muted">
                 Your grievance has been securely entered into our compliance audit pipeline.
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 text-left space-y-2">
-              <div className="text-xs text-slate-400 uppercase tracking-wider font-semibold">
+            <div className="p-4 rounded-2xl bg-surface-tint border border-border text-left space-y-2">
+              <div className="text-xs text-text-muted uppercase tracking-wider font-semibold">
                 Official Case Reference Code:
               </div>
-              <div className="text-xl font-mono font-extrabold text-brand-gold select-all">
+              <div className="text-xl font-mono font-extrabold text-orange select-all">
                 {submittedData.referenceId}
               </div>
-              <div className="text-xs text-slate-400">
-                Case Subject: <span className="text-white font-medium">{submittedData.subject}</span>
+              <div className="text-xs text-text-body">
+                Case Subject: <span className="text-text-heading font-bold">{submittedData.subject}</span>
               </div>
             </div>
 
             {/* Resolution Timeline */}
-            <div className="space-y-4 text-left border-t border-slate-800/80 pt-6">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Clock className="w-4 h-4 text-brand-blue" />
+            <div className="space-y-4 text-left border-t border-border pt-6">
+              <h3 className="text-sm font-bold text-text-heading flex items-center gap-2">
+                <Clock className="w-4 h-4 text-blue" />
                 Next Steps & Investigation Pipeline:
               </h3>
-              <div className="space-y-3 text-xs sm:text-sm text-slate-300">
+              <div className="space-y-3 text-xs sm:text-sm text-text-body">
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-brand-blue/20 text-brand-blue flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</div>
-                  <p><strong className="text-white">Evidence Review (24-48 Hours):</strong> Our forensic analysts examine your submitted transaction hashes, statement screenshots, and correspondence.</p>
+                  <div className="w-6 h-6 rounded-full bg-blue text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</div>
+                  <p><strong className="text-text-heading">Evidence Review (24-48 Hours):</strong> Our forensic analysts examine your submitted transaction hashes, statement screenshots, and correspondence.</p>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-brand-blue/20 text-brand-blue flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</div>
-                  <p><strong className="text-white">Formal Notice to Entity:</strong> We issue an official inquiry notice to the designated broker, account manager, or provider requesting clarification.</p>
+                  <div className="w-6 h-6 rounded-full bg-blue text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</div>
+                  <p><strong className="text-text-heading">Formal Notice to Entity:</strong> We issue an official inquiry notice to the designated broker, account manager, or provider requesting clarification.</p>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-brand-blue/20 text-brand-blue flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">3</div>
-                  <p><strong className="text-white">Resolution or Blacklist Notice:</strong> Uncooperative or rogue entities are penalized with public warning badges and listed on our scam watch registry.</p>
+                  <div className="w-6 h-6 rounded-full bg-blue text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">3</div>
+                  <p><strong className="text-text-heading">Resolution or Blacklist Notice:</strong> Uncooperative or rogue entities are penalized with public warning badges and listed on our scam watch registry.</p>
                 </div>
               </div>
             </div>
@@ -181,13 +178,13 @@ export default function ComplaintBoxPage() {
                   });
                   setFiles([]);
                 }}
-                className="px-6 py-2.5 rounded-xl border border-slate-700 hover:border-slate-500 text-sm font-semibold text-slate-200 transition"
+                className="px-6 py-2.5 rounded-full border border-border hover:bg-surface-tint text-sm font-bold text-text-heading transition"
               >
                 Submit Another Grievance
               </button>
               <Link
                 href="/brokers"
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-brand-blue to-brand-cyan hover:opacity-90 text-sm font-semibold text-white transition text-center"
+                className="px-6 py-2.5 rounded-full bg-orange hover:bg-orange-hover text-sm font-bold text-white transition text-center shadow-soft"
               >
                 Browse Regulated Brokers
               </Link>
@@ -198,56 +195,55 @@ export default function ComplaintBoxPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             {/* Form Column */}
-            <div className="lg:col-span-8 bg-brand-navy-card border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-xl">
-              <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-brand-blue" />
+            <div className="lg:col-span-8 bg-white border border-border rounded-2xl p-6 sm:p-10 shadow-soft">
+              <h2 className="text-xl font-bold text-text-heading mb-2 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-blue" />
                 Submit Incident Report
               </h2>
-              <p className="text-xs sm:text-sm text-slate-400 mb-8">
+              <p className="text-xs sm:text-sm text-text-muted mb-8">
                 Please provide exhaustive factual details. The more documentary evidence you attach, the stronger our mediation leverage.
               </p>
 
               {errorMessage && (
-                <div className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm flex items-center gap-3">
-                  <AlertTriangle className="w-5 h-5 shrink-0 text-red-400" />
+                <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-3">
+                  <AlertTriangle className="w-5 h-5 shrink-0 text-red-500" />
                   <span>{errorMessage}</span>
                 </div>
               )}
 
               <form onSubmit={handleSubmit} className="space-y-6">
-                
                 {/* Complainant Contact Details */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-text-heading mb-2">
                       Full Legal Name *
                     </label>
                     <div className="relative">
-                      <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                      <User className="w-4 h-4 text-text-muted absolute left-3.5 top-3.5" />
                       <input
                         type="text"
                         required
                         value={form.name}
                         onChange={(e) => setForm({ ...form, name: e.target.value })}
                         placeholder="e.g. John Doe"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-brand-blue"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-border text-sm text-text-heading focus:outline-none focus:border-blue shadow-sm"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-text-heading mb-2">
                       Email Address *
                     </label>
                     <div className="relative">
-                      <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                      <Mail className="w-4 h-4 text-text-muted absolute left-3.5 top-3.5" />
                       <input
                         type="email"
                         required
                         value={form.email}
                         onChange={(e) => setForm({ ...form, email: e.target.value })}
                         placeholder="john@example.com"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-brand-blue"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-border text-sm text-text-heading focus:outline-none focus:border-blue shadow-sm"
                       />
                     </div>
                   </div>
@@ -255,35 +251,35 @@ export default function ComplaintBoxPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-text-heading mb-2">
                       Mobile / WhatsApp Phone Number *
                     </label>
                     <div className="relative">
-                      <Phone className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                      <Phone className="w-4 h-4 text-text-muted absolute left-3.5 top-3.5" />
                       <input
                         type="tel"
                         required
                         value={form.phone}
                         onChange={(e) => setForm({ ...form, phone: e.target.value })}
                         placeholder="+44 7911 123456"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-brand-blue"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-border text-sm text-text-heading focus:outline-none focus:border-blue shadow-sm"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-text-heading mb-2">
                       Target Company / Entity Name *
                     </label>
                     <div className="relative">
-                      <Building2 className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                      <Building2 className="w-4 h-4 text-text-muted absolute left-3.5 top-3.5" />
                       <input
                         type="text"
                         required
                         value={form.companyName}
                         onChange={(e) => setForm({ ...form, companyName: e.target.value })}
                         placeholder="e.g. Apex Global Markets / FX-Alpha-Bot"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-brand-blue"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-border text-sm text-text-heading focus:outline-none focus:border-blue shadow-sm"
                       />
                     </div>
                   </div>
@@ -292,13 +288,13 @@ export default function ComplaintBoxPage() {
                 {/* Grievance Category & Subject */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-text-heading mb-2">
                       Grievance Category *
                     </label>
                     <select
                       value={form.category}
                       onChange={(e) => setForm({ ...form, category: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-brand-blue"
+                      className="w-full px-4 py-2.5 rounded-xl bg-white border border-border text-sm text-text-heading focus:outline-none focus:border-blue shadow-sm"
                     >
                       {COMPLAINT_CATEGORIES.map((cat) => (
                         <option key={cat.value} value={cat.value}>
@@ -309,7 +305,7 @@ export default function ComplaintBoxPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-text-heading mb-2">
                       Dispute Subject / Headline *
                     </label>
                     <input
@@ -318,14 +314,14 @@ export default function ComplaintBoxPage() {
                       value={form.subject}
                       onChange={(e) => setForm({ ...form, subject: e.target.value })}
                       placeholder="e.g. $14,500 withdrawal blocked since March 10"
-                      className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-brand-blue"
+                      className="w-full px-4 py-2.5 rounded-xl bg-white border border-border text-sm text-text-heading focus:outline-none focus:border-blue shadow-sm"
                     />
                   </div>
                 </div>
 
                 {/* Detailed Incident Narrative */}
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-text-heading mb-2">
                     Detailed Chronological Narrative *
                   </label>
                   <textarea
@@ -334,21 +330,21 @@ export default function ComplaintBoxPage() {
                     value={form.description}
                     onChange={(e) => setForm({ ...form, description: e.target.value })}
                     placeholder="Include trading account numbers, deposit dates, transaction IDs, specific dates when withdrawal was requested, broker rep names, and copies of denial emails..."
-                    className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-brand-blue resize-y"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-border text-sm text-text-heading focus:outline-none focus:border-blue resize-y shadow-sm"
                   />
                 </div>
 
                 {/* Document & Evidence Upload Dropzone */}
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-text-heading mb-2">
                     Attach Documentary Evidence (Screenshots, PDFs, Statements)
                   </label>
-                  <label className="border-2 border-dashed border-slate-800 hover:border-slate-600 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition bg-slate-900/50">
-                    <UploadCloud className="w-8 h-8 text-brand-blue mb-2" />
-                    <span className="text-xs sm:text-sm font-medium text-slate-300 text-center">
+                  <label className="border-2 border-dashed border-border hover:border-blue rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition bg-surface-tint">
+                    <UploadCloud className="w-8 h-8 text-blue mb-2" />
+                    <span className="text-xs sm:text-sm font-semibold text-text-heading text-center">
                       Click to upload or drag & drop files here
                     </span>
-                    <span className="text-[11px] text-slate-500 mt-1">
+                    <span className="text-[11px] text-text-muted mt-1">
                       PNG, JPG, PDF up to 10MB each (max 5 attachments)
                     </span>
                     <input
@@ -365,19 +361,19 @@ export default function ComplaintBoxPage() {
                       {files.map((file, idx) => (
                         <div
                           key={idx}
-                          className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300"
+                          className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-border text-xs text-text-body shadow-sm"
                         >
                           <div className="flex items-center gap-2 truncate">
-                            <FileCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                            <span className="truncate">{file.name}</span>
-                            <span className="text-[10px] text-slate-500">
+                            <FileCheck className="w-4 h-4 text-green shrink-0" />
+                            <span className="truncate font-medium">{file.name}</span>
+                            <span className="text-[10px] text-text-muted font-mono">
                               ({(file.size / 1024).toFixed(0)} KB)
                             </span>
                           </div>
                           <button
                             type="button"
                             onClick={() => removeFile(idx)}
-                            className="text-red-400 hover:text-red-300 text-xs font-bold px-2 py-1"
+                            className="text-red-600 hover:text-red-700 text-xs font-bold px-2 py-1"
                           >
                             Remove
                           </button>
@@ -387,17 +383,17 @@ export default function ComplaintBoxPage() {
                   )}
                 </div>
 
-                {/* Declaration & Consent Checkbox (SOW Section 7 Mandatory) */}
-                <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
+                {/* Declaration & Consent Checkbox */}
+                <div className="p-4 rounded-xl bg-surface-tint border border-border space-y-3">
                   <label className="flex items-start gap-3 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={form.declarationConsent}
                       onChange={(e) => setForm({ ...form, declarationConsent: e.target.checked })}
-                      className="mt-1 w-4 h-4 rounded text-brand-blue bg-slate-800 border-slate-700 focus:ring-brand-blue"
+                      className="mt-1 w-4 h-4 rounded text-blue border-border focus:ring-blue"
                     />
-                    <span className="text-xs text-slate-300 leading-relaxed">
-                      <strong className="text-white">Legal Declaration & Mediation Authorization:</strong> I solemnly declare that all statements, dates, and evidence provided above are truthful, accurate, and unedited to the best of my knowledge. I authorize EduTradeFX to contact the accused entity, review transaction records, and post anonymized dispute metrics to the public transparency desk.
+                    <span className="text-xs text-text-body leading-relaxed">
+                      <strong className="text-text-heading">Legal Declaration & Mediation Authorization:</strong> I solemnly declare that all statements, dates, and evidence provided above are truthful, accurate, and unedited to the best of my knowledge. I authorize EduTradeFX to contact the accused entity, review transaction records, and post anonymized dispute metrics to the public transparency desk.
                     </span>
                   </label>
                 </div>
@@ -406,7 +402,7 @@ export default function ComplaintBoxPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:opacity-95 text-white font-bold text-sm tracking-wide shadow-lg shadow-red-900/20 disabled:opacity-50 transition flex items-center justify-center gap-2"
+                  className="w-full py-3.5 px-6 rounded-full bg-orange hover:bg-orange-hover text-white font-bold text-sm tracking-wide shadow-soft hover:shadow-lift disabled:opacity-50 transition flex items-center justify-center gap-2"
                 >
                   {submitting ? (
                     <>
@@ -425,53 +421,51 @@ export default function ComplaintBoxPage() {
 
             {/* Sidebar Guide & Disclaimer */}
             <div className="lg:col-span-4 space-y-6">
-              
               {/* How Mediation Works */}
-              <div className="p-6 rounded-3xl bg-brand-navy-card border border-slate-800 space-y-4">
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <Info className="w-4 h-4 text-brand-blue" />
+              <div className="p-6 rounded-2xl bg-surface-tint border border-border space-y-4">
+                <h3 className="text-base font-bold text-text-heading flex items-center gap-2">
+                  <Info className="w-4 h-4 text-blue" />
                   How Dispute Resolution Works
                 </h3>
-                <div className="space-y-4 text-xs text-slate-400">
+                <div className="space-y-4 text-xs text-text-body">
                   <div className="space-y-1">
-                    <div className="font-semibold text-slate-200">1. Forensic Screening</div>
+                    <div className="font-bold text-text-heading">1. Forensic Screening</div>
                     <p>Our audit team checks regulatory status, licensing jurisdictions, and previous grievance records of the target entity.</p>
                   </div>
                   <div className="space-y-1">
-                    <div className="font-semibold text-slate-200">2. Formal Entity Inquiry</div>
+                    <div className="font-bold text-text-heading">2. Formal Entity Inquiry</div>
                     <p>We dispatch an official dispute inquiry to the brokerage or provider compliance desk giving 5 business days to respond.</p>
                   </div>
                   <div className="space-y-1">
-                    <div className="font-semibold text-slate-200">3. Community Warning & Blacklist</div>
+                    <div className="font-bold text-text-heading">3. Community Warning & Blacklist</div>
                     <p>Non-responsive entities receive a "High Risk / Dispute Notice" flag across all EduTradeFX broker comparison lists.</p>
                   </div>
                 </div>
               </div>
 
               {/* Legal Mandate Disclaimer */}
-              <div className="p-6 rounded-3xl bg-amber-500/10 border border-amber-500/20 space-y-3">
-                <div className="flex items-center gap-2 text-brand-amber font-bold text-xs uppercase tracking-wider">
+              <div className="p-6 rounded-2xl bg-amber-50 border border-amber-200 space-y-3">
+                <div className="flex items-center gap-2 text-orange font-bold text-xs uppercase tracking-wider">
                   <AlertTriangle className="w-4 h-4" />
                   <span>Important Legal Disclosure</span>
                 </div>
-                <p className="text-xs text-amber-200/90 leading-relaxed">
-                  EduTradeFX acts exclusively as an independent trading educational community and dispute mediator. We are not a judicial body, regulatory authority (such as FCA, CySEC, SEC, or CFTC), or legal enforcement court. We cannot physically seize funds or compel bank chargebacks. However, our public reputation indices frequently motivate brokers to resolve legitimate grievances expeditiously.
+                <p className="text-xs text-amber-900 leading-relaxed">
+                  EduTradeFX acts exclusively as an independent trading educational community and dispute mediator. We are not a judicial body or law court. We cannot physically seize funds or compel bank chargebacks. However, our public reputation indices frequently motivate brokers to resolve legitimate grievances expeditiously.
                 </p>
               </div>
 
-              {/* Emergency Contacts */}
-              <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-3">
-                <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+              {/* Direct Compliance Desk */}
+              <div className="p-6 rounded-2xl bg-white border border-border shadow-soft space-y-3">
+                <h4 className="text-xs font-bold text-text-heading uppercase tracking-wider">
                   Direct Compliance Desk
                 </h4>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-text-muted">
                   For law enforcement inquiries, regulatory subpoenas, or urgent security escalations:
                 </p>
-                <div className="text-xs font-mono text-brand-blue">
+                <div className="text-xs font-mono font-bold text-blue">
                   disputes@edutradefx.com
                 </div>
               </div>
-
             </div>
 
           </div>

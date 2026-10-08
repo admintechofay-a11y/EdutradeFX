@@ -56,18 +56,18 @@ export default function SignalProviderOverviewPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-white flex items-center gap-2">
-            <Radio className="w-6 h-6 text-emerald-400" />
+          <h1 className="text-2xl font-black text-navy flex items-center gap-2">
+            <Radio className="w-6 h-6 text-green" />
             Signal Desk & Execution Console
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-text-muted mt-1">
             Broadcast high-conviction trades, monitor live open positions, and track track-record metrics.
           </p>
         </div>
 
         <Link
           href="/dashboard/signal-provider/signals"
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow-lg shadow-emerald-600/20"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition shadow-sm"
         >
           <PlusCircle className="w-4 h-4" />
           <span>Launch Signal Terminal</span>
@@ -76,48 +76,48 @@ export default function SignalProviderOverviewPage() {
 
       {/* KPI Scorecards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-brand-navy-card border border-slate-800 p-5 rounded-3xl shadow-xl">
-          <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
+        <div className="bg-white border border-border p-5 rounded-3xl shadow-soft">
+          <div className="flex items-center justify-between text-text-muted text-xs mb-2">
             <span>Win Rate</span>
-            <Award className="w-4 h-4 text-emerald-400" />
+            <Award className="w-4 h-4 text-green" />
           </div>
-          <div className="text-2xl font-black text-emerald-400 font-mono">
+          <div className="text-2xl font-black text-green font-mono">
             {loading ? <Skeleton className="h-8 w-16" /> : `${winRate}%`}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">Based on closed verified setups</p>
+          <p className="text-[11px] text-text-muted mt-1">Based on closed verified setups</p>
         </div>
 
-        <div className="bg-brand-navy-card border border-slate-800 p-5 rounded-3xl shadow-xl">
-          <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
+        <div className="bg-white border border-border p-5 rounded-3xl shadow-soft">
+          <div className="flex items-center justify-between text-text-muted text-xs mb-2">
             <span>Net Pips Harvested</span>
-            <TrendingUp className="w-4 h-4 text-brand-blue" />
+            <TrendingUp className="w-4 h-4 text-blue" />
           </div>
-          <div className="text-2xl font-black text-white font-mono">
+          <div className="text-2xl font-black text-navy font-mono">
             {loading ? <Skeleton className="h-8 w-20" /> : `${totalPips > 0 ? '+' : ''}${totalPips} pips`}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">Cumulative performance</p>
+          <p className="text-[11px] text-text-muted mt-1">Cumulative performance</p>
         </div>
 
-        <div className="bg-brand-navy-card border border-slate-800 p-5 rounded-3xl shadow-xl">
-          <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
+        <div className="bg-white border border-border p-5 rounded-3xl shadow-soft">
+          <div className="flex items-center justify-between text-text-muted text-xs mb-2">
             <span>Live Active Setups</span>
-            <Clock className="w-4 h-4 text-amber-400" />
+            <Clock className="w-4 h-4 text-orange" />
           </div>
-          <div className="text-2xl font-black text-amber-400 font-mono">
+          <div className="text-2xl font-black text-orange font-mono">
             {loading ? <Skeleton className="h-8 w-12" /> : activeSignals.length}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">Currently open in market</p>
+          <p className="text-[11px] text-text-muted mt-1">Currently open in market</p>
         </div>
 
-        <div className="bg-brand-navy-card border border-slate-800 p-5 rounded-3xl shadow-xl">
-          <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
+        <div className="bg-white border border-border p-5 rounded-3xl shadow-soft">
+          <div className="flex items-center justify-between text-text-muted text-xs mb-2">
             <span>Total Broadcasts</span>
-            <Radio className="w-4 h-4 text-purple-400" />
+            <Radio className="w-4 h-4 text-blue" />
           </div>
-          <div className="text-2xl font-black text-white font-mono">
+          <div className="text-2xl font-black text-navy font-mono">
             {loading ? <Skeleton className="h-8 w-12" /> : signals.length}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">Published signal history</p>
+          <p className="text-[11px] text-text-muted mt-1">Published signal history</p>
         </div>
       </div>
 
@@ -125,42 +125,42 @@ export default function SignalProviderOverviewPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <Link
           href="/dashboard/signal-provider/signals"
-          className="p-6 rounded-3xl bg-brand-navy-card border border-slate-800 hover:border-emerald-500/50 transition group shadow-xl"
+          className="p-6 rounded-3xl bg-white border border-border hover:border-green/50 transition group shadow-soft hover:shadow-card"
         >
-          <Radio className="w-8 h-8 text-emerald-400 mb-3 group-hover:scale-110 transition" />
-          <h3 className="text-sm font-bold text-white mb-1 flex items-center justify-between">
+          <Radio className="w-8 h-8 text-green mb-3 group-hover:scale-110 transition" />
+          <h3 className="text-sm font-bold text-text-heading mb-1 flex items-center justify-between">
             <span>Signals Terminal</span>
-            <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-emerald-400 transition" />
+            <ArrowRight className="w-4 h-4 text-text-muted group-hover:text-green transition" />
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-text-muted">
             Publish new forex, crypto, and commodity calls with entry, stop loss, and multiple take profit targets.
           </p>
         </Link>
 
         <Link
           href="/dashboard/signal-provider/enquiries"
-          className="p-6 rounded-3xl bg-brand-navy-card border border-slate-800 hover:border-brand-blue/50 transition group shadow-xl"
+          className="p-6 rounded-3xl bg-white border border-border hover:border-blue/50 transition group shadow-soft hover:shadow-card"
         >
-          <Users className="w-8 h-8 text-brand-blue mb-3 group-hover:scale-110 transition" />
-          <h3 className="text-sm font-bold text-white mb-1 flex items-center justify-between">
+          <Users className="w-8 h-8 text-blue mb-3 group-hover:scale-110 transition" />
+          <h3 className="text-sm font-bold text-text-heading mb-1 flex items-center justify-between">
             <span>Investor & Subscriber Enquiries</span>
-            <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-brand-blue transition" />
+            <ArrowRight className="w-4 h-4 text-text-muted group-hover:text-blue transition" />
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-text-muted">
             Communicate with prospective VIP subscribers, answering copy-trading and risk-management questions.
           </p>
         </Link>
 
         <Link
           href="/dashboard/signal-provider/profile"
-          className="p-6 rounded-3xl bg-brand-navy-card border border-slate-800 hover:border-purple-500/50 transition group shadow-xl"
+          className="p-6 rounded-3xl bg-white border border-border hover:border-navy/40 transition group shadow-soft hover:shadow-card"
         >
-          <ShieldCheck className="w-8 h-8 text-purple-400 mb-3 group-hover:scale-110 transition" />
-          <h3 className="text-sm font-bold text-white mb-1 flex items-center justify-between">
+          <ShieldCheck className="w-8 h-8 text-navy mb-3 group-hover:scale-110 transition" />
+          <h3 className="text-sm font-bold text-text-heading mb-1 flex items-center justify-between">
             <span>Trading Profile & Track Record</span>
-            <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-purple-400 transition" />
+            <ArrowRight className="w-4 h-4 text-text-muted group-hover:text-navy transition" />
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-text-muted">
             Display verified trading methodology, risk parameters, Myfxbook sync, and institutional bio.
           </p>
         </Link>

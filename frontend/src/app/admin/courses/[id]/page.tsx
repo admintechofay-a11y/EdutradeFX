@@ -70,23 +70,23 @@ export default function AdminCourseDetailPage() {
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto space-y-6">
-        <Skeleton className="h-10 w-48 rounded-xl" />
-        <Skeleton className="h-64 rounded-3xl" />
+        <Skeleton className="h-10 w-48 rounded-xl bg-border/40" />
+        <Skeleton className="h-64 rounded-3xl bg-border/40" />
       </div>
     );
   }
 
   if (!course) {
     return (
-      <div className="max-w-2xl mx-auto text-center py-16 space-y-4">
-        <BookOpen className="w-12 h-12 text-slate-600 mx-auto" />
-        <h2 className="text-xl font-bold text-white">Course Not Found</h2>
-        <p className="text-xs text-slate-400">
+      <div className="max-w-2xl mx-auto text-center py-16 space-y-4 bg-white border border-border rounded-3xl p-8 shadow-soft">
+        <BookOpen className="w-12 h-12 text-border mx-auto" />
+        <h2 className="text-xl font-bold text-navy">Course Not Found</h2>
+        <p className="text-xs text-text-muted">
           The requested course could not be located or may have been deleted.
         </p>
         <Link
           href="/admin/courses"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue text-white rounded-xl text-xs font-bold"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition shadow-sm"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to All Courses</span>
@@ -101,7 +101,7 @@ export default function AdminCourseDetailPage() {
       <div>
         <Link
           href="/admin/courses"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-white transition"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-text-muted hover:text-navy transition"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to All Courses</span>
@@ -109,28 +109,28 @@ export default function AdminCourseDetailPage() {
       </div>
 
       {/* Main Card */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-slate-900 border border-slate-800 space-y-6 shadow-xl">
+      <div className="p-6 sm:p-8 rounded-3xl bg-white border border-border space-y-6 shadow-soft">
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-brand-blue/15 text-brand-blue border border-brand-blue/30 uppercase tracking-wider">
+              <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-blue/10 text-blue border border-blue/20 uppercase tracking-wider">
                 {course.category}
               </span>
-              <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300">
+              <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-surface-tint border border-border text-text-body">
                 {course.level}
               </span>
               <span
                 className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
                   course.status === 'PUBLISHED'
-                    ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                    : 'bg-amber-500/15 text-brand-amber border border-amber-500/30'
+                    ? 'bg-green/10 text-green border border-green/20'
+                    : 'bg-orange/10 text-orange border border-orange/20'
                 }`}
               >
                 {course.status}
               </span>
             </div>
-            <h1 className="text-2xl font-black text-white">{course.title}</h1>
-            <p className="text-xs text-slate-400 leading-relaxed max-w-2xl">
+            <h1 className="text-2xl font-black text-navy">{course.title}</h1>
+            <p className="text-xs text-text-muted leading-relaxed max-w-2xl">
               {course.shortDescription || course.description}
             </p>
           </div>
@@ -140,7 +140,7 @@ export default function AdminCourseDetailPage() {
               <button
                 onClick={() => updateStatus('PUBLISHED')}
                 disabled={actionLoading}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow-lg shadow-emerald-600/20"
+                className="px-4 py-2 bg-green hover:bg-green-hover text-white rounded-full text-xs font-bold transition shadow-sm"
               >
                 Publish Masterclass
               </button>
@@ -149,7 +149,7 @@ export default function AdminCourseDetailPage() {
               <button
                 onClick={() => updateStatus('ARCHIVED')}
                 disabled={actionLoading}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition"
+                className="px-4 py-2 bg-surface-tint hover:bg-border/60 text-text-body border border-border rounded-full text-xs font-bold transition"
               >
                 Unpublish
               </button>
@@ -158,46 +158,46 @@ export default function AdminCourseDetailPage() {
         </div>
 
         {/* Details Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-slate-800">
-          <div className="p-4 rounded-2xl bg-slate-850/60 border border-slate-800 space-y-1">
-            <div className="text-[11px] font-bold text-slate-400 uppercase">Instructor</div>
-            <div className="text-sm font-bold text-white flex items-center gap-1.5">
-              <User className="w-4 h-4 text-brand-blue" />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-border">
+          <div className="p-4 rounded-2xl bg-surface-tint border border-border space-y-1">
+            <div className="text-[11px] font-bold text-text-muted uppercase">Instructor</div>
+            <div className="text-sm font-bold text-navy flex items-center gap-1.5">
+              <User className="w-4 h-4 text-blue" />
               <span>{course.tutor?.user?.name || 'Instructor'}</span>
             </div>
-            <div className="text-xs text-slate-500">{course.tutor?.user?.email}</div>
+            <div className="text-xs text-text-muted">{course.tutor?.user?.email}</div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-850/60 border border-slate-800 space-y-1">
-            <div className="text-[11px] font-bold text-slate-400 uppercase">Price & Currency</div>
-            <div className="text-sm font-black text-brand-amber flex items-center gap-1">
+          <div className="p-4 rounded-2xl bg-surface-tint border border-border space-y-1">
+            <div className="text-[11px] font-bold text-text-muted uppercase">Price & Currency</div>
+            <div className="text-sm font-black text-orange flex items-center gap-1">
               <DollarSign className="w-4 h-4" />
               <span>{course.price === 0 ? 'Free' : `₹${course.price.toLocaleString()}`}</span>
             </div>
-            <div className="text-xs text-slate-500">{course.currency || 'INR'}</div>
+            <div className="text-xs text-text-muted">{course.currency || 'INR'}</div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-850/60 border border-slate-800 space-y-1">
-            <div className="text-[11px] font-bold text-slate-400 uppercase">Submitted At</div>
-            <div className="text-sm font-bold text-slate-200 flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-slate-400" />
+          <div className="p-4 rounded-2xl bg-surface-tint border border-border space-y-1">
+            <div className="text-[11px] font-bold text-text-muted uppercase">Submitted At</div>
+            <div className="text-sm font-bold text-text-heading flex items-center gap-1.5">
+              <Clock className="w-4 h-4 text-text-muted" />
               <span>
                 {new Date(course.createdAt).toLocaleDateString(undefined, {
                   dateStyle: 'medium',
                 })}
               </span>
             </div>
-            <div className="text-xs text-slate-500">ID: {course.id.slice(0, 8)}...</div>
+            <div className="text-xs text-text-muted">ID: {course.id.slice(0, 8)}...</div>
           </div>
         </div>
 
         {/* Full description */}
         {course.description && (
-          <div className="pt-6 border-t border-slate-800 space-y-2">
-            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+          <div className="pt-6 border-t border-border space-y-2">
+            <h3 className="text-xs font-bold text-navy uppercase tracking-wider">
               Course Overview & Syllabus
             </h3>
-            <p className="text-xs text-slate-400 whitespace-pre-line leading-relaxed">
+            <p className="text-xs text-text-body whitespace-pre-line leading-relaxed">
               {course.description}
             </p>
           </div>

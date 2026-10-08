@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  TrendingUp,
   User,
   Mail,
   Lock,
@@ -18,7 +17,6 @@ import {
   ArrowRight,
   AlertCircle,
   CheckCircle,
-  ShieldCheck,
   Briefcase
 } from 'lucide-react';
 import { api } from '../../../lib/api';
@@ -28,7 +26,7 @@ import { useAuthStore } from '../../../store/authStore';
 export default function RegisterPage() {
   const router = useRouter();
 
-  // Mode: 'TRADER' (Standard SOW Section 2 registration) or 'PARTNER' (Institutional application)
+  // Mode: 'TRADER' or 'PARTNER'
   const [mode, setMode] = useState<'TRADER' | 'PARTNER'>('TRADER');
   const [partnerRole, setPartnerRole] = useState<Role>('BROKER');
 
@@ -114,34 +112,29 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 bg-brand-navy">
-      <div className="w-full max-w-xl space-y-6 bg-brand-navy-card border border-slate-800 p-8 sm:p-10 rounded-3xl shadow-2xl">
+    <div className="min-h-screen flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 bg-surface-tint">
+      <div className="w-full max-w-xl space-y-6 bg-white border border-border p-8 sm:p-10 rounded-3xl shadow-lift">
         
         {/* Brand Logo & Heading */}
         <div className="text-center">
           <Link href="/" className="inline-flex items-center gap-2 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-blue to-blue-400 flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <TrendingUp className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-xl font-extrabold text-white tracking-tight">
-              EduTrade<span className="text-brand-blue">FX</span>
-            </span>
+            <img src="/logos/logo-color.svg" alt="EduTradeFX" className="h-9 w-auto" />
           </Link>
-          <h2 className="text-2xl sm:text-3xl font-black text-white">Create Your Account</h2>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <h2 className="text-2xl sm:text-3xl font-black text-text-heading">Create Your Account</h2>
+          <p className="text-xs sm:text-sm text-text-muted mt-1">
             Access verified broker audits, institutional courses, and dispute protection
           </p>
         </div>
 
         {/* Account Mode Toggle (Trader vs Partner) */}
-        <div className="flex p-1 rounded-2xl bg-slate-900 border border-slate-800">
+        <div className="flex p-1.5 rounded-full bg-surface-tint border border-border">
           <button
             type="button"
             onClick={() => setMode('TRADER')}
-            className={`flex-1 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 ${
+            className={`flex-1 py-2.5 rounded-full text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 ${
               mode === 'TRADER'
-                ? 'bg-brand-blue text-white shadow-md'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-blue text-white shadow-soft'
+                : 'text-text-muted hover:text-text-heading'
             }`}
           >
             <User className="w-4 h-4" />
@@ -150,10 +143,10 @@ export default function RegisterPage() {
           <button
             type="button"
             onClick={() => setMode('PARTNER')}
-            className={`flex-1 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 ${
+            className={`flex-1 py-2.5 rounded-full text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 ${
               mode === 'PARTNER'
-                ? 'bg-brand-blue text-white shadow-md'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-blue text-white shadow-soft'
+                : 'text-text-muted hover:text-text-heading'
             }`}
           >
             <Briefcase className="w-4 h-4" />
@@ -163,9 +156,9 @@ export default function RegisterPage() {
 
         {/* Success Alert */}
         {success && (
-          <div className="p-4 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center gap-3 text-emerald-300">
-            <CheckCircle className="w-5 h-5 shrink-0 text-emerald-400" />
-            <div className="text-xs sm:text-sm">
+          <div className="p-4 rounded-2xl bg-green-50 border border-green-200 flex items-center gap-3 text-green">
+            <CheckCircle className="w-5 h-5 shrink-0" />
+            <div className="text-xs sm:text-sm font-semibold">
               Account created successfully! Redirecting...
             </div>
           </div>
@@ -173,8 +166,8 @@ export default function RegisterPage() {
 
         {/* Error Alert */}
         {error && (
-          <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-start gap-2.5 text-xs text-rose-300">
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-400" />
+          <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 flex items-start gap-2.5 text-xs text-red-600">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
             <span>{error}</span>
           </div>
         )}
@@ -182,7 +175,7 @@ export default function RegisterPage() {
         {/* Partner Role Picker (Only shown in Institutional Partner mode) */}
         {mode === 'PARTNER' && (
           <div className="space-y-2">
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-400">
+            <label className="block text-xs font-bold uppercase tracking-wider text-text-muted">
               Institutional Entity Type:
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -196,20 +189,20 @@ export default function RegisterPage() {
                     onClick={() => setPartnerRole(opt.role)}
                     className={`p-3 rounded-xl border text-left transition flex items-start gap-2.5 ${
                       isSelected
-                        ? 'bg-brand-blue/15 border-brand-blue text-white'
-                        : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                        ? 'bg-blue-50 border-blue text-text-heading'
+                        : 'bg-white border-border text-text-muted hover:border-blue'
                     }`}
                   >
-                    <Icon className="w-4 h-4 text-brand-blue shrink-0 mt-0.5" />
+                    <Icon className="w-4 h-4 text-blue shrink-0 mt-0.5" />
                     <div>
-                      <div className="text-xs font-bold text-white">{opt.label}</div>
-                      <div className="text-[10px] text-slate-400 mt-0.5 leading-snug">{opt.desc}</div>
+                      <div className="text-xs font-bold text-text-heading">{opt.label}</div>
+                      <div className="text-[10px] text-text-muted mt-0.5 leading-snug">{opt.desc}</div>
                     </div>
                   </button>
                 );
               })}
             </div>
-            <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-200">
+            <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-800">
               Institutional partner applications require compliance verification before public listing activation.
             </div>
           </div>
@@ -218,64 +211,64 @@ export default function RegisterPage() {
         {/* Form Fields */}
         <form onSubmit={handleRegister} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-text-heading mb-1.5 uppercase tracking-wider">
               {mode === 'PARTNER' ? 'Entity / Representative Full Name *' : 'Full Name *'}
             </label>
             <div className="relative">
-              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Alex Morgan"
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-blue"
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-text-heading mb-1.5 uppercase tracking-wider">
                 Email Address *
               </label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="alex@example.com"
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-blue"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-text-heading mb-1.5 uppercase tracking-wider">
                 Mobile Number *
               </label>
               <div className="relative">
-                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
                 <input
                   type="tel"
                   required
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+44 7911 123456"
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-blue"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
                 />
               </div>
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
-              Password * <span className="text-[10px] text-slate-400 lowercase font-normal">(min 8 chars, 1 uppercase, 1 number, 1 symbol)</span>
+            <label className="block text-xs font-semibold text-text-heading mb-1.5 uppercase tracking-wider">
+              Password * <span className="text-[10px] text-text-muted lowercase font-normal">(min 8 chars, 1 uppercase, 1 number, 1 symbol)</span>
             </label>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 required
@@ -283,39 +276,39 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-10 pr-10 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-blue"
+                className="w-full pl-10 pr-10 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-heading"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
           </div>
 
-          {/* Mandatory Consent Checkbox (SOW Section 2 Requirement) */}
-          <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
+          {/* Mandatory Consent Checkbox */}
+          <div className="p-3.5 rounded-xl bg-surface-tint border border-border">
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 required
                 checked={consent}
                 onChange={(e) => setConsent(e.target.checked)}
-                className="mt-0.5 w-4 h-4 rounded text-brand-blue bg-slate-800 border-slate-700 focus:ring-brand-blue"
+                className="mt-0.5 w-4 h-4 rounded text-blue border-border focus:ring-blue"
               />
-              <span className="text-[11px] sm:text-xs text-slate-300 leading-relaxed">
+              <span className="text-[11px] sm:text-xs text-text-body leading-relaxed">
                 I agree to the{' '}
-                <Link href="/terms" target="_blank" className="text-brand-blue hover:underline font-semibold">
+                <Link href="/terms" target="_blank" className="text-blue hover:underline font-semibold">
                   Terms of Service
                 </Link>
                 ,{' '}
-                <Link href="/privacy" target="_blank" className="text-brand-blue hover:underline font-semibold">
+                <Link href="/privacy" target="_blank" className="text-blue hover:underline font-semibold">
                   Privacy Policy
                 </Link>
                 , and acknowledge the{' '}
-                <Link href="/risk-disclaimer" target="_blank" className="text-red-400 hover:underline font-semibold">
+                <Link href="/risk-disclaimer" target="_blank" className="text-red-600 hover:underline font-semibold">
                   High-Risk Investment Warning
                 </Link>
                 .
@@ -326,7 +319,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 bg-gradient-to-r from-brand-blue to-brand-cyan hover:opacity-95 disabled:opacity-50 text-white font-bold text-sm rounded-xl transition shadow-lg shadow-brand-blue/20 flex items-center justify-center gap-2"
+            className="w-full py-3.5 bg-orange hover:bg-orange-hover disabled:opacity-50 text-white font-bold text-sm rounded-full transition shadow-soft flex items-center justify-center gap-2"
           >
             <span>{loading ? 'Creating Account...' : (mode === 'PARTNER' ? 'Submit Partner Application' : 'Create Free Trader Account')}</span>
             <ArrowRight className="w-4 h-4" />
@@ -334,9 +327,9 @@ export default function RegisterPage() {
         </form>
 
         {/* Footer */}
-        <div className="text-center pt-2 border-t border-slate-800 text-xs text-slate-400">
+        <div className="text-center pt-2 border-t border-border text-xs text-text-muted">
           Already have an account?{' '}
-          <Link href="/login" className="font-bold text-brand-blue hover:text-brand-cyan transition">
+          <Link href="/login" className="font-bold text-blue hover:text-blue-hover transition">
             Sign In Here
           </Link>
         </div>

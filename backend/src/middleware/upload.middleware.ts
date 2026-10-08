@@ -7,7 +7,11 @@ import { AppError } from './error.middleware';
 import { APP_CONSTANTS } from '../config/constants';
 
 // Helper to configure Cloudinary storage per folder
-export const createCloudinaryStorage = (folderName: string, resourceType: 'image' | 'raw' | 'video' | 'auto' = 'auto') => {
+export const createCloudinaryStorage = (
+  folderName: string,
+  resourceType: 'image' | 'raw' | 'video' | 'auto' = 'auto',
+  type: 'upload' | 'authenticated' = 'upload'
+) => {
   return new CloudinaryStorage({
     cloudinary: cloudinary,
     params: async (req, file) => {
@@ -19,6 +23,7 @@ export const createCloudinaryStorage = (folderName: string, resourceType: 'image
         folder: `edutradefx/${folderName}`,
         public_id: `${cleanName}-${uniqueSuffix}`,
         resource_type: resourceType,
+        type: type,
       };
     },
   });
@@ -26,6 +31,7 @@ export const createCloudinaryStorage = (folderName: string, resourceType: 'image
 
 export const imageStorage = createCloudinaryStorage('images', 'image');
 export const documentStorage = createCloudinaryStorage('documents', 'raw');
+export const sensitiveDocumentStorage = createCloudinaryStorage('sensitive-compliance', 'raw', 'authenticated');
 export const videoStorage = createCloudinaryStorage('videos', 'video');
 export const courseContentStorage = createCloudinaryStorage('course-content', 'auto');
 
@@ -93,6 +99,107 @@ export const uploadCourseContent = multer({
       cb(null, true);
     } else {
       cb(new AppError('Only video files (MP4/MOV) and PDF documents are supported for curriculum content.', StatusCodes.BAD_REQUEST));
+    }
+  },
+});
+
+// ─── 5. Broker Onboarding Dedicated Uploaders ─────────
+
+export const uploadLicensePdf = multer({
+  storage: sensitiveDocumentStorage,
+  limits: { fileSize: 15 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (file.mimetype === 'application/pdf' && ext === '.pdf') {
+      cb(null, true);
+    } else {
+      cb(new AppError('Only PDF files are accepted for regulatory license documents.', StatusCodes.BAD_REQUEST));
+    }
+  },
+});
+
+export const uploadLicenseProof = multer({
+  storage: sensitiveDocumentStorage,
+  limits: { fileSize: 15 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const allowedMimes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
+    const allowedExts = ['.pdf', '.jpg', '.jpeg', '.png', '.webp'];
+    if (allowedMimes.includes(file.mimetype) && allowedExts.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(new AppError('Only PDF or image files (JPG, PNG) are accepted for regulatory proof.', StatusCodes.BAD_REQUEST));
+    }
+  },
+});
+
+export const uploadOfficeImages = multer({
+  storage: imageStorage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const isMimeValid = APP_CONSTANTS.ALLOWED_IMAGE_TYPES.includes(file.mimetype);
+    const isExtValid = APP_CONSTANTS.ALLOWED_IMAGE_EXTENSIONS.includes(ext);
+    if (isMimeValid && isExtValid) {
+      cb(null, true);
+    } else {
+      cb(new AppError('Only JPG, PNG, and WebP images are permitted for office photos.', StatusCodes.BAD_REQUEST));
+    }
+  },
+});
+
+export const uploadBoardPhoto = multer({
+  storage: imageStorage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const isMimeValid = APP_CONSTANTS.ALLOWED_IMAGE_TYPES.includes(file.mimetype);
+    const isExtValid = APP_CONSTANTS.ALLOWED_IMAGE_EXTENSIONS.includes(ext);
+    if (isMimeValid && isExtValid) {
+      cb(null, true);
+    } else {
+      cb(new AppError('Only JPG, PNG, and WebP images are permitted for board member photos.', StatusCodes.BAD_REQUEST));
+    }
+  },
+});
+
+export const uploadPolicyPdf = multer({
+  storage: documentStorage,
+  limits: { fileSize: 20 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (file.mimetype === 'application/pdf' && ext === '.pdf') {
+      cb(null, true);
+    } else {
+      cb(new AppError('Only official PDF documents are accepted for platform policies.', StatusCodes.BAD_REQUEST));
+    }
+  },
+});
+
+export const uploadStructureDoc = multer({
+  storage: documentStorage,
+  limits: { fileSize: 15 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const allowedMimes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
+    const allowedExts = ['.pdf', '.jpg', '.jpeg', '.png', '.webp'];
+    if (allowedMimes.includes(file.mimetype) && allowedExts.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(new AppError('Only PDF or image files are accepted for fee and structure schedules.', StatusCodes.BAD_REQUEST));
+    }
+  },
+});
+
+export const uploadPromoVideo = multer({
+  storage: videoStorage,
+  limits: { fileSize: 100 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (['video/mp4', 'video/quicktime'].includes(file.mimetype) && ['.mp4', '.mov'].includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(new AppError('Only MP4 and MOV videos up to 100MB are permitted for promotional videos.', StatusCodes.BAD_REQUEST));
     }
   },
 });

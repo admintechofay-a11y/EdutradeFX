@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { UserCheck, Star, MapPin, Briefcase, Languages, ArrowRight } from 'lucide-react';
+import { MapPin, Briefcase, ArrowRight } from 'lucide-react';
 import { AccountManager } from '../../types';
 import { StarRating } from '../common/StarRating';
 
@@ -12,54 +12,54 @@ interface AMCardProps {
 
 export const AMCard: React.FC<AMCardProps> = ({ am }) => {
   return (
-    <div className="group rounded-2xl bg-brand-navy-card border border-slate-800 hover:border-slate-700 transition-all duration-300 hover:-translate-y-1 shadow-lg p-6 flex flex-col justify-between">
+    <div className="group rounded-2xl bg-white border border-border hover:border-green/40 transition-all duration-300 hover:-translate-y-1 shadow-soft hover:shadow-lift p-6 flex flex-col justify-between">
       <div>
         {/* Header Photo + Name */}
         <div className="flex items-center gap-4 mb-4">
-          <div className="w-16 h-16 rounded-2xl bg-brand-navy-light border border-slate-700 flex items-center justify-center overflow-hidden shrink-0 shadow-md">
+          <div className="w-16 h-16 rounded-2xl bg-surface-tint border border-border flex items-center justify-center overflow-hidden shrink-0 shadow-sm group-hover:scale-105 transition-transform">
             {am.photo ? (
               <img src={am.photo} alt={am.fullName} className="w-full h-full object-cover" />
             ) : (
-              <span className="text-xl font-extrabold text-brand-blue">
+              <span className="text-xl font-extrabold font-mono text-green">
                 {am.fullName ? am.fullName[0].toUpperCase() : 'M'}
               </span>
             )}
           </div>
           <div className="overflow-hidden">
             <div className="flex items-center gap-2 mb-0.5">
-              <h3 className="text-base font-bold text-white group-hover:text-brand-blue transition truncate">
+              <h3 className="text-base font-bold text-text-heading group-hover:text-green transition truncate">
                 {am.fullName}
               </h3>
               {am.isFeatured && (
-                <span className="px-2 py-0.5 rounded-full bg-brand-amber/15 text-brand-amber text-[10px] font-bold border border-brand-amber/30">
+                <span className="px-2 py-0.5 rounded-full bg-green-50 text-green text-[10px] font-bold border border-green-200">
                   TOP AM
                 </span>
               )}
             </div>
-            <p className="text-xs text-slate-400 truncate">{am.tagline || 'PAMM & Portfolio Specialist'}</p>
+            <p className="text-xs text-text-muted truncate">{am.tagline || 'PAMM & Portfolio Specialist'}</p>
             <div className="flex items-center gap-1 mt-1 text-xs">
               <StarRating rating={am.avgRating} />
-              <span className="font-bold text-white ml-1">{am.avgRating.toFixed(1)}</span>
-              <span className="text-slate-400">({am.totalReviews})</span>
+              <span className="font-bold text-text-heading ml-1">{am.avgRating.toFixed(1)}</span>
+              <span className="text-text-muted">({am.totalReviews})</span>
             </div>
           </div>
         </div>
 
         {/* Location & Experience */}
-        <div className="grid grid-cols-2 gap-2 text-xs text-slate-300 py-3 border-t border-b border-slate-800/80 mb-4">
+        <div className="grid grid-cols-2 gap-2 text-xs text-text-body py-3 border-t border-b border-border mb-4">
           <div className="flex items-center gap-1.5 truncate">
-            <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+            <MapPin className="w-3.5 h-3.5 text-text-muted shrink-0" />
             <span className="truncate">{am.country || 'Global'}</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Briefcase className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+            <Briefcase className="w-3.5 h-3.5 text-text-muted shrink-0" />
             <span>{am.yearsExperience ? `${am.yearsExperience} yrs exp` : 'Verified Exp'}</span>
           </div>
         </div>
 
         {/* Expertise Tags */}
         <div className="space-y-1.5 mb-4">
-          <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+          <div className="text-[11px] font-bold text-text-muted uppercase tracking-wider">
             Key Strategies
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -67,7 +67,7 @@ export const AMCard: React.FC<AMCardProps> = ({ am }) => {
               am.expertise.slice(0, 3).map((exp, i) => (
                 <span
                   key={i}
-                  className="px-2.5 py-0.5 rounded-md bg-brand-navy-light text-slate-300 text-[11px] border border-slate-700/80"
+                  className="px-2.5 py-0.5 rounded-full bg-surface-tint text-text-body text-[11px] font-medium border border-border"
                 >
                   {exp}
                 </span>
@@ -76,7 +76,7 @@ export const AMCard: React.FC<AMCardProps> = ({ am }) => {
               ['PAMM', 'Hedging', 'Risk Management'].map((exp, i) => (
                 <span
                   key={i}
-                  className="px-2.5 py-0.5 rounded-md bg-brand-navy-light text-slate-300 text-[11px] border border-slate-700/80"
+                  className="px-2.5 py-0.5 rounded-full bg-surface-tint text-text-body text-[11px] font-medium border border-border"
                 >
                   {exp}
                 </span>
@@ -90,10 +90,10 @@ export const AMCard: React.FC<AMCardProps> = ({ am }) => {
       <div className="pt-2">
         <Link
           href={`/account-managers/${am.slug}`}
-          className="w-full py-2.5 bg-brand-navy-light hover:bg-slate-700 text-white rounded-xl text-xs font-bold border border-slate-700 transition flex items-center justify-center gap-2 group-hover:border-slate-500"
+          className="w-full py-2.5 bg-surface-tint hover:bg-green hover:text-white text-text-heading rounded-full text-xs font-bold border border-border hover:border-green transition-all flex items-center justify-center gap-2 shadow-sm group/btn"
         >
           <span>View Track Record</span>
-          <ArrowRight className="w-3.5 h-3.5" />
+          <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
         </Link>
       </div>
     </div>

@@ -1,9 +1,23 @@
 import type { Metadata } from 'next';
+import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import '../styles/globals.css';
 import { AppProviders } from '../components/providers/AppProviders';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { AIAssistant } from '../components/common/AIAssistant';
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-sans',
+  display: 'swap',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'EdutradeFX — Global Forex Marketplace, Education & Trading Ecosystem',
@@ -25,8 +39,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
-      <body className="min-h-screen flex flex-col bg-[#0A0F1E] text-text-primary antialiased selection:bg-blue-600 selection:text-white">
+    <html lang="en" className={`${plusJakartaSans.variable} ${jetbrainsMono.variable}`}>
+      <body className="min-h-screen flex flex-col bg-white text-text-body font-sans antialiased selection:bg-blue-600 selection:text-white">
         <AppProviders>
           <Navbar />
           <main className="flex-1 w-full">{children}</main>

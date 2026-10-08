@@ -44,11 +44,11 @@ export default function BlogPostDetailPage() {
   if (!post) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-24 text-center">
-        <h2 className="text-2xl font-bold text-white mb-2">Article Not Found</h2>
-        <p className="text-slate-400 mb-6">The requested market analysis article does not exist or has been removed.</p>
+        <h2 className="text-2xl font-bold text-text-heading mb-2">Article Not Found</h2>
+        <p className="text-text-muted mb-6">The requested market analysis article does not exist or has been removed.</p>
         <Link
           href="/blog"
-          className="px-6 py-2.5 bg-brand-blue text-white rounded-xl text-sm font-semibold"
+          className="px-6 py-2.5 bg-blue text-white rounded-full text-sm font-semibold hover:bg-blue-hover transition"
         >
           Back to Blog
         </Link>
@@ -57,12 +57,12 @@ export default function BlogPostDetailPage() {
   }
 
   return (
-    <article className="min-h-screen py-12 text-slate-100">
+    <article className="min-h-screen py-12 text-text-body bg-white">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Link */}
         <Link
           href="/blog"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-white transition mb-6"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-text-muted hover:text-blue transition mb-6"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to Articles</span>
@@ -70,22 +70,22 @@ export default function BlogPostDetailPage() {
 
         {/* Category & Title */}
         <div className="space-y-4 mb-8">
-          <span className="inline-block px-3 py-1 rounded-full bg-brand-blue/15 text-brand-blue text-xs font-bold border border-brand-blue/30">
+          <span className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue text-xs font-bold border border-blue-200">
             {post.category}
           </span>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-text-heading leading-tight">
             {post.title}
           </h1>
 
           {/* Author & Meta */}
-          <div className="flex items-center justify-between pt-4 border-t border-slate-800 text-xs text-slate-400 flex-wrap gap-4">
+          <div className="flex items-center justify-between pt-4 border-t border-border text-xs text-text-muted flex-wrap gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-brand-navy-light border border-slate-700 flex items-center justify-center font-bold text-white">
+              <div className="w-8 h-8 rounded-full bg-blue-50 text-blue border border-blue-200 flex items-center justify-center font-bold">
                 {post.author?.name ? post.author.name[0].toUpperCase() : 'E'}
               </div>
               <div>
-                <span className="font-semibold text-white">{post.author?.name || 'EdutradeFX Research'}</span>
-                <div className="text-[11px] text-slate-500">Forex Analyst</div>
+                <span className="font-semibold text-text-heading">{post.author?.name || 'EdutradeFX Research'}</span>
+                <div className="text-[11px] text-text-muted">Forex Analyst</div>
               </div>
             </div>
 
@@ -110,24 +110,24 @@ export default function BlogPostDetailPage() {
 
         {/* Cover Image */}
         {post.coverImage && (
-          <div className="rounded-3xl overflow-hidden aspect-video bg-slate-800 mb-10 shadow-2xl border border-slate-800">
+          <div className="rounded-3xl overflow-hidden aspect-video bg-surface-tint mb-10 shadow-soft border border-border">
             <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover" />
           </div>
         )}
 
         {/* Content Body */}
-        <div className="prose prose-invert max-w-none text-slate-300 text-base sm:text-lg leading-relaxed whitespace-pre-line space-y-6">
+        <div className="prose max-w-none text-text-body text-base sm:text-lg leading-relaxed whitespace-pre-line space-y-6">
           {post.content}
         </div>
 
         {/* Tags */}
         {post.tags && post.tags.length > 0 && (
-          <div className="mt-12 pt-6 border-t border-slate-800 flex items-center gap-2 flex-wrap">
-            <Tag className="w-4 h-4 text-slate-500" />
+          <div className="mt-12 pt-6 border-t border-border flex items-center gap-2 flex-wrap">
+            <Tag className="w-4 h-4 text-text-muted" />
             {post.tags.map((t, i) => (
               <span
                 key={i}
-                className="px-3 py-1 rounded-lg bg-brand-navy-light text-slate-300 text-xs border border-slate-700"
+                className="px-3 py-1 rounded-full bg-surface-tint text-text-body text-xs border border-border"
               >
                 #{t}
               </span>

@@ -21,6 +21,7 @@ const envSchema = z.object({
   CLOUDINARY_CLOUD_NAME: z.string().optional(),
   CLOUDINARY_API_KEY: z.string().optional(),
   CLOUDINARY_API_SECRET: z.string().optional(),
+  BROKER_SECRET_KEY: z.string().min(32, 'BROKER_SECRET_KEY must be at least 32 characters long for AES-256 encryption').default('edutrade_broker_secret_key_32_chars_min_2026!'),
 });
 
 export const validateEnv = () => {

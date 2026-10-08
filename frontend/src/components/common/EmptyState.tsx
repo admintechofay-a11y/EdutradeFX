@@ -22,16 +22,16 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   icon,
 }) => {
   return (
-    <div className="flex flex-col items-center justify-center p-12 text-center rounded-xl bg-slate-900/40 border border-slate-800">
-      <div className="w-14 h-14 rounded-full bg-slate-800/80 flex items-center justify-center text-blue-400 mb-4 border border-slate-700/50">
+    <div className="flex flex-col items-center justify-center p-12 text-center rounded-2xl bg-surface-tint border border-border">
+      <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center text-blue mb-4 border border-border shadow-sm">
         {icon || <AlertCircle size={28} />}
       </div>
-      <h3 className="text-lg font-bold text-gray-100 mb-1.5">{title}</h3>
-      <p className="text-sm text-gray-400 max-w-sm mb-6">{description}</p>
+      <h3 className="text-lg font-bold text-text-heading mb-1.5">{title}</h3>
+      <p className="text-sm text-text-body max-w-sm mb-6">{description}</p>
       {actionLabel && onAction && (
         <button
           onClick={onAction}
-          className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md bg-blue-600 hover:bg-blue-500 text-white transition-colors"
+          className="inline-flex items-center justify-center px-6 py-2.5 text-xs font-bold rounded-full bg-orange hover:bg-orange-hover text-white transition-all shadow-soft"
         >
           {actionLabel}
         </button>
@@ -39,7 +39,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       {actionText && actionHref && !onAction && (
         <Link
           href={actionHref}
-          className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md bg-blue-600 hover:bg-blue-500 text-white transition-colors"
+          className="inline-flex items-center justify-center px-6 py-2.5 text-xs font-bold rounded-full bg-orange hover:bg-orange-hover text-white transition-all shadow-soft"
         >
           {actionText}
         </Link>

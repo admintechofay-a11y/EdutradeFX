@@ -88,15 +88,15 @@ export default function NotificationsPage() {
   const getIcon = (type: string) => {
     switch (type) {
       case 'APPROVAL':
-        return <ShieldCheck className="w-5 h-5 text-emerald-400" />;
+        return <ShieldCheck className="w-5 h-5 text-green" />;
       case 'ALERT':
-        return <AlertTriangle className="w-5 h-5 text-rose-400" />;
+        return <AlertTriangle className="w-5 h-5 text-rose-500" />;
       case 'PAYMENT':
-        return <CreditCard className="w-5 h-5 text-brand-amber" />;
+        return <CreditCard className="w-5 h-5 text-orange" />;
       case 'REVIEW':
-        return <MessageSquare className="w-5 h-5 text-brand-blue" />;
+        return <MessageSquare className="w-5 h-5 text-blue" />;
       default:
-        return <Info className="w-5 h-5 text-brand-blue" />;
+        return <Info className="w-5 h-5 text-blue" />;
     }
   };
 
@@ -114,16 +114,16 @@ export default function NotificationsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3">
-            <Bell className="w-7 h-7 text-brand-blue" />
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-navy flex items-center gap-3">
+            <Bell className="w-7 h-7 text-blue" />
             <span>Notifications Center</span>
             {unreadCount > 0 && (
-              <span className="text-xs px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30 font-bold">
+              <span className="text-xs px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-600 border border-rose-200 font-bold">
                 {unreadCount} New
               </span>
             )}
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-text-muted mt-1">
             Stay informed with platform governance alerts, course review requests, and account updates.
           </p>
         </div>
@@ -132,16 +132,16 @@ export default function NotificationsPage() {
           <button
             onClick={handleMarkAllRead}
             disabled={actionLoading}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-brand-navy-card hover:bg-slate-800 text-slate-200 border border-slate-700 font-semibold text-xs rounded-xl transition shadow-sm self-start sm:self-auto"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-surface-tint text-navy border border-border font-semibold text-xs rounded-full transition shadow-sm self-start sm:self-auto"
           >
-            <CheckCheck className="w-4 h-4 text-emerald-400" />
+            <CheckCheck className="w-4 h-4 text-green" />
             <span>Mark All Read</span>
           </button>
         )}
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-2 p-1.5 bg-brand-navy-card border border-slate-800 rounded-2xl w-fit">
+      <div className="flex items-center gap-1.5 p-1.5 bg-surface-tint/60 border border-border rounded-full w-fit">
         {[
           { label: 'All', value: 'ALL', count: notifications.length },
           { label: 'Unread', value: 'UNREAD', count: unreadCount },
@@ -159,15 +159,15 @@ export default function NotificationsPage() {
           <button
             key={tab.value}
             onClick={() => setFilter(tab.value as any)}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition ${
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition ${
               filter === tab.value
-                ? 'bg-brand-blue text-white shadow-md'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-blue text-white shadow-sm'
+                : 'text-text-muted hover:text-navy'
             }`}
           >
             {tab.label}
             {tab.count > 0 && (
-              <span className="ml-1.5 opacity-75 font-mono">({tab.count})</span>
+              <span className="ml-1.5 opacity-80 font-mono">({tab.count})</span>
             )}
           </button>
         ))}
@@ -186,33 +186,33 @@ export default function NotificationsPage() {
             <div
               key={item.id}
               onClick={() => !item.isRead && handleMarkAsRead(item.id)}
-              className={`p-4 sm:p-5 rounded-2xl border transition flex items-start gap-4 ${
+              className={`p-4 sm:p-5 rounded-3xl border transition flex items-start gap-4 ${
                 item.isRead
-                  ? 'bg-brand-navy-card/60 border-slate-850 opacity-80'
-                  : 'bg-brand-navy-card border-slate-700/80 shadow-lg relative'
+                  ? 'bg-white/80 border-border opacity-85'
+                  : 'bg-white border-blue/40 shadow-soft relative'
               }`}
             >
               {!item.isRead && (
-                <div className="absolute top-4 right-4 w-2.5 h-2.5 rounded-full bg-brand-blue animate-pulse" />
+                <div className="absolute top-4 right-4 w-2.5 h-2.5 rounded-full bg-blue animate-pulse" />
               )}
 
-              <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 shrink-0 mt-0.5">
+              <div className="p-2.5 rounded-2xl bg-surface-tint border border-border shrink-0 mt-0.5">
                 {getIcon(item.type)}
               </div>
 
               <div className="flex-1 min-w-0 pr-6">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <h3 className="text-sm font-bold text-white truncate">{item.title}</h3>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">
+                  <h3 className="text-sm font-bold text-text-heading truncate">{item.title}</h3>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-surface-tint border border-border text-text-muted">
                     {item.type}
                   </span>
                 </div>
 
-                <p className="text-xs text-slate-300 leading-relaxed mb-3">{item.message}</p>
+                <p className="text-xs text-text-body leading-relaxed mb-3">{item.message}</p>
 
-                <div className="flex items-center gap-4 text-[11px] text-slate-400">
+                <div className="flex items-center gap-4 text-[11px] text-text-muted">
                   <span className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-slate-500" />
+                    <Clock className="w-3.5 h-3.5 text-text-muted" />
                     {new Date(item.createdAt).toLocaleString(undefined, {
                       dateStyle: 'medium',
                       timeStyle: 'short',
@@ -222,7 +222,7 @@ export default function NotificationsPage() {
                   {item.link && (
                     <Link
                       href={item.link}
-                      className="inline-flex items-center gap-1 font-bold text-brand-blue hover:underline"
+                      className="inline-flex items-center gap-1 font-bold text-blue hover:underline"
                     >
                       <span>Take Action</span>
                       <ExternalLink className="w-3 h-3" />
@@ -235,7 +235,7 @@ export default function NotificationsPage() {
                 <button
                   onClick={(e) => handleDelete(item.id, e)}
                   title="Delete notification"
-                  className="p-2 text-slate-500 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition"
+                  className="p-2 text-text-muted hover:text-rose-500 hover:bg-rose-50 rounded-lg transition"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -244,12 +244,12 @@ export default function NotificationsPage() {
           ))}
         </div>
       ) : (
-        <div className="p-12 text-center rounded-3xl bg-brand-navy-card border border-slate-800 space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-slate-800/80 flex items-center justify-center mx-auto text-slate-400">
-            <CheckCircle2 className="w-6 h-6 text-emerald-400" />
+        <div className="p-12 text-center rounded-3xl bg-white border border-border shadow-soft space-y-3">
+          <div className="w-12 h-12 rounded-2xl bg-green/10 flex items-center justify-center mx-auto text-green">
+            <CheckCircle2 className="w-6 h-6" />
           </div>
-          <h3 className="text-base font-bold text-white">All Caught Up!</h3>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto">
+          <h3 className="text-base font-bold text-navy">All Caught Up!</h3>
+          <p className="text-xs text-text-muted max-w-sm mx-auto">
             {filter === 'ALL'
               ? 'You have no notifications at this time.'
               : `No ${filter.toLowerCase()} notifications found.`}

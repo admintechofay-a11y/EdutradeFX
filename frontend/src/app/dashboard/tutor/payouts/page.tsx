@@ -103,14 +103,14 @@ export default function TutorPayoutsPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'PAID':
-        return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+        return 'bg-green/10 text-green border-green/20';
       case 'APPROVED':
-        return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+        return 'bg-blue/10 text-blue border-blue/20';
       case 'REJECTED':
-        return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
+        return 'bg-rose-50 text-rose-600 border-rose-200';
       case 'PENDING':
       default:
-        return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+        return 'bg-orange/10 text-orange border-orange/20';
     }
   };
 
@@ -118,23 +118,23 @@ export default function TutorPayoutsPage() {
     <div className="space-y-6 max-w-5xl mx-auto">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-black text-white flex items-center gap-2">
-          <TrendingUp className="w-6 h-6 text-brand-amber" />
+        <h1 className="text-2xl font-black text-navy flex items-center gap-2">
+          <TrendingUp className="w-6 h-6 text-orange" />
           Disbursement Desk & Payout Requests
         </h1>
-        <p className="text-xs text-slate-400 mt-1">
+        <p className="text-xs text-text-muted mt-1">
           Withdraw accumulated course revenue to your institutional bank account or designated remittance method.
         </p>
       </div>
 
       {successMsg && (
-        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs flex items-center gap-2">
+        <div className="p-4 rounded-2xl bg-green/10 border border-green/20 text-green text-xs flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4" />
           <span>{successMsg}</span>
         </div>
       )}
       {errorMsg && (
-        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs flex items-center gap-2">
+        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 text-xs flex items-center gap-2">
           <AlertCircle className="w-4 h-4" />
           <span>{errorMsg}</span>
         </div>
@@ -143,48 +143,48 @@ export default function TutorPayoutsPage() {
       {/* Balance Banner & Request Form */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Balance Card */}
-        <div className="bg-brand-navy-card border border-slate-800 rounded-3xl p-6 shadow-xl flex flex-col justify-between">
+        <div className="bg-white border border-border rounded-3xl p-6 shadow-soft flex flex-col justify-between">
           <div>
-            <div className="text-xs font-semibold text-slate-400 mb-2">Available Balance</div>
-            <div className="text-3xl font-black text-emerald-400 font-mono">
+            <div className="text-xs font-semibold text-text-muted mb-2">Available Balance</div>
+            <div className="text-3xl font-black text-green font-mono">
               ${(earnings?.availableBalance || 0).toLocaleString()}
             </div>
-            <div className="text-[11px] text-slate-500 mt-2">
-              Minimum disbursement: <strong className="text-slate-300">$500</strong>
+            <div className="text-[11px] text-text-muted mt-2">
+              Minimum disbursement: <strong className="text-text-heading">$500</strong>
             </div>
           </div>
 
-          <div className="pt-6 border-t border-slate-800 mt-6 text-[11px] text-slate-400 space-y-2">
+          <div className="pt-6 border-t border-border mt-6 text-[11px] text-text-muted space-y-2">
             <div className="flex items-center gap-2">
-              <Check className="w-3.5 h-3.5 text-emerald-400" />
+              <Check className="w-3.5 h-3.5 text-green" />
               <span>Direct Bank IMPS / SWIFT</span>
             </div>
             <div className="flex items-center gap-2">
-              <Check className="w-3.5 h-3.5 text-emerald-400" />
+              <Check className="w-3.5 h-3.5 text-green" />
               <span>Zero disbursement fees</span>
             </div>
             <div className="flex items-center gap-2">
-              <Check className="w-3.5 h-3.5 text-emerald-400" />
+              <Check className="w-3.5 h-3.5 text-green" />
               <span>Audit-logged compliance</span>
             </div>
           </div>
         </div>
 
         {/* Withdrawal Form */}
-        <div className="md:col-span-2 bg-brand-navy-card border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-          <h2 className="text-sm font-bold text-white flex items-center gap-2">
-            <CreditCard className="w-4 h-4 text-brand-blue" />
+        <div className="md:col-span-2 bg-white border border-border rounded-3xl p-6 shadow-soft space-y-4">
+          <h2 className="text-sm font-bold text-navy flex items-center gap-2">
+            <CreditCard className="w-4 h-4 text-blue" />
             Submit Withdrawal Request
           </h2>
 
           <form onSubmit={handleRequestPayout} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold text-text-heading mb-1.5">
                   Disbursement Amount (USD)
                 </label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <DollarSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
                   <input
                     type="number"
                     required
@@ -193,19 +193,19 @@ export default function TutorPayoutsPage() {
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     placeholder="Min 500"
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-blue transition"
+                    className="w-full bg-white border border-border rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue transition"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold text-text-heading mb-1.5">
                   Payout Method
                 </label>
                 <select
                   value={method}
                   onChange={(e) => setMethod(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-brand-blue transition"
+                  className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading focus:outline-none focus:border-blue transition"
                 >
                   <option value="BANK_TRANSFER">Direct Bank Wire / ACH</option>
                   <option value="UPI">UPI Remittance (India)</option>
@@ -216,7 +216,7 @@ export default function TutorPayoutsPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold text-text-heading mb-1.5">
                   Beneficiary Name
                 </label>
                 <input
@@ -225,12 +225,12 @@ export default function TutorPayoutsPage() {
                   value={beneficiaryName}
                   onChange={(e) => setBeneficiaryName(e.target.value)}
                   placeholder="Official name on account"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-blue transition"
+                  className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue transition"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold text-text-heading mb-1.5">
                   Bank / Institution Name
                 </label>
                 <input
@@ -239,12 +239,12 @@ export default function TutorPayoutsPage() {
                   value={bankName}
                   onChange={(e) => setBankName(e.target.value)}
                   placeholder="e.g. JPMorgan Chase or HDFC"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-blue transition"
+                  className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue transition"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold text-text-heading mb-1.5">
                   Account Number / IBAN
                 </label>
                 <input
@@ -253,12 +253,12 @@ export default function TutorPayoutsPage() {
                   value={accountNumber}
                   onChange={(e) => setAccountNumber(e.target.value)}
                   placeholder="Account or IBAN string"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-blue transition"
+                  className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue transition"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold text-text-heading mb-1.5">
                   Routing / Swift / IFSC Code
                 </label>
                 <input
@@ -267,7 +267,7 @@ export default function TutorPayoutsPage() {
                   value={routingNumber}
                   onChange={(e) => setRoutingNumber(e.target.value)}
                   placeholder="SWIFT / Routing / IFSC"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-blue transition"
+                  className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue transition"
                 />
               </div>
             </div>
@@ -276,7 +276,7 @@ export default function TutorPayoutsPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-6 py-2.5 bg-brand-blue hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-blue-500/20 disabled:opacity-50"
+                className="px-6 py-2.5 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition flex items-center gap-2 shadow-sm disabled:opacity-50"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>{submitting ? 'Submitting...' : 'Request Disbursement'}</span>
@@ -287,23 +287,23 @@ export default function TutorPayoutsPage() {
       </div>
 
       {/* Payout History */}
-      <div className="bg-brand-navy-card border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-        <h2 className="text-sm font-bold text-white flex items-center gap-2">
-          <Clock className="w-4 h-4 text-slate-400" />
+      <div className="bg-white border border-border rounded-3xl p-6 shadow-soft space-y-4">
+        <h2 className="text-sm font-bold text-navy flex items-center gap-2">
+          <Clock className="w-4 h-4 text-text-muted" />
           Disbursement Request History
         </h2>
 
         {loading ? (
           <div className="space-y-3">
             {[...Array(3)].map((_, i) => (
-              <Skeleton key={i} className="h-16 w-full rounded-2xl bg-slate-800/40" />
+              <Skeleton key={i} className="h-16 w-full rounded-2xl" />
             ))}
           </div>
         ) : payouts.length === 0 ? (
-          <div className="text-center py-12 px-4 border border-dashed border-slate-800 rounded-2xl">
-            <TrendingUp className="w-10 h-10 text-slate-600 mx-auto mb-2" />
-            <div className="text-xs font-bold text-white">No Payout Requests on Record</div>
-            <p className="text-[11px] text-slate-400 mt-1 max-w-sm mx-auto">
+          <div className="text-center py-12 px-4 border border-dashed border-border rounded-2xl">
+            <TrendingUp className="w-10 h-10 text-text-muted mx-auto mb-2" />
+            <div className="text-xs font-bold text-navy">No Payout Requests on Record</div>
+            <p className="text-[11px] text-text-muted mt-1 max-w-sm mx-auto">
               Submitted disbursement requests and admin settlement receipts will appear here.
             </p>
           </div>
@@ -312,7 +312,7 @@ export default function TutorPayoutsPage() {
             {payouts.map((p) => (
               <div
                 key={p.id}
-                className="p-4 rounded-2xl bg-brand-navy-light/40 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                className="p-4 rounded-2xl bg-surface-tint/60 border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3"
               >
                 <div>
                   <div className="flex items-center gap-2">
@@ -323,22 +323,22 @@ export default function TutorPayoutsPage() {
                     >
                       {p.status}
                     </span>
-                    <span className="text-[11px] text-slate-400">
-                      Method: <strong className="text-white">{p.method || 'Wire'}</strong>
+                    <span className="text-[11px] text-text-muted">
+                      Method: <strong className="text-text-heading">{p.method || 'Wire'}</strong>
                     </span>
                   </div>
-                  <div className="text-[10px] text-slate-500 font-mono mt-1">
+                  <div className="text-[10px] text-text-muted font-mono mt-1">
                     Submitted on {new Date(p.createdAt).toLocaleDateString()} • Ref: #{p.id.substring(0, 8)}
                   </div>
                   {p.notes && (
-                    <div className="text-[11px] text-slate-300 mt-1 italic">
+                    <div className="text-[11px] text-text-muted mt-1 italic">
                       Admin Note: {p.notes}
                     </div>
                   )}
                 </div>
 
                 <div className="text-right">
-                  <div className="text-base font-black text-white font-mono">
+                  <div className="text-base font-black text-navy font-mono">
                     ${p.amount.toLocaleString()} USD
                   </div>
                 </div>

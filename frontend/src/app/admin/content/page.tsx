@@ -79,33 +79,33 @@ export default function AdminContentManagementPage() {
     <div className="space-y-6 max-w-5xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white">Website Content Management (Lite CMS)</h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <h1 className="text-2xl sm:text-3xl font-black text-navy">Website Content Management (Lite CMS)</h1>
+          <p className="text-xs sm:text-sm text-text-muted mt-1">
             Edit live hero headlines, mission statements, announcement banners, and company contact details without deploying code.
           </p>
         </div>
       </div>
 
       {successMsg && (
-        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs sm:text-sm flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+        <div className="p-4 rounded-2xl bg-green/10 border border-green/20 text-green text-xs sm:text-sm flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-green shrink-0" />
           <span>{successMsg}</span>
         </div>
       )}
 
       {errorMsg && (
-        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs sm:text-sm flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+        <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs sm:text-sm flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
           <span>{errorMsg}</span>
         </div>
       )}
 
       {/* Tabs */}
-      <div className="flex p-1 rounded-2xl bg-slate-900 border border-slate-800 text-xs sm:text-sm">
+      <div className="flex p-1.5 rounded-full bg-surface-tint border border-border text-xs sm:text-sm">
         <button
           onClick={() => setActiveTab('home')}
-          className={`flex-1 py-2.5 rounded-xl font-bold transition flex items-center justify-center gap-2 ${
-            activeTab === 'home' ? 'bg-brand-blue text-white shadow-md' : 'text-slate-400 hover:text-white'
+          className={`flex-1 py-2 rounded-full font-bold transition flex items-center justify-center gap-2 ${
+            activeTab === 'home' ? 'bg-blue text-white shadow-sm' : 'text-text-muted hover:text-navy'
           }`}
         >
           <Layout className="w-4 h-4" />
@@ -113,8 +113,8 @@ export default function AdminContentManagementPage() {
         </button>
         <button
           onClick={() => setActiveTab('about')}
-          className={`flex-1 py-2.5 rounded-xl font-bold transition flex items-center justify-center gap-2 ${
-            activeTab === 'about' ? 'bg-brand-blue text-white shadow-md' : 'text-slate-400 hover:text-white'
+          className={`flex-1 py-2 rounded-full font-bold transition flex items-center justify-center gap-2 ${
+            activeTab === 'about' ? 'bg-blue text-white shadow-sm' : 'text-text-muted hover:text-navy'
           }`}
         >
           <Info className="w-4 h-4" />
@@ -122,8 +122,8 @@ export default function AdminContentManagementPage() {
         </button>
         <button
           onClick={() => setActiveTab('announcement')}
-          className={`flex-1 py-2.5 rounded-xl font-bold transition flex items-center justify-center gap-2 ${
-            activeTab === 'announcement' ? 'bg-brand-blue text-white shadow-md' : 'text-slate-400 hover:text-white'
+          className={`flex-1 py-2 rounded-full font-bold transition flex items-center justify-center gap-2 ${
+            activeTab === 'announcement' ? 'bg-blue text-white shadow-sm' : 'text-text-muted hover:text-navy'
           }`}
         >
           <Megaphone className="w-4 h-4" />
@@ -131,8 +131,8 @@ export default function AdminContentManagementPage() {
         </button>
         <button
           onClick={() => setActiveTab('contact')}
-          className={`flex-1 py-2.5 rounded-xl font-bold transition flex items-center justify-center gap-2 ${
-            activeTab === 'contact' ? 'bg-brand-blue text-white shadow-md' : 'text-slate-400 hover:text-white'
+          className={`flex-1 py-2 rounded-full font-bold transition flex items-center justify-center gap-2 ${
+            activeTab === 'contact' ? 'bg-blue text-white shadow-sm' : 'text-text-muted hover:text-navy'
           }`}
         >
           <FileText className="w-4 h-4" />
@@ -141,58 +141,58 @@ export default function AdminContentManagementPage() {
       </div>
 
       {loading ? (
-        <Skeleton className="h-96 rounded-3xl" />
+        <Skeleton className="h-96 rounded-3xl bg-border/40" />
       ) : (
-        <div className="p-6 sm:p-8 rounded-3xl bg-slate-900 border border-slate-800 shadow-xl space-y-6">
+        <div className="p-6 sm:p-8 rounded-3xl bg-white border border-border shadow-soft space-y-6">
           {/* TAB 1: HOMEPAGE */}
           {activeTab === 'home' && (
             <div className="space-y-4">
-              <h3 className="text-base font-bold text-white mb-2">Homepage Hero & Callouts</h3>
+              <h3 className="text-base font-bold text-navy mb-2">Homepage Hero & Callouts</h3>
               <div>
-                <label className="block text-xs font-semibold uppercase text-slate-400 mb-1.5">
+                <label className="block text-xs font-semibold uppercase text-text-muted mb-1.5">
                   Hero Main Headline
                 </label>
                 <input
                   type="text"
                   value={homeContent.heroHeadline}
                   onChange={(e) => setHomeContent({ ...homeContent, heroHeadline: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-brand-blue"
+                  className="w-full px-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase text-slate-400 mb-1.5">
+                <label className="block text-xs font-semibold uppercase text-text-muted mb-1.5">
                   Hero Subheadline Description
                 </label>
                 <textarea
                   rows={3}
                   value={homeContent.heroSubheadline}
                   onChange={(e) => setHomeContent({ ...homeContent, heroSubheadline: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-brand-blue"
+                  className="w-full px-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold uppercase text-slate-400 mb-1.5">
+                  <label className="block text-xs font-semibold uppercase text-text-muted mb-1.5">
                     Complaint Banner Title
                   </label>
                   <input
                     type="text"
                     value={homeContent.complaintBannerTitle}
                     onChange={(e) => setHomeContent({ ...homeContent, complaintBannerTitle: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-brand-blue"
+                    className="w-full px-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold uppercase text-slate-400 mb-1.5">
+                  <label className="block text-xs font-semibold uppercase text-text-muted mb-1.5">
                     Comparison Engine Teaser
                   </label>
                   <input
                     type="text"
                     value={homeContent.comparisonNotice}
                     onChange={(e) => setHomeContent({ ...homeContent, comparisonNotice: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-brand-blue"
+                    className="w-full px-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
                   />
                 </div>
               </div>
@@ -201,7 +201,7 @@ export default function AdminContentManagementPage() {
                 <button
                   onClick={() => handleSave('home', homeContent)}
                   disabled={saving}
-                  className="px-6 py-2.5 rounded-xl bg-brand-blue hover:bg-blue-600 disabled:opacity-50 text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition"
+                  className="px-6 py-2.5 rounded-full bg-blue hover:bg-blue-hover disabled:opacity-50 text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition shadow-sm"
                 >
                   <Save className="w-4 h-4" />
                   <span>{saving ? 'Saving...' : 'Save Homepage Content'}</span>
@@ -213,40 +213,40 @@ export default function AdminContentManagementPage() {
           {/* TAB 2: ABOUT US */}
           {activeTab === 'about' && (
             <div className="space-y-4">
-              <h3 className="text-base font-bold text-white mb-2">About Us Mission & Values</h3>
+              <h3 className="text-base font-bold text-navy mb-2">About Us Mission & Values</h3>
               <div>
-                <label className="block text-xs font-semibold uppercase text-slate-400 mb-1.5">
+                <label className="block text-xs font-semibold uppercase text-text-muted mb-1.5">
                   Mission Statement Headline
                 </label>
                 <input
                   type="text"
                   value={aboutContent.missionTitle}
                   onChange={(e) => setAboutContent({ ...aboutContent, missionTitle: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-brand-blue"
+                  className="w-full px-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase text-slate-400 mb-1.5">
+                <label className="block text-xs font-semibold uppercase text-text-muted mb-1.5">
                   Detailed Mission Narrative
                 </label>
                 <textarea
                   rows={4}
                   value={aboutContent.missionDesc}
                   onChange={(e) => setAboutContent({ ...aboutContent, missionDesc: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-brand-blue"
+                  className="w-full px-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase text-slate-400 mb-1.5">
+                <label className="block text-xs font-semibold uppercase text-text-muted mb-1.5">
                   Regulatory Neutrality Notice
                 </label>
                 <textarea
                   rows={3}
                   value={aboutContent.regulatoryNotice}
                   onChange={(e) => setAboutContent({ ...aboutContent, regulatoryNotice: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-brand-blue"
+                  className="w-full px-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
                 />
               </div>
 
@@ -254,7 +254,7 @@ export default function AdminContentManagementPage() {
                 <button
                   onClick={() => handleSave('about', aboutContent)}
                   disabled={saving}
-                  className="px-6 py-2.5 rounded-xl bg-brand-blue hover:bg-blue-600 disabled:opacity-50 text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition"
+                  className="px-6 py-2.5 rounded-full bg-blue hover:bg-blue-hover disabled:opacity-50 text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition shadow-sm"
                 >
                   <Save className="w-4 h-4" />
                   <span>{saving ? 'Saving...' : 'Save About Us Content'}</span>
@@ -266,34 +266,34 @@ export default function AdminContentManagementPage() {
           {/* TAB 3: ANNOUNCEMENT */}
           {activeTab === 'announcement' && (
             <div className="space-y-4">
-              <h3 className="text-base font-bold text-white mb-2">Global Announcement Banner</h3>
+              <h3 className="text-base font-bold text-navy mb-2">Global Announcement Banner</h3>
               <div className="flex items-center gap-3">
                 <input
                   type="checkbox"
                   id="ann-enabled"
                   checked={announcement.enabled}
                   onChange={(e) => setAnnouncement({ ...announcement, enabled: e.target.checked })}
-                  className="w-4 h-4 rounded text-brand-blue bg-slate-800 border-slate-700"
+                  className="w-4 h-4 rounded text-blue bg-white border-border focus:ring-blue"
                 />
-                <label htmlFor="ann-enabled" className="text-xs sm:text-sm text-slate-300 font-semibold cursor-pointer">
+                <label htmlFor="ann-enabled" className="text-xs sm:text-sm text-text-heading font-semibold cursor-pointer">
                   Display Announcement Strip at Top of Website
                 </label>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase text-slate-400 mb-1.5">
+                <label className="block text-xs font-semibold uppercase text-text-muted mb-1.5">
                   Announcement Text
                 </label>
                 <input
                   type="text"
                   value={announcement.message}
                   onChange={(e) => setAnnouncement({ ...announcement, message: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-brand-blue"
+                  className="w-full px-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase text-slate-400 mb-1.5">
+                <label className="block text-xs font-semibold uppercase text-text-muted mb-1.5">
                   Destination Link
                 </label>
                 <input
@@ -301,7 +301,7 @@ export default function AdminContentManagementPage() {
                   value={announcement.link}
                   onChange={(e) => setAnnouncement({ ...announcement, link: e.target.value })}
                   placeholder="/brokers or /courses"
-                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-brand-blue"
+                  className="w-full px-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
                 />
               </div>
 
@@ -309,7 +309,7 @@ export default function AdminContentManagementPage() {
                 <button
                   onClick={() => handleSave('announcement', announcement)}
                   disabled={saving}
-                  className="px-6 py-2.5 rounded-xl bg-brand-blue hover:bg-blue-600 disabled:opacity-50 text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition"
+                  className="px-6 py-2.5 rounded-full bg-blue hover:bg-blue-hover disabled:opacity-50 text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition shadow-sm"
                 >
                   <Save className="w-4 h-4" />
                   <span>{saving ? 'Saving...' : 'Save Announcement'}</span>
@@ -321,65 +321,65 @@ export default function AdminContentManagementPage() {
           {/* TAB 4: CONTACT INFO */}
           {activeTab === 'contact' && (
             <div className="space-y-4">
-              <h3 className="text-base font-bold text-white mb-2">Corporate Contact & Operating Details</h3>
+              <h3 className="text-base font-bold text-navy mb-2">Corporate Contact & Operating Details</h3>
               <div>
-                <label className="block text-xs font-semibold uppercase text-slate-400 mb-1.5">
+                <label className="block text-xs font-semibold uppercase text-text-muted mb-1.5">
                   Physical Headquarters Address
                 </label>
                 <input
                   type="text"
                   value={contactInfo.headquarters}
                   onChange={(e) => setContactInfo({ ...contactInfo, headquarters: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-brand-blue"
+                  className="w-full px-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold uppercase text-slate-400 mb-1.5">
+                  <label className="block text-xs font-semibold uppercase text-text-muted mb-1.5">
                     General Support Email
                   </label>
                   <input
                     type="email"
                     value={contactInfo.supportEmail}
                     onChange={(e) => setContactInfo({ ...contactInfo, supportEmail: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-brand-blue"
+                    className="w-full px-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold uppercase text-slate-400 mb-1.5">
+                  <label className="block text-xs font-semibold uppercase text-text-muted mb-1.5">
                     Dispute Desk Email
                   </label>
                   <input
                     type="email"
                     value={contactInfo.disputeEmail}
                     onChange={(e) => setContactInfo({ ...contactInfo, disputeEmail: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-brand-blue"
+                    className="w-full px-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold uppercase text-slate-400 mb-1.5">
+                  <label className="block text-xs font-semibold uppercase text-text-muted mb-1.5">
                     Switchboard Phone Number
                   </label>
                   <input
                     type="text"
                     value={contactInfo.phone}
                     onChange={(e) => setContactInfo({ ...contactInfo, phone: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-brand-blue"
+                    className="w-full px-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold uppercase text-slate-400 mb-1.5">
+                  <label className="block text-xs font-semibold uppercase text-text-muted mb-1.5">
                     Operational Hours
                   </label>
                   <input
                     type="text"
                     value={contactInfo.hours}
                     onChange={(e) => setContactInfo({ ...contactInfo, hours: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-brand-blue"
+                    className="w-full px-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
                   />
                 </div>
               </div>
@@ -388,7 +388,7 @@ export default function AdminContentManagementPage() {
                 <button
                   onClick={() => handleSave('contact', contactInfo)}
                   disabled={saving}
-                  className="px-6 py-2.5 rounded-xl bg-brand-blue hover:bg-blue-600 disabled:opacity-50 text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition"
+                  className="px-6 py-2.5 rounded-full bg-blue hover:bg-blue-hover disabled:opacity-50 text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition shadow-sm"
                 >
                   <Save className="w-4 h-4" />
                   <span>{saving ? 'Saving...' : 'Save Contact Details'}</span>

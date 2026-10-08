@@ -31,6 +31,7 @@ services:
       DATABASE_URL: ${DATABASE_URL:?DATABASE_URL must be set in root .env}
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?JWT_ACCESS_SECRET must be set in root .env}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?JWT_REFRESH_SECRET must be set in root .env}
+      BROKER_SECRET_KEY: ${BROKER_SECRET_KEY:-edutrade_broker_secret_key_32_chars_min_2026!}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
     ports:
       - '5000:5000'

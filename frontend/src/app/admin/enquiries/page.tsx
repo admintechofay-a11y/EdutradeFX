@@ -67,33 +67,33 @@ export default function AdminEnquiriesPage() {
     <div className="space-y-6 max-w-7xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white">Contact & Advertising Enquiries</h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <h1 className="text-2xl sm:text-3xl font-black text-navy">Contact & Advertising Enquiries</h1>
+          <p className="text-xs sm:text-sm text-text-muted mt-1">
             Review incoming general communications, advertising proposals, partnership inquiries, and academy applications.
           </p>
         </div>
-        <div className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300">
-          Total Inquiries: <span className="text-white font-mono">{enquiries.length}</span>
+        <div className="text-xs font-semibold px-3.5 py-1.5 rounded-full bg-white border border-border text-text-body shadow-sm">
+          Total Inquiries: <span className="text-navy font-bold font-mono">{enquiries.length}</span>
         </div>
       </div>
 
       {/* Search & Filter Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 p-4 rounded-2xl bg-slate-900 border border-slate-800">
+      <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 p-4 rounded-3xl bg-white border border-border shadow-soft">
         <div className="sm:col-span-8 relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by sender, email, subject, or message body..."
-            className="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none"
+            className="w-full pl-10 pr-4 py-2.5 bg-surface-tint border border-border rounded-xl text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
           />
         </div>
         <div className="sm:col-span-4">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none"
+            className="w-full px-3.5 py-2.5 bg-surface-tint border border-border rounded-xl text-xs text-text-heading focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
           >
             <option value="ALL">All Statuses</option>
             <option value="PENDING">Pending Response</option>
@@ -108,12 +108,12 @@ export default function AdminEnquiriesPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         <div className={`${selectedEnquiry ? 'lg:col-span-7' : 'lg:col-span-12'}`}>
           {loading ? (
-            <Skeleton className="h-96 rounded-3xl" />
+            <Skeleton className="h-96 rounded-3xl bg-border/40" />
           ) : (
-            <div className="overflow-x-auto rounded-3xl border border-slate-800 bg-slate-900 shadow-xl">
+            <div className="overflow-x-auto rounded-3xl border border-border bg-white shadow-soft">
               <table className="w-full text-left border-collapse text-xs sm:text-sm">
                 <thead>
-                  <tr className="border-b border-slate-800 bg-slate-850 text-slate-400 text-xs uppercase font-bold">
+                  <tr className="border-b border-border bg-surface-tint text-text-muted text-xs uppercase font-bold">
                     <th className="p-4">Sender Info</th>
                     <th className="p-4">Category & Subject</th>
                     <th className="p-4">Status</th>
@@ -121,7 +121,7 @@ export default function AdminEnquiriesPage() {
                     <th className="p-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/80">
+                <tbody className="divide-y divide-border">
                   {filtered.length > 0 ? (
                     filtered.map((enq) => (
                       <tr
@@ -131,36 +131,36 @@ export default function AdminEnquiriesPage() {
                           setAdminNotes(enq.adminNotes || '');
                         }}
                         className={`cursor-pointer transition ${
-                          selectedEnquiry?.id === enq.id ? 'bg-brand-blue/10' : 'hover:bg-slate-800/30'
+                          selectedEnquiry?.id === enq.id ? 'bg-blue/10' : 'hover:bg-surface-tint/60'
                         }`}
                       >
                         <td className="p-4">
-                          <div className="font-bold text-white">{enq.name}</div>
-                          <div className="text-slate-400 text-xs">{enq.email}</div>
-                          {enq.phone && <div className="text-[11px] text-slate-500">{enq.phone}</div>}
+                          <div className="font-bold text-navy">{enq.name}</div>
+                          <div className="text-text-muted text-xs">{enq.email}</div>
+                          {enq.phone && <div className="text-[11px] text-text-muted">{enq.phone}</div>}
                         </td>
                         <td className="p-4 max-w-xs">
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-brand-blue font-bold border border-slate-700">
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue/10 text-blue font-bold border border-blue/20">
                             {enq.category}
                           </span>
-                          <div className="text-slate-200 font-medium truncate mt-1">{enq.subject}</div>
+                          <div className="text-text-heading font-medium truncate mt-1">{enq.subject}</div>
                         </td>
                         <td className="p-4">
                           <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
                               enq.status === 'RESOLVED'
-                                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                ? 'bg-green/10 text-green border border-green/20'
                                 : enq.status === 'IN_PROGRESS'
-                                ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                                ? 'bg-blue/10 text-blue border border-blue/20'
                                 : enq.status === 'PENDING'
-                                ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                                : 'bg-slate-800 text-slate-400 border border-slate-700'
+                                ? 'bg-orange/10 text-orange border border-orange/20'
+                                : 'bg-surface-tint text-text-muted border border-border'
                             }`}
                           >
                             {enq.status}
                           </span>
                         </td>
-                        <td className="p-4 text-xs text-slate-500">
+                        <td className="p-4 text-xs text-text-muted">
                           {new Date(enq.createdAt).toLocaleDateString()}
                         </td>
                         <td className="p-4 text-right">
@@ -169,7 +169,7 @@ export default function AdminEnquiriesPage() {
                               e.stopPropagation();
                               deleteEnquiry(enq.id);
                             }}
-                            className="p-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-400 hover:text-rose-400 transition"
+                            className="p-1.5 rounded-full bg-surface-tint border border-border text-text-muted hover:text-red-500 transition"
                             title="Delete Record"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -179,7 +179,7 @@ export default function AdminEnquiriesPage() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={5} className="p-8 text-center text-slate-500 text-xs">
+                      <td colSpan={5} className="p-8 text-center text-text-muted text-xs">
                         No contact inquiries found.
                       </td>
                     </tr>
@@ -192,15 +192,15 @@ export default function AdminEnquiriesPage() {
 
         {/* Detail Panel */}
         {selectedEnquiry && (
-          <div className="lg:col-span-5 p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-4 shadow-xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Mail className="w-4 h-4 text-brand-blue" />
+          <div className="lg:col-span-5 p-6 rounded-3xl bg-white border border-border space-y-4 shadow-soft">
+            <div className="flex items-center justify-between pb-3 border-b border-border">
+              <h3 className="text-sm font-bold text-navy flex items-center gap-2">
+                <Mail className="w-4 h-4 text-blue" />
                 <span>Inquiry Details</span>
               </h3>
               <button
                 onClick={() => setSelectedEnquiry(null)}
-                className="text-slate-400 hover:text-white text-xs"
+                className="text-text-muted hover:text-navy text-xs"
               >
                 Close
               </button>
@@ -208,32 +208,32 @@ export default function AdminEnquiriesPage() {
 
             <div className="space-y-2 text-xs">
               <div>
-                <span className="text-slate-400">Sender: </span>
-                <strong className="text-white">{selectedEnquiry.name}</strong> ({selectedEnquiry.email})
+                <span className="text-text-muted">Sender: </span>
+                <strong className="text-navy">{selectedEnquiry.name}</strong> ({selectedEnquiry.email})
               </div>
               {selectedEnquiry.phone && (
                 <div>
-                  <span className="text-slate-400">Phone: </span>
-                  <strong className="text-white font-mono">{selectedEnquiry.phone}</strong>
+                  <span className="text-text-muted">Phone: </span>
+                  <strong className="text-navy font-mono">{selectedEnquiry.phone}</strong>
                 </div>
               )}
               <div>
-                <span className="text-slate-400">Category: </span>
-                <span className="font-bold text-brand-blue">{selectedEnquiry.category}</span>
+                <span className="text-text-muted">Category: </span>
+                <span className="font-bold text-blue">{selectedEnquiry.category}</span>
               </div>
               <div>
-                <span className="text-slate-400">Subject: </span>
-                <span className="text-white font-semibold">{selectedEnquiry.subject}</span>
+                <span className="text-text-muted">Subject: </span>
+                <span className="text-text-heading font-semibold">{selectedEnquiry.subject}</span>
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-850 text-xs text-slate-300 whitespace-pre-wrap leading-relaxed">
+            <div className="p-4 rounded-2xl bg-surface-tint border border-border text-xs text-text-body whitespace-pre-wrap leading-relaxed">
               {selectedEnquiry.message}
             </div>
 
             {/* Status Update & Notes */}
             <div className="space-y-3 pt-2">
-              <label className="block text-xs font-semibold text-slate-300">
+              <label className="block text-xs font-semibold text-text-heading">
                 Compliance & Admin Notes:
               </label>
               <textarea
@@ -241,24 +241,24 @@ export default function AdminEnquiriesPage() {
                 value={adminNotes}
                 onChange={(e) => setAdminNotes(e.target.value)}
                 placeholder="Log follow-up communication, call notes, or media kit dispatch details..."
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-brand-blue"
+                className="w-full px-3 py-2 bg-white border border-border rounded-xl text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
               />
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => updateStatus(selectedEnquiry.id, 'IN_PROGRESS', adminNotes)}
-                  className="px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-semibold hover:bg-blue-500/30 transition"
+                  className="px-3.5 py-1.5 rounded-full bg-blue/10 text-blue border border-blue/20 text-xs font-semibold hover:bg-blue/20 transition"
                 >
                   Mark In Progress
                 </button>
                 <button
                   onClick={() => updateStatus(selectedEnquiry.id, 'RESOLVED', adminNotes)}
-                  className="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold hover:bg-emerald-500/30 transition"
+                  className="px-3.5 py-1.5 rounded-full bg-green/10 text-green border border-green/20 text-xs font-semibold hover:bg-green/20 transition"
                 >
                   Mark Resolved
                 </button>
                 <button
                   onClick={() => updateStatus(selectedEnquiry.id, 'CLOSED', adminNotes)}
-                  className="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 text-xs font-semibold hover:bg-slate-700 transition"
+                  className="px-3.5 py-1.5 rounded-full bg-surface-tint text-text-body border border-border text-xs font-semibold hover:bg-border/60 transition"
                 >
                   Close Inquiry
                 </button>

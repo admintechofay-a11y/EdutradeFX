@@ -74,15 +74,15 @@ export default function TutorCoursesPage() {
     <div className="space-y-6 max-w-7xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Course Management</h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-navy">Course Management</h1>
+          <p className="text-xs sm:text-sm text-text-muted mt-1">
             Author and publish structured trading courses to our global community of Forex students.
           </p>
         </div>
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-amber hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition self-start sm:self-auto"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue hover:bg-blue-hover text-white font-bold text-xs rounded-full shadow-sm transition self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
           <span>New Masterclass</span>
@@ -96,50 +96,50 @@ export default function TutorCoursesPage() {
           {courses.map((course) => (
             <div
               key={course.id}
-              className="p-5 rounded-2xl bg-brand-navy-card border border-slate-800 flex flex-col justify-between"
+              className="p-5 rounded-3xl bg-white border border-border shadow-soft hover:shadow-card transition flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-brand-navy-light text-brand-amber border border-slate-700">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-surface-tint text-navy border border-border">
                     {course.level}
                   </span>
                   <span
-                    className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                       course.status === 'PUBLISHED'
-                        ? 'bg-emerald-500/15 text-emerald-400'
-                        : 'bg-amber-500/15 text-brand-amber'
+                        ? 'bg-green/10 text-green border border-green/20'
+                        : 'bg-orange/10 text-orange border border-orange/20'
                     }`}
                   >
                     {course.status}
                   </span>
                 </div>
 
-                <h3 className="text-sm font-bold text-white mb-2 line-clamp-2">{course.title}</h3>
-                <p className="text-xs text-slate-400 line-clamp-2 mb-4">
+                <h3 className="text-sm font-bold text-text-heading mb-2 line-clamp-2">{course.title}</h3>
+                <p className="text-xs text-text-muted line-clamp-2 mb-4">
                   {course.shortDescription || course.description}
                 </p>
 
-                <div className="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800">
+                <div className="flex items-center justify-between text-xs text-text-muted pt-2 border-t border-border">
                   <span className="flex items-center gap-1">
                     <Users className="w-3.5 h-3.5" />
                     {course.totalEnrollments} students
                   </span>
-                  <span className="font-extrabold text-white">
+                  <span className="font-extrabold text-navy font-mono">
                     {course.price === 0 ? 'Free' : `₹${course.price.toLocaleString()}`}
                   </span>
                 </div>
               </div>
 
-              <div className="pt-4 mt-3 border-t border-slate-800 flex items-center justify-between">
+              <div className="pt-4 mt-3 border-t border-border flex items-center justify-between">
                 <Link
                   href={`/courses/${course.slug}`}
-                  className="text-xs font-semibold text-brand-blue hover:underline"
+                  className="text-xs font-semibold text-blue hover:underline"
                 >
                   View Public Page
                 </Link>
                 <button
                   onClick={() => alert('Curriculum editor: Add lessons & videos')}
-                  className="px-3 py-1.5 rounded-lg bg-brand-navy-light hover:bg-slate-700 text-white text-xs font-semibold border border-slate-700 transition"
+                  className="px-4 py-1.5 rounded-full bg-surface-tint hover:bg-border/60 text-navy text-xs font-semibold border border-border transition"
                 >
                   Edit Curriculum
                 </button>
@@ -158,40 +158,40 @@ export default function TutorCoursesPage() {
 
       {/* Create Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-brand-navy-card border border-slate-700 rounded-3xl p-6 sm:p-8 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-deep/60 backdrop-blur-sm">
+          <div className="w-full max-w-lg bg-white border border-border rounded-3xl p-6 sm:p-8 shadow-2xl relative">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-5 right-5 text-slate-400 hover:text-white"
+              className="absolute top-5 right-5 text-text-muted hover:text-navy"
             >
               <X className="w-5 h-5" />
             </button>
 
             <form onSubmit={handleCreateCourse} className="space-y-4">
               <div>
-                <h3 className="text-xl font-bold text-white">Create New Course</h3>
-                <p className="text-xs text-slate-400 mt-0.5">Initial setup for your masterclass curriculum.</p>
+                <h3 className="text-xl font-bold text-navy">Create New Course</h3>
+                <p className="text-xs text-text-muted mt-0.5">Initial setup for your masterclass curriculum.</p>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Course Title</label>
+                <label className="block text-xs font-semibold text-text-heading mb-1">Course Title</label>
                 <input
                   type="text"
                   required
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   placeholder="e.g. Masterclass: Smart Money Liquidity Concepts"
-                  className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs sm:text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-brand-blue transition"
+                  className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:ring-1 focus:ring-blue transition"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Category</label>
+                  <label className="block text-xs font-semibold text-text-heading mb-1">Category</label>
                   <select
                     value={form.category}
                     onChange={(e) => setForm({ ...form, category: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white transition"
+                    className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading transition"
                   >
                     <option value="Price Action">Price Action</option>
                     <option value="Smart Money Concepts (SMC)">Smart Money Concepts (SMC)</option>
@@ -204,11 +204,11 @@ export default function TutorCoursesPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Level</label>
+                  <label className="block text-xs font-semibold text-text-heading mb-1">Level</label>
                   <select
                     value={form.level}
                     onChange={(e) => setForm({ ...form, level: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white transition"
+                    className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading transition"
                   >
                     <option value="BEGINNER">Beginner</option>
                     <option value="INTERMEDIATE">Intermediate</option>
@@ -218,7 +218,7 @@ export default function TutorCoursesPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-text-heading mb-1">
                   Price in INR (0 for Free)
                 </label>
                 <input
@@ -227,38 +227,38 @@ export default function TutorCoursesPage() {
                   required
                   value={form.price}
                   onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
-                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white transition"
+                  className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading transition"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Short Description</label>
+                <label className="block text-xs font-semibold text-text-heading mb-1">Short Description</label>
                 <input
                   type="text"
                   required
                   value={form.shortDescription}
                   onChange={(e) => setForm({ ...form, shortDescription: e.target.value })}
                   placeholder="One sentence summary of what students will achieve..."
-                  className="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 transition"
+                  className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading placeholder-text-muted transition"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Full Curriculum Description</label>
+                <label className="block text-xs font-semibold text-text-heading mb-1">Full Curriculum Description</label>
                 <textarea
                   rows={3}
                   required
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   placeholder="Detailed outline of modules, requirements, and outcomes..."
-                  className="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 resize-none transition"
+                  className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading placeholder-text-muted resize-none transition"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3 bg-brand-amber hover:bg-amber-400 disabled:opacity-50 text-slate-950 font-bold text-xs rounded-xl transition"
+                className="w-full py-3 bg-blue hover:bg-blue-hover disabled:opacity-50 text-white font-bold text-xs rounded-full transition shadow-sm"
               >
                 {submitting ? 'Creating Draft...' : 'Create Masterclass'}
               </button>

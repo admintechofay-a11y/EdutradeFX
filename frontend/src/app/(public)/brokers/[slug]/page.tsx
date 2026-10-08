@@ -23,7 +23,21 @@ import {
   X,
   Send,
   Lock,
+  Server,
+  Users,
+  CreditCard,
+  Handshake,
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  BarChart3,
+  Trophy,
+  FileText,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  Info,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { api } from '../../../../lib/api';
 import { Broker, BrokerReview } from '../../../../types';
 import { StarRating } from '../../../../components/common/StarRating';
@@ -38,7 +52,18 @@ export default function BrokerDetailPage() {
   const [broker, setBroker] = useState<Broker | null>(null);
   const [reviews, setReviews] = useState<BrokerReview[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'regulation' | 'trading' | 'payment' | 'reviews'>('overview');
+  const [activeTab, setActiveTab] = useState<
+    | 'overview'
+    | 'regulation'
+    | 'platforms'
+    | 'accounts'
+    | 'symbols'
+    | 'ib-program'
+    | 'banking'
+    | 'awards'
+    | 'policies'
+    | 'reviews'
+  >('overview');
 
   // Modals
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
@@ -67,7 +92,7 @@ export default function BrokerDetailPage() {
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewSuccess, setReviewSuccess] = useState(false);
 
-  const { selectedBrokerIds, addBroker, removeBroker } = useCompareStore();
+  const { selectedBrokerIds, toggleBroker } = useCompareStore();
   const { user } = useAuthStore();
 
   const isCompared = broker ? selectedBrokerIds.includes(broker.id) : false;
@@ -100,14 +125,23 @@ export default function BrokerDetailPage() {
     if (!broker) return;
     setLeadSubmitting(true);
     try {
-      await api.post(`/brokers/${broker.id}/leads`, leadForm);
+      await api.post(`/brokers/${broker.id}/lead`, leadForm);
       setLeadSuccess(true);
+      toast.success('Your inquiry was routed directly to broker representative.');
       setTimeout(() => {
         setIsLeadModalOpen(false);
         setLeadSuccess(false);
-      }, 2500);
+        setLeadForm({
+          name: '',
+          email: '',
+          phone: '',
+          country: '',
+          experience: 'BEGINNER',
+          depositBudget: '100 - 500 USD',
+        });
+      }, 2000);
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to submit enquiry. Please try again.');
+      toast.error(err.response?.data?.message || 'Failed to submit inquiry.');
     } finally {
       setLeadSubmitting(false);
     }
@@ -120,186 +154,231 @@ export default function BrokerDetailPage() {
     try {
       await api.post(`/brokers/${broker.id}/reviews`, reviewForm);
       setReviewSuccess(true);
-      // Reload reviews
-      const revRes = await api.get(`/brokers/${broker.id}/reviews`);
-      setReviews(revRes.data?.data || []);
+      toast.success('Review submitted for moderation.');
       setTimeout(() => {
         setIsReviewModalOpen(false);
         setReviewSuccess(false);
-        setReviewForm({ rating: 5, title: '', comment: '', pros: '', cons: '' });
+        setReviewForm({
+          rating: 5,
+          title: '',
+          comment: '',
+          pros: '',
+          cons: '',
+        });
       }, 2000);
     } catch (err: any) {
-      alert(err.message || err.response?.data?.message || 'Failed to submit review.');
+      toast.error(err.response?.data?.message || 'Failed to submit review.');
     } finally {
       setReviewSubmitting(false);
     }
   };
 
+  const toggleWatchlist = async () => {
+    if (!broker) return;
+    if (!user) {
+      toast.error('Please log in to bookmark brokers to your watchlist.');
+      return;
+    }
+    try {
+      const res = await api.post(`/brokers/${broker.id}/save`);
+      if (res.data?.data?.saved) {
+        toast.success(`${broker.companyName} added to your watchlist.`);
+      } else {
+        toast.success(`${broker.companyName} removed from watchlist.`);
+      }
+    } catch {
+      toast.error('Could not update watchlist.');
+    }
+  };
+
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
-        <Skeleton className="h-64 rounded-3xl" />
-        <Skeleton className="h-12 w-96 rounded-xl" />
-        <Skeleton className="h-96 rounded-3xl" />
+      <div className="min-h-screen bg-surface py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
+        <Skeleton className="h-48 w-full rounded-3xl" />
+        <Skeleton className="h-12 w-full rounded-2xl" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <Skeleton className="h-96 lg:col-span-2 rounded-3xl" />
+          <Skeleton className="h-96 rounded-3xl" />
+        </div>
       </div>
     );
   }
 
   if (!broker) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-24 text-center">
-        <h2 className="text-2xl font-bold text-white mb-2">Broker Not Found</h2>
-        <p className="text-slate-400 mb-6">The requested broker profile does not exist or has been removed.</p>
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-4 text-center">
+        <AlertTriangle className="w-16 h-16 text-orange mb-4" />
+        <h1 className="text-2xl font-black text-navy mb-2">Broker Profile Not Available</h1>
+        <p className="text-sm text-text-muted max-w-md mb-6">
+          The requested broker is currently pending verification or has been relocated.
+        </p>
         <Link
           href="/brokers"
-          className="px-6 py-2.5 bg-brand-blue text-white rounded-xl font-semibold text-sm hover:bg-blue-600 transition"
+          className="px-6 py-2.5 rounded-full bg-blue text-white text-xs font-bold hover:bg-blue-hover transition"
         >
-          Back to Directory
+          Return to Directory
         </Link>
       </div>
     );
   }
 
+  const licenses = broker.licenses || [];
+  const servers = broker.servers || [];
+  const accountGroups = broker.accountGroups || [];
+  const depositMethods = broker.depositMethodItems || [];
+  const withdrawalMethods = broker.withdrawalMethodItems || [];
+  const symbolSpecs = broker.symbolSpecs || [];
+  const ibPlans = broker.ibPlans || [];
+  const awards = broker.awards || [];
+  const boardMembers = broker.boardMembers || [];
+  const documents = (broker.documents || []).filter((d) => !d.isPrivate);
+
   return (
-    <div className="min-h-screen pb-24 text-slate-100">
-      {/* ─── Profile Header / Hero ───────────────────────────────── */}
-      <div className="bg-brand-navy-card/80 border-b border-slate-800 backdrop-blur-md pt-8 pb-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="flex items-center gap-5">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-brand-navy-light border border-slate-700 flex items-center justify-center p-3 overflow-hidden shadow-xl shrink-0">
+    <div className="min-h-screen bg-surface">
+      {/* ── TOP HERO HEADER ───────────────────────────────── */}
+      <div className="bg-white border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-6">
+              {/* Logo */}
+              <div className="w-24 h-24 rounded-3xl bg-surface-tint border border-border p-3 flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
                 {broker.logo ? (
-                  <img src={broker.logo} alt={broker.companyName} className="w-full h-full object-contain" />
+                  <img src={broker.logo} alt={broker.companyName} className="max-w-full max-h-full object-contain" />
                 ) : (
-                  <Building2 className="w-10 h-10 text-slate-400" />
+                  <Building2 className="w-12 h-12 text-navy" />
                 )}
               </div>
-              <div>
-                <div className="flex items-center gap-3 flex-wrap mb-1">
-                  <h1 className="text-2xl sm:text-3xl font-extrabold text-white">{broker.companyName}</h1>
-                  {broker.isFeatured && (
-                    <span className="px-2.5 py-0.5 rounded-full bg-brand-amber/15 text-brand-amber text-xs font-bold border border-brand-amber/30">
-                      FEATURED
+
+              {/* Title & Badges */}
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <h1 className="text-2xl sm:text-3xl font-black text-navy tracking-tight">{broker.companyName}</h1>
+                  {broker.isRegulated && (
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-black uppercase tracking-wider">
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                      Regulated Broker
                     </span>
                   )}
-                  {broker.regulation && broker.regulation.length > 0 && (
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 text-xs font-bold border border-emerald-500/30 flex items-center gap-1">
-                      <ShieldCheck className="w-3.5 h-3.5" />
-                      Regulated
+                  {broker.businessType && (
+                    <span className="px-3 py-1 rounded-full bg-blue/10 text-blue border border-blue/20 text-xs font-bold uppercase tracking-wider">
+                      {broker.businessType}
+                    </span>
+                  )}
+                  {broker.isFeatured && (
+                    <span className="px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-xs font-bold uppercase tracking-wider">
+                      ★ Featured
                     </span>
                   )}
                 </div>
 
-                <div className="flex items-center gap-4 text-xs sm:text-sm text-slate-400 flex-wrap">
-                  <div className="flex items-center gap-1.5">
-                    <StarRating rating={broker.avgRating} />
-                    <span className="font-bold text-white ml-1">{broker.avgRating.toFixed(1)}</span>
-                    <span>({broker.totalReviews} reviews)</span>
+                <div className="flex flex-wrap items-center gap-4 text-xs text-text-muted">
+                  <div className="flex items-center gap-1.5 font-bold text-navy">
+                    <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                    <span>{broker.avgRating.toFixed(1)}</span>
+                    <span className="text-text-muted font-normal">({broker.totalReviews} reviews)</span>
                   </div>
-                  {broker.headquarters && (
-                    <span className="flex items-center gap-1">
-                      <Building2 className="w-3.5 h-3.5 text-slate-500" />
-                      {broker.headquarters}
-                    </span>
-                  )}
-                  {broker.yearFounded && (
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-3.5 h-3.5 text-slate-500" />
-                      Est. {broker.yearFounded}
-                    </span>
-                  )}
+                  <span>•</span>
+                  <span>Founded: {broker.yearFounded || 'Established'}</span>
+                  <span>•</span>
+                  <span>HQ: {broker.headquarters || broker.country || 'Global'}</span>
                 </div>
               </div>
             </div>
 
-            {/* Header Action Buttons */}
+            {/* CTAs */}
             <div className="flex flex-wrap items-center gap-3">
               <button
-                onClick={() => (isCompared ? removeBroker(broker.id) : addBroker(broker.id))}
-                className={`px-4 py-2.5 rounded-xl text-xs font-semibold border transition flex items-center gap-2 ${
+                onClick={() => toggleBroker(broker.id)}
+                className={`px-4 py-2.5 rounded-full border text-xs font-bold transition flex items-center gap-2 ${
                   isCompared
-                    ? 'bg-brand-blue text-white border-brand-blue'
-                    : 'bg-brand-navy-light text-slate-300 border-slate-700 hover:border-slate-500'
+                    ? 'bg-blue text-white border-blue shadow-sm'
+                    : 'bg-white border-border text-navy hover:bg-surface-tint'
                 }`}
               >
                 <Scale className="w-4 h-4" />
-                <span>{isCompared ? 'Comparing' : 'Compare'}</span>
+                {isCompared ? 'In Compare Matrix' : 'Compare Broker'}
+              </button>
+
+              <button
+                onClick={toggleWatchlist}
+                className="p-2.5 rounded-full bg-white border border-border text-navy hover:bg-surface-tint transition"
+                title="Save to watchlist"
+              >
+                <Bookmark className="w-4 h-4" />
+              </button>
+
+              <button
+                onClick={() => setIsLeadModalOpen(true)}
+                className="px-6 py-2.5 rounded-full bg-orange hover:bg-orange-hover text-white text-xs font-black uppercase tracking-wider transition shadow-sm flex items-center gap-1.5"
+              >
+                Open Account / Inquiry
+                <ArrowRight className="w-4 h-4" />
               </button>
 
               {broker.website && (
                 <a
                   href={broker.website}
                   target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-2.5 rounded-xl text-xs font-semibold bg-brand-navy-light text-slate-300 border border-slate-700 hover:border-slate-500 transition flex items-center gap-2"
+                  rel="noreferrer"
+                  className="p-2.5 rounded-full bg-white border border-border text-navy hover:bg-surface-tint transition"
+                  title="Visit official website"
                 >
-                  <Globe className="w-4 h-4" />
-                  <span>Website</span>
-                  <ExternalLink className="w-3 h-3 text-slate-500" />
+                  <ExternalLink className="w-4 h-4" />
                 </a>
               )}
-
-              <button
-                onClick={() => setIsLeadModalOpen(true)}
-                className="px-6 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-brand-blue to-blue-600 text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 transition flex items-center gap-2"
-              >
-                <span>Open Live Account</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
             </div>
           </div>
 
-          {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 pt-6 border-t border-slate-800/80">
-            <div className="p-3.5 rounded-xl bg-brand-navy-light/60 border border-slate-800">
-              <div className="text-xs text-slate-400 mb-0.5">Min Deposit</div>
-              <div className="text-base font-bold text-white">
+          {/* Quick Metrics Ribbon */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 pt-6 border-t border-border">
+            <div className="p-4 rounded-2xl bg-surface-tint/60 border border-border">
+              <div className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Min Deposit</div>
+              <div className="text-lg font-black text-navy mt-0.5">
                 {broker.minDeposit ? `$${broker.minDeposit}` : 'No Minimum'}
               </div>
             </div>
-            <div className="p-3.5 rounded-xl bg-brand-navy-light/60 border border-slate-800">
-              <div className="text-xs text-slate-400 mb-0.5">Max Leverage</div>
-              <div className="text-base font-bold text-brand-amber">
-                {broker.maxLeverage || '1:500'}
-              </div>
+            <div className="p-4 rounded-2xl bg-surface-tint/60 border border-border">
+              <div className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Max Leverage</div>
+              <div className="text-lg font-black text-blue mt-0.5">{broker.maxLeverage || '1:500'}</div>
             </div>
-            <div className="p-3.5 rounded-xl bg-brand-navy-light/60 border border-slate-800">
-              <div className="text-xs text-slate-400 mb-0.5">Spreads From</div>
-              <div className="text-base font-bold text-emerald-400">
-                {broker.spreadsFrom || '0.0 Pips'}
-              </div>
+            <div className="p-4 rounded-2xl bg-surface-tint/60 border border-border">
+              <div className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Spreads From</div>
+              <div className="text-lg font-black text-emerald-600 mt-0.5">{broker.spreadsFrom || '0.0 Pips'}</div>
             </div>
-            <div className="p-3.5 rounded-xl bg-brand-navy-light/60 border border-slate-800">
-              <div className="text-xs text-slate-400 mb-0.5">Commissions</div>
-              <div className="text-base font-bold text-white">
-                {broker.commissions || '$0 / Zero'}
-              </div>
+            <div className="p-4 rounded-2xl bg-surface-tint/60 border border-border">
+              <div className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Commission Per Lot</div>
+              <div className="text-lg font-black text-navy mt-0.5">{broker.commissions || '$0 / Zero'}</div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ─── Tab Navigation ──────────────────────────────────────── */}
-      <div className="border-b border-slate-800 bg-brand-navy-card/40 sticky top-16 z-20 backdrop-blur-md">
+      {/* ── 10 TAB NAVIGATION STRIP ─────────────────────────── */}
+      <div className="sticky top-16 z-20 bg-white border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex space-x-8 overflow-x-auto no-scrollbar py-3">
+          <nav className="flex space-x-6 overflow-x-auto no-scrollbar py-3 text-xs font-bold">
             {[
               { id: 'overview', label: 'Overview' },
-              { id: 'regulation', label: 'Regulations & Licenses' },
-              { id: 'trading', label: 'Trading & Fees' },
-              { id: 'payment', label: 'Deposit & Withdrawal' },
+              { id: 'regulation', label: `Regulation (${licenses.length})` },
+              { id: 'platforms', label: 'Platforms & Servers' },
+              { id: 'accounts', label: `Accounts (${accountGroups.length})` },
+              { id: 'symbols', label: `Tradable Symbols (${symbolSpecs.length})` },
+              { id: 'ib-program', label: 'IB Program' },
+              { id: 'banking', label: 'Deposit & Withdrawal' },
+              { id: 'awards', label: 'Awards & Highlights' },
+              { id: 'policies', label: `Policies (${documents.length})` },
               { id: 'reviews', label: `Reviews (${reviews.length})` },
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`text-sm font-semibold whitespace-nowrap transition-colors relative py-2 ${
-                  activeTab === tab.id ? 'text-brand-blue' : 'text-slate-400 hover:text-slate-200'
+                className={`whitespace-nowrap pb-2 pt-1 relative transition ${
+                  activeTab === tab.id ? 'text-blue' : 'text-text-muted hover:text-navy'
                 }`}
               >
                 {tab.label}
                 {activeTab === tab.id && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-blue rounded-full" />
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue rounded-full" />
                 )}
               </button>
             ))}
@@ -307,561 +386,805 @@ export default function BrokerDetailPage() {
         </div>
       </div>
 
-      {/* ─── Tab Contents ────────────────────────────────────────── */}
+      {/* ── MAIN TAB WORKSPACE ─────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {/* Overview Tab */}
+        {/* TAB 1: OVERVIEW */}
         {activeTab === 'overview' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
-              <div className="p-6 rounded-2xl bg-brand-navy-card border border-slate-800">
-                <h3 className="text-lg font-bold text-white mb-4">About {broker.companyName}</h3>
-                <p className="text-sm sm:text-base text-slate-300 leading-relaxed whitespace-pre-line">
+              {/* About */}
+              <div className="p-6 rounded-3xl bg-white border border-border shadow-sm space-y-4">
+                <h3 className="text-base font-black text-navy uppercase tracking-wider">
+                  About {broker.companyName}
+                </h3>
+                <p className="text-sm text-text-body leading-relaxed whitespace-pre-line">
                   {broker.description ||
-                    `${broker.companyName} is an internationally recognized multi-asset Forex and CFD broker offering institutional liquidity, ultra-low raw spreads, and flexible leverage options. Established in ${broker.yearFounded || 2012}, the company serves retail and professional clients worldwide with Tier-1 regulatory protection.`}
+                    `${broker.companyName} is an internationally recognized multi-asset brokerage offering interbank liquidity, raw pricing, and flexible leverage for retail and institutional traders.`}
                 </p>
+                {broker.platformDescription && (
+                  <div className="p-4 rounded-2xl bg-surface-tint border border-border text-xs text-text-muted leading-relaxed">
+                    <strong className="text-navy block mb-1">Execution & Server Architecture:</strong>
+                    {broker.platformDescription}
+                  </div>
+                )}
               </div>
 
-              {/* Instruments Matrix */}
-              <div className="p-6 rounded-2xl bg-brand-navy-card border border-slate-800">
-                <h3 className="text-lg font-bold text-white mb-4">Tradable Instruments</h3>
-                <div className="flex flex-wrap gap-2">
-                  {broker.instruments && broker.instruments.length > 0 ? (
-                    broker.instruments.map((inst, i) => (
-                      <span
-                        key={i}
-                        className="px-3 py-1.5 rounded-xl bg-brand-navy-light text-slate-200 text-xs font-semibold border border-slate-700"
+              {/* Board Members */}
+              {boardMembers.length > 0 && (
+                <div className="p-6 rounded-3xl bg-white border border-border shadow-sm space-y-4">
+                  <h3 className="text-base font-black text-navy uppercase tracking-wider">
+                    Executive Leadership & Board of Directors
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {boardMembers.map((bm) => (
+                      <div
+                        key={bm.id}
+                        className="p-4 rounded-2xl border border-border bg-surface-tint/50 flex items-center gap-3.5"
                       >
-                        {inst}
+                        <div className="w-12 h-12 rounded-full bg-blue/10 text-blue font-black flex items-center justify-center shrink-0 overflow-hidden">
+                          {bm.photoUrl ? (
+                            <img src={bm.photoUrl} alt={bm.fullName} className="w-full h-full object-cover" />
+                          ) : (
+                            <Users className="w-6 h-6" />
+                          )}
+                        </div>
+                        <div>
+                          <div className="text-xs font-black text-navy">{bm.fullName}</div>
+                          <div className="text-[11px] text-text-muted">{bm.position}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Supported Currencies & Instruments */}
+              <div className="p-6 rounded-3xl bg-white border border-border shadow-sm space-y-4">
+                <h3 className="text-base font-black text-navy uppercase tracking-wider">
+                  Supported Account Currencies
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {broker.accountCurrencies && broker.accountCurrencies.length > 0 ? (
+                    broker.accountCurrencies.map((c) => (
+                      <span
+                        key={c}
+                        className="px-3 py-1.5 rounded-full bg-surface-tint text-navy text-xs font-bold border border-border"
+                      >
+                        {c}
                       </span>
                     ))
                   ) : (
-                    ['Forex Majors', 'Forex Minors', 'Indices', 'Commodities', 'Cryptos', 'Precious Metals'].map(
-                      (inst, i) => (
-                        <span
-                          key={i}
-                          className="px-3 py-1.5 rounded-xl bg-brand-navy-light text-slate-200 text-xs font-semibold border border-slate-700"
-                        >
-                          {inst}
-                        </span>
-                      )
-                    )
+                    <span className="text-xs text-text-muted">USD, EUR, GBP, AUD</span>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* Right Quick Summary Card */}
+            {/* Sidebar Overview Snapshot */}
             <div className="space-y-6">
-              <div className="p-6 rounded-2xl bg-brand-navy-card border border-slate-800">
-                <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">
-                  Trading Snapshot
-                </h4>
-                <div className="space-y-3.5 text-xs sm:text-sm">
-                  <div className="flex justify-between pb-2 border-b border-slate-800">
-                    <span className="text-slate-400">Headquarters</span>
-                    <span className="font-semibold text-white">{broker.headquarters || 'London, UK'}</span>
+              <div className="p-6 rounded-3xl bg-white border border-border shadow-sm space-y-4">
+                <h4 className="text-xs font-black text-navy uppercase tracking-wider">Corporate Snapshot</h4>
+                <div className="space-y-3 text-xs">
+                  <div className="flex justify-between py-1.5 border-b border-border">
+                    <span className="text-text-muted">Legal Entity</span>
+                    <span className="font-bold text-navy text-right">{broker.registeredName || broker.companyName}</span>
                   </div>
-                  <div className="flex justify-between pb-2 border-b border-slate-800">
-                    <span className="text-slate-400">Year Founded</span>
-                    <span className="font-semibold text-white">{broker.yearFounded || 2010}</span>
+                  <div className="flex justify-between py-1.5 border-b border-border">
+                    <span className="text-text-muted">Country</span>
+                    <span className="font-bold text-navy">{broker.country || 'Global'}</span>
                   </div>
-                  <div className="flex justify-between pb-2 border-b border-slate-800">
-                    <span className="text-slate-400">Min Deposit</span>
-                    <span className="font-semibold text-white">${broker.minDeposit || 10}</span>
+                  <div className="flex justify-between py-1.5 border-b border-border">
+                    <span className="text-text-muted">City / Address</span>
+                    <span className="font-bold text-navy text-right">{broker.city || broker.headquarters || '—'}</span>
                   </div>
-                  <div className="flex justify-between pb-2 border-b border-slate-800">
-                    <span className="text-slate-400">Max Leverage</span>
-                    <span className="font-semibold text-brand-amber">{broker.maxLeverage || '1:500'}</span>
+                  <div className="flex justify-between py-1.5 border-b border-border">
+                    <span className="text-text-muted">Negative Balance Protection</span>
+                    <span className="font-bold text-emerald-600">
+                      {broker.negativeBalanceProtection !== false ? 'Active ✓' : 'No'}
+                    </span>
                   </div>
-                  <div className="flex justify-between pb-2 border-b border-slate-800">
-                    <span className="text-slate-400">Scalping / Hedging</span>
-                    <span className="font-semibold text-emerald-400">Permitted</span>
+                  <div className="flex justify-between py-1.5 border-b border-border">
+                    <span className="text-text-muted">Tradable Symbols</span>
+                    <span className="font-bold text-navy">{broker.totalTradableSymbols || '500+'}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Islamic / Swap-Free</span>
-                    <span className="font-semibold text-emerald-400">Available</span>
+                  <div className="flex justify-between py-1.5">
+                    <span className="text-text-muted">Customer Support</span>
+                    <span className="font-bold text-navy">{broker.supportAvailability || '24/5 Live Chat'}</span>
                   </div>
                 </div>
-
-                <button
-                  onClick={() => setIsLeadModalOpen(true)}
-                  className="w-full mt-6 py-3 bg-brand-blue hover:bg-blue-600 text-white font-semibold text-sm rounded-xl transition shadow-lg shadow-blue-500/20"
-                >
-                  Contact Broker Rep
-                </button>
               </div>
+
+              {/* Funds Security Policy */}
+              {broker.fundsSecurity && (
+                <div className="p-6 rounded-3xl bg-blue/10 border border-blue/20 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Lock className="w-4 h-4 text-blue" />
+                    <h4 className="text-xs font-black uppercase text-navy tracking-wider">Funds Security</h4>
+                  </div>
+                  <p className="text-xs text-navy leading-relaxed">{broker.fundsSecurity}</p>
+                </div>
+              )}
             </div>
           </div>
         )}
 
-        {/* Regulation Tab */}
+        {/* TAB 2: REGULATION & LICENSES */}
         {activeTab === 'regulation' && (
-          <div className="p-6 rounded-2xl bg-brand-navy-card border border-slate-800 space-y-6">
+          <div className="space-y-6">
+            <div className="p-6 rounded-3xl bg-white border border-border shadow-sm space-y-4">
+              <h3 className="text-base font-black text-navy uppercase tracking-wider">
+                Regulatory Authorisations & Licenses
+              </h3>
+              <p className="text-xs text-text-muted">
+                EdutradeFX tracks and verifies official licenses issued by financial conduct authorities.
+              </p>
+
+              {licenses.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                  {licenses.map((lic) => (
+                    <div
+                      key={lic.id}
+                      className="p-5 rounded-2xl border border-border bg-surface-tint/40 space-y-3"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-black text-navy flex items-center gap-1.5">
+                          <ShieldCheck className="w-4 h-4 text-blue" />
+                          {lic.regulatoryBody}
+                        </span>
+                        {lic.verifiedByAdmin ? (
+                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase tracking-wider">
+                            Verified by Admin ✓
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold">
+                            Under Audit
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="space-y-1.5 text-xs">
+                        <div className="flex justify-between">
+                          <span className="text-text-muted">License / Reg #:</span>
+                          <span className="font-bold text-navy">{lic.licenseNumber}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-text-muted">Status:</span>
+                          <span className="font-bold text-emerald-600">{lic.licenseStatus || 'Active'}</span>
+                        </div>
+                        {lic.companyAddress && (
+                          <div className="text-[11px] text-text-muted pt-1 border-t border-border">
+                            {lic.companyAddress}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-3 pt-2">
+                        {lic.proofLink && (
+                          <a
+                            href={lic.proofLink}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 text-[11px] font-bold text-blue hover:underline"
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                            Regulator Registry Entry
+                          </a>
+                        )}
+                        {lic.licensePdfUrl && (
+                          <a
+                            href={lic.licensePdfUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 text-[11px] font-bold text-navy hover:underline"
+                          >
+                            <FileText className="w-3 h-3 text-blue" />
+                            View License PDF
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-8 text-center text-xs text-text-muted">
+                  No independent licenses currently filed.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: PLATFORMS & SERVERS */}
+        {activeTab === 'platforms' && (
+          <div className="space-y-6">
+            <div className="p-6 rounded-3xl bg-white border border-border shadow-sm space-y-6">
+              <div>
+                <h3 className="text-base font-black text-navy uppercase tracking-wider">Supported Trading Platforms</h3>
+                <div className="flex flex-wrap gap-2.5 mt-3">
+                  {(broker.availablePlatforms && broker.availablePlatforms.length > 0
+                    ? broker.availablePlatforms
+                    : ['MetaTrader 4', 'MetaTrader 5', 'WebTrader']
+                  ).map((p) => (
+                    <span
+                      key={p}
+                      className="px-3.5 py-1.5 rounded-full bg-blue text-white text-xs font-bold shadow-sm"
+                    >
+                      {p}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-border">
+                <h3 className="text-base font-black text-navy uppercase tracking-wider">Supported Hardware & Devices</h3>
+                <div className="flex flex-wrap gap-2.5 mt-3">
+                  {(broker.deviceSupport && broker.deviceSupport.length > 0
+                    ? broker.deviceSupport
+                    : ['Windows PC', 'macOS', 'iOS', 'Android']
+                  ).map((d) => (
+                    <span
+                      key={d}
+                      className="px-3.5 py-1.5 rounded-full bg-surface-tint border border-border text-navy text-xs font-bold"
+                    >
+                      {d}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Servers */}
+              {servers.length > 0 && (
+                <div className="pt-4 border-t border-border space-y-3">
+                  <h3 className="text-base font-black text-navy uppercase tracking-wider">Trading Server Clusters</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    {servers.map((s) => (
+                      <div
+                        key={s.id}
+                        className="p-3.5 rounded-2xl border border-border bg-surface-tint/50 flex items-center gap-3"
+                      >
+                        <Server className="w-5 h-5 text-blue shrink-0" />
+                        <div>
+                          <div className="text-xs font-bold text-navy">{s.name}</div>
+                          <div className="text-[10px] text-text-muted">{s.location || 'Equinix Datacenter'}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 4: TRADING ACCOUNTS */}
+        {activeTab === 'accounts' && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {accountGroups.map((group) => (
+                <div
+                  key={group.id}
+                  className="p-6 rounded-3xl border border-border bg-white shadow-sm flex flex-col justify-between space-y-6"
+                >
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <span className="text-[10px] font-black uppercase tracking-wider text-blue">
+                          {group.currency || 'USD'} Account
+                        </span>
+                        <h4 className="text-lg font-black text-navy mt-0.5">{group.name}</h4>
+                      </div>
+                      <span className="px-2.5 py-1 rounded-full bg-surface-tint text-navy text-[10px] font-bold border border-border">
+                        {group.spreadType}
+                      </span>
+                    </div>
+
+                    <div className="space-y-2 text-xs">
+                      <div className="flex justify-between py-1 border-b border-border">
+                        <span className="text-text-muted">Spreads:</span>
+                        <span className="font-bold text-emerald-600">{group.spreadFrom || '0.0 pips'}</span>
+                      </div>
+                      <div className="flex justify-between py-1 border-b border-border">
+                        <span className="text-text-muted">Min Deposit:</span>
+                        <span className="font-bold text-navy">
+                          {group.minDeposit ? `$${group.minDeposit}` : 'No Minimum'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between py-1 border-b border-border">
+                        <span className="text-text-muted">Max Leverage:</span>
+                        <span className="font-bold text-blue">{group.leverageUpTo || '1:500'}</span>
+                      </div>
+                      <div className="flex justify-between py-1 border-b border-border">
+                        <span className="text-text-muted">Commission:</span>
+                        <span className="font-bold text-navy">{group.feesPerLot || '$0'}</span>
+                      </div>
+                      <div className="flex justify-between py-1 border-b border-border">
+                        <span className="text-text-muted">Execution:</span>
+                        <span className="font-bold text-navy">{group.orderExecution || 'Market'}</span>
+                      </div>
+                    </div>
+
+                    {/* Permission Badges */}
+                    <div className="flex flex-wrap gap-1.5 pt-2">
+                      {group.eaAllowed && (
+                        <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-bold">
+                          EAs Allowed
+                        </span>
+                      )}
+                      {group.hedgingAllowed && (
+                        <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-bold">
+                          Hedging
+                        </span>
+                      )}
+                      {group.scalpingAllowed && (
+                        <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-bold">
+                          Scalping
+                        </span>
+                      )}
+                      {group.swapFree && (
+                        <span className="px-2 py-0.5 rounded-md bg-blue/10 text-blue text-[10px] font-bold">
+                          Swap-Free
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setIsLeadModalOpen(true)}
+                    className="w-full py-2.5 rounded-full bg-blue text-white text-xs font-bold hover:bg-blue-hover transition"
+                  >
+                    Open {group.name}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 5: TRADABLE SYMBOL SPECS */}
+        {activeTab === 'symbols' && (
+          <div className="p-6 rounded-3xl bg-white border border-border shadow-sm space-y-4">
+            <h3 className="text-base font-black text-navy uppercase tracking-wider">
+              Benchmark Symbol Specifications
+            </h3>
+            <p className="text-xs text-text-muted">
+              Live spreads, contract sizes, and margin requirements across key instruments.
+            </p>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead className="bg-surface-tint border-b border-border text-navy font-black uppercase text-[10px]">
+                  <tr>
+                    <th className="p-3">Symbol</th>
+                    <th className="p-3">Asset Category</th>
+                    <th className="p-3">Contract Size</th>
+                    <th className="p-3">Average Spread</th>
+                    <th className="p-3">Decimals / Precision</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border text-navy">
+                  {symbolSpecs.map((s) => (
+                    <tr key={s.id} className="hover:bg-surface-tint/50">
+                      <td className="p-3 font-bold text-blue">{s.symbol}</td>
+                      <td className="p-3">{s.category}</td>
+                      <td className="p-3">{s.contractSize || 'Standard Lot'}</td>
+                      <td className="p-3 font-bold text-emerald-600">{s.spreadAvg || '0.1 pips'}</td>
+                      <td className="p-3">{s.precision ?? 5}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 6: IB PROGRAM */}
+        {activeTab === 'ib-program' && (
+          <div className="p-6 rounded-3xl bg-white border border-border shadow-sm space-y-6">
             <div>
-              <h3 className="text-lg font-bold text-white mb-2">Verified Regulatory Licenses</h3>
-              <p className="text-sm text-slate-400">
-                EdutradeFX conducts quarterly verification checks on all regulatory declarations.
+              <h3 className="text-base font-black text-navy uppercase tracking-wider">
+                Introducing Broker (IB) & Affiliate Programs
+              </h3>
+              <p className="text-xs text-text-muted mt-1">
+                Monetize trading communities with competitive rebates and multi-tier sub-IB payouts.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {broker.regulation && broker.regulation.length > 0 ? (
-                broker.regulation.map((reg, i) => (
-                  <div
-                    key={i}
-                    className="p-4 rounded-xl bg-brand-navy-light/70 border border-slate-700/80 flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                        <ShieldCheck className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div className="text-sm font-bold text-white">{reg}</div>
-                        <div className="text-xs text-slate-400">Official Regulatory Authorization</div>
-                      </div>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 text-xs font-semibold">
-                      Active
+              {ibPlans.map((plan) => (
+                <div key={plan.id} className="p-5 rounded-2xl border border-border bg-surface-tint/50 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-navy">{plan.planName}</span>
+                    <span className="px-2.5 py-0.5 rounded-full bg-blue text-white text-[10px] font-bold uppercase">
+                      {plan.settlementCycle}
                     </span>
                   </div>
-                ))
-              ) : (
-                <div className="p-4 rounded-xl bg-brand-navy-light border border-slate-700 text-slate-400 text-sm">
-                  Standard regulatory records pending verification.
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-text-muted">Commission / Lot:</span>
+                      <span className="font-bold text-navy">{plan.commissionPerLot || 'Custom'}</span>
+                    </div>
+                    {plan.rebatePercentage && (
+                      <div className="flex justify-between">
+                        <span className="text-text-muted">Rebate Share:</span>
+                        <span className="font-bold text-emerald-600">{plan.rebatePercentage}%</span>
+                      </div>
+                    )}
+                    {plan.subIbCommission && (
+                      <div className="flex justify-between">
+                        <span className="text-text-muted">Sub-IB Tier:</span>
+                        <span className="font-bold text-navy">{plan.subIbCommission}</span>
+                      </div>
+                    )}
+                  </div>
+                  {plan.notes && (
+                    <div className="text-[11px] text-text-muted pt-2 border-t border-border">{plan.notes}</div>
+                  )}
                 </div>
-              )}
-            </div>
-
-            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-start gap-3 text-xs text-amber-200">
-              <AlertTriangle className="w-4 h-4 shrink-0 text-brand-amber mt-0.5" />
-              <span>
-                Risk Warning: Trading Forex and Leveraged Financial Instruments carries substantial risk of loss. Always trade under your local regulatory jurisdiction.
-              </span>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Trading Accounts & Fees Tab */}
-        {activeTab === 'trading' && (
-          <div className="space-y-6">
-            <div className="p-6 rounded-2xl bg-brand-navy-card border border-slate-800">
-              <h3 className="text-lg font-bold text-white mb-4">Supported Trading Platforms</h3>
-              <div className="flex flex-wrap gap-3">
-                {broker.tradingPlatforms && broker.tradingPlatforms.length > 0 ? (
-                  broker.tradingPlatforms.map((plat, i) => (
-                    <div
-                      key={i}
-                      className="px-4 py-2.5 rounded-xl bg-brand-navy-light border border-slate-700 text-slate-200 text-sm font-semibold flex items-center gap-2"
-                    >
-                      <Layers className="w-4 h-4 text-brand-blue" />
-                      <span>{plat}</span>
+        {/* TAB 7: BANKING (DEPOSITS & WITHDRAWALS) */}
+        {activeTab === 'banking' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Deposits */}
+            <div className="p-6 rounded-3xl bg-white border border-border shadow-sm space-y-4">
+              <h3 className="text-base font-black text-navy uppercase tracking-wider flex items-center gap-2">
+                <ArrowDownToLine className="w-5 h-5 text-emerald-600" />
+                Deposit Payment Gateways
+              </h3>
+              <div className="space-y-3">
+                {depositMethods.map((m) => (
+                  <div
+                    key={m.id}
+                    className="p-3.5 rounded-2xl border border-border bg-surface-tint/40 flex justify-between items-center text-xs"
+                  >
+                    <div>
+                      <div className="font-bold text-navy">{m.name}</div>
+                      <div className="text-[10px] text-text-muted">Currency: {m.currency}</div>
                     </div>
-                  ))
-                ) : (
-                  ['MetaTrader 4 (MT4)', 'MetaTrader 5 (MT5)', 'cTrader', 'WebTrader'].map((plat, i) => (
-                    <div
-                      key={i}
-                      className="px-4 py-2.5 rounded-xl bg-brand-navy-light border border-slate-700 text-slate-200 text-sm font-semibold flex items-center gap-2"
-                    >
-                      <Layers className="w-4 h-4 text-brand-blue" />
-                      <span>{plat}</span>
+                    <div className="text-right">
+                      <div className="font-bold text-emerald-600">
+                        {m.feePct === 0 ? 'Zero Fee (0%)' : `${m.feePct}%`}
+                      </div>
+                      <div className="text-[10px] text-text-muted">{m.processingTime || 'Instant'}</div>
                     </div>
-                  ))
-                )}
+                  </div>
+                ))}
               </div>
             </div>
 
-            <div className="p-6 rounded-2xl bg-brand-navy-card border border-slate-800">
-              <h3 className="text-lg font-bold text-white mb-4">Account Types Available</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {broker.accountTypes && broker.accountTypes.length > 0 ? (
-                  broker.accountTypes.map((type, i) => (
-                    <div key={i} className="p-4 rounded-xl bg-brand-navy-light border border-slate-700">
-                      <div className="text-sm font-bold text-white mb-1">{type}</div>
-                      <div className="text-xs text-slate-400">Leverage up to {broker.maxLeverage || '1:500'}</div>
+            {/* Withdrawals */}
+            <div className="p-6 rounded-3xl bg-white border border-border shadow-sm space-y-4">
+              <h3 className="text-base font-black text-navy uppercase tracking-wider flex items-center gap-2">
+                <ArrowUpFromLine className="w-5 h-5 text-blue" />
+                Withdrawal Payment Rails
+              </h3>
+              <div className="space-y-3">
+                {withdrawalMethods.map((m) => (
+                  <div
+                    key={m.id}
+                    className="p-3.5 rounded-2xl border border-border bg-surface-tint/40 flex justify-between items-center text-xs"
+                  >
+                    <div>
+                      <div className="font-bold text-navy">{m.name}</div>
+                      <div className="text-[10px] text-text-muted">Min: ${m.minWithdrawal || 20}</div>
                     </div>
-                  ))
-                ) : (
-                  ['Standard STP', 'Raw ECN', 'Islamic Swap-Free'].map((type, i) => (
-                    <div key={i} className="p-4 rounded-xl bg-brand-navy-light border border-slate-700">
-                      <div className="text-sm font-bold text-white mb-1">{type}</div>
-                      <div className="text-xs text-slate-400">Leverage up to {broker.maxLeverage || '1:500'}</div>
+                    <div className="text-right">
+                      <div className="font-bold text-navy">{m.feePct === 0 ? 'Free' : `${m.feePct}%`}</div>
+                      <div className="text-[10px] text-text-muted">{m.processingTime || '1-3 Days'}</div>
                     </div>
-                  ))
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Payment & Banking Tab */}
-        {activeTab === 'payment' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-6 rounded-2xl bg-brand-navy-card border border-slate-800">
-              <h3 className="text-base font-bold text-white mb-4">Deposit Gateways</h3>
-              <div className="flex flex-wrap gap-2">
-                {broker.depositMethods && broker.depositMethods.length > 0 ? (
-                  broker.depositMethods.map((m, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1.5 rounded-lg bg-brand-navy-light border border-slate-700 text-xs font-semibold text-slate-300"
-                    >
-                      {m}
-                    </span>
-                  ))
-                ) : (
-                  ['Bank Wire', 'Visa / Mastercard', 'Crypto (USDT/BTC)', 'Skrill', 'Neteller'].map((m, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1.5 rounded-lg bg-brand-navy-light border border-slate-700 text-xs font-semibold text-slate-300"
-                    >
-                      {m}
-                    </span>
-                  ))
-                )}
-              </div>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-brand-navy-card border border-slate-800">
-              <h3 className="text-base font-bold text-white mb-4">Withdrawal Gateways</h3>
-              <div className="flex flex-wrap gap-2">
-                {broker.withdrawMethods && broker.withdrawMethods.length > 0 ? (
-                  broker.withdrawMethods.map((m, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1.5 rounded-lg bg-brand-navy-light border border-slate-700 text-xs font-semibold text-slate-300"
-                    >
-                      {m}
-                    </span>
-                  ))
-                ) : (
-                  ['Bank Wire', 'Visa / Mastercard', 'Crypto (USDT)', 'Skrill', 'Neteller'].map((m, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1.5 rounded-lg bg-brand-navy-light border border-slate-700 text-xs font-semibold text-slate-300"
-                    >
-                      {m}
-                    </span>
-                  ))
-                )}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         )}
 
-        {/* Reviews Tab */}
-        {activeTab === 'reviews' && (
+        {/* TAB 8: AWARDS & PROS/CONS */}
+        {activeTab === 'awards' && (
           <div className="space-y-8">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl bg-brand-navy-card border border-slate-800">
+            {/* Pros and Cons */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="p-6 rounded-3xl bg-emerald-50/50 border border-emerald-200/80 space-y-3">
+                <h4 className="text-xs font-black uppercase text-emerald-900 tracking-wider flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  Key Strengths (Pros)
+                </h4>
+                <div className="space-y-2 text-xs text-navy font-semibold">
+                  {(broker.prosList && broker.prosList.length > 0
+                    ? broker.prosList
+                    : ['Raw interbank spreads from 0.0 pips', 'Regulated in major financial centres']
+                  ).map((p, i) => (
+                    <div key={i}>• {p}</div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="p-6 rounded-3xl bg-amber-50/50 border border-amber-200/80 space-y-3">
+                <h4 className="text-xs font-black uppercase text-amber-900 tracking-wider flex items-center gap-1.5">
+                  <AlertCircle className="w-4 h-4 text-amber-600" />
+                  Trade-offs (Cons)
+                </h4>
+                <div className="space-y-2 text-xs text-navy font-semibold">
+                  {(broker.consList && broker.consList.length > 0
+                    ? broker.consList
+                    : ['Inactivity fee after extended duration', 'Regional restrictions apply']
+                  ).map((c, i) => (
+                    <div key={i}>• {c}</div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Awards */}
+            {awards.length > 0 && (
+              <div className="p-6 rounded-3xl bg-white border border-border shadow-sm space-y-4">
+                <h3 className="text-base font-black text-navy uppercase tracking-wider flex items-center gap-2">
+                  <Trophy className="w-5 h-5 text-amber-500" />
+                  Industry Awards & Accreditations
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {awards.map((awd) => (
+                    <div
+                      key={awd.id}
+                      className="p-4 rounded-2xl border border-border bg-surface-tint/50 flex items-start gap-3"
+                    >
+                      <span className="px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 font-black text-[10px]">
+                        {awd.year}
+                      </span>
+                      <div>
+                        <div className="text-xs font-black text-navy">{awd.awardFor}</div>
+                        <div className="text-[11px] text-text-muted">
+                          {awd.expo} {awd.expoLocation ? `• ${awd.expoLocation}` : ''}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB 9: POLICIES & LEGAL DISCLOSURES */}
+        {activeTab === 'policies' && (
+          <div className="p-6 rounded-3xl bg-white border border-border shadow-sm space-y-4">
+            <h3 className="text-base font-black text-navy uppercase tracking-wider">
+              Legal Documents & Platform Disclosures
+            </h3>
+            <p className="text-xs text-text-muted">Official verified PDF disclosures available for download.</p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+              {documents.map((doc) => (
+                <div
+                  key={doc.id}
+                  className="p-4 rounded-2xl border border-border bg-surface-tint/50 flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-3">
+                    <FileText className="w-5 h-5 text-blue" />
+                    <div>
+                      <div className="text-xs font-bold text-navy">{doc.docType.replace(/_/g, ' ')}</div>
+                      <div className="text-[10px] text-text-muted">{doc.fileName || 'PDF Document'}</div>
+                    </div>
+                  </div>
+                  <a
+                    href={doc.fileUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3 py-1.5 rounded-full bg-white border border-border text-xs font-bold text-blue hover:bg-blue hover:text-white transition"
+                  >
+                    View PDF
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 10: REVIEWS & RATINGS */}
+        {activeTab === 'reviews' && (
+          <div className="space-y-6">
+            <div className="p-6 rounded-3xl bg-white border border-border shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-xl font-bold text-white mb-1">Community Trader Reviews</h3>
-                <p className="text-xs sm:text-sm text-slate-400">
-                  Real experiences from verified live accounts.
+                <h3 className="text-base font-black text-navy uppercase tracking-wider">Community Reviews</h3>
+                <p className="text-xs text-text-muted mt-0.5">
+                  Verified feedback from registered traders on EdutradeFX.
                 </p>
               </div>
               <button
                 onClick={() => setIsReviewModalOpen(true)}
-                className="px-5 py-2.5 bg-brand-blue hover:bg-blue-600 text-white font-semibold text-xs rounded-xl transition shadow"
+                className="px-5 py-2.5 rounded-full bg-blue text-white text-xs font-bold hover:bg-blue-hover transition shadow-sm"
               >
                 Write a Review
               </button>
             </div>
 
-            {reviews.length > 0 ? (
-              <div className="space-y-4">
-                {reviews.map((rev) => (
-                  <div
-                    key={rev.id}
-                    className="p-6 rounded-2xl bg-brand-navy-card border border-slate-800 space-y-3"
-                  >
+            <div className="space-y-4">
+              {reviews.length > 0 ? (
+                reviews.map((rev) => (
+                  <div key={rev.id} className="p-6 rounded-3xl bg-white border border-border shadow-sm space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-white text-sm">
-                          {rev.user?.name ? rev.user.name[0].toUpperCase() : 'T'}
+                        <div className="w-10 h-10 rounded-full bg-blue/10 text-blue font-bold flex items-center justify-center text-sm">
+                          {rev.user?.name?.[0] || 'U'}
                         </div>
                         <div>
-                          <div className="text-sm font-bold text-white flex items-center gap-2">
-                            <span>{rev.user?.name || 'Verified Trader'}</span>
-                            {rev.isVerified && (
-                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                                Verified Trader
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-xs text-slate-400">
+                          <div className="text-xs font-black text-navy">{rev.user?.name || 'Verified Trader'}</div>
+                          <div className="text-[10px] text-text-muted">
                             {new Date(rev.createdAt).toLocaleDateString()}
                           </div>
                         </div>
                       </div>
-                      <StarRating rating={rev.rating} />
+                      <div className="flex items-center gap-1 text-amber-400">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`w-3.5 h-3.5 ${
+                              i < rev.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-200'
+                            }`}
+                          />
+                        ))}
+                      </div>
                     </div>
 
-                    <h4 className="text-sm font-bold text-slate-200">{rev.title}</h4>
-                    <p className="text-sm text-slate-300 leading-relaxed">{rev.comment}</p>
+                    <h5 className="text-xs font-black text-navy">{rev.title}</h5>
+                    <p className="text-xs text-text-body leading-relaxed">{rev.comment}</p>
 
-                    {(rev.pros || rev.cons) && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-slate-800/80 text-xs">
-                        {rev.pros && (
-                          <div className="flex items-start gap-1.5 text-emerald-400">
-                            <ThumbsUp className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-                            <span>
-                              <strong>Pros:</strong> {rev.pros}
-                            </span>
-                          </div>
-                        )}
-                        {rev.cons && (
-                          <div className="flex items-start gap-1.5 text-rose-400">
-                            <ThumbsDown className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-                            <span>
-                              <strong>Cons:</strong> {rev.cons}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
+                    {/* Broker Response */}
                     {rev.brokerResponse && (
-                      <div className="mt-4 p-3.5 rounded-xl bg-brand-navy-light/60 border border-slate-800 text-xs space-y-1">
-                        <div className="font-semibold text-brand-blue flex items-center gap-1.5">
-                          <Building2 className="w-3.5 h-3.5" />
-                          <span>{broker.companyName} Official Response</span>
+                      <div className="p-3.5 rounded-2xl bg-surface-tint border border-border text-xs space-y-1">
+                        <div className="font-black text-blue text-[11px] uppercase tracking-wider">
+                          Official Broker Response:
                         </div>
-                        <p className="text-slate-300">{rev.brokerResponse}</p>
+                        <p className="text-text-muted">{rev.brokerResponse}</p>
                       </div>
                     )}
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-12 text-center bg-brand-navy-card rounded-2xl border border-slate-800">
-                <MessageSquare className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-                <h4 className="text-base font-bold text-white mb-1">No Reviews Yet</h4>
-                <p className="text-sm text-slate-400 mb-6">
-                  Be the first verified trader to share an honest review about {broker.companyName}.
-                </p>
-                <button
-                  onClick={() => setIsReviewModalOpen(true)}
-                  className="px-6 py-2.5 bg-brand-blue text-white rounded-xl text-xs font-semibold"
-                >
-                  Submit First Review
-                </button>
-              </div>
-            )}
+                ))
+              ) : (
+                <div className="p-10 rounded-3xl bg-white border border-border text-center text-xs text-text-muted">
+                  No published reviews yet. Be the first to share your experience with {broker.companyName}!
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
 
-      {/* ─── Modal 1: Lead Capture Form ──────────────────────────── */}
+      {/* ── LEAD INQUIRY MODAL ─────────────────────────────── */}
       {isLeadModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
-          <div className="w-full max-w-lg bg-brand-navy-card border border-slate-700 rounded-3xl p-6 sm:p-8 shadow-2xl relative">
-            <button
-              onClick={() => setIsLeadModalOpen(false)}
-              className="absolute top-5 right-5 text-slate-400 hover:text-white"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {leadSuccess ? (
-              <div className="text-center py-8">
-                <CheckCircle className="w-14 h-14 text-emerald-400 mx-auto mb-3" />
-                <h3 className="text-xl font-bold text-white mb-2">Enquiry Sent Successfully!</h3>
-                <p className="text-sm text-slate-300">
-                  An institutional representative from {broker.companyName} will contact you directly within 24 hours.
-                </p>
+        <div className="fixed inset-0 z-50 bg-navy/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 border border-border shadow-2xl space-y-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="text-base font-black text-navy">Open Account / Direct Inquiry</h3>
+                <p className="text-xs text-text-muted">Direct contact with {broker.companyName}</p>
               </div>
-            ) : (
-              <form onSubmit={handleLeadSubmit} className="space-y-4">
-                <div>
-                  <h3 className="text-xl font-bold text-white">Connect with {broker.companyName}</h3>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    Fast-track your VIP onboarding, lowest raw spreads, and swap-free setup.
-                  </p>
-                </div>
+              <button onClick={() => setIsLeadModalOpen(false)} className="text-text-muted hover:text-navy">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Full Name</label>
-                  <input
-                    type="text"
-                    required
-                    value={leadForm.name}
-                    onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
-                    placeholder="e.g. Alex Johnson"
-                    className="w-full px-3.5 py-2.5 bg-brand-navy-light border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-1 focus:ring-brand-blue"
-                  />
-                </div>
+            <form onSubmit={handleLeadSubmit} className="space-y-3.5">
+              <input
+                type="text"
+                required
+                value={leadForm.name}
+                onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
+                placeholder="Full Name"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
+              />
+              <input
+                type="email"
+                required
+                value={leadForm.email}
+                onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
+                placeholder="Email Address"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
+              />
+              <input
+                type="tel"
+                value={leadForm.phone}
+                onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
+                placeholder="Phone / WhatsApp"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
+              />
+              <input
+                type="text"
+                value={leadForm.country}
+                onChange={(e) => setLeadForm({ ...leadForm, country: e.target.value })}
+                placeholder="Residence Country"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
+              />
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Email</label>
-                    <input
-                      type="email"
-                      required
-                      value={leadForm.email}
-                      onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
-                      placeholder="alex@example.com"
-                      className="w-full px-3.5 py-2.5 bg-brand-navy-light border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-1 focus:ring-brand-blue"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Phone</label>
-                    <input
-                      type="text"
-                      required
-                      value={leadForm.phone}
-                      onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
-                      placeholder="+1 555 019 283"
-                      className="w-full px-3.5 py-2.5 bg-brand-navy-light border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-1 focus:ring-brand-blue"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Country</label>
-                    <input
-                      type="text"
-                      required
-                      value={leadForm.country}
-                      onChange={(e) => setLeadForm({ ...leadForm, country: e.target.value })}
-                      placeholder="e.g. United Kingdom"
-                      className="w-full px-3.5 py-2.5 bg-brand-navy-light border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-1 focus:ring-brand-blue"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Deposit Target</label>
-                    <select
-                      value={leadForm.depositBudget}
-                      onChange={(e) => setLeadForm({ ...leadForm, depositBudget: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-brand-navy-light border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-1 focus:ring-brand-blue"
-                    >
-                      <option value="100 - 500 USD">100 - 500 USD</option>
-                      <option value="500 - 2,000 USD">500 - 2,000 USD</option>
-                      <option value="2,000 - 10,000 USD">2,000 - 10,000 USD</option>
-                      <option value="10,000+ USD VIP">10,000+ USD (VIP Tier)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="pt-2">
-                  <button
-                    type="submit"
-                    disabled={leadSubmitting}
-                    className="w-full py-3 bg-brand-blue hover:bg-blue-600 disabled:opacity-50 text-white font-bold text-sm rounded-xl transition flex items-center justify-center gap-2"
-                  >
-                    {leadSubmitting ? 'Sending Request...' : 'Submit & Open Account'}
-                  </button>
-                </div>
-              </form>
-            )}
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsLeadModalOpen(false)}
+                  className="px-4 py-2 rounded-full border border-border text-xs font-bold text-navy hover:bg-surface-tint"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={leadSubmitting}
+                  className="px-5 py-2 rounded-full bg-blue text-white text-xs font-bold hover:bg-blue-hover disabled:opacity-40"
+                >
+                  {leadSubmitting ? 'Sending...' : 'Send Inquiry'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
 
-      {/* ─── Modal 2: Review Form ────────────────────────────────── */}
+      {/* ── WRITE REVIEW MODAL ─────────────────────────────── */}
       {isReviewModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-brand-navy-card border border-slate-700 rounded-3xl p-6 sm:p-8 shadow-2xl relative">
-            <button
-              onClick={() => setIsReviewModalOpen(false)}
-              className="absolute top-5 right-5 text-slate-400 hover:text-white"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {reviewSuccess ? (
-              <div className="text-center py-8">
-                <CheckCircle className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
-                <h3 className="text-xl font-bold text-white mb-1">Review Submitted!</h3>
-                <p className="text-xs text-slate-300">
-                  Thank you for contributing to transparency in retail Forex.
-                </p>
+        <div className="fixed inset-0 z-50 bg-navy/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 border border-border shadow-2xl space-y-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="text-base font-black text-navy">Review {broker.companyName}</h3>
+                <p className="text-xs text-text-muted">Share your verified trading experience</p>
               </div>
-            ) : (
-              <form onSubmit={handleReviewSubmit} className="space-y-4">
-                <div>
-                  <h3 className="text-xl font-bold text-white">Review {broker.companyName}</h3>
-                  <p className="text-xs text-slate-400 mt-0.5">Share your execution and deposit/withdrawal experience.</p>
-                </div>
+              <button onClick={() => setIsReviewModalOpen(false)} className="text-text-muted hover:text-navy">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Rating</label>
-                  <div className="flex gap-2">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        type="button"
-                        onClick={() => setReviewForm({ ...reviewForm, rating: star })}
-                        className="p-1 focus:outline-none"
-                      >
-                        <Star
-                          className={`w-6 h-6 ${
-                            star <= reviewForm.rating
-                              ? 'text-brand-amber fill-brand-amber'
-                              : 'text-slate-600'
-                          }`}
-                        />
-                      </button>
-                    ))}
-                  </div>
-                </div>
+            <form onSubmit={handleReviewSubmit} className="space-y-3.5">
+              <div>
+                <label className="text-[11px] font-bold text-navy block mb-1">Your Rating</label>
+                <select
+                  value={reviewForm.rating}
+                  onChange={(e) => setReviewForm({ ...reviewForm, rating: parseInt(e.target.value) || 5 })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue bg-white"
+                >
+                  <option value={5}>★★★★★ (5 Stars - Excellent)</option>
+                  <option value={4}>★★★★☆ (4 Stars - Very Good)</option>
+                  <option value={3}>★★★☆☆ (3 Stars - Average)</option>
+                  <option value={2}>★★☆☆☆ (2 Stars - Below Average)</option>
+                  <option value={1}>★☆☆☆☆ (1 Star - Poor)</option>
+                </select>
+              </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Headline</label>
-                  <input
-                    type="text"
-                    required
-                    value={reviewForm.title}
-                    onChange={(e) => setReviewForm({ ...reviewForm, title: e.target.value })}
-                    placeholder="e.g. Tight spreads on EURUSD and fast crypto payouts"
-                    className="w-full px-3.5 py-2.5 bg-brand-navy-light border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-1 focus:ring-brand-blue"
-                  />
-                </div>
+              <input
+                type="text"
+                required
+                value={reviewForm.title}
+                onChange={(e) => setReviewForm({ ...reviewForm, title: e.target.value })}
+                placeholder="Review Headline"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
+              />
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Detailed Review</label>
-                  <textarea
-                    rows={3}
-                    required
-                    value={reviewForm.comment}
-                    onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
-                    placeholder="Describe slippage during news, customer support responsiveness, and withdrawal times..."
-                    className="w-full px-3.5 py-2.5 bg-brand-navy-light border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-1 focus:ring-brand-blue resize-none"
-                  />
-                </div>
+              <textarea
+                required
+                rows={3}
+                value={reviewForm.comment}
+                onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
+                placeholder="Detailed review commentary..."
+                className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
+              />
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-emerald-400 mb-1">Pros</label>
-                    <input
-                      type="text"
-                      value={reviewForm.pros}
-                      onChange={(e) => setReviewForm({ ...reviewForm, pros: e.target.value })}
-                      placeholder="e.g. 0.0 pip spreads, cTrader"
-                      className="w-full px-3 py-2 bg-brand-navy-light border border-slate-700 rounded-xl text-xs text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-rose-400 mb-1">Cons</label>
-                    <input
-                      type="text"
-                      value={reviewForm.cons}
-                      onChange={(e) => setReviewForm({ ...reviewForm, cons: e.target.value })}
-                      placeholder="e.g. Wire transfer fee"
-                      className="w-full px-3 py-2 bg-brand-navy-light border border-slate-700 rounded-xl text-xs text-white"
-                    />
-                  </div>
-                </div>
-
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsReviewModalOpen(false)}
+                  className="px-4 py-2 rounded-full border border-border text-xs font-bold text-navy hover:bg-surface-tint"
+                >
+                  Cancel
+                </button>
                 <button
                   type="submit"
                   disabled={reviewSubmitting}
-                  className="w-full py-3 bg-brand-blue hover:bg-blue-600 disabled:opacity-50 text-white font-bold text-sm rounded-xl transition"
+                  className="px-5 py-2 rounded-full bg-blue text-white text-xs font-bold hover:bg-blue-hover disabled:opacity-40"
                 >
-                  {reviewSubmitting ? 'Posting Review...' : 'Publish Review'}
+                  {reviewSubmitting ? 'Submitting...' : 'Post Review'}
                 </button>
-              </form>
-            )}
+              </div>
+            </form>
           </div>
         </div>
       )}

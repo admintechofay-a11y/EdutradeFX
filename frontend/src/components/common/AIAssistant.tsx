@@ -96,32 +96,32 @@ export const AIAssistant: React.FC = () => {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="relative group flex items-center justify-center w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-500 text-white shadow-glow hover:scale-105 transition-all duration-300"
+          className="relative group flex items-center justify-center w-14 h-14 rounded-full bg-blue hover:bg-blue-hover text-white shadow-lift hover:scale-105 transition-all duration-300"
           aria-label="Open AI Assistant"
         >
           <MessageSquare size={24} />
           <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-orange"></span>
           </span>
         </button>
       )}
 
-      {/* Slide-Up Chat Panel */}
+      {/* Slide-Up Chat Panel (Light Theme with Blue Header & Orange Send Button) */}
       {isOpen && (
-        <div className="flex flex-col w-[360px] sm:w-[400px] h-[520px] rounded-2xl glass-modal shadow-2xl border border-slate-700/80 overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3.5 bg-slate-900/90 border-b border-slate-800">
+        <div className="flex flex-col w-[360px] sm:w-[400px] h-[520px] rounded-2xl bg-white shadow-lift border border-border overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
+          {/* Blue Header */}
+          <div className="flex items-center justify-between px-4 py-3.5 bg-blue text-white shadow-sm">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-blue-600/30 border border-blue-500/50 flex items-center justify-center text-blue-400">
+              <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center text-white">
                 <Bot size={18} />
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <h4 className="text-sm font-bold text-gray-100">Forex AI Mentor</h4>
-                  <Sparkles size={13} className="text-amber-400" />
+                  <h4 className="text-sm font-bold text-white">Forex AI Mentor</h4>
+                  <Sparkles size={13} className="text-orange-200" />
                 </div>
-                <p className="text-[11px] text-emerald-400 font-medium">Online & Ready</p>
+                <p className="text-[11px] text-emerald-200 font-medium">Online & Ready</p>
               </div>
             </div>
 
@@ -129,13 +129,13 @@ export const AIAssistant: React.FC = () => {
               <button
                 onClick={handleClear}
                 title="Clear Chat"
-                className="p-1.5 text-gray-400 hover:text-rose-400 hover:bg-slate-800/80 rounded-md transition-colors"
+                className="p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
               >
                 <Trash2 size={16} />
               </button>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 text-gray-400 hover:text-gray-100 hover:bg-slate-800/80 rounded-md transition-colors"
+                className="p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
               >
                 <X size={18} />
               </button>
@@ -143,28 +143,28 @@ export const AIAssistant: React.FC = () => {
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3.5 text-sm">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3.5 text-sm bg-slate-50/50">
             {messages.map((m, idx) => (
               <div
                 key={idx}
                 className={`flex gap-2.5 ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {m.role === 'assistant' && (
-                  <div className="w-7 h-7 rounded-full bg-blue-950 border border-blue-800 flex items-center justify-center text-blue-400 shrink-0 mt-0.5">
+                  <div className="w-7 h-7 rounded-full bg-blue-100 text-blue flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
                     <Bot size={14} />
                   </div>
                 )}
                 <div
-                  className={`max-w-[82%] px-3.5 py-2.5 rounded-xl leading-relaxed ${
+                  className={`max-w-[82%] px-3.5 py-2.5 rounded-2xl leading-relaxed text-xs sm:text-sm shadow-sm ${
                     m.role === 'user'
-                      ? 'bg-blue-600 text-white rounded-br-none shadow-sm'
-                      : 'bg-slate-800/90 text-gray-200 border border-slate-700/60 rounded-bl-none'
+                      ? 'bg-blue text-white rounded-br-none'
+                      : 'bg-white text-text-heading border border-border rounded-bl-none'
                   }`}
                 >
-                  <p className="whitespace-pre-line text-xs sm:text-sm">{m.content}</p>
+                  <p className="whitespace-pre-line">{m.content}</p>
                 </div>
                 {m.role === 'user' && (
-                  <div className="w-7 h-7 rounded-full bg-slate-700 flex items-center justify-center text-gray-300 shrink-0 mt-0.5">
+                  <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center text-text-heading shrink-0 mt-0.5">
                     <UserIcon size={14} />
                   </div>
                 )}
@@ -172,32 +172,33 @@ export const AIAssistant: React.FC = () => {
             ))}
 
             {loading && (
-              <div className="flex gap-2 items-center text-gray-400 text-xs bg-slate-800/50 p-2 rounded-lg w-fit border border-slate-700/40">
-                <Bot size={14} className="text-blue-400 animate-spin" />
+              <div className="flex gap-2 items-center text-text-muted text-xs bg-white p-2.5 rounded-xl w-fit border border-border shadow-sm">
+                <Bot size={14} className="text-blue animate-spin" />
                 <span>Analyzing trading knowledge base...</span>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Box */}
+          {/* Input Box with Orange Send Button */}
           <form
             onSubmit={handleSend}
-            className="p-3 bg-slate-900/90 border-t border-slate-800 flex items-center gap-2"
+            className="p-3 bg-white border-t border-border flex items-center gap-2"
           >
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about pips, spreads, brokers..."
-              className="flex-1 bg-slate-800/80 border border-slate-700 rounded-lg px-3.5 py-2 text-xs sm:text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
+              className="flex-1 bg-slate-50 border border-border rounded-full px-4 py-2 text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue transition-colors"
             />
             <button
               type="submit"
               disabled={!input.trim() || loading}
-              className="p-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              aria-label="Send Message"
+              className="w-9 h-9 rounded-full bg-orange hover:bg-orange-hover text-white flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm shrink-0"
             >
-              <Send size={16} />
+              <Send size={15} />
             </button>
           </form>
         </div>

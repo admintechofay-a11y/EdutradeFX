@@ -17,25 +17,27 @@ export const BrokerCard: React.FC<BrokerCardProps> = ({ broker }) => {
   const compared = isSelected(broker.id);
 
   return (
-    <div className={`flex flex-col justify-between p-5 rounded-xl border transition-all duration-200 ${
-      broker.isFeatured
-        ? 'bg-slate-900/90 border-blue-500/40 shadow-glow'
-        : 'bg-slate-900/60 border-slate-800 hover:border-slate-700 hover:bg-slate-900/80'
-    }`}>
+    <div
+      className={`group flex flex-col justify-between p-6 rounded-2xl border transition-all duration-300 bg-white shadow-soft hover:shadow-lift hover:-translate-y-1 ${
+        broker.isFeatured
+          ? 'border-blue/40 ring-1 ring-blue/20'
+          : 'border-border hover:border-blue/30'
+      }`}
+    >
       <div>
         {/* Top Header: Logo + Badges */}
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg bg-slate-800 border border-slate-700 p-1 flex items-center justify-center overflow-hidden shrink-0">
+            <div className="w-12 h-12 rounded-xl bg-surface-tint border border-border p-1.5 flex items-center justify-center overflow-hidden shrink-0 group-hover:scale-105 transition-transform">
               {broker.logo ? (
                 <img src={broker.logo} alt={broker.companyName} className="w-full h-full object-contain" />
               ) : (
-                <span className="text-sm font-bold text-blue-400">{broker.companyName.slice(0, 2).toUpperCase()}</span>
+                <span className="text-sm font-bold text-blue font-mono">{broker.companyName.slice(0, 2).toUpperCase()}</span>
               )}
             </div>
             <div>
-              <Link href={`/brokers/${broker.slug}`} className="hover:text-blue-400 transition-colors">
-                <h3 className="font-bold text-base text-gray-100 line-clamp-1">{broker.companyName}</h3>
+              <Link href={`/brokers/${broker.slug}`} className="hover:text-blue transition-colors">
+                <h3 className="font-bold text-base text-text-heading line-clamp-1">{broker.companyName}</h3>
               </Link>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <StarRating rating={broker.avgRating} totalReviews={broker.totalReviews} size={13} />
@@ -58,58 +60,61 @@ export const BrokerCard: React.FC<BrokerCardProps> = ({ broker }) => {
         </div>
 
         {/* Regulations Tags */}
-        <div className="flex flex-wrap gap-1 mb-4">
+        <div className="flex flex-wrap gap-1.5 mb-4">
           {broker.regulation.slice(0, 3).map((reg) => (
-            <span key={reg} className="px-2 py-0.5 rounded text-[11px] font-mono bg-slate-800 text-gray-300 border border-slate-700/60">
+            <span
+              key={reg}
+              className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-medium bg-surface-tint text-text-body border border-border"
+            >
               {reg}
             </span>
           ))}
           {broker.regulation.length > 3 && (
-            <span className="px-1.5 py-0.5 rounded text-[11px] text-gray-400">
+            <span className="px-1.5 py-0.5 rounded text-[11px] text-text-muted font-medium">
               +{broker.regulation.length - 3}
             </span>
           )}
         </div>
 
         {/* Trading Parameters Grid */}
-        <div className="grid grid-cols-3 gap-2 p-3 rounded-lg bg-slate-950/70 border border-slate-800/80 mb-4 text-center">
+        <div className="grid grid-cols-3 gap-2 p-3.5 rounded-xl bg-surface-tint border border-border mb-4 text-center">
           <div>
-            <span className="block text-[10px] text-gray-400 uppercase tracking-wider">Min Deposit</span>
-            <span className="text-xs font-bold font-mono text-gray-100">
+            <span className="block text-[10px] text-text-muted uppercase tracking-wider font-semibold">Min Deposit</span>
+            <span className="text-xs font-bold font-mono text-text-heading">
               {broker.minDeposit === 0 ? '₹0' : `$${broker.minDeposit || 0}`}
             </span>
           </div>
           <div>
-            <span className="block text-[10px] text-gray-400 uppercase tracking-wider">Max Leverage</span>
-            <span className="text-xs font-bold font-mono text-blue-400">
+            <span className="block text-[10px] text-text-muted uppercase tracking-wider font-semibold">Max Leverage</span>
+            <span className="text-xs font-bold font-mono text-blue">
               {broker.maxLeverage || '1:500'}
             </span>
           </div>
           <div>
-            <span className="block text-[10px] text-gray-400 uppercase tracking-wider">Spreads From</span>
-            <span className="text-xs font-bold font-mono text-emerald-400">
+            <span className="block text-[10px] text-text-muted uppercase tracking-wider font-semibold">Spreads From</span>
+            <span className="text-xs font-bold font-mono text-green">
               {broker.spreadsFrom || '0.0 pips'}
             </span>
           </div>
         </div>
 
         {/* Platforms Supported */}
-        <div className="text-xs text-gray-400 mb-4 flex items-center gap-1.5 flex-wrap">
-          <span className="text-gray-500">Platforms:</span>
+        <div className="text-xs text-text-muted mb-4 flex items-center gap-1.5 flex-wrap">
+          <span className="text-text-muted font-medium">Platforms:</span>
           {broker.tradingPlatforms.slice(0, 3).map((p) => (
-            <span key={p} className="text-gray-300 font-medium">{p}</span>
+            <span key={p} className="text-text-body font-semibold">{p}</span>
           ))}
         </div>
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-2 pt-2 border-t border-slate-800">
+      <div className="flex items-center gap-2 pt-3 border-t border-border">
         <button
           onClick={() => toggleBroker(broker.id)}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium border transition-colors ${
+          className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-full text-xs font-bold border transition-all ${
             compared
-              ? 'bg-blue-900/60 border-blue-500 text-blue-300'
-              : 'bg-slate-800/80 border-slate-700 text-gray-300 hover:bg-slate-700'
+              ? 'bg-blue-50 border-blue text-blue'
+              : 'bg-white border-border text-text-body hover:bg-surface-tint hover:border-blue/30'
           }`}
         >
           {compared ? <Check size={14} /> : <Plus size={14} />}
@@ -118,7 +123,7 @@ export const BrokerCard: React.FC<BrokerCardProps> = ({ broker }) => {
 
         <Link
           href={`/brokers/${broker.slug}`}
-          className="flex items-center justify-center gap-1 px-4 py-2 rounded-md text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors"
+          className="flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-bold bg-orange hover:bg-orange-hover text-white shadow-soft hover:shadow-lift transition-all"
         >
           <span>View Profile</span>
           <ExternalLink size={12} />

@@ -49,29 +49,29 @@ export default function AdminCoursesPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-black text-white">Course Quality Control</h1>
-        <p className="text-xs sm:text-sm text-slate-400 mt-1">
+        <h1 className="text-2xl sm:text-3xl font-black text-navy">Course Quality Control</h1>
+        <p className="text-xs sm:text-sm text-text-muted mt-1">
           Review curriculum submissions, publish approved masterclasses, or request revisions.
         </p>
       </div>
 
       {/* Filter */}
-      <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row gap-4">
+      <div className="p-4 rounded-3xl bg-white border border-border shadow-soft flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search masterclasses by title or category..."
-            className="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none"
+            className="w-full pl-10 pr-4 py-2.5 bg-surface-tint border border-border rounded-xl text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
           />
         </div>
 
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-3.5 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white"
+          className="px-3.5 py-2.5 bg-surface-tint border border-border rounded-xl text-xs text-text-heading focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
         >
           <option value="ALL">All Statuses</option>
           <option value="REVIEW">Under Review</option>
@@ -83,12 +83,12 @@ export default function AdminCoursesPage() {
 
       {/* Table */}
       {loading ? (
-        <Skeleton className="h-96 rounded-3xl" />
+        <Skeleton className="h-96 rounded-3xl bg-border/40" />
       ) : (
-        <div className="overflow-x-auto rounded-3xl border border-slate-800 bg-slate-900 shadow-xl">
+        <div className="overflow-x-auto rounded-3xl border border-border bg-white shadow-soft">
           <table className="w-full text-left border-collapse text-xs sm:text-sm">
             <thead>
-              <tr className="border-b border-slate-800 bg-slate-850 text-slate-400 text-xs uppercase font-bold">
+              <tr className="border-b border-border bg-surface-tint text-text-muted text-xs uppercase font-bold">
                 <th className="p-4">Masterclass</th>
                 <th className="p-4">Instructor</th>
                 <th className="p-4">Price</th>
@@ -97,26 +97,26 @@ export default function AdminCoursesPage() {
                 <th className="p-4 text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/80">
+            <tbody className="divide-y divide-border">
               {filtered.map((c) => (
-                <tr key={c.id} className="hover:bg-slate-800/30">
+                <tr key={c.id} className="hover:bg-surface-tint/60 transition">
                   <td className="p-4">
-                    <div className="font-bold text-white line-clamp-1">{c.title}</div>
-                    <div className="text-slate-400 text-xs">{c.category} • {c.level}</div>
+                    <div className="font-bold text-navy line-clamp-1">{c.title}</div>
+                    <div className="text-text-muted text-xs">{c.category} • {c.level}</div>
                   </td>
-                  <td className="p-4 text-slate-300">{c.tutor?.user?.name || 'Tutor'}</td>
-                  <td className="p-4 font-bold text-brand-amber">
+                  <td className="p-4 text-text-body">{c.tutor?.user?.name || 'Tutor'}</td>
+                  <td className="p-4 font-bold text-orange">
                     {c.price === 0 ? 'Free' : `₹${c.price}`}
                   </td>
-                  <td className="p-4 text-slate-400">{c.totalEnrollments} enrolled</td>
+                  <td className="p-4 text-text-muted">{c.totalEnrollments} enrolled</td>
                   <td className="p-4">
                     <span
                       className={`px-2.5 py-1 rounded-full text-xs font-bold ${
                         c.status === 'PUBLISHED'
-                          ? 'bg-emerald-500/15 text-emerald-400'
+                          ? 'bg-green/10 text-green'
                           : c.status === 'REVIEW'
-                          ? 'bg-amber-500/15 text-brand-amber'
-                          : 'bg-slate-800 text-slate-400'
+                          ? 'bg-orange/10 text-orange'
+                          : 'bg-surface-tint text-text-muted border border-border'
                       }`}
                     >
                       {c.status}
@@ -126,7 +126,7 @@ export default function AdminCoursesPage() {
                     {c.status !== 'PUBLISHED' && (
                       <button
                         onClick={() => updateStatus(c.id, 'PUBLISHED')}
-                        className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold"
+                        className="px-3.5 py-1 bg-green hover:bg-green-hover text-white rounded-full text-xs font-bold transition shadow-sm"
                       >
                         Publish
                       </button>
@@ -134,7 +134,7 @@ export default function AdminCoursesPage() {
                     {c.status === 'PUBLISHED' && (
                       <button
                         onClick={() => updateStatus(c.id, 'ARCHIVED')}
-                        className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold"
+                        className="px-3.5 py-1 bg-surface-tint hover:bg-border/60 text-text-body border border-border rounded-full text-xs font-bold transition"
                       >
                         Unpublish
                       </button>

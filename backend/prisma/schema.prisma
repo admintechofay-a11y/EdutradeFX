@@ -462,6 +462,8 @@ model BrokerAccountGroup {
   name                   String
   demoAvailable          Boolean            @default(false)
   currency               String             @default("USD")
+  currencyCode           String?
+  currencyOther          String?
   spreadTypesLabel       String?
   spreadFrom             Decimal            @default(0) @db.Decimal(6, 2)
   minDeposit             Decimal            @default(0) @db.Decimal(10, 2)
@@ -469,6 +471,7 @@ model BrokerAccountGroup {
   depositBonusCode       String?
   depositBonusNum        Int?
   leverageUpTo           String             @default("1:500")
+  leverageCode           String?
   leverageNum            Int?
   minTradeVolume         Decimal            @default(0.01) @db.Decimal(8, 2)
   hasCommissionPerLot    Boolean            @default(false)

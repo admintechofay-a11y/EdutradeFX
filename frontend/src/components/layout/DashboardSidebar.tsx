@@ -96,16 +96,16 @@ export const DashboardSidebar: React.FC = () => {
   const navItems = getNavItems(role);
 
   return (
-    <aside className="w-64 bg-brand-navy-card border-r border-slate-800 flex flex-col justify-between shrink-0 min-h-[calc(100vh-64px)] p-4">
+    <aside className="w-64 bg-white border-r border-border flex flex-col justify-between shrink-0 min-h-[calc(100vh-64px)] p-4 shadow-sm">
       <div className="space-y-6">
         {/* User Card */}
-        <div className="p-3.5 rounded-2xl bg-brand-navy-light/60 border border-slate-800 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-brand-blue/20 text-brand-blue flex items-center justify-center font-bold text-sm">
+        <div className="p-3.5 rounded-2xl bg-surface-tint border border-blue-100 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-blue text-white flex items-center justify-center font-bold text-sm shadow-soft">
             {user?.name ? user.name[0].toUpperCase() : 'U'}
           </div>
           <div className="overflow-hidden">
-            <div className="text-sm font-bold text-white truncate">{user?.name || 'Trader'}</div>
-            <div className="text-[10px] uppercase font-bold text-brand-amber tracking-wider">
+            <div className="text-sm font-bold text-text-heading truncate">{user?.name || 'Trader'}</div>
+            <div className="text-[10px] uppercase font-bold text-orange tracking-wider">
               {role.replace('_', ' ')}
             </div>
           </div>
@@ -122,8 +122,8 @@ export const DashboardSidebar: React.FC = () => {
                 href={item.href}
                 className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition ${
                   isActive
-                    ? 'bg-brand-blue text-white shadow-md shadow-blue-500/20'
-                    : 'text-slate-400 hover:text-white hover:bg-brand-navy-light/40'
+                    ? 'bg-blue text-white shadow-soft'
+                    : 'text-text-muted hover:text-text-heading hover:bg-surface-tint'
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -138,10 +138,10 @@ export const DashboardSidebar: React.FC = () => {
       </div>
 
       {/* Logout Action */}
-      <div className="pt-4 border-t border-slate-800">
+      <div className="pt-4 border-t border-border">
         <button
           onClick={logout}
-          className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-rose-400 hover:bg-rose-500/10 transition"
+          className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 transition"
         >
           <LogOut className="w-4 h-4" />
           <span>Sign Out</span>

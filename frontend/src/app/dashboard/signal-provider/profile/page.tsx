@@ -93,38 +93,38 @@ export default function SignalProviderProfilePage() {
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-black text-white flex items-center gap-2">
-          <ShieldCheck className="w-6 h-6 text-emerald-400" />
+        <h1 className="text-2xl font-black text-navy flex items-center gap-2">
+          <ShieldCheck className="w-6 h-6 text-green" />
           Provider Public Bio & Strategy Disclosures
         </h1>
-        <p className="text-xs text-slate-400 mt-1">
+        <p className="text-xs text-text-muted mt-1">
           Configure how your signal track record, risk parameters, and bio are presented to traders.
         </p>
       </div>
 
       {successMsg && (
-        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs flex items-center gap-2">
+        <div className="p-4 rounded-2xl bg-green/10 border border-green/20 text-green text-xs flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4" />
           <span>{successMsg}</span>
         </div>
       )}
       {errorMsg && (
-        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs flex items-center gap-2">
+        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 text-xs flex items-center gap-2">
           <AlertCircle className="w-4 h-4" />
           <span>{errorMsg}</span>
         </div>
       )}
 
       <form onSubmit={handleSave} className="space-y-6">
-        <div className="bg-brand-navy-card border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-          <h2 className="text-sm font-bold text-white flex items-center gap-2">
-            <Radio className="w-4 h-4 text-emerald-400" />
+        <div className="bg-white border border-border rounded-3xl p-6 shadow-soft space-y-4">
+          <h2 className="text-sm font-bold text-navy flex items-center gap-2">
+            <Radio className="w-4 h-4 text-green" />
             Public Trading Identity
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-text-heading mb-1.5">
                 Provider Display Name / Trading Desk
               </label>
               <input
@@ -133,18 +133,18 @@ export default function SignalProviderProfilePage() {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="e.g. Apex Alpha FX Signals"
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition"
+                className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-green focus:ring-1 focus:ring-green transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-text-heading mb-1.5">
                 Trading Style
               </label>
               <select
                 value={tradingStyle}
                 onChange={(e) => setTradingStyle(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500 transition"
+                className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading focus:outline-none focus:border-green transition"
               >
                 <option value="Day Trading & Scalping">Day Trading & Scalping</option>
                 <option value="Day Trading & Swing">Day Trading & Swing</option>
@@ -154,19 +154,19 @@ export default function SignalProviderProfilePage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-text-heading mb-1.5">
                 Years of Market Experience
               </label>
               <input
                 type="number"
                 value={experienceYears}
                 onChange={(e) => setExperienceYears(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500 transition"
+                className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading focus:outline-none focus:border-green transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-text-heading mb-1.5">
                 VIP Telegram / Community Link (Optional)
               </label>
               <input
@@ -174,13 +174,13 @@ export default function SignalProviderProfilePage() {
                 value={telegramLink}
                 onChange={(e) => setTelegramLink(e.target.value)}
                 placeholder="https://t.me/your_signals"
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition"
+                className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-green transition"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+            <label className="block text-xs font-semibold text-text-heading mb-1.5">
               Trader Bio & Credentials
             </label>
             <textarea
@@ -188,12 +188,12 @@ export default function SignalProviderProfilePage() {
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="Summary of trading background, market philosophy, and edge..."
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition"
+              className="w-full bg-white border border-border rounded-xl p-3 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-green transition"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+            <label className="block text-xs font-semibold text-text-heading mb-1.5">
               Strategy & Risk Management Protocol
             </label>
             <textarea
@@ -201,7 +201,7 @@ export default function SignalProviderProfilePage() {
               value={strategy}
               onChange={(e) => setStrategy(e.target.value)}
               placeholder="Explain how stop losses are calculated, max risk per trade (e.g. 1-2%), and take-profit scaling..."
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition"
+              className="w-full bg-white border border-border rounded-xl p-3 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-green transition"
             />
           </div>
         </div>
@@ -210,7 +210,7 @@ export default function SignalProviderProfilePage() {
           <button
             type="submit"
             disabled={saving}
-            className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-emerald-600/20 disabled:opacity-50"
+            className="px-6 py-3 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition flex items-center gap-2 shadow-sm disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             <span>{saving ? 'Publishing Bio...' : 'Save Provider Profile'}</span>

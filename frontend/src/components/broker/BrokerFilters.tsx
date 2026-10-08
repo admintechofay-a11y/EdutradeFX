@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Filter, RotateCcw } from 'lucide-react';
+import { OptionSelect } from '../common/OptionSelect';
 
 interface BrokerFiltersProps {
   filters: {
@@ -21,15 +22,15 @@ export const BrokerFilters: React.FC<BrokerFiltersProps> = ({
   onReset,
 }) => {
   return (
-    <div className="p-5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-5">
-      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-        <div className="flex items-center gap-2 text-sm font-bold text-gray-100">
-          <Filter size={16} className="text-blue-400" />
+    <div className="p-6 rounded-2xl bg-white border border-border shadow-soft space-y-5">
+      <div className="flex items-center justify-between border-b border-border pb-3.5">
+        <div className="flex items-center gap-2 text-sm font-bold text-text-heading">
+          <Filter size={16} className="text-blue" />
           <span>Filter Brokers</span>
         </div>
         <button
           onClick={onReset}
-          className="flex items-center gap-1 text-xs text-gray-400 hover:text-blue-400 transition-colors"
+          className="flex items-center gap-1 text-xs font-semibold text-text-muted hover:text-blue transition-colors"
         >
           <RotateCcw size={12} />
           Reset
@@ -38,28 +39,23 @@ export const BrokerFilters: React.FC<BrokerFiltersProps> = ({
 
       {/* Regulation Filter */}
       <div>
-        <label className="block text-xs font-semibold text-gray-300 mb-1.5">Regulation Authority</label>
-        <select
+        <OptionSelect
+          group="REGULATOR"
+          label="Regulation Authority"
           value={filters.regulation}
-          onChange={(e) => onChange('regulation', e.target.value)}
-          className="w-full bg-slate-800 border border-slate-700 rounded-md px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-blue-500"
-        >
-          <option value="">All Regulations</option>
-          <option value="FCA">FCA (United Kingdom)</option>
-          <option value="ASIC">ASIC (Australia)</option>
-          <option value="CySEC">CySEC (Cyprus/EU)</option>
-          <option value="BaFin">BaFin (Germany)</option>
-          <option value="DFSA">DFSA (Dubai/UAE)</option>
-        </select>
+          onChange={(val) => onChange('regulation', val || '')}
+          placeholder="All Regulations (59 authorities)..."
+          allowOther={false}
+        />
       </div>
 
       {/* Platform Filter */}
       <div>
-        <label className="block text-xs font-semibold text-gray-300 mb-1.5">Trading Platform</label>
+        <label className="block text-xs font-bold text-text-heading mb-1.5">Trading Platform</label>
         <select
           value={filters.platform}
           onChange={(e) => onChange('platform', e.target.value)}
-          className="w-full bg-slate-800 border border-slate-700 rounded-md px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-blue-500"
+          className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading focus:outline-none focus:border-blue shadow-sm"
         >
           <option value="">All Platforms</option>
           <option value="MetaTrader 4">MetaTrader 4 (MT4)</option>
@@ -71,11 +67,11 @@ export const BrokerFilters: React.FC<BrokerFiltersProps> = ({
 
       {/* Account Type */}
       <div>
-        <label className="block text-xs font-semibold text-gray-300 mb-1.5">Account Execution</label>
+        <label className="block text-xs font-bold text-text-heading mb-1.5">Account Execution</label>
         <select
           value={filters.accountType}
           onChange={(e) => onChange('accountType', e.target.value)}
-          className="w-full bg-slate-800 border border-slate-700 rounded-md px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-blue-500"
+          className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading focus:outline-none focus:border-blue shadow-sm"
         >
           <option value="">All Account Types</option>
           <option value="ECN">Raw ECN / Zero Spread</option>
@@ -86,11 +82,11 @@ export const BrokerFilters: React.FC<BrokerFiltersProps> = ({
 
       {/* Min Deposit */}
       <div>
-        <label className="block text-xs font-semibold text-gray-300 mb-1.5">Max Minimum Deposit</label>
+        <label className="block text-xs font-bold text-text-heading mb-1.5">Max Minimum Deposit</label>
         <select
           value={filters.minDeposit}
           onChange={(e) => onChange('minDeposit', e.target.value)}
-          className="w-full bg-slate-800 border border-slate-700 rounded-md px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-blue-500"
+          className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading focus:outline-none focus:border-blue shadow-sm"
         >
           <option value="">Any Deposit</option>
           <option value="0">$0 (No Minimum)</option>

@@ -8,6 +8,8 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "test:security": "ts-node src/tests/security-suite.ts",
+    "test:golden": "ts-node src/tests/verify-golden.ts",
+    "test:broker-v2": "ts-node src/tests/broker-v2-suite.ts",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate deploy",

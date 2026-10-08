@@ -17,25 +17,25 @@ export const Pagination: React.FC<PaginationProps> = ({
   if (totalPages <= 1) return null;
 
   return (
-    <div className="flex items-center justify-center gap-2 py-6">
+    <div className="flex items-center justify-center gap-3 py-8">
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage <= 1}
-        className="flex items-center justify-center w-9 h-9 rounded-md border border-slate-700 bg-slate-800/80 text-gray-300 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        className="flex items-center justify-center w-9 h-9 rounded-full border border-border bg-white text-text-heading hover:bg-surface-tint hover:border-blue/30 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed transition-all"
         aria-label="Previous Page"
       >
         <ChevronLeft size={16} />
       </button>
 
-      <span className="text-xs text-gray-400 px-3 font-mono">
-        Page <strong className="text-gray-100">{currentPage}</strong> of{' '}
-        <strong className="text-gray-100">{totalPages}</strong>
+      <span className="text-xs text-text-muted px-3 font-mono font-medium">
+        Page <strong className="text-text-heading font-bold">{currentPage}</strong> of{' '}
+        <strong className="text-text-heading font-bold">{totalPages}</strong>
       </span>
 
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage >= totalPages}
-        className="flex items-center justify-center w-9 h-9 rounded-md border border-slate-700 bg-slate-800/80 text-gray-300 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        className="flex items-center justify-center w-9 h-9 rounded-full border border-border bg-white text-text-heading hover:bg-surface-tint hover:border-blue/30 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed transition-all"
         aria-label="Next Page"
       >
         <ChevronRight size={16} />

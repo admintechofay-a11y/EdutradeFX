@@ -59,6 +59,8 @@ export interface BrokerLicense {
   id: string;
   brokerId?: string;
   regulatoryBody: string;
+  regulatorCode?: string | null;
+  regulatorOther?: string | null;
   licenseNumber: string;
   licenseStatus: string;
   companyAddress?: string | null;
@@ -86,11 +88,16 @@ export interface BrokerAccountGroup {
   name: string;
   demoAvailable: boolean;
   currency: string;
+  currencyCode?: string | null;
+  currencyOther?: string | null;
   spreadTypesLabel?: string | null;
   spreadFrom?: string | null;
   minDeposit?: number | null;
   depositBonusPctUpTo?: number | null;
+  depositBonusCode?: string | null;
+  depositBonusNum?: number | null;
   leverageUpTo?: string | null;
+  leverageCode?: string | null;
   leverageNum?: number | null;
   minTradeVolume?: number | null;
   hasCommissionPerLot: boolean;
@@ -269,6 +276,7 @@ export interface Broker {
   supportEmail?: string | null;
   supportAvailability?: string | null;
   languagesSupported: string[];
+  availableTimeframes?: string[];
   clientLossPercentage?: number | null;
   fundsSecurity?: string | null;
   liquidityProvider?: string | null;

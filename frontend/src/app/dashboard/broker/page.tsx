@@ -50,11 +50,11 @@ export default function BrokerOverviewPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-white flex items-center gap-2">
-            <Building2 className="w-6 h-6 text-purple-400" />
+          <h1 className="text-2xl font-black text-navy flex items-center gap-2">
+            <Building2 className="w-6 h-6 text-blue" />
             Broker Corporate Command Center
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-text-muted mt-1">
             Manage your firm listing, regulatory disclosures, investor leads, and institutional reputation.
           </p>
         </div>
@@ -63,7 +63,7 @@ export default function BrokerOverviewPage() {
           <Link
             href={`/brokers/${broker.slug}`}
             target="_blank"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold transition shadow-lg shadow-purple-600/20"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition shadow-sm"
           >
             <span>View Public Listing</span>
             <ExternalLink className="w-3.5 h-3.5" />
@@ -73,11 +73,11 @@ export default function BrokerOverviewPage() {
 
       {/* Verification Status Banner */}
       {broker && broker.status !== 'APPROVED' && (
-        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-start gap-3 text-amber-400 text-xs">
+        <div className="p-4 rounded-2xl bg-orange/10 border border-orange/20 flex items-start gap-3 text-orange text-xs">
           <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
           <div>
             <div className="font-bold">Institutional Compliance Status: {broker.status}</div>
-            <p className="text-slate-300 mt-0.5">
+            <p className="text-text-body mt-0.5">
               {broker.status === 'PENDING'
                 ? 'Your brokerage application is undergoing regulatory verification by EdutradeFX compliance officers.'
                 : `Status notice: ${broker.rejectionReason || 'Please contact institutional support.'}`}
@@ -88,46 +88,46 @@ export default function BrokerOverviewPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-brand-navy-card border border-slate-800 p-5 rounded-3xl shadow-xl">
-          <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
+        <div className="bg-white border border-border p-5 rounded-3xl shadow-soft">
+          <div className="flex items-center justify-between text-text-muted text-xs mb-2">
             <span>Inbound Leads</span>
-            <Users className="w-4 h-4 text-brand-blue" />
+            <Users className="w-4 h-4 text-blue" />
           </div>
-          <div className="text-2xl font-black text-white">
+          <div className="text-2xl font-black text-navy font-mono">
             {loading ? <Skeleton className="h-8 w-16" /> : leadsCount}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">Traders requesting onboarding</p>
+          <p className="text-[11px] text-text-muted mt-1">Traders requesting onboarding</p>
         </div>
 
-        <div className="bg-brand-navy-card border border-slate-800 p-5 rounded-3xl shadow-xl">
-          <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
+        <div className="bg-white border border-border p-5 rounded-3xl shadow-soft">
+          <div className="flex items-center justify-between text-text-muted text-xs mb-2">
             <span>Reputation Score</span>
-            <Star className="w-4 h-4 text-amber-400" />
+            <Star className="w-4 h-4 text-orange" />
           </div>
-          <div className="text-2xl font-black text-amber-400">
+          <div className="text-2xl font-black text-orange font-mono">
             {loading ? <Skeleton className="h-8 w-16" /> : broker?.avgRating?.toFixed(1) || '4.8'}
-            <span className="text-xs text-slate-500 font-normal"> / 5.0</span>
+            <span className="text-xs text-text-muted font-normal font-sans"> / 5.0</span>
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">{broker?.totalReviews || 0} verified reviews</p>
+          <p className="text-[11px] text-text-muted mt-1">{broker?.totalReviews || 0} verified reviews</p>
         </div>
 
-        <div className="bg-brand-navy-card border border-slate-800 p-5 rounded-3xl shadow-xl">
-          <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
+        <div className="bg-white border border-border p-5 rounded-3xl shadow-soft">
+          <div className="flex items-center justify-between text-text-muted text-xs mb-2">
             <span>Spreads From</span>
-            <TrendingUp className="w-4 h-4 text-emerald-400" />
+            <TrendingUp className="w-4 h-4 text-green" />
           </div>
-          <div className="text-2xl font-black text-emerald-400">
+          <div className="text-2xl font-black text-green font-mono">
             {loading ? <Skeleton className="h-8 w-24" /> : broker?.spreadsFrom || '0.0 pips'}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">EURUSD institutional spread</p>
+          <p className="text-[11px] text-text-muted mt-1">EURUSD institutional spread</p>
         </div>
 
-        <div className="bg-brand-navy-card border border-slate-800 p-5 rounded-3xl shadow-xl">
-          <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
+        <div className="bg-white border border-border p-5 rounded-3xl shadow-soft">
+          <div className="flex items-center justify-between text-text-muted text-xs mb-2">
             <span>Regulation Tier</span>
-            <ShieldCheck className="w-4 h-4 text-purple-400" />
+            <ShieldCheck className="w-4 h-4 text-navy" />
           </div>
-          <div className="text-lg font-black text-white truncate">
+          <div className="text-lg font-black text-navy truncate">
             {loading ? (
               <Skeleton className="h-8 w-28" />
             ) : Array.isArray(broker?.regulation) ? (
@@ -136,7 +136,7 @@ export default function BrokerOverviewPage() {
               broker?.regulation || 'Tier-1 Regulated'
             )}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">Verified compliance licenses</p>
+          <p className="text-[11px] text-text-muted mt-1">Verified compliance licenses</p>
         </div>
       </div>
 
@@ -144,42 +144,42 @@ export default function BrokerOverviewPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <Link
           href="/dashboard/broker/profile"
-          className="p-6 rounded-3xl bg-brand-navy-card border border-slate-800 hover:border-purple-500/50 transition group shadow-xl"
+          className="p-6 rounded-3xl bg-white border border-border hover:border-blue/50 transition group shadow-soft hover:shadow-card"
         >
-          <Building2 className="w-8 h-8 text-purple-400 mb-3 group-hover:scale-110 transition" />
-          <h3 className="text-sm font-bold text-white mb-1 flex items-center justify-between">
+          <Building2 className="w-8 h-8 text-blue mb-3 group-hover:scale-110 transition" />
+          <h3 className="text-sm font-bold text-text-heading mb-1 flex items-center justify-between">
             <span>Update Firm Profile</span>
-            <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-purple-400 transition" />
+            <ArrowRight className="w-4 h-4 text-text-muted group-hover:text-blue transition" />
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-text-muted">
             Update account types, trading platforms, leverage, deposit methods, and compliance documentation.
           </p>
         </Link>
 
         <Link
           href="/dashboard/broker/leads"
-          className="p-6 rounded-3xl bg-brand-navy-card border border-slate-800 hover:border-brand-blue/50 transition group shadow-xl"
+          className="p-6 rounded-3xl bg-white border border-border hover:border-green/50 transition group shadow-soft hover:shadow-card"
         >
-          <Users className="w-8 h-8 text-brand-blue mb-3 group-hover:scale-110 transition" />
-          <h3 className="text-sm font-bold text-white mb-1 flex items-center justify-between">
+          <Users className="w-8 h-8 text-green mb-3 group-hover:scale-110 transition" />
+          <h3 className="text-sm font-bold text-text-heading mb-1 flex items-center justify-between">
             <span>Trader Lead Pipeline</span>
-            <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-brand-blue transition" />
+            <ArrowRight className="w-4 h-4 text-text-muted group-hover:text-green transition" />
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-text-muted">
             Access inbound registration leads, investor contacts, and export CRM-ready CSV files.
           </p>
         </Link>
 
         <Link
           href="/dashboard/broker/reviews"
-          className="p-6 rounded-3xl bg-brand-navy-card border border-slate-800 hover:border-amber-500/50 transition group shadow-xl"
+          className="p-6 rounded-3xl bg-white border border-border hover:border-orange/50 transition group shadow-soft hover:shadow-card"
         >
-          <MessageSquare className="w-8 h-8 text-amber-400 mb-3 group-hover:scale-110 transition" />
-          <h3 className="text-sm font-bold text-white mb-1 flex items-center justify-between">
+          <MessageSquare className="w-8 h-8 text-orange mb-3 group-hover:scale-110 transition" />
+          <h3 className="text-sm font-bold text-text-heading mb-1 flex items-center justify-between">
             <span>Reputation & Reviews</span>
-            <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-amber-400 transition" />
+            <ArrowRight className="w-4 h-4 text-text-muted group-hover:text-orange transition" />
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-text-muted">
             Review community ratings, respond officially to trader feedback, and protect your brand score.
           </p>
         </Link>

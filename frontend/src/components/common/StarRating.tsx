@@ -30,20 +30,20 @@ export const StarRating: React.FC<StarRatingProps> = ({
               size={size}
               className={`${
                 filled
-                  ? 'text-amber-400 fill-amber-400'
+                  ? 'text-orange fill-orange'
                   : half
-                  ? 'text-amber-400 fill-amber-400/50'
-                  : 'text-gray-600'
+                  ? 'text-orange fill-orange/40'
+                  : 'text-slate-300'
               }`}
             />
           );
         })}
       </div>
       {showText && (
-        <span className="text-xs font-semibold text-gray-300 ml-1">
+        <span className="text-xs font-bold text-text-heading ml-1">
           {rating.toFixed(1)}
           {totalReviews !== undefined && (
-            <span className="text-gray-500 font-normal ml-1">({totalReviews})</span>
+            <span className="text-text-muted font-normal ml-1">({totalReviews})</span>
           )}
         </span>
       )}

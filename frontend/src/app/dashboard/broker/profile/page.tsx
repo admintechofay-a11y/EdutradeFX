@@ -125,24 +125,52 @@ export default function BrokerProfileEditorPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-white flex items-center gap-2">
-            <Building2 className="w-6 h-6 text-purple-400" />
+          <h1 className="text-2xl font-black text-navy flex items-center gap-2">
+            <Building2 className="w-6 h-6 text-blue" />
             Firm Profile & Regulatory Disclosures
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-text-muted mt-1">
             Configure institutional trading terms, regulatory bodies, platform features, and account options.
           </p>
         </div>
+        <a
+          href="/dashboard/broker/onboarding"
+          className="px-5 py-2.5 rounded-full bg-blue text-white text-xs font-bold hover:bg-blue-hover transition shadow-sm flex items-center gap-2 shrink-0"
+        >
+          <ShieldCheck className="w-4 h-4" />
+          Launch 18-Step Onboarding Form →
+        </a>
+      </div>
+
+      {/* Onboarding Form Banner */}
+      <div className="p-5 rounded-3xl bg-blue/10 border border-blue/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="text-xs font-black uppercase text-blue tracking-wider">
+            Comprehensive Verification Dossier
+          </div>
+          <div className="text-sm font-bold text-navy mt-0.5">
+            Submit your complete 18-step broker profile matching the EdutradeFX specification
+          </div>
+          <div className="text-xs text-text-muted mt-0.5">
+            Includes verified regulatory licenses, server endpoints, board members, IB rebate plans, fee schedules, and policy PDFs.
+          </div>
+        </div>
+        <a
+          href="/dashboard/broker/onboarding"
+          className="px-4 py-2 rounded-full bg-blue text-white text-xs font-bold hover:bg-blue-hover transition shrink-0"
+        >
+          Open Onboarding Wizard
+        </a>
       </div>
 
       {successMsg && (
-        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs flex items-center gap-2">
+        <div className="p-4 rounded-2xl bg-green/10 border border-green/20 text-green text-xs flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4" />
           <span>{successMsg}</span>
         </div>
       )}
       {errorMsg && (
-        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs flex items-center gap-2">
+        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 text-xs flex items-center gap-2">
           <AlertCircle className="w-4 h-4" />
           <span>{errorMsg}</span>
         </div>
@@ -150,15 +178,15 @@ export default function BrokerProfileEditorPage() {
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* Core Corporate Information */}
-        <div className="bg-brand-navy-card border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-          <h2 className="text-sm font-bold text-white flex items-center gap-2">
-            <Building2 className="w-4 h-4 text-purple-400" />
+        <div className="bg-white border border-border rounded-3xl p-6 shadow-soft space-y-4">
+          <h2 className="text-sm font-bold text-navy flex items-center gap-2">
+            <Building2 className="w-4 h-4 text-blue" />
             Corporate Identity
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-text-heading mb-1.5">
                 Brokerage Brand Name
               </label>
               <input
@@ -166,12 +194,12 @@ export default function BrokerProfileEditorPage() {
                 required
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
+                className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-text-heading mb-1.5">
                 Corporate Website URL
               </label>
               <input
@@ -180,12 +208,12 @@ export default function BrokerProfileEditorPage() {
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
                 placeholder="https://example.com"
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
+                className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-text-heading mb-1.5">
                 Global Headquarters
               </label>
               <input
@@ -193,12 +221,12 @@ export default function BrokerProfileEditorPage() {
                 value={headquarters}
                 onChange={(e) => setHeadquarters(e.target.value)}
                 placeholder="e.g. Sydney, Australia"
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
+                className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-text-heading mb-1.5">
                 Year Founded
               </label>
               <input
@@ -206,13 +234,13 @@ export default function BrokerProfileEditorPage() {
                 value={yearFounded}
                 onChange={(e) => setYearFounded(e.target.value)}
                 placeholder="2010"
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
+                className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue transition"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+            <label className="block text-xs font-semibold text-text-heading mb-1.5">
               Firm Overview & Value Proposition
             </label>
             <textarea
@@ -220,33 +248,33 @@ export default function BrokerProfileEditorPage() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Highlight liquidity depth, execution speed, institutional features..."
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
+              className="w-full bg-white border border-border rounded-xl p-3 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue transition"
             />
           </div>
         </div>
 
         {/* Regulatory & Trading Conditions */}
-        <div className="bg-brand-navy-card border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-          <h2 className="text-sm font-bold text-white flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+        <div className="bg-white border border-border rounded-3xl p-6 shadow-soft space-y-4">
+          <h2 className="text-sm font-bold text-navy flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-green" />
             Trading Conditions & Regulatory Licenses
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-text-heading mb-1.5">
                 Minimum Deposit ($)
               </label>
               <input
                 type="number"
                 value={minDeposit}
                 onChange={(e) => setMinDeposit(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500 transition"
+                className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading focus:outline-none focus:border-blue transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-text-heading mb-1.5">
                 Maximum Leverage
               </label>
               <input
@@ -254,12 +282,12 @@ export default function BrokerProfileEditorPage() {
                 value={maxLeverage}
                 onChange={(e) => setMaxLeverage(e.target.value)}
                 placeholder="1:500"
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
+                className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-text-heading mb-1.5">
                 Spreads From
               </label>
               <input
@@ -267,12 +295,12 @@ export default function BrokerProfileEditorPage() {
                 value={spreadsFrom}
                 onChange={(e) => setSpreadsFrom(e.target.value)}
                 placeholder="0.0 pips"
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
+                className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-text-heading mb-1.5">
                 Commissions
               </label>
               <input
@@ -280,14 +308,14 @@ export default function BrokerProfileEditorPage() {
                 value={commissions}
                 onChange={(e) => setCommissions(e.target.value)}
                 placeholder="$3.50 per lot"
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
+                className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue transition"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-text-heading mb-1.5">
                 Regulatory Licenses (comma separated)
               </label>
               <input
@@ -295,12 +323,12 @@ export default function BrokerProfileEditorPage() {
                 value={regulation}
                 onChange={(e) => setRegulation(e.target.value)}
                 placeholder="FCA, ASIC, CySEC, DFSA"
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
+                className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-text-heading mb-1.5">
                 Trading Platforms (comma separated)
               </label>
               <input
@@ -308,12 +336,12 @@ export default function BrokerProfileEditorPage() {
                 value={tradingPlatforms}
                 onChange={(e) => setTradingPlatforms(e.target.value)}
                 placeholder="MetaTrader 4, MetaTrader 5, cTrader, TradingView"
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
+                className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-text-heading mb-1.5">
                 Account Types (comma separated)
               </label>
               <input
@@ -321,12 +349,12 @@ export default function BrokerProfileEditorPage() {
                 value={accountTypes}
                 onChange={(e) => setAccountTypes(e.target.value)}
                 placeholder="Razor Account, Standard Account, Islamic Swap-Free"
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
+                className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-text-heading mb-1.5">
                 Deposit Methods (comma separated)
               </label>
               <input
@@ -334,7 +362,7 @@ export default function BrokerProfileEditorPage() {
                 value={depositMethods}
                 onChange={(e) => setDepositMethods(e.target.value)}
                 placeholder="Visa/Mastercard, Wire Transfer, Neteller, Skrill"
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition"
+                className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue transition"
               />
             </div>
           </div>
@@ -345,7 +373,7 @@ export default function BrokerProfileEditorPage() {
           <button
             type="submit"
             disabled={saving}
-            className="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-purple-600/20 disabled:opacity-50"
+            className="px-6 py-3 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition flex items-center gap-2 shadow-sm disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             <span>{saving ? 'Publishing Updates...' : 'Save Firm Profile'}</span>

@@ -2,19 +2,28 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { AdminSidebar } from '../../components/layout/AdminSidebar';
 import { useAuthStore } from '../../store/authStore';
-import { ShieldAlert, Loader2 } from 'lucide-react';
+import { ShieldAlert, Loader2, Menu, X, ShieldCheck } from 'lucide-react';
+import { useBodyScrollLock } from '../../lib/hooks/useBodyScrollLock';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { user, isAuthenticated, isLoading } = useAuthStore();
   const [mounted, setMounted] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useBodyScrollLock(sidebarOpen);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     if (pathname === '/admin/login') return;
@@ -58,11 +67,70 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="min-h-screen bg-surface-tint flex">
-      <AdminSidebar />
-      <main className="flex-1 overflow-y-auto p-6 sm:p-8 bg-surface-tint text-text-body">
-        {children}
-      </main>
+    <div className="min-h-screen min-h-dvh bg-surface-tint flex flex-col">
+      {/* Top Mobile/Tablet Bar (< lg) */}
+      <div className="lg:hidden bg-slate-900 border-b border-slate-800 px-4 py-3 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+        <Link href="/admin" className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-brand-blue to-purple-500 flex items-center justify-center text-white">
+            <ShieldCheck className="w-4 h-4" />
+          </div>
+          <span className="text-xs font-black text-white uppercase tracking-wider">
+            Admin Console
+          </span>
+        </Link>
+
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          aria-label={sidebarOpen ? 'Close admin navigation' : 'Open admin navigation'}
+          className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition min-w-[44px] min-h-[44px] flex items-center justify-center"
+        >
+          {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      </div>
+
+      <div className="flex-1 flex overflow-hidden">
+        {/* Desktop Sidebar (lg+) */}
+        <div className="hidden lg:block shrink-0">
+          <AdminSidebar />
+        </div>
+
+        {/* Mobile/Tablet Sidebar Drawer Overlay (< lg) */}
+        {sidebarOpen && (
+          <div className="fixed inset-0 z-50 lg:hidden flex animate-in fade-in duration-200">
+            <div
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setSidebarOpen(false)}
+              aria-hidden="true"
+            />
+            <div className="relative z-50 w-72 max-w-[85vw] bg-slate-900 h-full shadow-2xl flex flex-col">
+              <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-md bg-gradient-to-tr from-brand-blue to-purple-500 flex items-center justify-center text-white">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="text-xs font-black text-white uppercase tracking-wider">
+                    Admin Portal
+                  </span>
+                </div>
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  aria-label="Close admin menu"
+                  className="p-2 text-slate-400 hover:text-white rounded-lg min-w-[40px] min-h-[40px] flex items-center justify-center"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto">
+                <AdminSidebar onNavigate={() => setSidebarOpen(false)} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-surface-tint text-text-body">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

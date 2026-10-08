@@ -48,9 +48,9 @@ export default function CertificatesPage() {
               key={cert.id}
               className="p-6 rounded-3xl bg-white border border-border shadow-soft flex flex-col justify-between space-y-4"
             >
-              <div className="flex items-start justify-between">
+              <div className="flex flex-col xs:flex-row xs:items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-orange/10 border border-orange/20 flex items-center justify-center text-orange">
+                  <div className="w-12 h-12 rounded-2xl bg-orange/10 border border-orange/20 flex items-center justify-center text-orange shrink-0">
                     <Award className="w-6 h-6" />
                   </div>
                   <div>
@@ -58,7 +58,7 @@ export default function CertificatesPage() {
                     <div className="text-xs text-text-muted">EdutradeFX Certified Trader</div>
                   </div>
                 </div>
-                <span className="px-2.5 py-1 rounded-full bg-green/10 text-green border border-green/20 text-xs font-bold flex items-center gap-1">
+                <span className="self-start px-2.5 py-1 rounded-full bg-green/10 text-green border border-green/20 text-xs font-bold flex items-center gap-1 shrink-0">
                   <CheckCircle className="w-3.5 h-3.5" /> Verified
                 </span>
               </div>
@@ -70,7 +70,7 @@ export default function CertificatesPage() {
               <div className="pt-4 border-t border-border flex items-center justify-end gap-3">
                 <button
                   onClick={() => alert(`Certificate ID: FX-${cert.id.substring(0, 8).toUpperCase()}`)}
-                  className="px-4 py-2 rounded-full bg-surface-tint text-navy hover:bg-border/60 text-xs font-semibold border border-border transition flex items-center gap-1.5"
+                  className="w-full sm:w-auto justify-center px-4 py-2.5 rounded-full bg-surface-tint text-navy hover:bg-border/60 text-xs font-semibold border border-border transition flex items-center gap-1.5 min-h-[40px]"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
                   <span>Verify Authenticity</span>

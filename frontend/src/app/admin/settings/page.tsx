@@ -133,7 +133,7 @@ export default function AdminSettingsPage() {
         <div className="pt-4 border-t border-border flex justify-end">
           <button
             type="submit"
-            className="px-6 py-2.5 bg-blue hover:bg-blue-hover text-white font-bold text-xs rounded-full transition shadow-sm flex items-center gap-2"
+            className="w-full sm:w-auto px-6 py-2.5 bg-blue hover:bg-blue-hover text-white font-bold text-xs rounded-full transition shadow-sm flex items-center justify-center gap-2 min-h-[44px]"
           >
             <Save className="w-4 h-4" />
             <span>Save Global Configurations</span>

@@ -1,7 +1,5 @@
-'use client';
-
-import React from 'react';
-import { Filter, RotateCcw } from 'lucide-react';
+import React, { useState } from 'react';
+import { Filter, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
 import { OptionSelect } from '../common/OptionSelect';
 
 interface BrokerFiltersProps {
@@ -21,21 +19,44 @@ export const BrokerFilters: React.FC<BrokerFiltersProps> = ({
   onChange,
   onReset,
 }) => {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const activeCount = [
+    filters.regulation,
+    filters.platform,
+    filters.accountType,
+    filters.minDeposit,
+  ].filter(Boolean).length;
+
   return (
-    <div className="p-6 rounded-2xl bg-white border border-border shadow-soft space-y-5">
-      <div className="flex items-center justify-between border-b border-border pb-3.5">
-        <div className="flex items-center gap-2 text-sm font-bold text-text-heading">
+    <div className="p-4 sm:p-6 rounded-2xl bg-white border border-border shadow-soft space-y-4 sm:space-y-5">
+      <div className="flex items-center justify-between border-b border-border pb-3">
+        <button
+          type="button"
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="flex items-center gap-2 text-sm font-bold text-text-heading lg:cursor-default"
+        >
           <Filter size={16} className="text-blue" />
           <span>Filter Brokers</span>
-        </div>
+          {activeCount > 0 && (
+            <span className="px-2 py-0.5 rounded-full bg-blue text-white text-[10px] font-bold">
+              {activeCount}
+            </span>
+          )}
+          <span className="lg:hidden ml-1 text-text-muted">
+            {mobileOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </span>
+        </button>
+
         <button
           onClick={onReset}
-          className="flex items-center gap-1 text-xs font-semibold text-text-muted hover:text-blue transition-colors"
+          className="flex items-center gap-1 text-xs font-semibold text-text-muted hover:text-blue transition-colors p-1"
         >
           <RotateCcw size={12} />
           Reset
         </button>
       </div>
+
+      <div className={`space-y-4 sm:space-y-5 ${mobileOpen ? 'block' : 'hidden lg:block'}`}>
 
       {/* Regulation Filter */}
       <div>
@@ -96,5 +117,6 @@ export const BrokerFilters: React.FC<BrokerFiltersProps> = ({
         </select>
       </div>
     </div>
+  </div>
   );
 };

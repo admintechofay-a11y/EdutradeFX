@@ -111,7 +111,7 @@ export default function AdminEnquiriesPage() {
             <Skeleton className="h-96 rounded-3xl bg-border/40" />
           ) : (
             <div className="overflow-x-auto rounded-3xl border border-border bg-white shadow-soft">
-              <table className="w-full text-left border-collapse text-xs sm:text-sm">
+              <table className="w-full min-w-[600px] text-left border-collapse text-xs sm:text-sm">
                 <thead>
                   <tr className="border-b border-border bg-surface-tint text-text-muted text-xs uppercase font-bold">
                     <th className="p-4">Sender Info</th>

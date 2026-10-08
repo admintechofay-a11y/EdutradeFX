@@ -250,13 +250,14 @@ export const BrokerOptionsManager: React.FC = () => {
             No options found matching &quot;{search}&quot;.
           </div>
         ) : (
-          <div className="max-h-96 overflow-y-auto divide-y divide-border/60">
-            <div className="grid grid-cols-12 bg-slate-50 px-4 py-2.5 text-[11px] font-bold text-slate-500 uppercase tracking-wider sticky top-0 z-10 border-b border-border">
-              <div className="col-span-3">Code</div>
-              <div className="col-span-5">Label</div>
-              <div className="col-span-2 text-center">Sort Order</div>
-              <div className="col-span-2 text-right">Status</div>
-            </div>
+          <div className="max-h-96 overflow-y-auto overflow-x-auto divide-y divide-border/60">
+            <div className="min-w-[480px]">
+              <div className="grid grid-cols-12 bg-slate-50 px-4 py-2.5 text-[11px] font-bold text-slate-500 uppercase tracking-wider sticky top-0 z-10 border-b border-border">
+                <div className="col-span-3">Code</div>
+                <div className="col-span-5">Label</div>
+                <div className="col-span-2 text-center">Sort Order</div>
+                <div className="col-span-2 text-right">Status</div>
+              </div>
 
             {options.map((opt) => (
               <div
@@ -306,10 +307,11 @@ export const BrokerOptionsManager: React.FC = () => {
                 </div>
               </div>
             ))}
+            </div>
           </div>
         )}
       </div>
-      <div className="text-[11px] text-text-muted flex items-center justify-between">
+      <div className="text-[11px] text-text-muted flex flex-col sm:flex-row sm:items-center justify-between gap-1">
         <span>Showing {options.length} options in {selectedGroup}</span>
         <span>Standardized from Appendix A (263 options total)</span>
       </div>

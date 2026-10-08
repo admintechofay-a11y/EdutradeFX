@@ -59,7 +59,7 @@ export default function TutorEarningsPage() {
 
         <Link
           href="/dashboard/tutor/payouts"
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition shadow-sm"
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition shadow-sm w-full sm:w-auto min-h-[44px]"
         >
           <span>Request Payout</span>
           <ArrowRight className="w-4 h-4" />
@@ -114,7 +114,7 @@ export default function TutorEarningsPage() {
       </div>
 
       {/* Transaction History */}
-      <div className="bg-white border border-border rounded-3xl p-6 shadow-soft space-y-4">
+      <div className="bg-white border border-border rounded-3xl p-5 sm:p-6 shadow-soft space-y-4">
         <h2 className="text-sm font-bold text-navy flex items-center gap-2">
           <Clock className="w-4 h-4 text-blue" />
           Enrollment Sales Ledger
@@ -135,8 +135,8 @@ export default function TutorEarningsPage() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-text-body">
+          <div className="overflow-x-auto -mx-5 px-5 sm:mx-0 sm:px-0">
+            <table className="w-full min-w-[550px] text-left text-xs text-text-body">
               <thead className="border-b border-border bg-surface-tint/60 text-[11px] uppercase tracking-wider text-text-muted font-semibold">
                 <tr>
                   <th className="py-3 px-4">Student</th>

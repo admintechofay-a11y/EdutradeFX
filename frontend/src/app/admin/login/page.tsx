@@ -63,7 +63,7 @@ function AdminLoginForm() {
       </div>
 
       {/* Auth Box */}
-      <div className="bg-white border border-border rounded-3xl p-8 shadow-xl">
+      <div className="bg-white border border-border rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-xl">
         <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border text-text-muted font-mono text-[11px]">
           <span className="w-2 h-2 rounded-full bg-green animate-pulse"></span>
           <span>SECURE ADMINISTRATIVE GATEWAY</span>
@@ -76,7 +76,7 @@ function AdminLoginForm() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
           <div>
             <label className="block text-xs font-semibold text-text-heading mb-2">
               Admin Email Address
@@ -89,7 +89,7 @@ function AdminLoginForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@edutradefx.com"
-                className="w-full bg-surface-tint border border-border rounded-xl pl-10 pr-4 py-2.5 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
+                className="w-full bg-surface-tint border border-border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
               />
             </div>
           </div>
@@ -106,7 +106,7 @@ function AdminLoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full bg-surface-tint border border-border rounded-xl pl-10 pr-4 py-2.5 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
+                className="w-full bg-surface-tint border border-border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
               />
             </div>
           </div>
@@ -114,7 +114,7 @@ function AdminLoginForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 rounded-full bg-blue hover:bg-blue-hover text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
+            className="w-full py-3 sm:py-3.5 px-4 rounded-full bg-blue hover:bg-blue-hover text-white text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 min-h-[46px]"
           >
             {loading ? (
               <>
@@ -139,7 +139,7 @@ function AdminLoginForm() {
 
 export default function AdminLoginPage() {
   return (
-    <div className="min-h-screen bg-surface-tint flex flex-col justify-center items-center p-4 selection:bg-blue selection:text-white relative">
+    <div className="min-h-screen min-h-dvh bg-surface-tint flex flex-col justify-center items-center py-8 px-4 sm:px-6 selection:bg-blue selection:text-white relative">
       {/* Background Accent Gradients */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue/10 rounded-full blur-3xl"></div>

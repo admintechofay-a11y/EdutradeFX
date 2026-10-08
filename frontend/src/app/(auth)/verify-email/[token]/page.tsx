@@ -31,10 +31,10 @@ export default function VerifyEmailPage() {
   }, [token]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-16 px-4 bg-surface-tint">
-      <div className="w-full max-w-md bg-white border border-border p-8 sm:p-10 rounded-3xl shadow-lift text-center">
+    <div className="min-h-screen min-h-dvh flex items-center justify-center py-8 sm:py-16 px-4 sm:px-6 bg-surface-tint">
+      <div className="w-full max-w-md bg-white border border-border p-5 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl shadow-lift text-center">
         <Link href="/" className="inline-flex items-center gap-2 mb-6">
-          <img src="/logos/logo-color.svg" alt="EduTradeFX" className="h-9 w-auto" />
+          <img src="/logos/logo-color.svg" alt="EduTradeFX" className="h-8 sm:h-9 w-auto" />
         </Link>
 
         {loading ? (
@@ -45,27 +45,27 @@ export default function VerifyEmailPage() {
           </div>
         ) : success ? (
           <div className="py-6 space-y-4">
-            <CheckCircle2 className="w-16 h-16 text-green mx-auto" />
-            <h2 className="text-2xl font-bold text-text-heading">Email Verified!</h2>
-            <p className="text-xs text-text-body">
+            <CheckCircle2 className="w-14 sm:w-16 h-14 sm:h-16 text-green mx-auto" />
+            <h2 className="text-xl sm:text-2xl font-bold text-text-heading">Email Verified!</h2>
+            <p className="text-xs sm:text-sm text-text-body">
               Your trading account is now fully verified. You can now access all verified courses, reviews, and community features.
             </p>
             <Link
               href="/login"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-orange hover:bg-orange-hover text-white rounded-full text-xs font-bold transition shadow-soft"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-orange hover:bg-orange-hover text-white rounded-full text-xs sm:text-sm font-bold transition shadow-soft min-h-[44px]"
             >
               <span>Continue to Login</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         ) : (
           <div className="py-6 space-y-4">
-            <XCircle className="w-16 h-16 text-red-500 mx-auto" />
-            <h2 className="text-2xl font-bold text-text-heading">Verification Failed</h2>
+            <XCircle className="w-14 sm:w-16 h-14 sm:h-16 text-red-500 mx-auto" />
+            <h2 className="text-xl sm:text-2xl font-bold text-text-heading">Verification Failed</h2>
             <p className="text-xs text-text-muted">{errorMessage}</p>
             <Link
               href="/login"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-text-heading rounded-full text-xs font-bold transition border border-border"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white hover:bg-slate-50 text-text-heading rounded-full text-xs sm:text-sm font-bold transition border border-border min-h-[44px]"
             >
               <span>Return to Login</span>
             </Link>

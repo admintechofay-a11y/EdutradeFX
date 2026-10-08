@@ -170,12 +170,12 @@ export default function BrokerOnboardingPage() {
   const isReadOnly = broker.onboardingStatus === 'SUBMITTED' && broker.status === 'PENDING';
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6">
+    <div className="p-3 sm:p-6 md:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-6">
       {/* ── TOP HEADER & STATUS BAR ──────────────────────── */}
-      <div className="bg-white rounded-3xl p-6 border border-border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-black text-navy">{broker.companyName || 'Broker Registration'}</h1>
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
+        <div className="space-y-1.5 sm:space-y-2">
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+            <h1 className="text-xl sm:text-2xl font-black text-navy">{broker.companyName || 'Broker Registration'}</h1>
             <span
               className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase ${
                 broker.onboardingStatus === 'VERIFIED'
@@ -196,8 +196,8 @@ export default function BrokerOnboardingPage() {
         </div>
 
         {/* Progress Bar & Jump */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <div className="w-48 space-y-1.5">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+          <div className="w-full sm:w-48 space-y-1.5">
             <div className="flex justify-between text-xs font-bold text-navy">
               <span>Completeness</span>
               <span className="text-blue">{broker.completenessPct ?? 0}%</span>
@@ -212,9 +212,9 @@ export default function BrokerOnboardingPage() {
 
           <button
             onClick={() => setActiveStepIndex(WIZARD_STEPS.length - 1)}
-            className="px-4 py-2 rounded-full border border-border text-navy text-xs font-bold hover:bg-surface-tint transition flex items-center gap-1.5"
+            className="px-4 py-2 rounded-full border border-border text-navy text-xs font-bold hover:bg-surface-tint transition flex items-center justify-center gap-1.5 min-h-[38px]"
           >
-            <CheckCircle2 className="w-3.5 h-3.5 text-blue" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-blue shrink-0" />
             Checklist ({broker.completenessPct || 0}%)
           </button>
         </div>
@@ -252,16 +252,39 @@ export default function BrokerOnboardingPage() {
         </div>
       )}
 
+      {/* ── MOBILE COMPACT SECTION PICKER (< lg) ────────── */}
+      <div className="lg:hidden bg-white rounded-2xl p-4 border border-border shadow-sm flex items-center justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <div className="text-[10px] font-black uppercase tracking-wider text-blue">
+            Section {currentStep.number} of {WIZARD_STEPS.length}
+          </div>
+          <div className="text-sm font-bold text-navy truncate">
+            {currentStep.shortTitle}
+          </div>
+        </div>
+        <select
+          value={activeStepIndex}
+          onChange={(e) => setActiveStepIndex(Number(e.target.value))}
+          className="text-xs font-bold px-3 py-2 rounded-xl border border-border bg-surface-tint text-navy focus:outline-none focus:border-blue shrink-0 max-w-[160px]"
+          aria-label="Select onboarding section"
+        >
+          {WIZARD_STEPS.map((step, idx) => (
+            <option key={step.id} value={idx}>
+              {step.number}. {step.shortTitle}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* ── MAIN WORKSPACE: STEPPER + STEP VIEW ──────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left: Wizard Navigation List */}
-        <aside className="lg:col-span-3 bg-white rounded-3xl p-3 border border-border shadow-sm space-y-1 max-h-[80vh] overflow-y-auto">
+        {/* Left: Desktop Wizard Navigation List (lg+) */}
+        <aside className="hidden lg:block lg:col-span-3 bg-white rounded-3xl p-3 border border-border shadow-sm space-y-1 max-h-[80vh] overflow-y-auto sticky top-20">
           <div className="px-3 py-2 text-[11px] font-black uppercase tracking-wider text-text-muted">
             Onboarding Sections (18)
           </div>
           {WIZARD_STEPS.map((step, idx) => {
             const isActive = activeStepIndex === idx;
-            const isCompleted = idx < 19; // Visual indication
             return (
               <button
                 key={step.id}
@@ -289,7 +312,7 @@ export default function BrokerOnboardingPage() {
         </aside>
 
         {/* Right: Active Step Form Workspace */}
-        <main className="lg:col-span-9 bg-white rounded-3xl p-6 md:p-8 border border-border shadow-sm space-y-6">
+        <main className="w-full lg:col-span-9 bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-border shadow-sm space-y-6">
           {/* Step Title Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-border gap-4">
             <div>

@@ -73,7 +73,7 @@ export default function BlogPostDetailPage() {
           <span className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue text-xs font-bold border border-blue-200">
             {post.category}
           </span>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-text-heading leading-tight">
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-text-heading leading-tight">
             {post.title}
           </h1>
 
@@ -89,7 +89,7 @@ export default function BlogPostDetailPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 flex-wrap">
               <span className="flex items-center gap-1">
                 <Calendar className="w-3.5 h-3.5" />
                 {new Date(post.publishedAt || post.createdAt).toLocaleDateString()}
@@ -110,13 +110,13 @@ export default function BlogPostDetailPage() {
 
         {/* Cover Image */}
         {post.coverImage && (
-          <div className="rounded-3xl overflow-hidden aspect-video bg-surface-tint mb-10 shadow-soft border border-border">
+          <div className="rounded-2xl sm:rounded-3xl overflow-hidden aspect-video bg-surface-tint mb-8 sm:mb-10 shadow-soft border border-border">
             <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover" />
           </div>
         )}
 
         {/* Content Body */}
-        <div className="prose max-w-none text-text-body text-base sm:text-lg leading-relaxed whitespace-pre-line space-y-6">
+        <div className="prose max-w-none text-text-body text-sm sm:text-base md:text-lg leading-relaxed whitespace-pre-line space-y-6 break-words">
           {post.content}
         </div>
 

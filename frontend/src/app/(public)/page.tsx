@@ -103,29 +103,29 @@ export default function HomePage() {
               </div>
 
               {/* Big Headline with Two-Tone Words */}
-              <h1 className="text-3xl sm:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight text-white leading-[1.15]">
+              <h1 className="text-2xl xs:text-3xl sm:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight text-white leading-[1.15]">
                 Trade Smarter with{' '}
                 <span className="text-orange">Verified Brokers</span> &{' '}
                 <span className="text-emerald-300">Masterclass Education</span>
               </h1>
 
               {/* Short Paragraph */}
-              <p className="text-base sm:text-lg text-slate-200 leading-relaxed max-w-xl">
+              <p className="text-sm sm:text-base md:text-lg text-slate-200 leading-relaxed max-w-xl">
                 Compare tier-1 regulated Forex brokerages, learn institutional price action strategies from veteran mentors, connect with audited account managers, and safeguard your capital.
               </p>
 
               {/* 2 CTAs (Orange Pill + White Outline Pill) */}
-              <div className="flex flex-wrap items-center gap-4 pt-2">
-                <Button href="/brokers" variant="primary" size="lg" withArrow>
+              <div className="flex flex-col xs:flex-row flex-wrap items-stretch xs:items-center gap-3 sm:gap-4 pt-2">
+                <Button href="/brokers" variant="primary" size="lg" withArrow className="w-full xs:w-auto justify-center">
                   Explore Regulated Brokers
                 </Button>
-                <Button href="/courses" variant="outline-white" size="lg">
+                <Button href="/courses" variant="outline-white" size="lg" className="w-full xs:w-auto justify-center">
                   Browse Academy Courses
                 </Button>
               </div>
 
               {/* 3 Small Icon Features */}
-              <div className="pt-2 flex flex-wrap items-center gap-6 text-xs sm:text-sm font-semibold text-slate-200">
+              <div className="pt-2 flex flex-wrap items-center gap-4 sm:gap-6 text-xs sm:text-sm font-semibold text-slate-200">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
                   <span>Tier-1 FCA/ASIC Audits</span>
@@ -149,19 +149,19 @@ export default function HomePage() {
                       window.location.href = `/brokers?search=${encodeURIComponent(searchQuery)}`;
                     }
                   }}
-                  className="relative flex items-center bg-white rounded-full p-1.5 shadow-lift"
+                  className="relative flex items-center bg-white rounded-full p-1 sm:p-1.5 shadow-lift"
                 >
-                  <Search className="absolute left-5 w-5 h-5 text-slate-400" />
+                  <Search className="absolute left-3.5 sm:left-5 w-4 h-4 sm:w-5 sm:h-5 text-slate-400" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search brokers (e.g. Exness, IC Markets), regulations, or courses..."
-                    className="w-full pl-12 pr-32 py-3 bg-transparent text-text-heading placeholder-slate-400 text-sm focus:outline-none rounded-full"
+                    placeholder="Search brokers, regulations, courses..."
+                    className="w-full pl-9 sm:pl-12 pr-22 sm:pr-32 py-2.5 sm:py-3 bg-transparent text-text-heading placeholder-slate-400 text-xs sm:text-sm focus:outline-none rounded-full"
                   />
                   <button
                     type="submit"
-                    className="px-6 py-2.5 bg-orange hover:bg-orange-hover text-white font-bold rounded-full text-xs transition shadow-sm"
+                    className="px-4 sm:px-6 py-2 sm:py-2.5 bg-orange hover:bg-orange-hover text-white font-bold rounded-full text-xs transition shadow-sm shrink-0 min-h-[38px]"
                   >
                     Search
                   </button>
@@ -557,7 +557,7 @@ export default function HomePage() {
 
       {/* ─── 6. FULL-WIDTH BLUE -> ORANGE CTA BANNER (Dual Purpose: Complaint Box & Media Kit) ─── */}
       <section className="py-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="p-8 sm:p-14 rounded-3xl bg-gradient-to-r from-blue via-indigo-600 to-orange text-white shadow-lift flex flex-col lg:flex-row items-center justify-between gap-10">
+        <div className="p-6 sm:p-10 md:p-14 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-blue via-indigo-600 to-orange text-white shadow-lift flex flex-col lg:flex-row items-center justify-between gap-8 sm:gap-10">
           <div className="space-y-4 max-w-2xl text-left">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/20 backdrop-blur-sm text-xs font-bold uppercase tracking-wider text-white">
               <ShieldAlert className="w-3.5 h-3.5 text-orange-200" />
@@ -571,11 +571,11 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 shrink-0">
-            <Button href="/complaint-box" variant="outline-white" size="lg" withArrow>
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto shrink-0">
+            <Button href="/complaint-box" variant="outline-white" size="lg" withArrow className="w-full sm:w-auto justify-center">
               File a Dispute Case
             </Button>
-            <Button href="/advertise" variant="navy" size="lg">
+            <Button href="/advertise" variant="navy" size="lg" className="w-full sm:w-auto justify-center">
               Media Kit & Advertising
             </Button>
           </div>

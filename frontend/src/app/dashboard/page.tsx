@@ -111,7 +111,7 @@ export default function DashboardOverviewPage() {
       {role === 'STUDENT' && (
         <div className="space-y-8">
           {/* KPI Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div className="p-5 rounded-2xl bg-white border border-border shadow-soft">
               <div className="text-xs font-semibold text-text-muted">Enrolled Courses</div>
               <div className="text-2xl font-black text-text-heading mt-1">
@@ -194,7 +194,7 @@ export default function DashboardOverviewPage() {
       {/* ─── Role: BROKER Dashboard ──────────────────────────────── */}
       {role === 'BROKER' && (
         <div className="space-y-8">
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div className="p-5 rounded-2xl bg-white border border-border shadow-soft">
               <div className="text-xs font-semibold text-text-muted">Total Leads</div>
               <div className="text-2xl font-black text-blue mt-1">
@@ -238,7 +238,7 @@ export default function DashboardOverviewPage() {
       {/* ─── Role: SIGNAL_PROVIDER Dashboard ─────────────────────── */}
       {role === 'SIGNAL_PROVIDER' && (
         <div className="space-y-8">
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div className="p-5 rounded-2xl bg-white border border-border shadow-soft">
               <div className="text-xs font-semibold text-text-muted">Total Signals</div>
               <div className="text-2xl font-black text-text-heading mt-1">
@@ -270,7 +270,7 @@ export default function DashboardOverviewPage() {
       {/* ─── Role: TUTOR Dashboard ───────────────────────────────── */}
       {role === 'TUTOR' && (
         <div className="space-y-8">
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div className="p-5 rounded-2xl bg-white border border-border shadow-soft">
               <div className="text-xs font-semibold text-text-muted">Total Courses</div>
               <div className="text-2xl font-black text-text-heading mt-1">
@@ -328,8 +328,8 @@ export default function DashboardOverviewPage() {
             </div>
 
             {data?.courses && data.courses.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse text-xs sm:text-sm">
+              <div className="overflow-x-auto -mx-2 sm:mx-0">
+                <table className="w-full min-w-[580px] text-left border-collapse text-xs sm:text-sm">
                   <thead>
                     <tr className="border-b border-border text-text-muted uppercase text-[11px] font-bold">
                       <th className="py-3 px-4">Masterclass</th>
@@ -414,7 +414,7 @@ export default function DashboardOverviewPage() {
       {/* ─── Role: ACCOUNT_MANAGER Dashboard ─────────────────────── */}
       {role === 'ACCOUNT_MANAGER' && (
         <div className="space-y-8">
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div className="p-5 rounded-2xl bg-white border border-border shadow-soft">
               <div className="text-xs font-semibold text-text-muted">Experience</div>
               <div className="text-2xl font-black text-text-heading mt-1">

@@ -27,13 +27,13 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 bg-surface-tint">
-      <div className="w-full max-w-md space-y-8 bg-white border border-border p-8 sm:p-10 rounded-3xl shadow-lift">
+    <div className="min-h-screen min-h-dvh flex items-center justify-center py-8 sm:py-16 px-4 sm:px-6 lg:px-8 bg-surface-tint">
+      <div className="w-full max-w-md space-y-6 sm:space-y-8 bg-white border border-border p-5 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl shadow-lift">
         <div className="text-center">
           <Link href="/" className="inline-flex items-center gap-2 mb-4">
-            <img src="/logos/logo-color.svg" alt="EduTradeFX" className="h-9 w-auto" />
+            <img src="/logos/logo-color.svg" alt="EduTradeFX" className="h-8 sm:h-9 w-auto" />
           </Link>
-          <h2 className="text-2xl font-black text-text-heading">Reset Password</h2>
+          <h2 className="text-xl sm:text-2xl font-black text-text-heading">Reset Password</h2>
           <p className="text-xs sm:text-sm text-text-muted mt-1">
             Enter your account email to receive a password reset link
           </p>
@@ -48,7 +48,7 @@ export default function ForgotPasswordPage() {
             </p>
             <Link
               href="/login"
-              className="inline-flex items-center gap-2 text-xs font-bold text-blue hover:text-blue-hover transition"
+              className="inline-flex items-center gap-2 text-xs font-bold text-blue hover:text-blue-hover transition min-h-[40px] px-4 py-2"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to Sign In</span>
@@ -75,7 +75,7 @@ export default function ForgotPasswordPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="trader@example.com"
-                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
+                  className="w-full pl-10 pr-4 py-2.5 sm:py-3 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
                 />
               </div>
             </div>
@@ -83,7 +83,7 @@ export default function ForgotPasswordPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-orange hover:bg-orange-hover disabled:opacity-50 text-white font-bold text-sm rounded-full transition shadow-soft flex items-center justify-center gap-2"
+              className="w-full py-3.5 sm:py-4 bg-orange hover:bg-orange-hover disabled:opacity-50 text-white font-bold text-sm rounded-full transition shadow-soft flex items-center justify-center gap-2 min-h-[48px]"
             >
               <span>{loading ? 'Sending Link...' : 'Send Reset Link'}</span>
               <ArrowRight className="w-4 h-4" />
@@ -92,7 +92,7 @@ export default function ForgotPasswordPage() {
             <div className="text-center pt-2">
               <Link
                 href="/login"
-                className="inline-flex items-center gap-1.5 text-xs text-text-muted hover:text-blue transition"
+                className="inline-flex items-center gap-1.5 text-xs text-text-muted hover:text-blue transition min-h-[36px] py-1"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Back to Login</span>

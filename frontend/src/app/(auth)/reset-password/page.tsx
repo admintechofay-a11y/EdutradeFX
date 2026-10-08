@@ -46,12 +46,12 @@ function ResetPasswordFormContent() {
   };
 
   return (
-    <div className="w-full max-w-md space-y-8 bg-white border border-border p-8 sm:p-10 rounded-3xl shadow-lift">
+    <div className="w-full max-w-md space-y-6 sm:space-y-8 bg-white border border-border p-5 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl shadow-lift">
       <div className="text-center">
         <Link href="/" className="inline-flex items-center gap-2 mb-4">
-          <img src="/logos/logo-color.svg" alt="EduTradeFX" className="h-9 w-auto" />
+          <img src="/logos/logo-color.svg" alt="EduTradeFX" className="h-8 sm:h-9 w-auto" />
         </Link>
-        <h2 className="text-2xl font-black text-text-heading">Choose New Password</h2>
+        <h2 className="text-xl sm:text-2xl font-black text-text-heading">Choose New Password</h2>
         <p className="text-xs sm:text-sm text-text-muted mt-1">
           Ensure your account uses a secure combination of characters
         </p>
@@ -87,12 +87,13 @@ function ResetPasswordFormContent() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Min 8 characters"
-                className="w-full pl-10 pr-10 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
+                className="w-full pl-10 pr-12 py-2.5 sm:py-3 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-heading"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                className="absolute right-1 top-1/2 -translate-y-1/2 p-2 text-text-muted hover:text-text-heading min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -111,7 +112,7 @@ function ResetPasswordFormContent() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm new password"
-                className="w-full pl-10 pr-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
+                className="w-full pl-10 pr-12 py-2.5 sm:py-3 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
               />
             </div>
           </div>
@@ -119,7 +120,7 @@ function ResetPasswordFormContent() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 bg-orange hover:bg-orange-hover disabled:opacity-50 text-white font-bold text-sm rounded-full transition shadow-soft flex items-center justify-center gap-2"
+            className="w-full py-3.5 sm:py-4 bg-orange hover:bg-orange-hover disabled:opacity-50 text-white font-bold text-sm rounded-full transition shadow-soft flex items-center justify-center gap-2 min-h-[48px]"
           >
             <span>{loading ? 'Updating Password...' : 'Save New Password'}</span>
             <ArrowRight className="w-4 h-4" />
@@ -132,10 +133,10 @@ function ResetPasswordFormContent() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 bg-surface-tint">
+    <div className="min-h-screen min-h-dvh flex items-center justify-center py-8 sm:py-16 px-4 sm:px-6 lg:px-8 bg-surface-tint">
       <Suspense
         fallback={
-          <div className="w-full max-w-md p-12 bg-white border border-border rounded-3xl flex justify-center shadow-soft">
+          <div className="w-full max-w-md p-8 sm:p-12 bg-white border border-border rounded-2xl sm:rounded-3xl flex justify-center shadow-soft">
             <Loader2 className="w-8 h-8 text-blue animate-spin" />
           </div>
         }

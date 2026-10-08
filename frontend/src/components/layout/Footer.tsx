@@ -67,36 +67,36 @@ export const Footer: React.FC = () => {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Twitter"
-              className="w-8 h-8 rounded-full bg-[#0A2A6B] hover:bg-blue text-white flex items-center justify-center transition-colors"
+              className="w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-[#0A2A6B] hover:bg-blue text-white flex items-center justify-center transition-colors tap-target"
             >
-              <Twitter size={14} />
+              <Twitter size={15} />
             </a>
             <a
               href="https://linkedin.com"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn"
-              className="w-8 h-8 rounded-full bg-[#0A2A6B] hover:bg-blue text-white flex items-center justify-center transition-colors"
+              className="w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-[#0A2A6B] hover:bg-blue text-white flex items-center justify-center transition-colors tap-target"
             >
-              <Linkedin size={14} />
+              <Linkedin size={15} />
             </a>
             <a
               href="https://t.me"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Telegram"
-              className="w-8 h-8 rounded-full bg-[#0A2A6B] hover:bg-blue text-white flex items-center justify-center transition-colors"
+              className="w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-[#0A2A6B] hover:bg-blue text-white flex items-center justify-center transition-colors tap-target"
             >
-              <Send size={14} />
+              <Send size={15} />
             </a>
             <a
               href="https://youtube.com"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="YouTube"
-              className="w-8 h-8 rounded-full bg-[#0A2A6B] hover:bg-blue text-white flex items-center justify-center transition-colors"
+              className="w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-[#0A2A6B] hover:bg-blue text-white flex items-center justify-center transition-colors tap-target"
             >
-              <Youtube size={14} />
+              <Youtube size={15} />
             </a>
           </div>
 
@@ -115,42 +115,42 @@ export const Footer: React.FC = () => {
         {/* 3 Link Columns */}
         <div>
           <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">Marketplace</h4>
-          <ul className="space-y-2.5">
-            <li><Link href="/brokers" className="hover:text-white transition-colors">Compare Brokers</Link></li>
-            <li><Link href="/brokers/compare" className="hover:text-white transition-colors">Side-by-Side Matrix</Link></li>
-            <li><Link href="/account-managers" className="hover:text-white transition-colors">Account Managers</Link></li>
-            <li><Link href="/signal-providers" className="hover:text-white transition-colors">Signal Feeds</Link></li>
-            <li><Link href="/courses" className="hover:text-white transition-colors">Forex Academy</Link></li>
+          <ul className="space-y-1 sm:space-y-2.5">
+            <li><Link href="/brokers" className="inline-block py-1.5 hover:text-white transition-colors">Compare Brokers</Link></li>
+            <li><Link href="/brokers/compare" className="inline-block py-1.5 hover:text-white transition-colors">Side-by-Side Matrix</Link></li>
+            <li><Link href="/account-managers" className="inline-block py-1.5 hover:text-white transition-colors">Account Managers</Link></li>
+            <li><Link href="/signal-providers" className="inline-block py-1.5 hover:text-white transition-colors">Signal Feeds</Link></li>
+            <li><Link href="/courses" className="inline-block py-1.5 hover:text-white transition-colors">Forex Academy</Link></li>
           </ul>
         </div>
 
         <div>
           <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">Education & Help</h4>
-          <ul className="space-y-2.5">
-            <li><Link href="/blog" className="hover:text-white transition-colors">Market Analysis</Link></li>
-            <li><Link href="/courses" className="hover:text-white transition-colors">Academy Lessons</Link></li>
-            <li><Link href="/about" className="hover:text-white transition-colors">About EduTradeFX</Link></li>
-            <li><Link href="/contact" className="hover:text-white transition-colors">Contact Support</Link></li>
-            <li><Link href="/advertise" className="hover:text-white transition-colors">Advertise with Us</Link></li>
+          <ul className="space-y-1 sm:space-y-2.5">
+            <li><Link href="/blog" className="inline-block py-1.5 hover:text-white transition-colors">Market Analysis</Link></li>
+            <li><Link href="/courses" className="inline-block py-1.5 hover:text-white transition-colors">Academy Lessons</Link></li>
+            <li><Link href="/about" className="inline-block py-1.5 hover:text-white transition-colors">About EduTradeFX</Link></li>
+            <li><Link href="/contact" className="inline-block py-1.5 hover:text-white transition-colors">Contact Support</Link></li>
+            <li><Link href="/advertise" className="inline-block py-1.5 hover:text-white transition-colors">Advertise with Us</Link></li>
           </ul>
         </div>
 
         <div>
           <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">Compliance & Legal</h4>
-          <ul className="space-y-2.5">
+          <ul className="space-y-1 sm:space-y-2.5">
             <li>
               <Link
                 href="/complaint-box"
-                className="text-orange hover:text-orange-hover font-semibold transition-colors flex items-center gap-1.5"
+                className="text-orange hover:text-orange-hover font-semibold transition-colors flex items-center gap-1.5 py-1.5"
               >
-                <ShieldAlert size={13} className="text-orange" />
+                <ShieldAlert size={13} className="text-orange shrink-0" />
                 <span>Complaint Box</span>
               </Link>
             </li>
-            <li><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
-            <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-            <li><Link href="/risk-disclaimer" className="hover:text-white transition-colors">Risk Disclaimer</Link></li>
-            <li><Link href="/register" className="hover:text-white transition-colors">Partner Registration</Link></li>
+            <li><Link href="/terms" className="inline-block py-1.5 hover:text-white transition-colors">Terms of Service</Link></li>
+            <li><Link href="/privacy" className="inline-block py-1.5 hover:text-white transition-colors">Privacy Policy</Link></li>
+            <li><Link href="/risk-disclaimer" className="inline-block py-1.5 hover:text-white transition-colors">Risk Disclaimer</Link></li>
+            <li><Link href="/register" className="inline-block py-1.5 hover:text-white transition-colors">Partner Registration</Link></li>
           </ul>
 
           {/* Newsletter Input with Blue Arrow Button */}
@@ -161,14 +161,14 @@ export const Footer: React.FC = () => {
               <input
                 type="email"
                 placeholder="Enter email..."
-                className="w-full px-3 py-2 rounded-full bg-[#05153D] border border-[#0A2A6B] text-xs text-white placeholder-slate-400 focus:outline-none focus:border-blue"
+                className="w-full px-3.5 py-2.5 rounded-full bg-[#05153D] border border-[#0A2A6B] text-xs text-white placeholder-slate-400 focus:outline-none focus:border-blue"
               />
               <button
                 type="submit"
                 aria-label="Subscribe to newsletter"
-                className="w-8 h-8 rounded-full bg-blue hover:bg-blue-hover text-white flex items-center justify-center shrink-0 transition-colors shadow-sm"
+                className="w-10 h-10 sm:w-9 sm:h-9 rounded-full bg-blue hover:bg-blue-hover text-white flex items-center justify-center shrink-0 transition-colors shadow-sm"
               >
-                <ArrowRight size={14} />
+                <ArrowRight size={15} />
               </button>
             </form>
           </div>

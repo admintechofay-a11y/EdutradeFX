@@ -76,8 +76,8 @@ export default function SPDirectoryPage() {
         </div>
 
         {/* Filters */}
-        <div className="p-6 rounded-2xl bg-white border border-border shadow-soft mb-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="p-4 sm:p-6 rounded-2xl bg-white border border-border shadow-soft mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             <div className="relative sm:col-span-2">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
               <input
@@ -109,7 +109,7 @@ export default function SPDirectoryPage() {
         </div>
 
         {/* Sort & Stats */}
-        <div className="flex items-center justify-between mb-6 text-xs sm:text-sm text-text-muted">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6 text-xs sm:text-sm text-text-muted">
           <div>
             Showing <span className="font-bold text-text-heading">{providers.length}</span> of{' '}
             <span className="font-bold text-text-heading">{total}</span> signal providers

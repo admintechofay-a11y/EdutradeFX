@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { api } from '../../../lib/api';
 import { Skeleton } from '../../../components/common/Skeleton';
+import { Modal } from '@/components/ui/Modal';
 
 export default function AdminAuditLogsPage() {
   const [logs, setLogs] = useState<any[]>([]);
@@ -84,7 +85,7 @@ export default function AdminAuditLogsPage() {
         <button
           onClick={fetchLogs}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-surface-tint text-navy rounded-full text-xs font-semibold border border-border shadow-sm transition"
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-white hover:bg-surface-tint text-navy rounded-full text-xs font-semibold border border-border shadow-sm transition w-full sm:w-auto min-h-[40px]"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
           <span>Refresh Feed</span>
@@ -104,7 +105,7 @@ export default function AdminAuditLogsPage() {
             setTargetTypeFilter(e.target.value);
             setPage(1);
           }}
-          className="bg-surface-tint border border-border rounded-xl px-3 py-2 text-xs text-text-heading focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
+          className="bg-surface-tint border border-border rounded-xl px-3 py-2 text-xs text-text-heading focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue min-h-[40px]"
         >
           <option value="">All Entities</option>
           <option value="USER">User Account</option>
@@ -125,10 +126,10 @@ export default function AdminAuditLogsPage() {
             setActionFilter(e.target.value);
             setPage(1);
           }}
-          className="bg-surface-tint border border-border rounded-xl px-3 py-2 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue w-64"
+          className="bg-surface-tint border border-border rounded-xl px-3 py-2 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue w-full sm:w-64 min-h-[40px]"
         />
 
-        <div className="ml-auto text-xs text-text-muted">
+        <div className="w-full sm:w-auto sm:ml-auto text-xs text-text-muted">
           Showing {logs.length} of {total} records
         </div>
       </div>
@@ -151,7 +152,7 @@ export default function AdminAuditLogsPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-text-body">
+            <table className="w-full min-w-[700px] text-left text-xs text-text-body">
               <thead className="bg-surface-tint border-b border-border text-[11px] uppercase tracking-wider text-text-muted font-semibold">
                 <tr>
                   <th className="py-3.5 px-4">Timestamp</th>
@@ -243,27 +244,21 @@ export default function AdminAuditLogsPage() {
       </div>
 
       {/* Metadata Inspect Modal */}
-      {selectedMetadata && (
-        <div className="fixed inset-0 z-50 bg-navy-deep/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-border rounded-3xl p-6 max-w-lg w-full space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-border">
-              <h3 className="text-sm font-bold text-navy flex items-center gap-2">
-                <FileCode className="w-4 h-4 text-blue" />
-                Audit Trail Metadata Snapshot
-              </h3>
-              <button
-                onClick={() => setSelectedMetadata(null)}
-                className="text-xs text-text-muted hover:text-navy px-3 py-1 rounded-full hover:bg-surface-tint transition"
-              >
-                Close
-              </button>
-            </div>
-            <pre className="p-4 bg-surface-tint rounded-2xl border border-border text-navy font-mono text-[11px] overflow-x-auto max-h-72">
-              {JSON.stringify(selectedMetadata, null, 2)}
-            </pre>
-          </div>
-        </div>
-      )}
+      <Modal
+        isOpen={Boolean(selectedMetadata)}
+        onClose={() => setSelectedMetadata(null)}
+        maxWidth="lg"
+        title={
+          <span className="flex items-center gap-2">
+            <FileCode className="w-4 h-4 text-blue" />
+            Audit Trail Metadata Snapshot
+          </span>
+        }
+      >
+        <pre className="p-4 bg-surface-tint rounded-2xl border border-border text-navy font-mono text-[11px] overflow-x-auto max-h-72">
+          {JSON.stringify(selectedMetadata, null, 2)}
+        </pre>
+      </Modal>
     </div>
   );
 }

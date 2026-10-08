@@ -6,6 +6,7 @@ import { api } from '../../../lib/api';
 import { Signal, SignalDirection } from '../../../types';
 import { Skeleton } from '../../../components/common/Skeleton';
 import { EmptyState } from '../../../components/common/EmptyState';
+import { Modal } from '@/components/ui/Modal';
 
 export default function SPSignalsTerminalPage() {
   const [signals, setSignals] = useState<Signal[]>([]);
@@ -116,7 +117,7 @@ export default function SPSignalsTerminalPage() {
 
         <button
           onClick={() => setIsNewModalOpen(true)}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue hover:bg-blue-hover text-white font-bold text-xs rounded-full shadow-sm transition self-start sm:self-auto"
+          className="w-full sm:w-auto justify-center inline-flex items-center gap-2 px-5 py-2.5 bg-blue hover:bg-blue-hover text-white font-bold text-xs rounded-full shadow-sm transition min-h-[42px]"
         >
           <Plus className="w-4 h-4" />
           <span>Broadcast New Signal</span>
@@ -126,8 +127,8 @@ export default function SPSignalsTerminalPage() {
       {loading ? (
         <Skeleton className="h-96 rounded-3xl" />
       ) : signals.length > 0 ? (
-        <div className="overflow-x-auto rounded-3xl border border-border bg-white shadow-soft">
-          <table className="w-full text-left border-collapse text-xs sm:text-sm">
+        <div className="overflow-x-auto -mx-2 sm:mx-0 rounded-2xl sm:rounded-3xl border border-border bg-white shadow-soft">
+          <table className="w-full min-w-[650px] text-left border-collapse text-xs sm:text-sm">
             <thead>
               <tr className="border-b border-border bg-surface-tint/60 text-text-muted text-xs uppercase font-bold">
                 <th className="p-4">Instrument / Type</th>
@@ -213,176 +214,158 @@ export default function SPSignalsTerminalPage() {
       )}
 
       {/* Broadcast Modal */}
-      {isNewModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-deep/60 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-white border border-border rounded-3xl p-6 sm:p-8 shadow-2xl relative">
-            <button
-              onClick={() => setIsNewModalOpen(false)}
-              className="absolute top-5 right-5 text-text-muted hover:text-navy"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <form onSubmit={handleCreateSignal} className="space-y-4">
-              <div>
-                <h3 className="text-xl font-bold text-navy">Broadcast New Trade Signal</h3>
-                <p className="text-xs text-text-muted mt-0.5">Parameters will be audited and broadcast instantly.</p>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-text-heading mb-1">
-                  Setup Title <span className="text-text-muted font-normal">(Optional)</span>
-                </label>
-                <input
-                  type="text"
-                  value={newForm.title}
-                  onChange={(e) => setNewForm({ ...newForm, title: e.target.value })}
-                  placeholder={`e.g. ${newForm.direction} ${newForm.instrument} Breakout Setup`}
-                  className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading placeholder-text-muted transition"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-text-heading mb-1">Instrument</label>
-                  <input
-                    type="text"
-                    required
-                    value={newForm.instrument}
-                    onChange={(e) => setNewForm({ ...newForm, instrument: e.target.value.toUpperCase() })}
-                    placeholder="e.g. XAUUSD"
-                    className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs font-bold text-text-heading placeholder-text-muted uppercase transition"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-text-heading mb-1">Direction</label>
-                  <select
-                    value={newForm.direction}
-                    onChange={(e) => setNewForm({ ...newForm, direction: e.target.value as SignalDirection })}
-                    className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs font-bold text-text-heading transition"
-                  >
-                    <option value="BUY">BUY / LONG</option>
-                    <option value="SELL">SELL / SHORT</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-text-heading mb-1">Entry Price</label>
-                  <input
-                    type="number"
-                    step="any"
-                    required
-                    value={newForm.entryPrice}
-                    onChange={(e) => setNewForm({ ...newForm, entryPrice: e.target.value })}
-                    placeholder="1.0850"
-                    className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading placeholder-text-muted font-mono transition"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-rose-500 mb-1">Stop Loss</label>
-                  <input
-                    type="number"
-                    step="any"
-                    required
-                    value={newForm.stopLoss}
-                    onChange={(e) => setNewForm({ ...newForm, stopLoss: e.target.value })}
-                    placeholder="1.0820"
-                    className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading placeholder-text-muted font-mono transition"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-green mb-1">Take Profit</label>
-                  <input
-                    type="number"
-                    step="any"
-                    required
-                    value={newForm.takeProfit}
-                    onChange={(e) => setNewForm({ ...newForm, takeProfit: e.target.value })}
-                    placeholder="1.0920"
-                    className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading placeholder-text-muted font-mono transition"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-text-heading mb-1">Rationale / Note</label>
-                <textarea
-                  rows={2}
-                  value={newForm.description}
-                  onChange={(e) => setNewForm({ ...newForm, description: e.target.value })}
-                  placeholder="e.g. 15m Liquidity grab of Asian session low with Bullish BOS..."
-                  className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading placeholder-text-muted resize-none transition"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full py-3 bg-blue hover:bg-blue-hover disabled:opacity-50 text-white font-bold text-xs rounded-full transition shadow-sm"
-              >
-                {submitting ? 'Broadcasting...' : 'Publish Live Signal'}
-              </button>
-            </form>
+      <Modal
+        isOpen={isNewModalOpen}
+        onClose={() => setIsNewModalOpen(false)}
+        maxWidth="lg"
+        title="Broadcast New Trade Signal"
+        subtitle="Parameters will be audited and broadcast instantly."
+      >
+        <form onSubmit={handleCreateSignal} className="space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-text-heading mb-1">
+              Setup Title <span className="text-text-muted font-normal">(Optional)</span>
+            </label>
+            <input
+              type="text"
+              value={newForm.title}
+              onChange={(e) => setNewForm({ ...newForm, title: e.target.value })}
+              placeholder={`e.g. ${newForm.direction} ${newForm.instrument} Breakout Setup`}
+              className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading placeholder-text-muted transition"
+            />
           </div>
-        </div>
-      )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-text-heading mb-1">Instrument</label>
+              <input
+                type="text"
+                required
+                value={newForm.instrument}
+                onChange={(e) => setNewForm({ ...newForm, instrument: e.target.value.toUpperCase() })}
+                placeholder="e.g. XAUUSD"
+                className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs font-bold text-text-heading placeholder-text-muted uppercase transition"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-text-heading mb-1">Direction</label>
+              <select
+                value={newForm.direction}
+                onChange={(e) => setNewForm({ ...newForm, direction: e.target.value as SignalDirection })}
+                className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs font-bold text-text-heading transition"
+              >
+                <option value="BUY">BUY / LONG</option>
+                <option value="SELL">SELL / SHORT</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-text-heading mb-1">Entry Price</label>
+              <input
+                type="number"
+                step="any"
+                required
+                value={newForm.entryPrice}
+                onChange={(e) => setNewForm({ ...newForm, entryPrice: e.target.value })}
+                placeholder="1.0850"
+                className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading placeholder-text-muted font-mono transition"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-rose-500 mb-1">Stop Loss</label>
+              <input
+                type="number"
+                step="any"
+                required
+                value={newForm.stopLoss}
+                onChange={(e) => setNewForm({ ...newForm, stopLoss: e.target.value })}
+                placeholder="1.0820"
+                className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading placeholder-text-muted font-mono transition"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-green mb-1">Take Profit</label>
+              <input
+                type="number"
+                step="any"
+                required
+                value={newForm.takeProfit}
+                onChange={(e) => setNewForm({ ...newForm, takeProfit: e.target.value })}
+                placeholder="1.0920"
+                className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading placeholder-text-muted font-mono transition"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-text-heading mb-1">Rationale / Note</label>
+            <textarea
+              rows={2}
+              value={newForm.description}
+              onChange={(e) => setNewForm({ ...newForm, description: e.target.value })}
+              placeholder="e.g. 15m Liquidity grab of Asian session low with Bullish BOS..."
+              className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading placeholder-text-muted resize-none transition"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full py-3 bg-blue hover:bg-blue-hover disabled:opacity-50 text-white font-bold text-xs rounded-full transition shadow-sm"
+          >
+            {submitting ? 'Broadcasting...' : 'Publish Live Signal'}
+          </button>
+        </form>
+      </Modal>
 
       {/* Close Signal Modal */}
-      {closingSignal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-deep/60 backdrop-blur-sm">
-          <div className="w-full max-w-md bg-white border border-border rounded-3xl p-6 shadow-2xl relative">
+      <Modal
+        isOpen={Boolean(closingSignal)}
+        onClose={() => setClosingSignal(null)}
+        maxWidth="md"
+        title={closingSignal ? `Close ${closingSignal.instrument} Trade` : undefined}
+        subtitle="Record exit price and net pips for audited win rate."
+      >
+        {closingSignal && (
+          <form onSubmit={handleCloseSignal} className="space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-text-heading mb-1">Exit Price</label>
+              <input
+                type="number"
+                step="any"
+                required
+                value={closeForm.closedPrice}
+                onChange={(e) => setCloseForm({ ...closeForm, closedPrice: e.target.value })}
+                placeholder="e.g. 1.0890"
+                className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading placeholder-text-muted font-mono transition"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-text-heading mb-1">Pips Gained (or Lost)</label>
+              <input
+                type="number"
+                step="any"
+                required
+                value={closeForm.pipsGained}
+                onChange={(e) => setCloseForm({ ...closeForm, pipsGained: e.target.value })}
+                placeholder="e.g. 45 or -20"
+                className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading placeholder-text-muted font-mono transition"
+              />
+            </div>
+
             <button
-              onClick={() => setClosingSignal(null)}
-              className="absolute top-5 right-5 text-text-muted hover:text-navy"
+              type="submit"
+              disabled={closing}
+              className="w-full py-3 bg-blue hover:bg-blue-hover disabled:opacity-50 text-white font-bold text-xs rounded-full transition shadow-sm"
             >
-              <X className="w-5 h-5" />
+              {closing ? 'Settling...' : 'Confirm Trade Settlement'}
             </button>
-
-            <form onSubmit={handleCloseSignal} className="space-y-4">
-              <div>
-                <h3 className="text-xl font-bold text-navy">Close {closingSignal.instrument} Trade</h3>
-                <p className="text-xs text-text-muted mt-0.5">Record exit price and net pips for audited win rate.</p>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-text-heading mb-1">Exit Price</label>
-                <input
-                  type="number"
-                  step="any"
-                  required
-                  value={closeForm.closedPrice}
-                  onChange={(e) => setCloseForm({ ...closeForm, closedPrice: e.target.value })}
-                  placeholder="e.g. 1.0890"
-                  className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading placeholder-text-muted font-mono transition"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-text-heading mb-1">Pips Gained (or Lost)</label>
-                <input
-                  type="number"
-                  step="any"
-                  required
-                  value={closeForm.pipsGained}
-                  onChange={(e) => setCloseForm({ ...closeForm, pipsGained: e.target.value })}
-                  placeholder="e.g. 45 or -20"
-                  className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading placeholder-text-muted font-mono transition"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={closing}
-                className="w-full py-3 bg-blue hover:bg-blue-hover disabled:opacity-50 text-white font-bold text-xs rounded-full transition shadow-sm"
-              >
-                {closing ? 'Settling...' : 'Confirm Trade Settlement'}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
+          </form>
+        )}
+      </Modal>
     </div>
   );
 }

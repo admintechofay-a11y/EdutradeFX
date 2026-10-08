@@ -22,6 +22,7 @@ import { api } from '../../../../lib/api';
 import { AccountManager, AccountManagerReview } from '../../../../types';
 import { StarRating } from '../../../../components/common/StarRating';
 import { Skeleton } from '../../../../components/common/Skeleton';
+import { Modal } from '@/components/ui/Modal';
 
 export default function AMDetailPage() {
   const params = useParams();
@@ -113,8 +114,8 @@ export default function AMDetailPage() {
       <div className="bg-surface-tint border-b border-border pt-10 pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="flex items-center gap-6">
-              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-white border border-border flex items-center justify-center overflow-hidden shrink-0 shadow-soft">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+              <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl sm:rounded-3xl bg-white border border-border flex items-center justify-center overflow-hidden shrink-0 shadow-soft">
                 {am.photo ? (
                   <img src={am.photo} alt={am.fullName} className="w-full h-full object-cover" />
                 ) : (
@@ -124,7 +125,7 @@ export default function AMDetailPage() {
                 )}
               </div>
               <div>
-                <div className="flex items-center gap-3 flex-wrap mb-1">
+                <div className="flex items-center gap-2 sm:gap-3 flex-wrap mb-1">
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-text-heading">{am.fullName}</h1>
                   {am.isFeatured && (
                     <span className="px-2.5 py-0.5 rounded-full bg-orange-50 text-orange text-xs font-bold border border-orange-200">
@@ -138,7 +139,7 @@ export default function AMDetailPage() {
                 </div>
                 <p className="text-sm text-text-body mb-2">{am.tagline || 'PAMM Portfolio Specialist'}</p>
 
-                <div className="flex items-center gap-4 text-xs sm:text-sm text-text-muted flex-wrap">
+                <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-text-muted flex-wrap">
                   <div className="flex items-center gap-1.5">
                     <StarRating rating={am.avgRating} />
                     <span className="font-bold text-text-heading ml-1">{am.avgRating.toFixed(1)}</span>
@@ -156,10 +157,10 @@ export default function AMDetailPage() {
               </div>
             </div>
 
-            <div>
+            <div className="w-full md:w-auto">
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="px-6 py-3.5 rounded-full bg-orange hover:bg-orange-hover text-white font-bold text-sm shadow-soft transition flex items-center gap-2"
+                className="w-full sm:w-auto justify-center px-6 py-3.5 rounded-full bg-orange hover:bg-orange-hover text-white font-bold text-sm shadow-soft transition flex items-center gap-2 min-h-[44px]"
               >
                 <Mail className="w-4 h-4" />
                 <span>Request Allocation Consultation</span>
@@ -268,30 +269,23 @@ export default function AMDetailPage() {
       </div>
 
       {/* Enquiry Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-deep/60 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-white border border-border rounded-3xl p-6 sm:p-8 shadow-lift relative">
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-5 right-5 text-text-muted hover:text-text-heading"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {success ? (
-              <div className="text-center py-8">
-                <CheckCircle className="w-14 h-14 text-green mx-auto mb-3" />
-                <h3 className="text-xl font-bold text-text-heading mb-2">Message Sent!</h3>
-                <p className="text-xs text-text-body">
-                  {am.fullName} has been notified and will reply to your registered email shortly.
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={handleEnquirySubmit} className="space-y-4">
-                <div>
-                  <h3 className="text-xl font-bold text-text-heading">Contact {am.fullName}</h3>
-                  <p className="text-xs text-text-muted mt-0.5">Inquire about portfolio conditions and minimum allocation.</p>
-                </div>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        maxWidth="lg"
+        title={!success && am ? `Contact ${am.fullName}` : undefined}
+        subtitle={!success ? 'Inquire about portfolio conditions and minimum allocation.' : undefined}
+      >
+        {success ? (
+          <div className="text-center py-8">
+            <CheckCircle className="w-14 h-14 text-green mx-auto mb-3" />
+            <h3 className="text-xl font-bold text-text-heading mb-2">Message Sent!</h3>
+            <p className="text-xs text-text-body">
+              {am?.fullName} has been notified and will reply to your registered email shortly.
+            </p>
+          </div>
+        ) : (
+          <form onSubmit={handleEnquirySubmit} className="space-y-4">
 
                 <div>
                   <label className="block text-xs font-semibold text-text-heading mb-1">Your Name</label>
@@ -364,9 +358,7 @@ export default function AMDetailPage() {
                 </button>
               </form>
             )}
-          </div>
-        </div>
-      )}
+      </Modal>
     </div>
   );
 }

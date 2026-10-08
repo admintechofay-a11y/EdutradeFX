@@ -31,7 +31,11 @@ interface NavItem {
   icon: any;
 }
 
-export const DashboardSidebar: React.FC = () => {
+interface DashboardSidebarProps {
+  onNavigate?: () => void;
+}
+
+export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ onNavigate }) => {
   const pathname = usePathname();
   const { user, logout } = useAuthStore();
   const role = user?.role || 'STUDENT';
@@ -42,6 +46,7 @@ export const DashboardSidebar: React.FC = () => {
         return [
           { label: 'Overview', href: '/dashboard/broker', icon: LayoutDashboard },
           { label: 'Firm Profile', href: '/dashboard/broker/profile', icon: Building2 },
+          { label: 'Broker Onboarding Form', href: '/dashboard/broker/onboarding', icon: ShieldCheck },
           { label: 'Inbound Leads', href: '/dashboard/broker/leads', icon: Users },
           { label: 'Reviews & Reputation', href: '/dashboard/broker/reviews', icon: MessageSquare },
           { label: 'Account Settings', href: '/dashboard/broker/settings', icon: Settings },
@@ -96,7 +101,7 @@ export const DashboardSidebar: React.FC = () => {
   const navItems = getNavItems(role);
 
   return (
-    <aside className="w-64 bg-white border-r border-border flex flex-col justify-between shrink-0 min-h-[calc(100vh-64px)] p-4 shadow-sm">
+    <aside className="w-64 bg-white border-r border-border flex flex-col justify-between shrink-0 min-h-[calc(100vh-64px)] min-h-[calc(100dvh-64px)] p-4 shadow-sm">
       <div className="space-y-6">
         {/* User Card */}
         <div className="p-3.5 rounded-2xl bg-surface-tint border border-blue-100 flex items-center gap-3">
@@ -120,17 +125,18 @@ export const DashboardSidebar: React.FC = () => {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition ${
+                onClick={() => onNavigate?.()}
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition min-h-[40px] ${
                   isActive
                     ? 'bg-blue text-white shadow-soft'
                     : 'text-text-muted hover:text-text-heading hover:bg-surface-tint'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <Icon className="w-4 h-4" />
+                  <Icon className="w-4 h-4 shrink-0" />
                   <span>{item.label}</span>
                 </div>
-                {isActive && <ChevronRight className="w-3.5 h-3.5" />}
+                {isActive && <ChevronRight className="w-3.5 h-3.5 shrink-0" />}
               </Link>
             );
           })}
@@ -140,10 +146,13 @@ export const DashboardSidebar: React.FC = () => {
       {/* Logout Action */}
       <div className="pt-4 border-t border-border">
         <button
-          onClick={logout}
-          className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 transition"
+          onClick={() => {
+            onNavigate?.();
+            logout();
+          }}
+          className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 transition min-h-[40px]"
         >
-          <LogOut className="w-4 h-4" />
+          <LogOut className="w-4 h-4 shrink-0" />
           <span>Sign Out</span>
         </button>
       </div>

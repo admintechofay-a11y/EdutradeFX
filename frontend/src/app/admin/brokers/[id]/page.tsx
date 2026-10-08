@@ -35,6 +35,7 @@ import {
 import toast from 'react-hot-toast';
 import { api } from '@/lib/api';
 import { Broker, ApprovalStatus, BrokerOnboardingStatus } from '@/types';
+import { Modal } from '@/components/ui/Modal';
 
 export default function AdminBrokerAuditDetailPage() {
   const params = useParams();
@@ -182,13 +183,13 @@ export default function AdminBrokerAuditDetailPage() {
   const documents = broker.documents || [];
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6">
+    <div className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto space-y-6">
       {/* ── BREADCRUMB & TOP ACTIONS ──────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Link
             href="/admin/brokers"
-            className="p-2 rounded-full border border-border text-navy hover:bg-surface-tint transition"
+            className="p-2 rounded-full border border-border text-navy hover:bg-surface-tint transition shrink-0"
           >
             <ChevronLeft className="w-4 h-4" />
           </Link>
@@ -202,7 +203,7 @@ export default function AdminBrokerAuditDetailPage() {
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={() => setShowStatusModal('APPROVED')}
-            className="px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+            className="px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition w-full sm:w-auto min-h-[40px]"
           >
             <CheckCircle2 className="w-4 h-4" />
             Approve & Verify Broker
@@ -210,7 +211,7 @@ export default function AdminBrokerAuditDetailPage() {
 
           <button
             onClick={() => setShowStatusModal('PENDING')}
-            className="px-4 py-2.5 rounded-full bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+            className="px-4 py-2.5 rounded-full bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition w-full sm:w-auto min-h-[40px]"
           >
             <Clock className="w-4 h-4" />
             Request Changes
@@ -218,7 +219,7 @@ export default function AdminBrokerAuditDetailPage() {
 
           <button
             onClick={() => setShowStatusModal('REJECTED')}
-            className="px-4 py-2.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+            className="px-4 py-2.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition w-full sm:w-auto min-h-[40px]"
           >
             <X className="w-4 h-4" />
             Reject Application
@@ -228,7 +229,7 @@ export default function AdminBrokerAuditDetailPage() {
             href={`/brokers/${broker.slug}`}
             target="_blank"
             rel="noreferrer"
-            className="p-2.5 rounded-full border border-border text-navy hover:bg-surface-tint transition"
+            className="p-2.5 rounded-full border border-border text-navy hover:bg-surface-tint transition w-full sm:w-auto flex items-center justify-center min-h-[40px]"
             title="Preview public profile"
           >
             <ExternalLink className="w-4 h-4" />
@@ -442,7 +443,7 @@ export default function AdminBrokerAuditDetailPage() {
 
         {fundingYears.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
+            <table className="w-full min-w-[500px] text-xs text-left">
               <thead className="bg-surface-tint text-navy font-black uppercase text-[10px]">
                 <tr>
                   <th className="p-3">Year</th>
@@ -533,76 +534,73 @@ export default function AdminBrokerAuditDetailPage() {
       </div>
 
       {/* ── STATUS UPDATE MODAL ───────────────────────────── */}
-      {showStatusModal && (
-        <div className="fixed inset-0 z-50 bg-navy/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 border border-border shadow-2xl space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="text-base font-black text-navy">
-                {showStatusModal === 'APPROVED'
-                  ? 'Approve & Publish Broker'
+      <Modal
+        isOpen={Boolean(showStatusModal)}
+        onClose={() => setShowStatusModal(null)}
+        maxWidth="md"
+        title={
+          showStatusModal === 'APPROVED'
+            ? 'Approve & Publish Broker'
+            : showStatusModal === 'PENDING'
+            ? 'Request Compliance Modifications'
+            : 'Reject Broker Application'
+        }
+        footer={
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setShowStatusModal(null)}
+              className="px-4 py-2 rounded-full border border-border text-xs font-bold text-navy hover:bg-surface-tint"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              disabled={actionLoading}
+              onClick={() => handleUpdateStatus(showStatusModal!)}
+              className={`px-5 py-2 rounded-full text-white text-xs font-bold transition ${
+                showStatusModal === 'APPROVED'
+                  ? 'bg-emerald-600 hover:bg-emerald-700'
                   : showStatusModal === 'PENDING'
-                  ? 'Request Compliance Modifications'
-                  : 'Reject Broker Application'}
-              </h3>
-              <button onClick={() => setShowStatusModal(null)} className="text-text-muted hover:text-navy">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <p className="text-xs text-text-muted">
-              {showStatusModal === 'APPROVED'
-                ? 'This action marks the broker as VERIFIED, publishes their profile to the live directory, and dispatches an approval notification to the firm.'
-                : showStatusModal === 'PENDING'
-                ? 'Specify the modifications required. The broker will be notified in their dashboard and by email.'
-                : 'State the formal grounds for rejection. An administrative notice will be dispatched.'}
-            </p>
-
-            {showStatusModal === 'PENDING' && (
-              <textarea
-                rows={4}
-                value={reviewNote}
-                onChange={(e) => setReviewNote(e.target.value)}
-                placeholder="Detail the required changes (e.g. upload certified ASIC license certificate, update client loss disclaimer)..."
-                className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
-              />
-            )}
-
-            {showStatusModal === 'REJECTED' && (
-              <textarea
-                rows={4}
-                value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
-                placeholder="Reason for rejection (e.g. Unverifiable offshore entity, non-compliant regulatory filing)..."
-                className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
-              />
-            )}
-
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setShowStatusModal(null)}
-                className="px-4 py-2 rounded-full border border-border text-xs font-bold text-navy hover:bg-surface-tint"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                disabled={actionLoading}
-                onClick={() => handleUpdateStatus(showStatusModal)}
-                className={`px-5 py-2 rounded-full text-white text-xs font-bold transition ${
-                  showStatusModal === 'APPROVED'
-                    ? 'bg-emerald-600 hover:bg-emerald-700'
-                    : showStatusModal === 'PENDING'
-                    ? 'bg-amber-600 hover:bg-amber-700'
-                    : 'bg-rose-600 hover:bg-rose-700'
-                }`}
-              >
-                {actionLoading ? 'Processing...' : 'Confirm Status Update'}
-              </button>
-            </div>
+                  ? 'bg-amber-600 hover:bg-amber-700'
+                  : 'bg-rose-600 hover:bg-rose-700'
+              }`}
+            >
+              {actionLoading ? 'Processing...' : 'Confirm Status Update'}
+            </button>
           </div>
+        }
+      >
+        <div className="space-y-4">
+          <p className="text-xs text-text-muted">
+            {showStatusModal === 'APPROVED'
+              ? 'This action marks the broker as VERIFIED, publishes their profile to the live directory, and dispatches an approval notification to the firm.'
+              : showStatusModal === 'PENDING'
+              ? 'Specify the modifications required. The broker will be notified in their dashboard and by email.'
+              : 'State the formal grounds for rejection. An administrative notice will be dispatched.'}
+          </p>
+
+          {showStatusModal === 'PENDING' && (
+            <textarea
+              rows={4}
+              value={reviewNote}
+              onChange={(e) => setReviewNote(e.target.value)}
+              placeholder="Detail the required changes (e.g. upload certified ASIC license certificate, update client loss disclaimer)..."
+              className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
+            />
+          )}
+
+          {showStatusModal === 'REJECTED' && (
+            <textarea
+              rows={4}
+              value={rejectionReason}
+              onChange={(e) => setRejectionReason(e.target.value)}
+              placeholder="Reason for rejection (e.g. Unverifiable offshore entity, non-compliant regulatory filing)..."
+              className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
+            />
+          )}
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

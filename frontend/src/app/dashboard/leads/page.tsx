@@ -68,7 +68,7 @@ export default function BrokerLeadsPage() {
         <button
           onClick={exportCSV}
           disabled={leads.length === 0}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-surface-tint hover:bg-border/60 disabled:opacity-50 text-navy font-semibold text-xs rounded-full border border-border transition"
+          className="w-full sm:w-auto justify-center inline-flex items-center gap-2 px-5 py-2.5 bg-surface-tint hover:bg-border/60 disabled:opacity-50 text-navy font-semibold text-xs rounded-full border border-border transition min-h-[42px]"
         >
           <Download className="w-4 h-4" />
           <span>Export to CSV</span>
@@ -93,8 +93,8 @@ export default function BrokerLeadsPage() {
       {loading ? (
         <Skeleton className="h-96 rounded-3xl" />
       ) : filteredLeads.length > 0 ? (
-        <div className="overflow-x-auto rounded-3xl border border-border bg-white shadow-soft">
-          <table className="w-full text-left border-collapse text-xs sm:text-sm">
+        <div className="overflow-x-auto -mx-2 sm:mx-0 rounded-2xl sm:rounded-3xl border border-border bg-white shadow-soft">
+          <table className="w-full min-w-[580px] text-left border-collapse text-xs sm:text-sm">
             <thead>
               <tr className="border-b border-border bg-surface-tint/60 text-text-muted text-xs uppercase font-bold">
                 <th className="p-4">Trader Details</th>

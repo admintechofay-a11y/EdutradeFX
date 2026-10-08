@@ -143,7 +143,7 @@ export default function TutorPayoutsPage() {
       {/* Balance Banner & Request Form */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Balance Card */}
-        <div className="bg-white border border-border rounded-3xl p-6 shadow-soft flex flex-col justify-between">
+        <div className="bg-white border border-border rounded-3xl p-5 sm:p-6 shadow-soft flex flex-col justify-between">
           <div>
             <div className="text-xs font-semibold text-text-muted mb-2">Available Balance</div>
             <div className="text-3xl font-black text-green font-mono">
@@ -171,7 +171,7 @@ export default function TutorPayoutsPage() {
         </div>
 
         {/* Withdrawal Form */}
-        <div className="md:col-span-2 bg-white border border-border rounded-3xl p-6 shadow-soft space-y-4">
+        <div className="md:col-span-2 bg-white border border-border rounded-3xl p-5 sm:p-6 shadow-soft space-y-4">
           <h2 className="text-sm font-bold text-navy flex items-center gap-2">
             <CreditCard className="w-4 h-4 text-blue" />
             Submit Withdrawal Request
@@ -276,7 +276,7 @@ export default function TutorPayoutsPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-6 py-2.5 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition flex items-center gap-2 shadow-sm disabled:opacity-50"
+                className="w-full sm:w-auto px-6 py-2.5 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 min-h-[44px]"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>{submitting ? 'Submitting...' : 'Request Disbursement'}</span>
@@ -287,7 +287,7 @@ export default function TutorPayoutsPage() {
       </div>
 
       {/* Payout History */}
-      <div className="bg-white border border-border rounded-3xl p-6 shadow-soft space-y-4">
+      <div className="bg-white border border-border rounded-3xl p-5 sm:p-6 shadow-soft space-y-4">
         <h2 className="text-sm font-bold text-navy flex items-center gap-2">
           <Clock className="w-4 h-4 text-text-muted" />
           Disbursement Request History
@@ -337,7 +337,7 @@ export default function TutorPayoutsPage() {
                   )}
                 </div>
 
-                <div className="text-right">
+                <div className="text-left sm:text-right">
                   <div className="text-base font-black text-navy font-mono">
                     ${p.amount.toLocaleString()} USD
                   </div>

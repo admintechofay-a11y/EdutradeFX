@@ -135,7 +135,7 @@ export default function BrokerProfileEditorPage() {
         </div>
         <a
           href="/dashboard/broker/onboarding"
-          className="px-5 py-2.5 rounded-full bg-blue text-white text-xs font-bold hover:bg-blue-hover transition shadow-sm flex items-center gap-2 shrink-0"
+          className="px-5 py-2.5 rounded-full bg-blue text-white text-xs font-bold hover:bg-blue-hover transition shadow-sm flex items-center justify-center gap-2 shrink-0 w-full sm:w-auto min-h-[44px]"
         >
           <ShieldCheck className="w-4 h-4" />
           Launch 18-Step Onboarding Form →
@@ -157,7 +157,7 @@ export default function BrokerProfileEditorPage() {
         </div>
         <a
           href="/dashboard/broker/onboarding"
-          className="px-4 py-2 rounded-full bg-blue text-white text-xs font-bold hover:bg-blue-hover transition shrink-0"
+          className="px-4 py-2.5 rounded-full bg-blue text-white text-xs font-bold hover:bg-blue-hover transition shrink-0 w-full sm:w-auto text-center flex items-center justify-center min-h-[40px]"
         >
           Open Onboarding Wizard
         </a>
@@ -178,7 +178,7 @@ export default function BrokerProfileEditorPage() {
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* Core Corporate Information */}
-        <div className="bg-white border border-border rounded-3xl p-6 shadow-soft space-y-4">
+        <div className="bg-white border border-border rounded-3xl p-5 sm:p-6 shadow-soft space-y-4">
           <h2 className="text-sm font-bold text-navy flex items-center gap-2">
             <Building2 className="w-4 h-4 text-blue" />
             Corporate Identity
@@ -254,7 +254,7 @@ export default function BrokerProfileEditorPage() {
         </div>
 
         {/* Regulatory & Trading Conditions */}
-        <div className="bg-white border border-border rounded-3xl p-6 shadow-soft space-y-4">
+        <div className="bg-white border border-border rounded-3xl p-5 sm:p-6 shadow-soft space-y-4">
           <h2 className="text-sm font-bold text-navy flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-green" />
             Trading Conditions & Regulatory Licenses
@@ -373,7 +373,7 @@ export default function BrokerProfileEditorPage() {
           <button
             type="submit"
             disabled={saving}
-            className="px-6 py-3 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition flex items-center gap-2 shadow-sm disabled:opacity-50"
+            className="w-full sm:w-auto px-6 py-3 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 min-h-[44px]"
           >
             <Save className="w-4 h-4" />
             <span>{saving ? 'Publishing Updates...' : 'Save Firm Profile'}</span>

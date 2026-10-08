@@ -148,7 +148,7 @@ export default function AdvertisePage() {
         </div>
 
         {/* Enquiry Form */}
-        <div className="max-w-3xl mx-auto bg-white border border-border rounded-3xl p-6 sm:p-12 shadow-lift">
+        <div className="max-w-3xl mx-auto bg-white border border-border rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-12 shadow-lift">
           {submitted ? (
             <div className="text-center py-8 space-y-4">
               <div className="w-16 h-16 rounded-full bg-green-50 border border-green-200 text-green flex items-center justify-center mx-auto">

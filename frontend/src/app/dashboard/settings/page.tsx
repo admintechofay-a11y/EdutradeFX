@@ -159,7 +159,7 @@ export default function AccountSettingsPage() {
             <button
               type="submit"
               disabled={savingProfile}
-              className="px-6 py-2.5 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition flex items-center gap-2 shadow-sm disabled:opacity-50"
+              className="w-full sm:w-auto justify-center px-6 py-2.5 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition flex items-center gap-2 shadow-sm disabled:opacity-50 min-h-[42px]"
             >
               <Save className="w-3.5 h-3.5" />
               <span>{savingProfile ? 'Saving...' : 'Save Profile Changes'}</span>
@@ -237,7 +237,7 @@ export default function AccountSettingsPage() {
             <button
               type="submit"
               disabled={savingPassword}
-              className="px-6 py-2.5 bg-surface-tint hover:bg-border/60 text-navy rounded-full text-xs font-bold transition flex items-center gap-2 border border-border disabled:opacity-50"
+              className="w-full sm:w-auto justify-center px-6 py-2.5 bg-surface-tint hover:bg-border/60 text-navy rounded-full text-xs font-bold transition flex items-center gap-2 border border-border disabled:opacity-50 min-h-[42px]"
             >
               <KeyRound className="w-3.5 h-3.5" />
               <span>{savingPassword ? 'Updating Password...' : 'Update Password'}</span>
@@ -279,7 +279,7 @@ export default function AccountSettingsPage() {
           ].map((item) => (
             <div
               key={item.id}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-surface-tint/60 border border-border"
+              className="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-surface-tint/60 border border-border"
             >
               <div>
                 <div className="text-xs font-bold text-text-heading">{item.title}</div>

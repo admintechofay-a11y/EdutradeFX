@@ -109,7 +109,7 @@ export default function AdminCourseDetailPage() {
       </div>
 
       {/* Main Card */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-white border border-border space-y-6 shadow-soft">
+      <div className="p-5 sm:p-8 rounded-3xl bg-white border border-border space-y-6 shadow-soft">
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
@@ -135,12 +135,12 @@ export default function AdminCourseDetailPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0">
             {course.status !== 'PUBLISHED' && (
               <button
                 onClick={() => updateStatus('PUBLISHED')}
                 disabled={actionLoading}
-                className="px-4 py-2 bg-green hover:bg-green-hover text-white rounded-full text-xs font-bold transition shadow-sm"
+                className="px-4 py-2 bg-green hover:bg-green-hover text-white rounded-full text-xs font-bold transition shadow-sm w-full sm:w-auto min-h-[40px] flex items-center justify-center"
               >
                 Publish Masterclass
               </button>
@@ -149,7 +149,7 @@ export default function AdminCourseDetailPage() {
               <button
                 onClick={() => updateStatus('ARCHIVED')}
                 disabled={actionLoading}
-                className="px-4 py-2 bg-surface-tint hover:bg-border/60 text-text-body border border-border rounded-full text-xs font-bold transition"
+                className="px-4 py-2 bg-surface-tint hover:bg-border/60 text-text-body border border-border rounded-full text-xs font-bold transition w-full sm:w-auto min-h-[40px] flex items-center justify-center"
               >
                 Unpublish
               </button>

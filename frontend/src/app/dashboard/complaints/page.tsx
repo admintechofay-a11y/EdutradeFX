@@ -114,7 +114,7 @@ export default function StudentComplaintsPage() {
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-full text-xs font-bold transition shadow-sm"
+          className="w-full sm:w-auto justify-center flex items-center gap-2 px-5 py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-full text-xs font-bold transition shadow-sm min-h-[42px]"
         >
           <ShieldAlert className="w-4 h-4" />
           <span>{showForm ? 'Close Form' : 'File a New Dispute'}</span>
@@ -240,18 +240,18 @@ export default function StudentComplaintsPage() {
               />
             </div>
 
-            <div className="flex justify-end gap-3 pt-2">
+            <div className="flex flex-col-reverse sm:flex-row justify-end gap-2.5 sm:gap-3 pt-2">
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
-                className="px-5 py-2.5 bg-surface-tint hover:bg-border/60 text-navy rounded-full text-xs font-semibold transition"
+                className="w-full sm:w-auto justify-center px-5 py-2.5 bg-surface-tint hover:bg-border/60 text-navy rounded-full text-xs font-semibold transition min-h-[42px]"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-6 py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-full text-xs font-bold transition flex items-center gap-2 shadow-sm disabled:opacity-50"
+                className="w-full sm:w-auto justify-center px-6 py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-full text-xs font-bold transition flex items-center gap-2 shadow-sm disabled:opacity-50 min-h-[42px]"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>{submitting ? 'Lodging Dispute...' : 'Submit to Compliance Council'}</span>

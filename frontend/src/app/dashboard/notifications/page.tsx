@@ -132,7 +132,7 @@ export default function NotificationsPage() {
           <button
             onClick={handleMarkAllRead}
             disabled={actionLoading}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-surface-tint text-navy border border-border font-semibold text-xs rounded-full transition shadow-sm self-start sm:self-auto"
+            className="w-full sm:w-auto justify-center inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-surface-tint text-navy border border-border font-semibold text-xs rounded-full transition shadow-sm min-h-[40px]"
           >
             <CheckCheck className="w-4 h-4 text-green" />
             <span>Mark All Read</span>
@@ -141,7 +141,7 @@ export default function NotificationsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-1.5 p-1.5 bg-surface-tint/60 border border-border rounded-full w-fit">
+      <div className="flex items-center gap-1.5 p-1.5 bg-surface-tint/60 border border-border rounded-full w-full sm:w-fit overflow-x-auto no-scrollbar">
         {[
           { label: 'All', value: 'ALL', count: notifications.length },
           { label: 'Unread', value: 'UNREAD', count: unreadCount },

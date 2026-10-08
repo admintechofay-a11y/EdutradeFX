@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { api } from '../../../lib/api';
 import { Skeleton } from '../../../components/common/Skeleton';
+import { Modal } from '@/components/ui/Modal';
 
 export default function AdminPayoutsPage() {
   const [payouts, setPayouts] = useState<any[]>([]);
@@ -112,7 +113,7 @@ export default function AdminPayoutsPage() {
         <button
           onClick={fetchPayouts}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-surface-tint text-navy rounded-full text-xs font-semibold border border-border shadow-sm transition"
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-white hover:bg-surface-tint text-navy rounded-full text-xs font-semibold border border-border shadow-sm transition w-full sm:w-auto min-h-[40px]"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
           <span>Refresh Requests</span>
@@ -120,7 +121,7 @@ export default function AdminPayoutsPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 border-b border-border pb-3">
+      <div className="flex items-center gap-2 border-b border-border pb-3 overflow-x-auto no-scrollbar">
         {['', 'PENDING', 'APPROVED', 'PAID', 'REJECTED'].map((st) => (
           <button
             key={st}
@@ -128,7 +129,7 @@ export default function AdminPayoutsPage() {
               setStatusFilter(st);
               setPage(1);
             }}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition shrink-0 ${
               statusFilter === st
                 ? 'bg-blue text-white shadow-sm'
                 : 'text-text-muted hover:text-navy hover:bg-surface-tint'
@@ -157,7 +158,7 @@ export default function AdminPayoutsPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-text-body">
+            <table className="w-full min-w-[700px] text-left text-xs text-text-body">
               <thead className="bg-surface-tint border-b border-border text-[11px] uppercase tracking-wider text-text-muted font-semibold">
                 <tr>
                   <th className="py-3.5 px-4">Tutor Details</th>
@@ -248,15 +249,46 @@ export default function AdminPayoutsPage() {
       </div>
 
       {/* Action Confirmation Modal */}
-      {actionModal && (
-        <div className="fixed inset-0 z-50 bg-navy-deep/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-border rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl">
-            <h3 className="text-sm font-bold text-navy flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-blue" />
+      <Modal
+        isOpen={Boolean(actionModal)}
+        onClose={() => {
+          setActionModal(null);
+          setNotes('');
+        }}
+        maxWidth="md"
+        title={
+          actionModal ? (
+            <span className="flex items-center gap-2">
+              <DollarSign className="w-5 h-5 text-blue" />
               {actionModal.status === 'APPROVED' && 'Approve Payout Request'}
               {actionModal.status === 'REJECTED' && 'Reject Payout Request'}
               {actionModal.status === 'PAID' && 'Confirm Disbursement Complete'}
-            </h3>
+            </span>
+          ) : undefined
+        }
+        footer={
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => {
+                setActionModal(null);
+                setNotes('');
+              }}
+              className="px-4 py-2 bg-surface-tint hover:bg-border/60 text-text-body border border-border rounded-full text-xs font-semibold transition"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleProcessPayout}
+              disabled={processingId !== null}
+              className="px-4 py-2 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-semibold disabled:opacity-50 transition shadow-sm"
+            >
+              {processingId ? 'Processing...' : 'Confirm Action'}
+            </button>
+          </div>
+        }
+      >
+        {actionModal && (
+          <div className="space-y-4">
             <p className="text-xs text-text-muted">
               Disbursement of <strong className="text-navy">${actionModal.payout.amount}</strong> to{' '}
               <strong className="text-navy">
@@ -277,28 +309,9 @@ export default function AdminPayoutsPage() {
                 className="w-full bg-white border border-border rounded-xl p-3 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
               />
             </div>
-
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                onClick={() => {
-                  setActionModal(null);
-                  setNotes('');
-                }}
-                className="px-4 py-2 bg-surface-tint hover:bg-border/60 text-text-body border border-border rounded-full text-xs font-semibold transition"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleProcessPayout}
-                disabled={processingId !== null}
-                className="px-4 py-2 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-semibold disabled:opacity-50 transition shadow-sm"
-              >
-                {processingId ? 'Processing...' : 'Confirm Action'}
-              </button>
-            </div>
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
     </div>
   );
 }

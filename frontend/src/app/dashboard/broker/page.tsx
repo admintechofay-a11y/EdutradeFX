@@ -63,7 +63,7 @@ export default function BrokerOverviewPage() {
           <Link
             href={`/brokers/${broker.slug}`}
             target="_blank"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition shadow-sm"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition shadow-sm w-full sm:w-auto min-h-[44px]"
           >
             <span>View Public Listing</span>
             <ExternalLink className="w-3.5 h-3.5" />
@@ -144,7 +144,7 @@ export default function BrokerOverviewPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <Link
           href="/dashboard/broker/profile"
-          className="p-6 rounded-3xl bg-white border border-border hover:border-blue/50 transition group shadow-soft hover:shadow-card"
+          className="p-5 sm:p-6 rounded-3xl bg-white border border-border hover:border-blue/50 transition group shadow-soft hover:shadow-card"
         >
           <Building2 className="w-8 h-8 text-blue mb-3 group-hover:scale-110 transition" />
           <h3 className="text-sm font-bold text-text-heading mb-1 flex items-center justify-between">
@@ -158,7 +158,7 @@ export default function BrokerOverviewPage() {
 
         <Link
           href="/dashboard/broker/leads"
-          className="p-6 rounded-3xl bg-white border border-border hover:border-green/50 transition group shadow-soft hover:shadow-card"
+          className="p-5 sm:p-6 rounded-3xl bg-white border border-border hover:border-green/50 transition group shadow-soft hover:shadow-card"
         >
           <Users className="w-8 h-8 text-green mb-3 group-hover:scale-110 transition" />
           <h3 className="text-sm font-bold text-text-heading mb-1 flex items-center justify-between">
@@ -172,7 +172,7 @@ export default function BrokerOverviewPage() {
 
         <Link
           href="/dashboard/broker/reviews"
-          className="p-6 rounded-3xl bg-white border border-border hover:border-orange/50 transition group shadow-soft hover:shadow-card"
+          className="p-5 sm:p-6 rounded-3xl bg-white border border-border hover:border-orange/50 transition group shadow-soft hover:shadow-card"
         >
           <MessageSquare className="w-8 h-8 text-orange mb-3 group-hover:scale-110 transition" />
           <h3 className="text-sm font-bold text-text-heading mb-1 flex items-center justify-between">

@@ -63,7 +63,7 @@ export default function TutorOverviewPage() {
 
         <Link
           href="/dashboard/tutor/courses"
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition shadow-sm"
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition shadow-sm w-full sm:w-auto min-h-[44px]"
         >
           <PlusCircle className="w-4 h-4" />
           <span>Course Studio</span>
@@ -129,7 +129,7 @@ export default function TutorOverviewPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <Link
           href="/dashboard/tutor/courses"
-          className="p-6 rounded-3xl bg-white border border-border hover:border-blue/50 transition group shadow-soft hover:shadow-card"
+          className="p-5 sm:p-6 rounded-3xl bg-white border border-border hover:border-blue/50 transition group shadow-soft hover:shadow-card"
         >
           <BookOpen className="w-8 h-8 text-blue mb-3 group-hover:scale-110 transition" />
           <h3 className="text-sm font-bold text-text-heading mb-1 flex items-center justify-between">
@@ -143,7 +143,7 @@ export default function TutorOverviewPage() {
 
         <Link
           href="/dashboard/tutor/earnings"
-          className="p-6 rounded-3xl bg-white border border-border hover:border-green/50 transition group shadow-soft hover:shadow-card"
+          className="p-5 sm:p-6 rounded-3xl bg-white border border-border hover:border-green/50 transition group shadow-soft hover:shadow-card"
         >
           <DollarSign className="w-8 h-8 text-green mb-3 group-hover:scale-110 transition" />
           <h3 className="text-sm font-bold text-text-heading mb-1 flex items-center justify-between">
@@ -157,7 +157,7 @@ export default function TutorOverviewPage() {
 
         <Link
           href="/dashboard/tutor/payouts"
-          className="p-6 rounded-3xl bg-white border border-border hover:border-orange/50 transition group shadow-soft hover:shadow-card"
+          className="p-5 sm:p-6 rounded-3xl bg-white border border-border hover:border-orange/50 transition group shadow-soft hover:shadow-card"
         >
           <TrendingUp className="w-8 h-8 text-orange mb-3 group-hover:scale-110 transition" />
           <h3 className="text-sm font-bold text-text-heading mb-1 flex items-center justify-between">
@@ -171,7 +171,7 @@ export default function TutorOverviewPage() {
       </div>
 
       {/* Live Courses Section */}
-      <div className="p-6 rounded-3xl bg-white border border-border space-y-4 shadow-soft">
+      <div className="p-5 sm:p-6 rounded-3xl bg-white border border-border space-y-4 shadow-soft">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border">
           <div>
             <h2 className="text-lg font-bold text-navy flex items-center gap-2">
@@ -185,7 +185,7 @@ export default function TutorOverviewPage() {
 
           <Link
             href="/dashboard/tutor/courses"
-            className="px-5 py-2.5 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition inline-flex items-center gap-1.5 self-start sm:self-auto shadow-sm"
+            className="px-5 py-2.5 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition inline-flex items-center justify-center gap-1.5 w-full sm:w-auto shadow-sm min-h-[40px]"
           >
             <PlusCircle className="w-4 h-4" />
             <span>Manage All Courses</span>

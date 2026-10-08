@@ -420,6 +420,33 @@ export default function CourseDetailPage() {
           </div>
         )}
       </Modal>
+
+      {/* Mobile Sticky Enroll Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-30 p-3.5 pb-safe bg-white/95 backdrop-blur-md border-t border-border shadow-lift flex items-center justify-between gap-3">
+        <div>
+          <div className="text-[10px] text-text-muted font-bold uppercase tracking-wider">Tuition Fee</div>
+          <div className="text-lg font-black text-orange leading-tight">
+            {course.price === 0 ? 'Free' : `₹${(course.discountPrice || course.price).toLocaleString()}`}
+          </div>
+        </div>
+
+        {isEnrolled ? (
+          <Link
+            href={`/learn/${course.slug}/${course.sections?.[0]?.lessons?.[0]?.id || ''}`}
+            className="px-6 py-2.5 bg-green hover:opacity-90 text-white font-bold text-xs rounded-full shadow-soft transition text-center min-h-[44px] flex items-center justify-center"
+          >
+            Go to Classroom
+          </Link>
+        ) : (
+          <button
+            onClick={handleEnrollment}
+            disabled={enrolling}
+            className="px-6 py-2.5 bg-orange hover:bg-orange-hover disabled:opacity-50 text-white font-bold text-xs rounded-full shadow-soft transition min-h-[44px] flex items-center justify-center"
+          >
+            {enrolling ? 'Processing...' : course.price === 0 ? 'Enroll for Free' : 'Enroll Now'}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

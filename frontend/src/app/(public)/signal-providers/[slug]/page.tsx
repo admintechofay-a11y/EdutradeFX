@@ -126,8 +126,8 @@ export default function SPDetailPage() {
       <div className="bg-surface-tint border-b border-border pt-10 pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="flex items-center gap-6">
-              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-white border border-border flex items-center justify-center overflow-hidden shrink-0 shadow-soft">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+              <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl sm:rounded-3xl bg-white border border-border flex items-center justify-center overflow-hidden shrink-0 shadow-soft">
                 {provider.photo ? (
                   <img src={provider.photo} alt={provider.displayName} className="w-full h-full object-cover" />
                 ) : (
@@ -137,7 +137,7 @@ export default function SPDetailPage() {
                 )}
               </div>
               <div>
-                <div className="flex items-center gap-3 flex-wrap mb-1">
+                <div className="flex items-center gap-2 sm:gap-3 flex-wrap mb-1">
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-text-heading">{provider.displayName}</h1>
                   {provider.verificationStatus && (
                     <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue text-xs font-bold border border-blue-200 flex items-center gap-1">
@@ -148,7 +148,7 @@ export default function SPDetailPage() {
                 </div>
                 <p className="text-sm text-text-body mb-2">{provider.strategy || 'Multi-Asset Swing Alerts'}</p>
 
-                <div className="flex items-center gap-4 text-xs sm:text-sm text-text-muted flex-wrap">
+                <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-text-muted flex-wrap">
                   <div className="flex items-center gap-1.5">
                     <StarRating rating={provider.avgRating} />
                     <span className="font-bold text-text-heading ml-1">{provider.avgRating.toFixed(1)}</span>
@@ -162,10 +162,10 @@ export default function SPDetailPage() {
               </div>
             </div>
 
-            <div>
+            <div className="w-full md:w-auto">
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="px-6 py-3.5 rounded-full bg-orange hover:bg-orange-hover text-white font-bold text-sm shadow-soft transition flex items-center gap-2"
+                className="w-full sm:w-auto justify-center px-6 py-3.5 rounded-full bg-orange hover:bg-orange-hover text-white font-bold text-sm shadow-soft transition flex items-center gap-2 min-h-[44px]"
               >
                 <Radio className="w-4 h-4" />
                 <span>Subscribe to Signals Feed</span>

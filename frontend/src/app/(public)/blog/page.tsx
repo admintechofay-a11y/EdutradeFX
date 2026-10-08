@@ -73,7 +73,7 @@ export default function BlogDirectoryPage() {
         </div>
 
         {/* Filter bar */}
-        <div className="p-6 rounded-2xl bg-white border border-border shadow-soft mb-8">
+        <div className="p-4 sm:p-6 rounded-2xl bg-white border border-border shadow-soft mb-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="relative">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />

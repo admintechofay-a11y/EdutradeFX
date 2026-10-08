@@ -171,11 +171,11 @@ export default function AboutPage() {
 
         {/* Core Values Section */}
         <div className="mb-20">
-          <div className="p-8 sm:p-12 rounded-3xl bg-surface-tint border border-border shadow-soft">
+          <div className="p-6 sm:p-8 md:p-12 rounded-2xl sm:rounded-3xl bg-surface-tint border border-border shadow-soft">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-text-heading mb-8 text-center">
               Our Core Operating Principles
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
               {CORE_VALUES.map((val, idx) => (
                 <div key={idx} className="space-y-2">
                   <div className="flex items-center gap-2">
@@ -192,7 +192,7 @@ export default function AboutPage() {
         </div>
 
         {/* Regulatory Disclosure & Warning Callout */}
-        <div className="p-6 sm:p-8 rounded-2xl bg-amber-50 border border-amber-200 mb-16 space-y-3 shadow-sm">
+        <div className="p-5 sm:p-8 rounded-2xl bg-amber-50 border border-amber-200 mb-16 space-y-3 shadow-sm">
           <div className="flex items-center gap-2 text-orange font-bold text-sm">
             <AlertTriangle className="w-5 h-5 shrink-0" />
             <span>Regulatory Disclosures & Neutrality Notice</span>
@@ -203,11 +203,11 @@ export default function AboutPage() {
         </div>
 
         {/* CTA */}
-        <div className="text-center py-4 flex flex-col sm:flex-row gap-4 justify-center">
-          <Button href="/brokers" variant="primary" size="lg" withArrow>
+        <div className="text-center py-4 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
+          <Button href="/brokers" variant="primary" size="lg" withArrow className="w-full sm:w-auto justify-center">
             Explore Regulated Directory
           </Button>
-          <Button href="/complaint-box" variant="secondary" size="lg">
+          <Button href="/complaint-box" variant="secondary" size="lg" className="w-full sm:w-auto justify-center">
             Visit Complaint Box
           </Button>
         </div>

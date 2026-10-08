@@ -287,10 +287,10 @@ export default function BrokerDetailPage() {
             </div>
 
             {/* CTAs */}
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-3 w-full lg:w-auto">
               <button
                 onClick={() => toggleBroker(broker.id)}
-                className={`px-4 py-2.5 rounded-full border text-xs font-bold transition flex items-center gap-2 ${
+                className={`px-4 py-2.5 rounded-full border text-xs font-bold transition flex items-center justify-center gap-2 min-h-[42px] ${
                   isCompared
                     ? 'bg-blue text-white border-blue shadow-sm'
                     : 'bg-white border-border text-navy hover:bg-surface-tint'
@@ -300,33 +300,35 @@ export default function BrokerDetailPage() {
                 {isCompared ? 'In Compare Matrix' : 'Compare Broker'}
               </button>
 
-              <button
-                onClick={toggleWatchlist}
-                className="p-2.5 rounded-full bg-white border border-border text-navy hover:bg-surface-tint transition"
-                title="Save to watchlist"
-              >
-                <Bookmark className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={toggleWatchlist}
+                  className="flex-1 sm:flex-none p-2.5 rounded-full bg-white border border-border text-navy hover:bg-surface-tint transition flex items-center justify-center min-h-[42px] min-w-[42px]"
+                  title="Save to watchlist"
+                >
+                  <Bookmark className="w-4 h-4" />
+                </button>
+
+                {broker.website && (
+                  <a
+                    href={broker.website}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 sm:flex-none p-2.5 rounded-full bg-white border border-border text-navy hover:bg-surface-tint transition flex items-center justify-center min-h-[42px] min-w-[42px]"
+                    title="Visit official website"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                )}
+              </div>
 
               <button
                 onClick={() => setIsLeadModalOpen(true)}
-                className="px-6 py-2.5 rounded-full bg-orange hover:bg-orange-hover text-white text-xs font-black uppercase tracking-wider transition shadow-sm flex items-center gap-1.5"
+                className="px-6 py-2.5 rounded-full bg-orange hover:bg-orange-hover text-white text-xs font-black uppercase tracking-wider transition shadow-sm flex items-center justify-center gap-1.5 min-h-[44px] w-full sm:w-auto"
               >
                 Open Account / Inquiry
                 <ArrowRight className="w-4 h-4" />
               </button>
-
-              {broker.website && (
-                <a
-                  href={broker.website}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="p-2.5 rounded-full bg-white border border-border text-navy hover:bg-surface-tint transition"
-                  title="Visit official website"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                </a>
-              )}
             </div>
           </div>
 

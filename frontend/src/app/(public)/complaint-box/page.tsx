@@ -195,12 +195,12 @@ export default function ComplaintBoxPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             {/* Form Column */}
-            <div className="lg:col-span-8 bg-white border border-border rounded-2xl p-6 sm:p-10 shadow-soft">
+            <div className="lg:col-span-8 bg-white border border-border rounded-2xl p-4 sm:p-8 md:p-10 shadow-soft">
               <h2 className="text-xl font-bold text-text-heading mb-2 flex items-center gap-2">
                 <FileText className="w-5 h-5 text-blue" />
                 Submit Incident Report
               </h2>
-              <p className="text-xs sm:text-sm text-text-muted mb-8">
+              <p className="text-xs sm:text-sm text-text-muted mb-6 sm:mb-8">
                 Please provide exhaustive factual details. The more documentary evidence you attach, the stronger our mediation leverage.
               </p>
 

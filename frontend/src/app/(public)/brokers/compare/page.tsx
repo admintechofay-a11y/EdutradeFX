@@ -120,11 +120,15 @@ export default function BrokerComparePage() {
       {/* ─── Comparison Matrix (when at least 2 brokers selected) ─── */}
       {!loading && brokers.length >= 2 && (
         <div className="space-y-12">
-          <div className="overflow-x-auto rounded-3xl border border-border bg-white shadow-soft">
+          <div className="md:hidden flex items-center gap-1.5 text-xs text-text-muted mb-2 px-1">
+            <span className="w-2 h-2 rounded-full bg-blue animate-pulse" />
+            <span>Swipe horizontally to compare specifications</span>
+          </div>
+          <div className="overflow-x-auto rounded-2xl sm:rounded-3xl border border-border bg-white shadow-soft">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-border bg-surface-tint">
-                  <th className="p-6 w-60 text-xs font-bold uppercase tracking-wider text-text-muted sticky left-0 bg-white z-20 border-r border-border">
+                  <th className="p-4 sm:p-6 w-36 sm:w-60 min-w-[130px] sm:min-w-[240px] text-xs font-bold uppercase tracking-wider text-text-muted sticky left-0 bg-white z-20 border-r border-border">
                     Specifications
                   </th>
                   {brokers.map((b) => (

@@ -27,7 +27,7 @@ export default function PrivacyPolicyPage() {
         </div>
 
         {/* Content Box */}
-        <div className="space-y-10 text-text-body text-sm leading-relaxed bg-white border border-border rounded-3xl p-8 sm:p-12 shadow-soft">
+        <div className="space-y-8 sm:space-y-10 text-text-body text-sm leading-relaxed bg-white border border-border rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-12 shadow-soft">
           
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-text-heading flex items-center gap-2">

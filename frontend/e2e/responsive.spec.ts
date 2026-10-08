@@ -20,12 +20,23 @@ const VIEWPORTS = [
 
 const TEST_ROUTES = [
   '/',
-  '/login',
-  '/register',
+  '/about',
+  '/contact',
   '/brokers',
   '/brokers/compare',
   '/courses',
+  '/complaint-box',
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/dashboard',
+  '/dashboard/enrollments',
+  '/dashboard/broker',
   '/dashboard/broker/onboarding',
+  '/dashboard/tutor',
+  '/dashboard/signal-provider',
+  '/admin',
+  '/admin/brokers',
 ];
 
 for (const vp of VIEWPORTS) {

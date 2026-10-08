@@ -117,7 +117,7 @@ export default function SPSignalsTerminalPage() {
 
         <button
           onClick={() => setIsNewModalOpen(true)}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue hover:bg-blue-hover text-white font-bold text-xs rounded-full shadow-sm transition self-start sm:self-auto"
+          className="w-full sm:w-auto justify-center inline-flex items-center gap-2 px-5 py-2.5 bg-blue hover:bg-blue-hover text-white font-bold text-xs rounded-full shadow-sm transition min-h-[42px]"
         >
           <Plus className="w-4 h-4" />
           <span>Broadcast New Signal</span>
@@ -127,8 +127,8 @@ export default function SPSignalsTerminalPage() {
       {loading ? (
         <Skeleton className="h-96 rounded-3xl" />
       ) : signals.length > 0 ? (
-        <div className="overflow-x-auto rounded-3xl border border-border bg-white shadow-soft">
-          <table className="w-full text-left border-collapse text-xs sm:text-sm">
+        <div className="overflow-x-auto -mx-2 sm:mx-0 rounded-2xl sm:rounded-3xl border border-border bg-white shadow-soft">
+          <table className="w-full min-w-[650px] text-left border-collapse text-xs sm:text-sm">
             <thead>
               <tr className="border-b border-border bg-surface-tint/60 text-text-muted text-xs uppercase font-bold">
                 <th className="p-4">Instrument / Type</th>

@@ -62,7 +62,7 @@ export default function SavedBrokersPage() {
         </div>
         <Link
           href="/brokers"
-          className="flex items-center gap-2 px-5 py-2.5 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition shadow-sm"
+          className="w-full sm:w-auto justify-center flex items-center gap-2 px-5 py-2.5 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition shadow-sm min-h-[42px]"
         >
           <Building2 className="w-4 h-4" />
           <span>Explore All Brokers</span>

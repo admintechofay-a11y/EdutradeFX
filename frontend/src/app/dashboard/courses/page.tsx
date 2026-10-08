@@ -83,7 +83,7 @@ export default function TutorCoursesPage() {
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue hover:bg-blue-hover text-white font-bold text-xs rounded-full shadow-sm transition self-start sm:self-auto"
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue hover:bg-blue-hover text-white font-bold text-xs rounded-full shadow-sm transition w-full sm:w-auto min-h-[42px]"
         >
           <Plus className="w-4 h-4" />
           <span>New Masterclass</span>

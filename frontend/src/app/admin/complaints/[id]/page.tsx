@@ -109,7 +109,7 @@ export default function AdminComplaintDetailPage() {
       </div>
 
       {/* Main Dispute Card */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-white border border-border space-y-6 shadow-soft">
+      <div className="p-5 sm:p-8 rounded-3xl bg-white border border-border space-y-6 shadow-soft">
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
@@ -134,12 +134,12 @@ export default function AdminComplaintDetailPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0">
             {complaint.status !== 'RESOLVED' && (
               <button
                 onClick={() => handleUpdateStatus('RESOLVED')}
                 disabled={actionLoading}
-                className="px-4 py-2 bg-green hover:bg-green-hover text-white rounded-full text-xs font-bold transition shadow-sm"
+                className="px-4 py-2 bg-green hover:bg-green-hover text-white rounded-full text-xs font-bold transition shadow-sm w-full sm:w-auto min-h-[40px] flex items-center justify-center"
               >
                 Mark Resolved
               </button>
@@ -148,7 +148,7 @@ export default function AdminComplaintDetailPage() {
               <button
                 onClick={() => handleUpdateStatus('IN_REVIEW')}
                 disabled={actionLoading}
-                className="px-4 py-2 bg-orange/10 hover:bg-orange/20 text-orange border border-orange/20 rounded-full text-xs font-bold transition"
+                className="px-4 py-2 bg-orange/10 hover:bg-orange/20 text-orange border border-orange/20 rounded-full text-xs font-bold transition w-full sm:w-auto min-h-[40px] flex items-center justify-center"
               >
                 Set Under Review
               </button>

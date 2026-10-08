@@ -183,13 +183,13 @@ export default function AdminBrokerAuditDetailPage() {
   const documents = broker.documents || [];
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6">
+    <div className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto space-y-6">
       {/* ── BREADCRUMB & TOP ACTIONS ──────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Link
             href="/admin/brokers"
-            className="p-2 rounded-full border border-border text-navy hover:bg-surface-tint transition"
+            className="p-2 rounded-full border border-border text-navy hover:bg-surface-tint transition shrink-0"
           >
             <ChevronLeft className="w-4 h-4" />
           </Link>
@@ -203,7 +203,7 @@ export default function AdminBrokerAuditDetailPage() {
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={() => setShowStatusModal('APPROVED')}
-            className="px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+            className="px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition w-full sm:w-auto min-h-[40px]"
           >
             <CheckCircle2 className="w-4 h-4" />
             Approve & Verify Broker
@@ -211,7 +211,7 @@ export default function AdminBrokerAuditDetailPage() {
 
           <button
             onClick={() => setShowStatusModal('PENDING')}
-            className="px-4 py-2.5 rounded-full bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+            className="px-4 py-2.5 rounded-full bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition w-full sm:w-auto min-h-[40px]"
           >
             <Clock className="w-4 h-4" />
             Request Changes
@@ -219,7 +219,7 @@ export default function AdminBrokerAuditDetailPage() {
 
           <button
             onClick={() => setShowStatusModal('REJECTED')}
-            className="px-4 py-2.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+            className="px-4 py-2.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition w-full sm:w-auto min-h-[40px]"
           >
             <X className="w-4 h-4" />
             Reject Application
@@ -229,7 +229,7 @@ export default function AdminBrokerAuditDetailPage() {
             href={`/brokers/${broker.slug}`}
             target="_blank"
             rel="noreferrer"
-            className="p-2.5 rounded-full border border-border text-navy hover:bg-surface-tint transition"
+            className="p-2.5 rounded-full border border-border text-navy hover:bg-surface-tint transition w-full sm:w-auto flex items-center justify-center min-h-[40px]"
             title="Preview public profile"
           >
             <ExternalLink className="w-4 h-4" />
@@ -443,7 +443,7 @@ export default function AdminBrokerAuditDetailPage() {
 
         {fundingYears.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
+            <table className="w-full min-w-[500px] text-xs text-left">
               <thead className="bg-surface-tint text-navy font-black uppercase text-[10px]">
                 <tr>
                   <th className="p-3">Year</th>

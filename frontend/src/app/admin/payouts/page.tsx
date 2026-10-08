@@ -113,7 +113,7 @@ export default function AdminPayoutsPage() {
         <button
           onClick={fetchPayouts}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-surface-tint text-navy rounded-full text-xs font-semibold border border-border shadow-sm transition"
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-white hover:bg-surface-tint text-navy rounded-full text-xs font-semibold border border-border shadow-sm transition w-full sm:w-auto min-h-[40px]"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
           <span>Refresh Requests</span>
@@ -121,7 +121,7 @@ export default function AdminPayoutsPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 border-b border-border pb-3">
+      <div className="flex items-center gap-2 border-b border-border pb-3 overflow-x-auto no-scrollbar">
         {['', 'PENDING', 'APPROVED', 'PAID', 'REJECTED'].map((st) => (
           <button
             key={st}
@@ -129,7 +129,7 @@ export default function AdminPayoutsPage() {
               setStatusFilter(st);
               setPage(1);
             }}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition shrink-0 ${
               statusFilter === st
                 ? 'bg-blue text-white shadow-sm'
                 : 'text-text-muted hover:text-navy hover:bg-surface-tint'
@@ -158,7 +158,7 @@ export default function AdminPayoutsPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-text-body">
+            <table className="w-full min-w-[700px] text-left text-xs text-text-body">
               <thead className="bg-surface-tint border-b border-border text-[11px] uppercase tracking-wider text-text-muted font-semibold">
                 <tr>
                   <th className="py-3.5 px-4">Tutor Details</th>

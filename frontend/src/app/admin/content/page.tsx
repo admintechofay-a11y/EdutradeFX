@@ -101,10 +101,10 @@ export default function AdminContentManagementPage() {
       )}
 
       {/* Tabs */}
-      <div className="flex p-1.5 rounded-full bg-surface-tint border border-border text-xs sm:text-sm">
+      <div className="flex p-1.5 rounded-2xl sm:rounded-full bg-surface-tint border border-border text-xs sm:text-sm overflow-x-auto no-scrollbar gap-1 sm:gap-0">
         <button
           onClick={() => setActiveTab('home')}
-          className={`flex-1 py-2 rounded-full font-bold transition flex items-center justify-center gap-2 ${
+          className={`min-w-[130px] sm:min-w-0 sm:flex-1 py-2 px-3 rounded-full font-bold transition flex items-center justify-center gap-2 shrink-0 sm:shrink ${
             activeTab === 'home' ? 'bg-blue text-white shadow-sm' : 'text-text-muted hover:text-navy'
           }`}
         >
@@ -113,7 +113,7 @@ export default function AdminContentManagementPage() {
         </button>
         <button
           onClick={() => setActiveTab('about')}
-          className={`flex-1 py-2 rounded-full font-bold transition flex items-center justify-center gap-2 ${
+          className={`min-w-[120px] sm:min-w-0 sm:flex-1 py-2 px-3 rounded-full font-bold transition flex items-center justify-center gap-2 shrink-0 sm:shrink ${
             activeTab === 'about' ? 'bg-blue text-white shadow-sm' : 'text-text-muted hover:text-navy'
           }`}
         >
@@ -122,7 +122,7 @@ export default function AdminContentManagementPage() {
         </button>
         <button
           onClick={() => setActiveTab('announcement')}
-          className={`flex-1 py-2 rounded-full font-bold transition flex items-center justify-center gap-2 ${
+          className={`min-w-[135px] sm:min-w-0 sm:flex-1 py-2 px-3 rounded-full font-bold transition flex items-center justify-center gap-2 shrink-0 sm:shrink ${
             activeTab === 'announcement' ? 'bg-blue text-white shadow-sm' : 'text-text-muted hover:text-navy'
           }`}
         >
@@ -131,7 +131,7 @@ export default function AdminContentManagementPage() {
         </button>
         <button
           onClick={() => setActiveTab('contact')}
-          className={`flex-1 py-2 rounded-full font-bold transition flex items-center justify-center gap-2 ${
+          className={`min-w-[135px] sm:min-w-0 sm:flex-1 py-2 px-3 rounded-full font-bold transition flex items-center justify-center gap-2 shrink-0 sm:shrink ${
             activeTab === 'contact' ? 'bg-blue text-white shadow-sm' : 'text-text-muted hover:text-navy'
           }`}
         >
@@ -143,7 +143,7 @@ export default function AdminContentManagementPage() {
       {loading ? (
         <Skeleton className="h-96 rounded-3xl bg-border/40" />
       ) : (
-        <div className="p-6 sm:p-8 rounded-3xl bg-white border border-border shadow-soft space-y-6">
+        <div className="p-5 sm:p-8 rounded-3xl bg-white border border-border shadow-soft space-y-6">
           {/* TAB 1: HOMEPAGE */}
           {activeTab === 'home' && (
             <div className="space-y-4">
@@ -201,7 +201,7 @@ export default function AdminContentManagementPage() {
                 <button
                   onClick={() => handleSave('home', homeContent)}
                   disabled={saving}
-                  className="px-6 py-2.5 rounded-full bg-blue hover:bg-blue-hover disabled:opacity-50 text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition shadow-sm"
+                  className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-blue hover:bg-blue-hover disabled:opacity-50 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition shadow-sm min-h-[44px]"
                 >
                   <Save className="w-4 h-4" />
                   <span>{saving ? 'Saving...' : 'Save Homepage Content'}</span>
@@ -254,7 +254,7 @@ export default function AdminContentManagementPage() {
                 <button
                   onClick={() => handleSave('about', aboutContent)}
                   disabled={saving}
-                  className="px-6 py-2.5 rounded-full bg-blue hover:bg-blue-hover disabled:opacity-50 text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition shadow-sm"
+                  className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-blue hover:bg-blue-hover disabled:opacity-50 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition shadow-sm min-h-[44px]"
                 >
                   <Save className="w-4 h-4" />
                   <span>{saving ? 'Saving...' : 'Save About Us Content'}</span>
@@ -309,7 +309,7 @@ export default function AdminContentManagementPage() {
                 <button
                   onClick={() => handleSave('announcement', announcement)}
                   disabled={saving}
-                  className="px-6 py-2.5 rounded-full bg-blue hover:bg-blue-hover disabled:opacity-50 text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition shadow-sm"
+                  className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-blue hover:bg-blue-hover disabled:opacity-50 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition shadow-sm min-h-[44px]"
                 >
                   <Save className="w-4 h-4" />
                   <span>{saving ? 'Saving...' : 'Save Announcement'}</span>
@@ -388,7 +388,7 @@ export default function AdminContentManagementPage() {
                 <button
                   onClick={() => handleSave('contact', contactInfo)}
                   disabled={saving}
-                  className="px-6 py-2.5 rounded-full bg-blue hover:bg-blue-hover disabled:opacity-50 text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition shadow-sm"
+                  className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-blue hover:bg-blue-hover disabled:opacity-50 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition shadow-sm min-h-[44px]"
                 >
                   <Save className="w-4 h-4" />
                   <span>{saving ? 'Saving...' : 'Save Contact Details'}</span>

@@ -136,7 +136,7 @@ export default function AdminCommandCenterPage() {
       </div>
 
       {/* Pending Broker Verifications */}
-      <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-4 shadow-xl">
+      <div className="p-5 sm:p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-4 shadow-xl">
         <div className="flex items-center justify-between">
           <h3 className="text-base font-bold text-white flex items-center gap-2">
             <Building2 className="w-4 h-4 text-brand-blue" />
@@ -148,8 +148,8 @@ export default function AdminCommandCenterPage() {
         </div>
 
         {pendingBrokers.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+          <div className="overflow-x-auto -mx-5 px-5 sm:mx-0 sm:px-0">
+            <table className="w-full min-w-[650px] text-left border-collapse text-xs">
               <thead>
                 <tr className="border-b border-slate-800 text-slate-400 uppercase font-bold">
                   <th className="p-3">Company Name</th>
@@ -170,16 +170,16 @@ export default function AdminCommandCenterPage() {
                       {b.headquarters || 'N/A'} (Est. {b.yearFounded || 'N/A'})
                     </td>
                     <td className="p-3 text-slate-300">{b.user?.email || 'Admin Direct'}</td>
-                    <td className="p-3 text-right space-x-2">
+                    <td className="p-3 text-right space-x-2 whitespace-nowrap">
                       <button
                         onClick={() => handleApproveBroker(b.id)}
-                        className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold"
+                        className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold min-h-[36px]"
                       >
                         Approve
                       </button>
                       <button
                         onClick={() => handleRejectBroker(b.id)}
-                        className="px-3 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-lg font-bold"
+                        className="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-lg font-bold min-h-[36px]"
                       >
                         Reject
                       </button>
@@ -195,7 +195,7 @@ export default function AdminCommandCenterPage() {
       </div>
 
       {/* Pending Course Reviews */}
-      <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-4 shadow-xl">
+      <div className="p-5 sm:p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-4 shadow-xl">
         <div className="flex items-center justify-between">
           <h3 className="text-base font-bold text-white flex items-center gap-2">
             <BookOpen className="w-4 h-4 text-brand-amber" />
@@ -207,8 +207,8 @@ export default function AdminCommandCenterPage() {
         </div>
 
         {pendingCourses.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+          <div className="overflow-x-auto -mx-5 px-5 sm:mx-0 sm:px-0">
+            <table className="w-full min-w-[600px] text-left border-collapse text-xs">
               <thead>
                 <tr className="border-b border-slate-800 text-slate-400 uppercase font-bold">
                   <th className="p-3">Masterclass Title</th>
@@ -227,10 +227,10 @@ export default function AdminCommandCenterPage() {
                     <td className="p-3 font-bold text-brand-amber">
                       {c.price === 0 ? 'Free' : `₹${c.price}`}
                     </td>
-                    <td className="p-3 text-right space-x-2">
+                    <td className="p-3 text-right space-x-2 whitespace-nowrap">
                       <button
                         onClick={() => handleApproveCourse(c.id)}
-                        className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold"
+                        className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold min-h-[36px]"
                       >
                         Publish Course
                       </button>

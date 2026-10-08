@@ -85,7 +85,7 @@ export default function AdminAuditLogsPage() {
         <button
           onClick={fetchLogs}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-surface-tint text-navy rounded-full text-xs font-semibold border border-border shadow-sm transition"
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-white hover:bg-surface-tint text-navy rounded-full text-xs font-semibold border border-border shadow-sm transition w-full sm:w-auto min-h-[40px]"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
           <span>Refresh Feed</span>
@@ -105,7 +105,7 @@ export default function AdminAuditLogsPage() {
             setTargetTypeFilter(e.target.value);
             setPage(1);
           }}
-          className="bg-surface-tint border border-border rounded-xl px-3 py-2 text-xs text-text-heading focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
+          className="bg-surface-tint border border-border rounded-xl px-3 py-2 text-xs text-text-heading focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue min-h-[40px]"
         >
           <option value="">All Entities</option>
           <option value="USER">User Account</option>
@@ -126,10 +126,10 @@ export default function AdminAuditLogsPage() {
             setActionFilter(e.target.value);
             setPage(1);
           }}
-          className="bg-surface-tint border border-border rounded-xl px-3 py-2 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue w-64"
+          className="bg-surface-tint border border-border rounded-xl px-3 py-2 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue w-full sm:w-64 min-h-[40px]"
         />
 
-        <div className="ml-auto text-xs text-text-muted">
+        <div className="w-full sm:w-auto sm:ml-auto text-xs text-text-muted">
           Showing {logs.length} of {total} records
         </div>
       </div>
@@ -152,7 +152,7 @@ export default function AdminAuditLogsPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-text-body">
+            <table className="w-full min-w-[700px] text-left text-xs text-text-body">
               <thead className="bg-surface-tint border-b border-border text-[11px] uppercase tracking-wider text-text-muted font-semibold">
                 <tr>
                   <th className="py-3.5 px-4">Timestamp</th>

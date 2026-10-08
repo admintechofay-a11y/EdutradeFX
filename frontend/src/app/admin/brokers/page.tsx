@@ -124,7 +124,7 @@ export default function AdminBrokersManagementPage() {
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="px-4 py-2 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition flex items-center gap-2 shadow-sm"
+          className="px-4 py-2 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm w-full sm:w-auto min-h-[44px]"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Broker</span>
@@ -162,7 +162,7 @@ export default function AdminBrokersManagementPage() {
         <Skeleton className="h-96 rounded-3xl bg-border/40" />
       ) : (
         <div className="overflow-x-auto rounded-3xl border border-border bg-white shadow-soft">
-          <table className="w-full text-left border-collapse text-xs sm:text-sm">
+          <table className="w-full min-w-[760px] text-left border-collapse text-xs sm:text-sm">
             <thead>
               <tr className="border-b border-border bg-surface-tint text-text-muted text-xs uppercase font-bold">
                 <th className="p-4">Broker Entity</th>
@@ -246,10 +246,10 @@ export default function AdminBrokersManagementPage() {
                       <Star className="w-3.5 h-3.5 fill-current" />
                     </button>
                   </td>
-                  <td className="p-4 text-right space-x-1.5">
+                  <td className="p-4 text-right space-x-1.5 whitespace-nowrap">
                     <Link
                       href={`/admin/brokers/${b.id}`}
-                      className="px-3 py-1 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition shadow-sm inline-flex items-center gap-1"
+                      className="px-3 py-1.5 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-bold transition shadow-sm inline-flex items-center gap-1 min-h-[36px]"
                       title="Audit Broker Details"
                     >
                       <Eye className="w-3.5 h-3.5" />
@@ -258,7 +258,7 @@ export default function AdminBrokersManagementPage() {
                     {b.status !== 'APPROVED' && (
                       <button
                         onClick={() => updateStatus(b.id, 'APPROVED')}
-                        className="px-3 py-1 bg-green hover:bg-green-hover text-white rounded-full text-xs font-bold transition shadow-sm"
+                        className="px-3 py-1.5 bg-green hover:bg-green-hover text-white rounded-full text-xs font-bold transition shadow-sm min-h-[36px]"
                         title="Approve"
                       >
                         Approve
@@ -267,7 +267,7 @@ export default function AdminBrokersManagementPage() {
                     {b.status !== 'SUSPENDED' && (
                       <button
                         onClick={() => updateStatus(b.id, 'SUSPENDED')}
-                        className="px-3 py-1 bg-orange/10 text-orange hover:bg-orange/20 border border-orange/20 rounded-full text-xs font-bold transition"
+                        className="px-3 py-1.5 bg-orange/10 text-orange hover:bg-orange/20 border border-orange/20 rounded-full text-xs font-bold transition min-h-[36px]"
                         title="Suspend"
                       >
                         Suspend
@@ -275,7 +275,7 @@ export default function AdminBrokersManagementPage() {
                     )}
                     <button
                       onClick={() => deleteBroker(b.id, b.companyName)}
-                      className="p-1.5 bg-surface-tint border border-border text-text-muted hover:text-red-500 rounded-full text-xs transition"
+                      className="p-2 bg-surface-tint border border-border text-text-muted hover:text-red-500 rounded-full text-xs transition inline-flex items-center justify-center min-h-[36px] min-w-[36px]"
                       title="Delete Broker"
                     >
                       <Trash2 className="w-3.5 h-3.5" />

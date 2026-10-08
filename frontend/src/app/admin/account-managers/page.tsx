@@ -110,7 +110,7 @@ export default function AdminAMManagementPage() {
         <Skeleton className="h-96 rounded-3xl bg-border/40" />
       ) : (
         <div className="overflow-x-auto rounded-3xl border border-border bg-white shadow-soft">
-          <table className="w-full text-left border-collapse text-xs sm:text-sm">
+          <table className="w-full min-w-[650px] text-left border-collapse text-xs sm:text-sm">
             <thead>
               <tr className="border-b border-border bg-surface-tint text-text-muted text-xs uppercase font-bold">
                 <th className="p-4">Manager Profile</th>
@@ -171,11 +171,11 @@ export default function AdminAMManagementPage() {
                       </button>
                     </td>
                     <td className="p-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
+                      <div className="flex items-center justify-end gap-1.5 whitespace-nowrap">
                         {m.status !== 'APPROVED' && (
                           <button
                             onClick={() => updateStatus(m.id, 'APPROVED')}
-                            className="p-1.5 rounded-full bg-green/10 border border-green/20 text-green hover:bg-green/20 transition"
+                            className="p-2 sm:p-1.5 rounded-full bg-green/10 border border-green/20 text-green hover:bg-green/20 transition min-h-[36px] min-w-[36px] flex items-center justify-center"
                             title="Approve Manager"
                           >
                             <Check className="w-3.5 h-3.5" />
@@ -184,7 +184,7 @@ export default function AdminAMManagementPage() {
                         {m.status !== 'REJECTED' && (
                           <button
                             onClick={() => updateStatus(m.id, 'REJECTED')}
-                            className="p-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 transition"
+                            className="p-2 sm:p-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 transition min-h-[36px] min-w-[36px] flex items-center justify-center"
                             title="Reject / Suspend"
                           >
                             <X className="w-3.5 h-3.5" />
@@ -192,7 +192,7 @@ export default function AdminAMManagementPage() {
                         )}
                         <button
                           onClick={() => deleteAM(m.id, m.fullName)}
-                          className="p-1.5 rounded-full bg-surface-tint border border-border text-text-muted hover:text-red-500 transition"
+                          className="p-2 sm:p-1.5 rounded-full bg-surface-tint border border-border text-text-muted hover:text-red-500 transition min-h-[36px] min-w-[36px] flex items-center justify-center"
                           title="Delete Record"
                         >
                           <Trash2 className="w-3.5 h-3.5" />

@@ -9,6 +9,10 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens: {
+        xs: '420px',
+        '3xl': '1920px',
+      },
       colors: {
         // Core fintech brand tokens
         navy: {

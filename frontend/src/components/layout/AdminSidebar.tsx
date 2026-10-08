@@ -44,7 +44,7 @@ export const AdminSidebar: React.FC = () => {
   ];
 
   return (
-    <aside className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0 min-h-[calc(100vh-64px)] p-4">
+    <aside className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0 min-h-[calc(100vh-64px)] min-h-[calc(100dvh-64px)] p-4">
       <div className="space-y-6">
         {/* Brand Admin Tag */}
         <div className="p-3 rounded-2xl bg-slate-800/80 border border-slate-750 flex items-center gap-3">

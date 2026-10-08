@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import '../styles/globals.css';
 import { AppProviders } from '../components/providers/AppProviders';
@@ -18,6 +18,13 @@ const jetbrainsMono = JetBrains_Mono({
   variable: '--font-mono',
   display: 'swap',
 });
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#0A2A6B',
+};
 
 export const metadata: Metadata = {
   title: 'EdutradeFX — Global Forex Marketplace, Education & Trading Ecosystem',
@@ -40,7 +47,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${plusJakartaSans.variable} ${jetbrainsMono.variable}`}>
-      <body className="min-h-screen flex flex-col bg-white text-text-body font-sans antialiased selection:bg-blue-600 selection:text-white">
+      <body className="min-h-screen min-h-dvh flex flex-col bg-white text-text-body font-sans antialiased selection:bg-blue-600 selection:text-white">
         <AppProviders>
           <Navbar />
           <main className="flex-1 w-full">{children}</main>

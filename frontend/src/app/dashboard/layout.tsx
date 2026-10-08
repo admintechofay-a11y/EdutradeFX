@@ -11,7 +11,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { user } = useAuthStore();
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen min-h-dvh bg-slate-50 flex flex-col">
       {/* Top Mobile Bar */}
       <div className="md:hidden bg-white border-b border-border p-4 flex items-center justify-between sticky top-0 z-30 shadow-sm">
         <Link href="/" className="flex items-center gap-2">

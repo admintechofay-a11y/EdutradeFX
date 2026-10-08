@@ -96,7 +96,7 @@ export const DashboardSidebar: React.FC = () => {
   const navItems = getNavItems(role);
 
   return (
-    <aside className="w-64 bg-white border-r border-border flex flex-col justify-between shrink-0 min-h-[calc(100vh-64px)] p-4 shadow-sm">
+    <aside className="w-64 bg-white border-r border-border flex flex-col justify-between shrink-0 min-h-[calc(100vh-64px)] min-h-[calc(100dvh-64px)] p-4 shadow-sm">
       <div className="space-y-6">
         {/* User Card */}
         <div className="p-3.5 rounded-2xl bg-surface-tint border border-blue-100 flex items-center gap-3">

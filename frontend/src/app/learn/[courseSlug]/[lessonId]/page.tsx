@@ -229,7 +229,7 @@ export default function VideoLearningRoomPage() {
           </div>
 
           {/* Bottom Action Bar */}
-          <div className="max-w-4xl mx-auto w-full pt-8 mt-8 border-t border-slate-800/80 flex items-center justify-between">
+          <div className="max-w-4xl mx-auto w-full pt-6 mt-6 border-t border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <span className="text-xs text-slate-400">
               {currentLesson?.duration ? `${currentLesson.duration} minutes runtime` : 'Lesson lecture'}
             </span>
@@ -237,9 +237,9 @@ export default function VideoLearningRoomPage() {
             <button
               onClick={handleMarkComplete}
               disabled={marking}
-              className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/25 transition flex items-center gap-2"
+              className="w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/25 transition flex items-center justify-center gap-2 min-h-[44px]"
             >
-              <CheckCircle2 className="w-4 h-4" />
+              <CheckCircle2 className="w-4 h-4 shrink-0" />
               <span>{marking ? 'Updating...' : 'Mark Complete & Next'}</span>
             </button>
           </div>
@@ -247,88 +247,107 @@ export default function VideoLearningRoomPage() {
 
         {/* Right Collapsible Curriculum Drawer */}
         {drawerOpen && (
-          <aside className="w-80 sm:w-96 bg-brand-navy-card border-l border-slate-800 flex flex-col justify-between shrink-0 overflow-y-auto z-20">
-            <div>
-              <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                  Course Outline
-                </h3>
-                <button
-                  onClick={() => setDrawerOpen(false)}
-                  className="p-1 text-slate-400 hover:text-white"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
+          <div
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 lg:hidden"
+            onClick={() => setDrawerOpen(false)}
+            aria-hidden="true"
+          />
+        )}
 
-              <div className="divide-y divide-slate-850">
-                {course.sections?.map((section) => (
-                  <div key={section.id} className="p-4 space-y-2">
-                    <div className="text-xs font-bold text-slate-300 mb-2">{section.title}</div>
-                    <div className="space-y-1">
-                      {section.lessons?.map((lesson) => {
-                        const isCurrent = lesson.id === currentLesson?.id;
-                        const isDone = completedLessonIds.includes(lesson.id);
-
-                        return (
-                          <button
-                            key={lesson.id}
-                            onClick={() => router.push(`/learn/${course.slug}/${lesson.id}`)}
-                            className={`w-full p-2.5 rounded-xl text-left text-xs transition flex items-center justify-between gap-2 ${
-                              isCurrent
-                                ? 'bg-brand-blue text-white font-bold'
-                                : 'text-slate-300 hover:bg-brand-navy-light/60'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2.5 overflow-hidden">
-                              {isDone ? (
-                                <CheckCircle2
-                                  className={`w-4 h-4 shrink-0 ${
-                                    isCurrent ? 'text-white' : 'text-emerald-400'
-                                  }`}
-                                />
-                              ) : (
-                                <Circle
-                                  className={`w-4 h-4 shrink-0 ${
-                                    isCurrent ? 'text-white' : 'text-slate-600'
-                                  }`}
-                                />
-                              )}
-                              <span className="truncate">{lesson.title}</span>
-                            </div>
-                            {lesson.duration && (
-                              <span
-                                className={`text-[10px] shrink-0 ${
-                                  isCurrent ? 'text-blue-200' : 'text-slate-500'
-                                }`}
-                              >
-                                {lesson.duration}m
-                              </span>
-                            )}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
+        <aside
+          className={`
+            fixed lg:relative inset-y-0 right-0 z-50 lg:z-20 h-full
+            w-[85vw] max-w-sm sm:w-80 lg:w-80 xl:w-96
+            bg-brand-navy-card border-l border-slate-800
+            flex flex-col justify-between shrink-0 overflow-y-auto shadow-2xl lg:shadow-none
+            transition-transform duration-300 ease-in-out
+            ${drawerOpen ? 'translate-x-0' : 'translate-x-full lg:hidden'}
+          `}
+        >
+          <div>
+            <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Course Outline
+              </h3>
+              <button
+                onClick={() => setDrawerOpen(false)}
+                aria-label="Close curriculum outline"
+                className="p-1.5 text-slate-400 hover:text-white rounded-lg min-w-[36px] min-h-[36px] flex items-center justify-center"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
 
-            {/* Certificate Status Box */}
-            {progressPercent === 100 && (
-              <div className="p-4 m-4 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-center space-y-2">
-                <Award className="w-8 h-8 text-emerald-400 mx-auto" />
-                <div className="text-xs font-bold text-white">Course Completed!</div>
-                <Link
-                  href="/dashboard/certificates"
-                  className="block py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition"
-                >
-                  View Certificate
-                </Link>
-              </div>
-            )}
-          </aside>
-        )}
+            <div className="divide-y divide-slate-850">
+              {course.sections?.map((section) => (
+                <div key={section.id} className="p-4 space-y-2">
+                  <div className="text-xs font-bold text-slate-300 mb-2">{section.title}</div>
+                  <div className="space-y-1">
+                    {section.lessons?.map((lesson) => {
+                      const isCurrent = lesson.id === currentLesson?.id;
+                      const isDone = completedLessonIds.includes(lesson.id);
+
+                      return (
+                        <button
+                          key={lesson.id}
+                          onClick={() => {
+                            router.push(`/learn/${course.slug}/${lesson.id}`);
+                            if (window.innerWidth < 1024) setDrawerOpen(false);
+                          }}
+                          className={`w-full p-2.5 rounded-xl text-left text-xs transition flex items-center justify-between gap-2 min-h-[40px] ${
+                            isCurrent
+                              ? 'bg-brand-blue text-white font-bold'
+                              : 'text-slate-300 hover:bg-brand-navy-light/60'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5 overflow-hidden">
+                            {isDone ? (
+                              <CheckCircle2
+                                className={`w-4 h-4 shrink-0 ${
+                                  isCurrent ? 'text-white' : 'text-emerald-400'
+                                }`}
+                              />
+                            ) : (
+                              <Circle
+                                className={`w-4 h-4 shrink-0 ${
+                                  isCurrent ? 'text-white' : 'text-slate-600'
+                                }`}
+                              />
+                            )}
+                            <span className="truncate">{lesson.title}</span>
+                          </div>
+                          {lesson.duration && (
+                            <span
+                              className={`text-[10px] shrink-0 ${
+                                isCurrent ? 'text-blue-200' : 'text-slate-500'
+                              }`}
+                            >
+                              {lesson.duration}m
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Certificate Status Box */}
+          {progressPercent === 100 && (
+            <div className="p-4 m-4 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-center space-y-2">
+              <Award className="w-8 h-8 text-emerald-400 mx-auto" />
+              <div className="text-xs font-bold text-white">Course Completed!</div>
+              <Link
+                href="/dashboard/certificates"
+                className="block py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition"
+              >
+                View Certificate
+              </Link>
+            </div>
+          )}
+        </aside>
       </div>
     </div>
   );

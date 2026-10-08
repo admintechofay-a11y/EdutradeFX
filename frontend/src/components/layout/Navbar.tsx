@@ -21,6 +21,7 @@ import { useAuthStore } from '../../store/authStore';
 import { useCompareStore } from '../../store/compareStore';
 import { NAV_LINKS } from '../../lib/constants';
 import { api } from '../../lib/api';
+import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
@@ -59,6 +60,28 @@ export const Navbar: React.FC = () => {
       loadNotifications();
     }
   }, [isAuthenticated]);
+
+  useBodyScrollLock(mobileMenuOpen);
+
+  // Close menus on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setDropdownOpen(false);
+    setNotifDropdownOpen(false);
+  }, [pathname]);
+
+  // Close on Escape
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMobileMenuOpen(false);
+        setDropdownOpen(false);
+        setNotifDropdownOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -162,7 +185,7 @@ export const Navbar: React.FC = () => {
 
                 {notifDropdownOpen && (
                   <div
-                    className="absolute right-0 mt-2 w-80 rounded-2xl bg-white shadow-lift border border-border p-3 z-50 animate-in fade-in zoom-in-95 duration-100"
+                    className="absolute right-0 mt-2 w-[calc(100vw-32px)] sm:w-80 max-w-sm rounded-2xl bg-white shadow-lift border border-border p-3 z-50 animate-in fade-in zoom-in-95 duration-100"
                     onMouseLeave={() => setNotifDropdownOpen(false)}
                   >
                     <div className="flex items-center justify-between pb-2 mb-2 border-b border-border">
@@ -245,7 +268,7 @@ export const Navbar: React.FC = () => {
 
                 {dropdownOpen && (
                   <div
-                    className="absolute right-0 mt-2 w-56 rounded-2xl bg-white shadow-lift border border-border py-2 z-50 animate-in fade-in zoom-in-95 duration-100"
+                    className="absolute right-0 mt-2 w-56 max-w-[calc(100vw-32px)] rounded-2xl bg-white shadow-lift border border-border py-2 z-50 animate-in fade-in zoom-in-95 duration-100"
                     onMouseLeave={() => setDropdownOpen(false)}
                   >
                     <div className="px-4 py-2.5 border-b border-border">
@@ -340,67 +363,102 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-b border-border bg-white px-4 pt-3 pb-6 space-y-4 animate-in slide-in-from-top duration-200 shadow-lift">
-          <div className="flex flex-col space-y-1">
-            {NAV_LINKS.map((link) => {
-              const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`px-3.5 py-2.5 rounded-xl text-sm font-semibold transition ${
-                    isActive
-                      ? 'text-blue bg-surface-tint'
-                      : 'text-text-body hover:bg-slate-50'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-          </div>
+        <div className="fixed inset-0 z-50 lg:hidden flex justify-end">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-navy-deep/60 backdrop-blur-sm animate-in fade-in-0 duration-200"
+            onClick={() => setMobileMenuOpen(false)}
+          />
 
-          <div className="border-t border-border pt-3">
-            {isAuthenticated && user ? (
-              <div className="space-y-2">
-                <Link
-                  href={getDashboardHref()}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-sm text-blue font-bold bg-surface-tint"
-                >
-                  <LayoutDashboard size={18} />
-                  Dashboard ({user.role})
+          {/* Drawer content */}
+          <div className="relative z-10 w-[85vw] max-w-sm bg-white dark:bg-slate-900 h-full p-5 flex flex-col justify-between overflow-y-auto shadow-2xl animate-in slide-in-from-right duration-200 pb-safe">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-border/80">
+                <Link href="/" onClick={() => setMobileMenuOpen(false)} className="relative h-9 w-36">
+                  <Image
+                    src="/logos/logo-color.svg"
+                    alt="EduTradeFX Logo"
+                    fill
+                    sizes="144px"
+                    className="object-contain object-left"
+                  />
                 </Link>
                 <button
-                  onClick={() => {
-                    handleLogout();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50"
+                  type="button"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 -mr-2 rounded-xl text-text-muted hover:text-navy hover:bg-surface-tint"
+                  aria-label="Close Menu"
                 >
-                  <LogOut size={18} />
-                  Sign Out
+                  <X size={22} />
                 </button>
               </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-3 pt-1">
-                <Link
-                  href="/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-center px-4 py-3 rounded-full text-xs font-bold text-blue border-2 border-blue bg-white hover:bg-blue-50"
-                >
-                  Log In
-                </Link>
-                <Link
-                  href="/register"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-center px-4 py-3 rounded-full text-xs font-bold text-white bg-orange hover:bg-orange-hover shadow-soft"
-                >
-                  Sign Up
-                </Link>
+
+              <div className="flex flex-col space-y-1">
+                {NAV_LINKS.map((link) => {
+                  const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`min-h-[44px] px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center transition ${
+                        isActive
+                          ? 'text-blue bg-surface-tint font-bold'
+                          : 'text-text-body hover:bg-slate-50'
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                })}
               </div>
-            )}
+            </div>
+
+            <div className="border-t border-border pt-4 mt-6">
+              {isAuthenticated && user ? (
+                <div className="space-y-2">
+                  <div className="px-3 py-2 bg-surface-tint/60 rounded-xl mb-2">
+                    <p className="text-xs font-bold text-navy truncate">{user.name}</p>
+                    <p className="text-[11px] text-text-muted truncate">{user.email}</p>
+                  </div>
+                  <Link
+                    href={getDashboardHref()}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="min-h-[44px] flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-sm text-blue font-bold bg-surface-tint"
+                  >
+                    <LayoutDashboard size={18} />
+                    Dashboard ({user.role})
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="min-h-[44px] w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50"
+                  >
+                    <LogOut size={18} />
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-3 pt-1">
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="min-h-[44px] flex items-center justify-center text-center px-4 py-2.5 rounded-full text-xs font-bold text-blue border-2 border-blue bg-white hover:bg-blue-50"
+                  >
+                    Log In
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="min-h-[44px] flex items-center justify-center text-center px-4 py-2.5 rounded-full text-xs font-bold text-white bg-orange hover:bg-orange-hover shadow-soft"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

@@ -91,15 +91,16 @@ export const AIAssistant: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50">
       {/* Floating Toggle Button */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="relative group flex items-center justify-center w-14 h-14 rounded-full bg-blue hover:bg-blue-hover text-white shadow-lift hover:scale-105 transition-all duration-300"
+          className="relative group flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-blue hover:bg-blue-hover text-white shadow-lift hover:scale-105 transition-all duration-300"
           aria-label="Open AI Assistant"
         >
-          <MessageSquare size={24} />
+          <MessageSquare size={22} className="sm:hidden" />
+          <MessageSquare size={24} className="hidden sm:block" />
           <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange opacity-75"></span>
             <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-orange"></span>
@@ -109,7 +110,7 @@ export const AIAssistant: React.FC = () => {
 
       {/* Slide-Up Chat Panel (Light Theme with Blue Header & Orange Send Button) */}
       {isOpen && (
-        <div className="flex flex-col w-[360px] sm:w-[400px] h-[520px] rounded-2xl bg-white shadow-lift border border-border overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
+        <div className="flex flex-col w-[calc(100vw-32px)] sm:w-[400px] max-w-[400px] h-[min(520px,calc(100dvh-90px))] rounded-2xl bg-white shadow-lift border border-border overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
           {/* Blue Header */}
           <div className="flex items-center justify-between px-4 py-3.5 bg-blue text-white shadow-sm">
             <div className="flex items-center gap-2.5">

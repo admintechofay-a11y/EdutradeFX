@@ -112,44 +112,44 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 bg-surface-tint">
-      <div className="w-full max-w-xl space-y-6 bg-white border border-border p-8 sm:p-10 rounded-3xl shadow-lift">
+    <div className="min-h-screen min-h-dvh flex items-center justify-center py-8 sm:py-16 px-4 sm:px-6 lg:px-8 bg-surface-tint">
+      <div className="w-full max-w-xl space-y-5 sm:space-y-6 bg-white border border-border p-5 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl shadow-lift">
         
         {/* Brand Logo & Heading */}
         <div className="text-center">
           <Link href="/" className="inline-flex items-center gap-2 mb-4">
-            <img src="/logos/logo-color.svg" alt="EduTradeFX" className="h-9 w-auto" />
+            <img src="/logos/logo-color.svg" alt="EduTradeFX" className="h-8 sm:h-9 w-auto" />
           </Link>
-          <h2 className="text-2xl sm:text-3xl font-black text-text-heading">Create Your Account</h2>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-text-heading">Create Your Account</h2>
           <p className="text-xs sm:text-sm text-text-muted mt-1">
             Access verified broker audits, institutional courses, and dispute protection
           </p>
         </div>
 
         {/* Account Mode Toggle (Trader vs Partner) */}
-        <div className="flex p-1.5 rounded-full bg-surface-tint border border-border">
+        <div className="flex flex-col xs:flex-row p-1 sm:p-1.5 rounded-2xl xs:rounded-full bg-surface-tint border border-border gap-1 xs:gap-0">
           <button
             type="button"
             onClick={() => setMode('TRADER')}
-            className={`flex-1 py-2.5 rounded-full text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 ${
+            className={`flex-1 py-2 sm:py-2.5 px-3 rounded-xl xs:rounded-full text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 min-h-[40px] ${
               mode === 'TRADER'
                 ? 'bg-blue text-white shadow-soft'
                 : 'text-text-muted hover:text-text-heading'
             }`}
           >
-            <User className="w-4 h-4" />
+            <User className="w-4 h-4 shrink-0" />
             <span>Trader Registration</span>
           </button>
           <button
             type="button"
             onClick={() => setMode('PARTNER')}
-            className={`flex-1 py-2.5 rounded-full text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 ${
+            className={`flex-1 py-2 sm:py-2.5 px-3 rounded-xl xs:rounded-full text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 min-h-[40px] ${
               mode === 'PARTNER'
                 ? 'bg-blue text-white shadow-soft'
                 : 'text-text-muted hover:text-text-heading'
             }`}
           >
-            <Briefcase className="w-4 h-4" />
+            <Briefcase className="w-4 h-4 shrink-0" />
             <span>Institutional Partner</span>
           </button>
         </div>
@@ -276,12 +276,13 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-10 pr-10 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
+                className="w-full pl-10 pr-12 py-2.5 sm:py-3 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-heading"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                className="absolute right-1 top-1/2 -translate-y-1/2 p-2 text-text-muted hover:text-text-heading min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -289,14 +290,14 @@ export default function RegisterPage() {
           </div>
 
           {/* Mandatory Consent Checkbox */}
-          <div className="p-3.5 rounded-xl bg-surface-tint border border-border">
+          <div className="p-3 sm:p-3.5 rounded-xl bg-surface-tint border border-border">
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 required
                 checked={consent}
                 onChange={(e) => setConsent(e.target.checked)}
-                className="mt-0.5 w-4 h-4 rounded text-blue border-border focus:ring-blue"
+                className="mt-0.5 w-4 h-4 rounded text-blue border-border focus:ring-blue shrink-0"
               />
               <span className="text-[11px] sm:text-xs text-text-body leading-relaxed">
                 I agree to the{' '}
@@ -319,7 +320,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 bg-orange hover:bg-orange-hover disabled:opacity-50 text-white font-bold text-sm rounded-full transition shadow-soft flex items-center justify-center gap-2"
+            className="w-full py-3.5 sm:py-4 bg-orange hover:bg-orange-hover disabled:opacity-50 text-white font-bold text-sm rounded-full transition shadow-soft flex items-center justify-center gap-2 min-h-[48px]"
           >
             <span>{loading ? 'Creating Account...' : (mode === 'PARTNER' ? 'Submit Partner Application' : 'Create Free Trader Account')}</span>
             <ArrowRight className="w-4 h-4" />
@@ -329,7 +330,7 @@ export default function RegisterPage() {
         {/* Footer */}
         <div className="text-center pt-2 border-t border-border text-xs text-text-muted">
           Already have an account?{' '}
-          <Link href="/login" className="font-bold text-blue hover:text-blue-hover transition">
+          <Link href="/login" className="font-bold text-blue hover:text-blue-hover transition inline-block py-1">
             Sign In Here
           </Link>
         </div>

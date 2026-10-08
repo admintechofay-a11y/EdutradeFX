@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { DashboardSidebar } from '../../components/layout/DashboardSidebar';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LayoutDashboard } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useBodyScrollLock } from '../../lib/hooks/useBodyScrollLock';
 
@@ -23,10 +23,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen min-h-dvh bg-slate-50 flex flex-col">
       {/* Top Mobile/Tablet Bar (< lg) */}
-      <div className="lg:hidden bg-white border-b border-border px-4 py-3 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-sm">
-        <Link href="/" className="flex items-center gap-2">
-          <img src="/logos/logo-color.svg" alt="EdutradeFX" className="h-7 w-auto" />
-        </Link>
+      <div className="lg:hidden bg-white border-b border-border px-4 py-3 sm:px-6 flex items-center justify-between sticky top-20 z-30 shadow-sm">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-blue">
+            <LayoutDashboard className="w-4 h-4" />
+          </div>
+          <span className="text-xs font-bold text-text-heading uppercase tracking-wider">
+            Dashboard Menu
+          </span>
+        </div>
 
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -37,7 +42,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </button>
       </div>
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex flex-col lg:flex-row lg:overflow-hidden">
         {/* Desktop Sidebar (lg+) */}
         <div className="hidden lg:block shrink-0">
           <DashboardSidebar />
@@ -72,7 +77,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         )}
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50 text-text-body">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-slate-50 text-text-body lg:overflow-y-auto">
           {children}
         </main>
       </div>

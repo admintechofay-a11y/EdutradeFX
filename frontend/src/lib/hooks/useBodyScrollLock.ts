@@ -1,53 +1,37 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
+
+// Global counter for nested or concurrent modals/drawers
+let activeLocksCount = 0;
 
 /**
  * Hook to lock body scroll on mobile and desktop modals, sheets, and drawers.
- * Handles iOS rubberband prevention and restores scroll position cleanly on unmount.
+ * Uses reference counting so nested/transitioning modals don't prematurely unlock
+ * or leave the body scroll permanently disabled.
  */
 export function useBodyScrollLock(isLocked: boolean): void {
-  const originalStyles = useRef<{
-    overflow: string;
-    position: string;
-    top: string;
-    width: string;
-  } | null>(null);
-  const scrollY = useRef<number>(0);
-
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !isLocked) return;
 
-    if (isLocked) {
-      scrollY.current = window.scrollY;
-      originalStyles.current = {
-        overflow: document.body.style.overflow,
-        position: document.body.style.position,
-        top: document.body.style.top,
-        width: document.body.style.width,
-      };
-
+    activeLocksCount++;
+    if (activeLocksCount === 1) {
       document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY.current}px`;
-      document.body.style.width = '100%';
-    } else if (originalStyles.current) {
-      document.body.style.overflow = originalStyles.current.overflow;
-      document.body.style.position = originalStyles.current.position;
-      document.body.style.top = originalStyles.current.top;
-      document.body.style.width = originalStyles.current.width;
-      window.scrollTo(0, scrollY.current);
-      originalStyles.current = null;
+      document.documentElement.style.overflow = 'hidden';
+      // Clean up any stale legacy fixed position inline styles
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
     }
 
     return () => {
-      if (originalStyles.current) {
-        document.body.style.overflow = originalStyles.current.overflow;
-        document.body.style.position = originalStyles.current.position;
-        document.body.style.top = originalStyles.current.top;
-        document.body.style.width = originalStyles.current.width;
-        window.scrollTo(0, scrollY.current);
-        originalStyles.current = null;
+      activeLocksCount = Math.max(0, activeLocksCount - 1);
+      if (activeLocksCount === 0) {
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
       }
     };
   }, [isLocked]);

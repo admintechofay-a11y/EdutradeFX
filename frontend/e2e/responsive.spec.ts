@@ -103,3 +103,41 @@ test('Mobile Navigation Drawer Interaction @ 375x667', async ({ page }) => {
   await page.waitForTimeout(300);
   await expect(drawer).not.toBeVisible();
 });
+
+test('Dashboard Mobile Scrolling & Drawer @ 375x667', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  const p = Buffer.from(JSON.stringify({ userId: '1', role: 'BROKER', exp: Math.floor(Date.now() / 1000) + 86400 })).toString('base64');
+  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.' + p + '.sig';
+  await page.context().addCookies([
+    { name: 'edutrade_token', value: token, url: 'http://localhost:3000' },
+    { name: 'edutrade_role', value: 'BROKER', url: 'http://localhost:3000' },
+  ]);
+  await page.route('**/api/**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true, data: { status: 'PENDING', slug: 'test-broker' } }) }));
+  await page.addInitScript(({ token }) => {
+    localStorage.setItem('edutrade_user', JSON.stringify({ id: '1', name: 'Broker User', email: 'broker@test.com', role: 'BROKER' }));
+    localStorage.setItem('edutrade_token', token);
+  }, { token });
+
+  await page.goto('/dashboard/broker', { waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(500);
+
+  // Test window scrolling
+  await page.evaluate(() => window.scrollTo(0, 350));
+  await page.waitForTimeout(300);
+  const scrolledY = await page.evaluate(() => window.scrollY);
+  expect(scrolledY).toBeGreaterThanOrEqual(300);
+
+  // Test dashboard drawer opening and closing
+  const dashMenuBtn = page.locator('button[aria-label="Open navigation menu"]');
+  await expect(dashMenuBtn).toBeVisible();
+  await dashMenuBtn.click();
+  await page.waitForTimeout(400);
+
+  const dashDrawer = page.locator('aside');
+  await expect(dashDrawer.last()).toBeVisible();
+
+  const closeSidebarBtn = page.locator('button[aria-label="Close sidebar"]');
+  await expect(closeSidebarBtn).toBeVisible();
+  await closeSidebarBtn.click();
+  await page.waitForTimeout(300);
+});

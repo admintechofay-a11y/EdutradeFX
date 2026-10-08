@@ -69,7 +69,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen min-h-dvh bg-surface-tint flex flex-col">
       {/* Top Mobile/Tablet Bar (< lg) */}
-      <div className="lg:hidden bg-slate-900 border-b border-slate-800 px-4 py-3 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+      <div className="lg:hidden bg-slate-900 border-b border-slate-800 px-4 py-3 sm:px-6 flex items-center justify-between sticky top-20 z-30 shadow-sm">
         <Link href="/admin" className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-brand-blue to-purple-500 flex items-center justify-center text-white">
             <ShieldCheck className="w-4 h-4" />
@@ -88,7 +88,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </button>
       </div>
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex flex-col lg:flex-row lg:overflow-hidden">
         {/* Desktop Sidebar (lg+) */}
         <div className="hidden lg:block shrink-0">
           <AdminSidebar />
@@ -127,7 +127,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
         )}
 
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-surface-tint text-text-body">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-surface-tint text-text-body lg:overflow-y-auto">
           {children}
         </main>
       </div>

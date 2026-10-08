@@ -33,14 +33,14 @@ export const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
         {/* Brand Column */}
         <div className="lg:col-span-2 space-y-4">
-          <Link href="/" className="inline-block">
-            <div className="relative h-10 w-48">
+          <Link href="/" className="inline-block group pb-1">
+            <div className="relative w-44 h-20">
               <Image
                 src="/logos/logo-white.svg"
                 alt="EduTradeFX Logo"
-                width={180}
-                height={40}
-                className="object-contain"
+                fill
+                sizes="176px"
+                className="object-contain object-left"
               />
             </div>
           </Link>

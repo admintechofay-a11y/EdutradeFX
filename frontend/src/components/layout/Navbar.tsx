@@ -80,14 +80,14 @@ export const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         {/* Logo Left */}
         <Link href="/" className="flex items-center gap-3 group shrink-0">
-          <div className="relative h-10 w-44 sm:w-48 flex items-center">
+          <div className="relative h-12 w-44 sm:w-48 flex items-center">
             {/* Real Brand Logo from EdutradeFx2 */}
             <Image
               src="/logos/logo-color.svg"
               alt="EduTradeFX Logo"
-              width={180}
-              height={40}
-              className="object-contain"
+              fill
+              sizes="192px"
+              className="object-contain object-left"
               priority
             />
           </div>

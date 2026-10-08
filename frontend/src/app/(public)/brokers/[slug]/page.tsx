@@ -42,6 +42,7 @@ import { api } from '../../../../lib/api';
 import { Broker, BrokerReview } from '../../../../types';
 import { StarRating } from '../../../../components/common/StarRating';
 import { Skeleton } from '../../../../components/common/Skeleton';
+import { Modal } from '@/components/ui/Modal';
 import { useCompareStore } from '../../../../store/compareStore';
 import { useAuthStore } from '../../../../store/authStore';
 
@@ -1054,140 +1055,124 @@ export default function BrokerDetailPage() {
       </div>
 
       {/* ── LEAD INQUIRY MODAL ─────────────────────────────── */}
-      {isLeadModalOpen && (
-        <div className="fixed inset-0 z-50 bg-navy/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 border border-border shadow-2xl space-y-4">
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="text-base font-black text-navy">Open Account / Direct Inquiry</h3>
-                <p className="text-xs text-text-muted">Direct contact with {broker.companyName}</p>
-              </div>
-              <button onClick={() => setIsLeadModalOpen(false)} className="text-text-muted hover:text-navy">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+      <Modal
+        isOpen={isLeadModalOpen}
+        onClose={() => setIsLeadModalOpen(false)}
+        maxWidth="md"
+        title="Open Account / Direct Inquiry"
+        subtitle={`Direct contact with ${broker.companyName}`}
+      >
+        <form onSubmit={handleLeadSubmit} className="space-y-3.5">
+          <input
+            type="text"
+            required
+            value={leadForm.name}
+            onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
+            placeholder="Full Name"
+            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
+          />
+          <input
+            type="email"
+            required
+            value={leadForm.email}
+            onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
+            placeholder="Email Address"
+            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
+          />
+          <input
+            type="tel"
+            value={leadForm.phone}
+            onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
+            placeholder="Phone / WhatsApp"
+            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
+          />
+          <input
+            type="text"
+            value={leadForm.country}
+            onChange={(e) => setLeadForm({ ...leadForm, country: e.target.value })}
+            placeholder="Residence Country"
+            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
+          />
 
-            <form onSubmit={handleLeadSubmit} className="space-y-3.5">
-              <input
-                type="text"
-                required
-                value={leadForm.name}
-                onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
-                placeholder="Full Name"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
-              />
-              <input
-                type="email"
-                required
-                value={leadForm.email}
-                onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
-                placeholder="Email Address"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
-              />
-              <input
-                type="tel"
-                value={leadForm.phone}
-                onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
-                placeholder="Phone / WhatsApp"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
-              />
-              <input
-                type="text"
-                value={leadForm.country}
-                onChange={(e) => setLeadForm({ ...leadForm, country: e.target.value })}
-                placeholder="Residence Country"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
-              />
-
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setIsLeadModalOpen(false)}
-                  className="px-4 py-2 rounded-full border border-border text-xs font-bold text-navy hover:bg-surface-tint"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={leadSubmitting}
-                  className="px-5 py-2 rounded-full bg-blue text-white text-xs font-bold hover:bg-blue-hover disabled:opacity-40"
-                >
-                  {leadSubmitting ? 'Sending...' : 'Send Inquiry'}
-                </button>
-              </div>
-            </form>
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onClick={() => setIsLeadModalOpen(false)}
+              className="px-4 py-2 rounded-full border border-border text-xs font-bold text-navy hover:bg-surface-tint"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={leadSubmitting}
+              className="px-5 py-2 rounded-full bg-blue text-white text-xs font-bold hover:bg-blue-hover disabled:opacity-40"
+            >
+              {leadSubmitting ? 'Sending...' : 'Send Inquiry'}
+            </button>
           </div>
-        </div>
-      )}
+        </form>
+      </Modal>
 
       {/* ── WRITE REVIEW MODAL ─────────────────────────────── */}
-      {isReviewModalOpen && (
-        <div className="fixed inset-0 z-50 bg-navy/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 border border-border shadow-2xl space-y-4">
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="text-base font-black text-navy">Review {broker.companyName}</h3>
-                <p className="text-xs text-text-muted">Share your verified trading experience</p>
-              </div>
-              <button onClick={() => setIsReviewModalOpen(false)} className="text-text-muted hover:text-navy">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleReviewSubmit} className="space-y-3.5">
-              <div>
-                <label className="text-[11px] font-bold text-navy block mb-1">Your Rating</label>
-                <select
-                  value={reviewForm.rating}
-                  onChange={(e) => setReviewForm({ ...reviewForm, rating: parseInt(e.target.value) || 5 })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue bg-white"
-                >
-                  <option value={5}>★★★★★ (5 Stars - Excellent)</option>
-                  <option value={4}>★★★★☆ (4 Stars - Very Good)</option>
-                  <option value={3}>★★★☆☆ (3 Stars - Average)</option>
-                  <option value={2}>★★☆☆☆ (2 Stars - Below Average)</option>
-                  <option value={1}>★☆☆☆☆ (1 Star - Poor)</option>
-                </select>
-              </div>
-
-              <input
-                type="text"
-                required
-                value={reviewForm.title}
-                onChange={(e) => setReviewForm({ ...reviewForm, title: e.target.value })}
-                placeholder="Review Headline"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
-              />
-
-              <textarea
-                required
-                rows={3}
-                value={reviewForm.comment}
-                onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
-                placeholder="Detailed review commentary..."
-                className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
-              />
-
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setIsReviewModalOpen(false)}
-                  className="px-4 py-2 rounded-full border border-border text-xs font-bold text-navy hover:bg-surface-tint"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={reviewSubmitting}
-                  className="px-5 py-2 rounded-full bg-blue text-white text-xs font-bold hover:bg-blue-hover disabled:opacity-40"
-                >
-                  {reviewSubmitting ? 'Submitting...' : 'Post Review'}
-                </button>
-              </div>
-            </form>
+      <Modal
+        isOpen={isReviewModalOpen}
+        onClose={() => setIsReviewModalOpen(false)}
+        maxWidth="md"
+        title={`Review ${broker.companyName}`}
+        subtitle="Share your verified trading experience"
+      >
+        <form onSubmit={handleReviewSubmit} className="space-y-3.5">
+          <div>
+            <label className="text-[11px] font-bold text-navy block mb-1">Your Rating</label>
+            <select
+              value={reviewForm.rating}
+              onChange={(e) => setReviewForm({ ...reviewForm, rating: parseInt(e.target.value) || 5 })}
+              className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue bg-white"
+            >
+              <option value={5}>★★★★★ (5 Stars - Excellent)</option>
+              <option value={4}>★★★★☆ (4 Stars - Very Good)</option>
+              <option value={3}>★★★☆☆ (3 Stars - Average)</option>
+              <option value={2}>★★☆☆☆ (2 Stars - Below Average)</option>
+              <option value={1}>★☆☆☆☆ (1 Star - Poor)</option>
+            </select>
           </div>
-        </div>
-      )}
+
+          <input
+            type="text"
+            required
+            value={reviewForm.title}
+            onChange={(e) => setReviewForm({ ...reviewForm, title: e.target.value })}
+            placeholder="Review Headline"
+            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
+          />
+
+          <textarea
+            required
+            rows={3}
+            value={reviewForm.comment}
+            onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
+            placeholder="Detailed review commentary..."
+            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
+          />
+
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onClick={() => setIsReviewModalOpen(false)}
+              className="px-4 py-2 rounded-full border border-border text-xs font-bold text-navy hover:bg-surface-tint"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={reviewSubmitting}
+              className="px-5 py-2 rounded-full bg-blue text-white text-xs font-bold hover:bg-blue-hover disabled:opacity-40"
+            >
+              {reviewSubmitting ? 'Submitting...' : 'Post Review'}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

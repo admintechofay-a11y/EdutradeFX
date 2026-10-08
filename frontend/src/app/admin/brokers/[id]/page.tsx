@@ -35,6 +35,7 @@ import {
 import toast from 'react-hot-toast';
 import { api } from '@/lib/api';
 import { Broker, ApprovalStatus, BrokerOnboardingStatus } from '@/types';
+import { Modal } from '@/components/ui/Modal';
 
 export default function AdminBrokerAuditDetailPage() {
   const params = useParams();
@@ -533,76 +534,73 @@ export default function AdminBrokerAuditDetailPage() {
       </div>
 
       {/* ── STATUS UPDATE MODAL ───────────────────────────── */}
-      {showStatusModal && (
-        <div className="fixed inset-0 z-50 bg-navy/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 border border-border shadow-2xl space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="text-base font-black text-navy">
-                {showStatusModal === 'APPROVED'
-                  ? 'Approve & Publish Broker'
+      <Modal
+        isOpen={Boolean(showStatusModal)}
+        onClose={() => setShowStatusModal(null)}
+        maxWidth="md"
+        title={
+          showStatusModal === 'APPROVED'
+            ? 'Approve & Publish Broker'
+            : showStatusModal === 'PENDING'
+            ? 'Request Compliance Modifications'
+            : 'Reject Broker Application'
+        }
+        footer={
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setShowStatusModal(null)}
+              className="px-4 py-2 rounded-full border border-border text-xs font-bold text-navy hover:bg-surface-tint"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              disabled={actionLoading}
+              onClick={() => handleUpdateStatus(showStatusModal!)}
+              className={`px-5 py-2 rounded-full text-white text-xs font-bold transition ${
+                showStatusModal === 'APPROVED'
+                  ? 'bg-emerald-600 hover:bg-emerald-700'
                   : showStatusModal === 'PENDING'
-                  ? 'Request Compliance Modifications'
-                  : 'Reject Broker Application'}
-              </h3>
-              <button onClick={() => setShowStatusModal(null)} className="text-text-muted hover:text-navy">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <p className="text-xs text-text-muted">
-              {showStatusModal === 'APPROVED'
-                ? 'This action marks the broker as VERIFIED, publishes their profile to the live directory, and dispatches an approval notification to the firm.'
-                : showStatusModal === 'PENDING'
-                ? 'Specify the modifications required. The broker will be notified in their dashboard and by email.'
-                : 'State the formal grounds for rejection. An administrative notice will be dispatched.'}
-            </p>
-
-            {showStatusModal === 'PENDING' && (
-              <textarea
-                rows={4}
-                value={reviewNote}
-                onChange={(e) => setReviewNote(e.target.value)}
-                placeholder="Detail the required changes (e.g. upload certified ASIC license certificate, update client loss disclaimer)..."
-                className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
-              />
-            )}
-
-            {showStatusModal === 'REJECTED' && (
-              <textarea
-                rows={4}
-                value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
-                placeholder="Reason for rejection (e.g. Unverifiable offshore entity, non-compliant regulatory filing)..."
-                className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
-              />
-            )}
-
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setShowStatusModal(null)}
-                className="px-4 py-2 rounded-full border border-border text-xs font-bold text-navy hover:bg-surface-tint"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                disabled={actionLoading}
-                onClick={() => handleUpdateStatus(showStatusModal)}
-                className={`px-5 py-2 rounded-full text-white text-xs font-bold transition ${
-                  showStatusModal === 'APPROVED'
-                    ? 'bg-emerald-600 hover:bg-emerald-700'
-                    : showStatusModal === 'PENDING'
-                    ? 'bg-amber-600 hover:bg-amber-700'
-                    : 'bg-rose-600 hover:bg-rose-700'
-                }`}
-              >
-                {actionLoading ? 'Processing...' : 'Confirm Status Update'}
-              </button>
-            </div>
+                  ? 'bg-amber-600 hover:bg-amber-700'
+                  : 'bg-rose-600 hover:bg-rose-700'
+              }`}
+            >
+              {actionLoading ? 'Processing...' : 'Confirm Status Update'}
+            </button>
           </div>
+        }
+      >
+        <div className="space-y-4">
+          <p className="text-xs text-text-muted">
+            {showStatusModal === 'APPROVED'
+              ? 'This action marks the broker as VERIFIED, publishes their profile to the live directory, and dispatches an approval notification to the firm.'
+              : showStatusModal === 'PENDING'
+              ? 'Specify the modifications required. The broker will be notified in their dashboard and by email.'
+              : 'State the formal grounds for rejection. An administrative notice will be dispatched.'}
+          </p>
+
+          {showStatusModal === 'PENDING' && (
+            <textarea
+              rows={4}
+              value={reviewNote}
+              onChange={(e) => setReviewNote(e.target.value)}
+              placeholder="Detail the required changes (e.g. upload certified ASIC license certificate, update client loss disclaimer)..."
+              className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
+            />
+          )}
+
+          {showStatusModal === 'REJECTED' && (
+            <textarea
+              rows={4}
+              value={rejectionReason}
+              onChange={(e) => setRejectionReason(e.target.value)}
+              placeholder="Reason for rejection (e.g. Unverifiable offshore entity, non-compliant regulatory filing)..."
+              className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
+            />
+          )}
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { api } from '../../../lib/api';
 import { Complaint, ComplaintStatus } from '../../../types';
 import { Skeleton } from '../../../components/common/Skeleton';
 import { EmptyState } from '../../../components/common/EmptyState';
+import { Modal } from '@/components/ui/Modal';
 
 export default function AdminComplaintsDeskPage() {
   const [complaints, setComplaints] = useState<Complaint[]>([]);
@@ -126,23 +127,22 @@ export default function AdminComplaintsDeskPage() {
       )}
 
       {/* Review Modal */}
-      {selectedTicket && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-deep/60 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-white border border-border rounded-3xl p-6 sm:p-8 shadow-2xl relative space-y-4">
-            <button
-              onClick={() => setSelectedTicket(null)}
-              className="absolute top-5 right-5 text-text-muted hover:text-navy"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
+      <Modal
+        isOpen={Boolean(selectedTicket)}
+        onClose={() => setSelectedTicket(null)}
+        title={
+          selectedTicket ? (
             <div>
-              <span className="px-2.5 py-0.5 rounded-full bg-surface-tint border border-border text-text-muted text-xs font-bold">
+              <span className="px-2.5 py-0.5 rounded-full bg-surface-tint border border-border text-text-muted text-xs font-bold inline-block mb-1">
                 Target: {selectedTicket.targetType}
               </span>
-              <h3 className="text-xl font-bold text-navy mt-1">{selectedTicket.title}</h3>
+              <div className="text-lg sm:text-xl font-bold text-navy">{selectedTicket.title}</div>
             </div>
-
+          ) : undefined
+        }
+      >
+        {selectedTicket && (
+          <div className="space-y-4">
             <div className="p-4 rounded-2xl bg-surface-tint border border-border text-xs sm:text-sm text-text-body leading-relaxed max-h-48 overflow-y-auto">
               {selectedTicket.description}
             </div>
@@ -187,8 +187,8 @@ export default function AdminComplaintsDeskPage() {
               </button>
             </form>
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
     </div>
   );
 }

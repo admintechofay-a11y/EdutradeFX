@@ -24,6 +24,7 @@ import { api } from '../../../../lib/api';
 import { Course, CourseSection, Lesson } from '../../../../types';
 import { StarRating } from '../../../../components/common/StarRating';
 import { Skeleton } from '../../../../components/common/Skeleton';
+import { Modal } from '@/components/ui/Modal';
 import { useAuthStore } from '../../../../store/authStore';
 
 export default function CourseDetailPage() {
@@ -396,35 +397,29 @@ export default function CourseDetailPage() {
       </div>
 
       {/* Preview Lesson Modal */}
-      {previewLesson && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-deep/60 backdrop-blur-md">
-          <div className="w-full max-w-2xl bg-white border border-border rounded-3xl p-6 shadow-lift">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-bold text-text-heading">{previewLesson.title} (Free Preview)</h3>
-              <button
-                onClick={() => setPreviewLesson(null)}
-                className="text-text-muted hover:text-text-heading text-sm"
-              >
-                Close
-              </button>
-            </div>
-            <div className="aspect-video bg-black rounded-2xl overflow-hidden flex items-center justify-center">
-              {previewLesson.contentUrl ? (
-                <iframe
-                  src={previewLesson.contentUrl}
-                  className="w-full h-full"
-                  allowFullScreen
-                />
-              ) : (
-                <div className="text-center p-6">
-                  <PlayCircle className="w-12 h-12 text-blue mx-auto mb-2" />
-                  <p className="text-text-muted text-xs">Preview video stream loading...</p>
-                </div>
-              )}
-            </div>
+      <Modal
+        isOpen={Boolean(previewLesson)}
+        onClose={() => setPreviewLesson(null)}
+        maxWidth="2xl"
+        title={previewLesson ? `${previewLesson.title} (Free Preview)` : undefined}
+      >
+        {previewLesson && (
+          <div className="aspect-video bg-black rounded-2xl overflow-hidden flex items-center justify-center">
+            {previewLesson.contentUrl ? (
+              <iframe
+                src={previewLesson.contentUrl}
+                className="w-full h-full"
+                allowFullScreen
+              />
+            ) : (
+              <div className="text-center p-6">
+                <PlayCircle className="w-12 h-12 text-blue mx-auto mb-2" />
+                <p className="text-text-muted text-xs">Preview video stream loading...</p>
+              </div>
+            )}
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
     </div>
   );
 }

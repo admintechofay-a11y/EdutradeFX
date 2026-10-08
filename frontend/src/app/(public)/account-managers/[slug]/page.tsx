@@ -22,6 +22,7 @@ import { api } from '../../../../lib/api';
 import { AccountManager, AccountManagerReview } from '../../../../types';
 import { StarRating } from '../../../../components/common/StarRating';
 import { Skeleton } from '../../../../components/common/Skeleton';
+import { Modal } from '@/components/ui/Modal';
 
 export default function AMDetailPage() {
   const params = useParams();
@@ -268,30 +269,23 @@ export default function AMDetailPage() {
       </div>
 
       {/* Enquiry Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-deep/60 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-white border border-border rounded-3xl p-6 sm:p-8 shadow-lift relative">
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-5 right-5 text-text-muted hover:text-text-heading"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {success ? (
-              <div className="text-center py-8">
-                <CheckCircle className="w-14 h-14 text-green mx-auto mb-3" />
-                <h3 className="text-xl font-bold text-text-heading mb-2">Message Sent!</h3>
-                <p className="text-xs text-text-body">
-                  {am.fullName} has been notified and will reply to your registered email shortly.
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={handleEnquirySubmit} className="space-y-4">
-                <div>
-                  <h3 className="text-xl font-bold text-text-heading">Contact {am.fullName}</h3>
-                  <p className="text-xs text-text-muted mt-0.5">Inquire about portfolio conditions and minimum allocation.</p>
-                </div>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        maxWidth="lg"
+        title={!success && am ? `Contact ${am.fullName}` : undefined}
+        subtitle={!success ? 'Inquire about portfolio conditions and minimum allocation.' : undefined}
+      >
+        {success ? (
+          <div className="text-center py-8">
+            <CheckCircle className="w-14 h-14 text-green mx-auto mb-3" />
+            <h3 className="text-xl font-bold text-text-heading mb-2">Message Sent!</h3>
+            <p className="text-xs text-text-body">
+              {am?.fullName} has been notified and will reply to your registered email shortly.
+            </p>
+          </div>
+        ) : (
+          <form onSubmit={handleEnquirySubmit} className="space-y-4">
 
                 <div>
                   <label className="block text-xs font-semibold text-text-heading mb-1">Your Name</label>
@@ -364,9 +358,7 @@ export default function AMDetailPage() {
                 </button>
               </form>
             )}
-          </div>
-        </div>
-      )}
+      </Modal>
     </div>
   );
 }

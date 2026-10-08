@@ -7,6 +7,7 @@ import { api } from '../../../lib/api';
 import { Course } from '../../../types';
 import { Skeleton } from '../../../components/common/Skeleton';
 import { EmptyState } from '../../../components/common/EmptyState';
+import { Modal } from '@/components/ui/Modal';
 
 export default function TutorCoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -157,115 +158,105 @@ export default function TutorCoursesPage() {
       )}
 
       {/* Create Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-deep/60 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-white border border-border rounded-3xl p-6 sm:p-8 shadow-2xl relative">
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-5 right-5 text-text-muted hover:text-navy"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <form onSubmit={handleCreateCourse} className="space-y-4">
-              <div>
-                <h3 className="text-xl font-bold text-navy">Create New Course</h3>
-                <p className="text-xs text-text-muted mt-0.5">Initial setup for your masterclass curriculum.</p>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-text-heading mb-1">Course Title</label>
-                <input
-                  type="text"
-                  required
-                  value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  placeholder="e.g. Masterclass: Smart Money Liquidity Concepts"
-                  className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:ring-1 focus:ring-blue transition"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-text-heading mb-1">Category</label>
-                  <select
-                    value={form.category}
-                    onChange={(e) => setForm({ ...form, category: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading transition"
-                  >
-                    <option value="Price Action">Price Action</option>
-                    <option value="Smart Money Concepts (SMC)">Smart Money Concepts (SMC)</option>
-                    <option value="Technical Analysis">Technical Analysis</option>
-                    <option value="Fundamental & Macroeconomics">Fundamental & Macroeconomics</option>
-                    <option value="Risk Management">Risk Management</option>
-                    <option value="Algorithmic & EA Trading">Algorithmic & EA Trading</option>
-                    <option value="Forex Basics">Forex Basics</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-text-heading mb-1">Level</label>
-                  <select
-                    value={form.level}
-                    onChange={(e) => setForm({ ...form, level: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading transition"
-                  >
-                    <option value="BEGINNER">Beginner</option>
-                    <option value="INTERMEDIATE">Intermediate</option>
-                    <option value="ADVANCED">Advanced</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-text-heading mb-1">
-                  Price in INR (0 for Free)
-                </label>
-                <input
-                  type="number"
-                  min={0}
-                  required
-                  value={form.price}
-                  onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
-                  className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading transition"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-text-heading mb-1">Short Description</label>
-                <input
-                  type="text"
-                  required
-                  value={form.shortDescription}
-                  onChange={(e) => setForm({ ...form, shortDescription: e.target.value })}
-                  placeholder="One sentence summary of what students will achieve..."
-                  className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading placeholder-text-muted transition"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-text-heading mb-1">Full Curriculum Description</label>
-                <textarea
-                  rows={3}
-                  required
-                  value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  placeholder="Detailed outline of modules, requirements, and outcomes..."
-                  className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading placeholder-text-muted resize-none transition"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full py-3 bg-blue hover:bg-blue-hover disabled:opacity-50 text-white font-bold text-xs rounded-full transition shadow-sm"
-              >
-                {submitting ? 'Creating Draft...' : 'Create Masterclass'}
-              </button>
-            </form>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        maxWidth="lg"
+        title="Create New Course"
+        subtitle="Initial setup for your masterclass curriculum."
+      >
+        <form onSubmit={handleCreateCourse} className="space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-text-heading mb-1">Course Title</label>
+            <input
+              type="text"
+              required
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              placeholder="e.g. Masterclass: Smart Money Liquidity Concepts"
+              className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:ring-1 focus:ring-blue transition"
+            />
           </div>
-        </div>
-      )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-text-heading mb-1">Category</label>
+              <select
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+                className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading transition"
+              >
+                <option value="Price Action">Price Action</option>
+                <option value="Smart Money Concepts (SMC)">Smart Money Concepts (SMC)</option>
+                <option value="Technical Analysis">Technical Analysis</option>
+                <option value="Fundamental & Macroeconomics">Fundamental & Macroeconomics</option>
+                <option value="Risk Management">Risk Management</option>
+                <option value="Algorithmic & EA Trading">Algorithmic & EA Trading</option>
+                <option value="Forex Basics">Forex Basics</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-text-heading mb-1">Level</label>
+              <select
+                value={form.level}
+                onChange={(e) => setForm({ ...form, level: e.target.value })}
+                className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading transition"
+              >
+                <option value="BEGINNER">Beginner</option>
+                <option value="INTERMEDIATE">Intermediate</option>
+                <option value="ADVANCED">Advanced</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-text-heading mb-1">
+              Price in INR (0 for Free)
+            </label>
+            <input
+              type="number"
+              min={0}
+              required
+              value={form.price}
+              onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
+              className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading transition"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-text-heading mb-1">Short Description</label>
+            <input
+              type="text"
+              required
+              value={form.shortDescription}
+              onChange={(e) => setForm({ ...form, shortDescription: e.target.value })}
+              placeholder="One sentence summary of what students will achieve..."
+              className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading placeholder-text-muted transition"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-text-heading mb-1">Full Curriculum Description</label>
+            <textarea
+              rows={3}
+              required
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              placeholder="Detailed outline of modules, requirements, and outcomes..."
+              className="w-full px-3.5 py-2.5 bg-white border border-border rounded-xl text-xs text-text-heading placeholder-text-muted resize-none transition"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full py-3 bg-blue hover:bg-blue-hover disabled:opacity-50 text-white font-bold text-xs rounded-full transition shadow-sm"
+          >
+            {submitting ? 'Creating Draft...' : 'Create Masterclass'}
+          </button>
+        </form>
+      </Modal>
     </div>
   );
 }

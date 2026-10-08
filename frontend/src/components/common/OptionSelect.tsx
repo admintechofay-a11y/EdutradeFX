@@ -7,6 +7,9 @@ import { Check, ChevronDown, Search, X, Loader2 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
+import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
+
 function cn(...inputs: any[]) {
   return twMerge(clsx(inputs));
 }
@@ -58,6 +61,9 @@ export const OptionSelect: React.FC<OptionSelectProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
+
+  const isMobile = useMediaQuery('(max-width: 639px)');
+  useBodyScrollLock(isOpen && isMobile);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -173,6 +179,55 @@ export const OptionSelect: React.FC<OptionSelectProps> = ({
     return { code, label: found ? found.label : code };
   });
 
+  const renderOptionsList = () => (
+    <ul
+      id={listboxId}
+      role="listbox"
+      ref={listboxRef}
+      className="max-h-60 sm:max-h-60 overflow-y-auto p-1 text-sm focus:outline-none divide-y divide-slate-50 dark:divide-slate-800/40"
+    >
+      {filteredOptions.length === 0 ? (
+        <li className="p-4 text-center text-xs text-slate-400">
+          No matching options found.
+        </li>
+      ) : (
+        filteredOptions.map((opt, index) => {
+          const isSelected = selectedCodes.includes(opt.code);
+          const isHighlighted = highlightedIndex === index;
+
+          return (
+            <li
+              key={opt.code}
+              role="option"
+              aria-selected={isSelected}
+              onClick={() => handleSelectOption(opt)}
+              onMouseEnter={() => setHighlightedIndex(index)}
+              className={cn(
+                'px-3 py-2.5 sm:py-2 rounded-md cursor-pointer flex items-center justify-between text-xs transition-colors min-h-[44px] sm:min-h-0',
+                isSelected
+                  ? 'bg-amber-50/80 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200 font-medium'
+                  : 'text-slate-700 dark:text-slate-300',
+                isHighlighted && !isSelected && 'bg-slate-100 dark:bg-slate-800/60'
+              )}
+            >
+              <div className="flex flex-col">
+                <span className="truncate">{opt.label}</span>
+                {opt.code !== opt.label && (
+                  <span className="text-[10px] text-slate-400 font-mono">
+                    {opt.code}
+                  </span>
+                )}
+              </div>
+              {isSelected && (
+                <Check className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+              )}
+            </li>
+          );
+        })
+      )}
+    </ul>
+  );
+
   return (
     <div className={cn('w-full flex flex-col space-y-1.5', className)} ref={containerRef}>
       {label && (
@@ -271,12 +326,75 @@ export const OptionSelect: React.FC<OptionSelectProps> = ({
           </div>
         </button>
 
-        {/* Dropdown Popover */}
-        {isOpen && (
+        {/* Mobile Bottom Sheet (< sm) */}
+        {isOpen && isMobile && (
+          <div className="fixed inset-0 z-50 flex items-end justify-center bg-navy-deep/60 backdrop-blur-sm sm:hidden">
+            <div
+              className="w-full bg-white dark:bg-slate-900 rounded-t-3xl border-t border-slate-200 dark:border-slate-800 shadow-2xl max-h-[85dvh] flex flex-col overflow-hidden animate-in slide-in-from-bottom duration-200"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="pt-2.5 pb-1 flex justify-center">
+                <span className="w-12 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700" />
+              </div>
+              <div className="flex items-center justify-between px-4 py-2 border-b border-slate-100 dark:border-slate-800">
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+                  {label || `Select ${group.toLowerCase().replace('_', ' ')}`}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsOpen(false);
+                    setSearch('');
+                  }}
+                  className="p-1 rounded-md text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                  aria-label="Close"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="p-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                <div className="relative">
+                  <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400 pointer-events-none" />
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={search}
+                    onChange={(e) => {
+                      setSearch(e.target.value);
+                      setHighlightedIndex(0);
+                    }}
+                    placeholder={`Search ${options.length} ${group.toLowerCase().replace('_', ' ')}s...`}
+                    className="w-full pl-9 pr-3 py-2 text-sm rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-amber-500"
+                  />
+                </div>
+              </div>
+              <div className="flex-1 overflow-y-auto">
+                {renderOptionsList()}
+              </div>
+              {mode === 'multiple' && (
+                <div className="p-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80 pb-safe">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsOpen(false);
+                      setSearch('');
+                    }}
+                    className="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-xl text-sm"
+                  >
+                    Done ({selectedCodes.length} selected)
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Desktop Popover (>= sm) */}
+        {isOpen && !isMobile && (
           <div
             className={cn(
               'absolute z-50 mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-800',
-              'bg-white dark:bg-slate-900 shadow-xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-100'
+              'bg-white dark:bg-slate-900 shadow-xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-100 hidden sm:block'
             )}
           >
             {/* Search filter input */}
@@ -299,52 +417,7 @@ export const OptionSelect: React.FC<OptionSelectProps> = ({
             </div>
 
             {/* Options list */}
-            <ul
-              id={listboxId}
-              role="listbox"
-              ref={listboxRef}
-              className="max-h-60 overflow-y-auto p-1 text-sm focus:outline-none divide-y divide-slate-50 dark:divide-slate-800/40"
-            >
-              {filteredOptions.length === 0 ? (
-                <li className="p-4 text-center text-xs text-slate-400">
-                  No matching options found.
-                </li>
-              ) : (
-                filteredOptions.map((opt, index) => {
-                  const isSelected = selectedCodes.includes(opt.code);
-                  const isHighlighted = highlightedIndex === index;
-
-                  return (
-                    <li
-                      key={opt.code}
-                      role="option"
-                      aria-selected={isSelected}
-                      onClick={() => handleSelectOption(opt)}
-                      onMouseEnter={() => setHighlightedIndex(index)}
-                      className={cn(
-                        'px-3 py-2 rounded-md cursor-pointer flex items-center justify-between text-xs transition-colors',
-                        isSelected
-                          ? 'bg-amber-50/80 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200 font-medium'
-                          : 'text-slate-700 dark:text-slate-300',
-                        isHighlighted && !isSelected && 'bg-slate-100 dark:bg-slate-800/60'
-                      )}
-                    >
-                      <div className="flex flex-col">
-                        <span className="truncate">{opt.label}</span>
-                        {opt.code !== opt.label && (
-                          <span className="text-[10px] text-slate-400 font-mono">
-                            {opt.code}
-                          </span>
-                        )}
-                      </div>
-                      {isSelected && (
-                        <Check className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
-                      )}
-                    </li>
-                  );
-                })
-              )}
-            </ul>
+            {renderOptionsList()}
           </div>
         )}
       </div>

@@ -6,6 +6,7 @@ import { Building2, Search, Check, X, ShieldAlert, Star, ExternalLink, Plus, Tra
 import { api } from '../../../lib/api';
 import type { Broker, ApprovalStatus } from '../../../types';
 import { Skeleton } from '../../../components/common/Skeleton';
+import { Modal } from '@/components/ui/Modal';
 
 export default function AdminBrokersManagementPage() {
   const [brokers, setBrokers] = useState<Broker[]>([]);
@@ -288,117 +289,113 @@ export default function AdminBrokersManagementPage() {
       )}
 
       {/* Add New Broker Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 z-50 bg-navy-deep/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-border rounded-3xl p-6 sm:p-8 max-w-lg w-full space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-border">
-              <h3 className="text-base font-bold text-navy flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-blue" />
-                <span>Add Broker to Directory</span>
-              </h3>
-              <button onClick={() => setShowAddModal(false)} className="text-text-muted hover:text-navy">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateBroker} className="space-y-3 text-xs">
-              <div>
-                <label className="block text-text-heading font-semibold mb-1">Company / Broker Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={newBroker.companyName}
-                  onChange={(e) => setNewBroker({ ...newBroker, companyName: e.target.value })}
-                  placeholder="e.g. Apex Global Markets"
-                  className="w-full px-3 py-2 bg-white border border-border rounded-xl text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-text-heading font-semibold mb-1">Official Website</label>
-                  <input
-                    type="url"
-                    value={newBroker.website}
-                    onChange={(e) => setNewBroker({ ...newBroker, website: e.target.value })}
-                    placeholder="https://example.com"
-                    className="w-full px-3 py-2 bg-white border border-border rounded-xl text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
-                  />
-                </div>
-                <div>
-                  <label className="block text-text-heading font-semibold mb-1">Headquarters</label>
-                  <input
-                    type="text"
-                    value={newBroker.headquarters}
-                    onChange={(e) => setNewBroker({ ...newBroker, headquarters: e.target.value })}
-                    placeholder="London, UK"
-                    className="w-full px-3 py-2 bg-white border border-border rounded-xl text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-text-heading font-semibold mb-1">Min Deposit ($)</label>
-                  <input
-                    type="number"
-                    value={newBroker.minDeposit}
-                    onChange={(e) => setNewBroker({ ...newBroker, minDeposit: Number(e.target.value) })}
-                    className="w-full px-3 py-2 bg-white border border-border rounded-xl text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
-                  />
-                </div>
-                <div>
-                  <label className="block text-text-heading font-semibold mb-1">Max Leverage</label>
-                  <input
-                    type="text"
-                    value={newBroker.maxLeverage}
-                    onChange={(e) => setNewBroker({ ...newBroker, maxLeverage: e.target.value })}
-                    className="w-full px-3 py-2 bg-white border border-border rounded-xl text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
-                  />
-                </div>
-                <div>
-                  <label className="block text-text-heading font-semibold mb-1">Execution Type</label>
-                  <input
-                    type="text"
-                    value={newBroker.executionType}
-                    onChange={(e) => setNewBroker({ ...newBroker, executionType: e.target.value })}
-                    placeholder="ECN / STP"
-                    className="w-full px-3 py-2 bg-white border border-border rounded-xl text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-text-heading font-semibold mb-1">Regulations (Comma Separated)</label>
-                <input
-                  type="text"
-                  value={newBroker.regulation}
-                  onChange={(e) => setNewBroker({ ...newBroker, regulation: e.target.value })}
-                  placeholder="FCA, ASIC, CySEC"
-                  className="w-full px-3 py-2 bg-white border border-border rounded-xl text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
-                />
-              </div>
-
-              <div className="pt-2 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 rounded-full border border-border text-text-body hover:bg-surface-tint font-medium text-xs transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="px-5 py-2 bg-blue hover:bg-blue-hover text-white rounded-full font-bold text-xs shadow-sm transition disabled:opacity-50"
-                >
-                  {saving ? 'Creating...' : 'Create Broker'}
-                </button>
-              </div>
-            </form>
+      <Modal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        maxWidth="lg"
+        title={
+          <span className="flex items-center gap-2">
+            <Building2 className="w-5 h-5 text-blue" />
+            <span>Add Broker to Directory</span>
+          </span>
+        }
+      >
+        <form onSubmit={handleCreateBroker} className="space-y-3 text-xs">
+          <div>
+            <label className="block text-text-heading font-semibold mb-1">Company / Broker Name *</label>
+            <input
+              type="text"
+              required
+              value={newBroker.companyName}
+              onChange={(e) => setNewBroker({ ...newBroker, companyName: e.target.value })}
+              placeholder="e.g. Apex Global Markets"
+              className="w-full px-3 py-2 bg-white border border-border rounded-xl text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
+            />
           </div>
-        </div>
-      )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-text-heading font-semibold mb-1">Official Website</label>
+              <input
+                type="url"
+                value={newBroker.website}
+                onChange={(e) => setNewBroker({ ...newBroker, website: e.target.value })}
+                placeholder="https://example.com"
+                className="w-full px-3 py-2 bg-white border border-border rounded-xl text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
+              />
+            </div>
+            <div>
+              <label className="block text-text-heading font-semibold mb-1">Headquarters</label>
+              <input
+                type="text"
+                value={newBroker.headquarters}
+                onChange={(e) => setNewBroker({ ...newBroker, headquarters: e.target.value })}
+                placeholder="London, UK"
+                className="w-full px-3 py-2 bg-white border border-border rounded-xl text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="block text-text-heading font-semibold mb-1">Min Deposit ($)</label>
+              <input
+                type="number"
+                value={newBroker.minDeposit}
+                onChange={(e) => setNewBroker({ ...newBroker, minDeposit: Number(e.target.value) })}
+                className="w-full px-3 py-2 bg-white border border-border rounded-xl text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
+              />
+            </div>
+            <div>
+              <label className="block text-text-heading font-semibold mb-1">Max Leverage</label>
+              <input
+                type="text"
+                value={newBroker.maxLeverage}
+                onChange={(e) => setNewBroker({ ...newBroker, maxLeverage: e.target.value })}
+                className="w-full px-3 py-2 bg-white border border-border rounded-xl text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
+              />
+            </div>
+            <div>
+              <label className="block text-text-heading font-semibold mb-1">Execution Type</label>
+              <input
+                type="text"
+                value={newBroker.executionType}
+                onChange={(e) => setNewBroker({ ...newBroker, executionType: e.target.value })}
+                placeholder="ECN / STP"
+                className="w-full px-3 py-2 bg-white border border-border rounded-xl text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-text-heading font-semibold mb-1">Regulations (Comma Separated)</label>
+            <input
+              type="text"
+              value={newBroker.regulation}
+              onChange={(e) => setNewBroker({ ...newBroker, regulation: e.target.value })}
+              placeholder="FCA, ASIC, CySEC"
+              className="w-full px-3 py-2 bg-white border border-border rounded-xl text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
+            />
+          </div>
+
+          <div className="pt-2 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setShowAddModal(false)}
+              className="px-4 py-2 rounded-full border border-border text-text-body hover:bg-surface-tint font-medium text-xs transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="px-5 py-2 bg-blue hover:bg-blue-hover text-white rounded-full font-bold text-xs shadow-sm transition disabled:opacity-50"
+            >
+              {saving ? 'Creating...' : 'Create Broker'}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

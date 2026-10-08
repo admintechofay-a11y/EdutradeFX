@@ -21,6 +21,7 @@ import { SignalProvider, Signal, SignalProviderReview } from '../../../../types'
 import { StarRating } from '../../../../components/common/StarRating';
 import { Skeleton } from '../../../../components/common/Skeleton';
 import { SignalCard } from '../../../../components/sp/SignalCard';
+import { Modal } from '@/components/ui/Modal';
 
 export default function SPDetailPage() {
   const params = useParams();
@@ -290,30 +291,23 @@ export default function SPDetailPage() {
       </div>
 
       {/* Enquiry Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-deep/60 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-white border border-border rounded-3xl p-6 sm:p-8 shadow-lift relative">
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-5 right-5 text-text-muted hover:text-text-heading"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {success ? (
-              <div className="text-center py-8">
-                <CheckCircle className="w-14 h-14 text-green mx-auto mb-3" />
-                <h3 className="text-xl font-bold text-text-heading mb-2">Subscription Request Sent!</h3>
-                <p className="text-xs text-text-body">
-                  The provider has received your details and will invite you to the private channel.
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={handleEnquirySubmit} className="space-y-4">
-                <div>
-                  <h3 className="text-xl font-bold text-text-heading">Join {provider.displayName}'s Signals</h3>
-                  <p className="text-xs text-text-muted mt-0.5">Receive real-time trade alerts with SL, TP and trailing guidance.</p>
-                </div>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        maxWidth="lg"
+        title={!success ? `Join ${provider.displayName}'s Signals` : undefined}
+        subtitle={!success ? 'Receive real-time trade alerts with SL, TP and trailing guidance.' : undefined}
+      >
+        {success ? (
+          <div className="text-center py-8">
+            <CheckCircle className="w-14 h-14 text-green mx-auto mb-3" />
+            <h3 className="text-xl font-bold text-text-heading mb-2">Subscription Request Sent!</h3>
+            <p className="text-xs text-text-body">
+              The provider has received your details and will invite you to the private channel.
+            </p>
+          </div>
+        ) : (
+          <form onSubmit={handleEnquirySubmit} className="space-y-4">
 
                 <div>
                   <label className="block text-xs font-semibold text-text-heading mb-1">Your Name</label>
@@ -385,9 +379,7 @@ export default function SPDetailPage() {
                 </button>
               </form>
             )}
-          </div>
-        </div>
-      )}
+      </Modal>
     </div>
   );
 }

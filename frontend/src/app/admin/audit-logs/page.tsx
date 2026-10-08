@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { api } from '../../../lib/api';
 import { Skeleton } from '../../../components/common/Skeleton';
+import { Modal } from '@/components/ui/Modal';
 
 export default function AdminAuditLogsPage() {
   const [logs, setLogs] = useState<any[]>([]);
@@ -243,27 +244,21 @@ export default function AdminAuditLogsPage() {
       </div>
 
       {/* Metadata Inspect Modal */}
-      {selectedMetadata && (
-        <div className="fixed inset-0 z-50 bg-navy-deep/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-border rounded-3xl p-6 max-w-lg w-full space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-border">
-              <h3 className="text-sm font-bold text-navy flex items-center gap-2">
-                <FileCode className="w-4 h-4 text-blue" />
-                Audit Trail Metadata Snapshot
-              </h3>
-              <button
-                onClick={() => setSelectedMetadata(null)}
-                className="text-xs text-text-muted hover:text-navy px-3 py-1 rounded-full hover:bg-surface-tint transition"
-              >
-                Close
-              </button>
-            </div>
-            <pre className="p-4 bg-surface-tint rounded-2xl border border-border text-navy font-mono text-[11px] overflow-x-auto max-h-72">
-              {JSON.stringify(selectedMetadata, null, 2)}
-            </pre>
-          </div>
-        </div>
-      )}
+      <Modal
+        isOpen={Boolean(selectedMetadata)}
+        onClose={() => setSelectedMetadata(null)}
+        maxWidth="lg"
+        title={
+          <span className="flex items-center gap-2">
+            <FileCode className="w-4 h-4 text-blue" />
+            Audit Trail Metadata Snapshot
+          </span>
+        }
+      >
+        <pre className="p-4 bg-surface-tint rounded-2xl border border-border text-navy font-mono text-[11px] overflow-x-auto max-h-72">
+          {JSON.stringify(selectedMetadata, null, 2)}
+        </pre>
+      </Modal>
     </div>
   );
 }

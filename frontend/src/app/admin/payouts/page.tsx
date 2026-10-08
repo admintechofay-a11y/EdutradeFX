@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { api } from '../../../lib/api';
 import { Skeleton } from '../../../components/common/Skeleton';
+import { Modal } from '@/components/ui/Modal';
 
 export default function AdminPayoutsPage() {
   const [payouts, setPayouts] = useState<any[]>([]);
@@ -248,15 +249,46 @@ export default function AdminPayoutsPage() {
       </div>
 
       {/* Action Confirmation Modal */}
-      {actionModal && (
-        <div className="fixed inset-0 z-50 bg-navy-deep/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-border rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl">
-            <h3 className="text-sm font-bold text-navy flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-blue" />
+      <Modal
+        isOpen={Boolean(actionModal)}
+        onClose={() => {
+          setActionModal(null);
+          setNotes('');
+        }}
+        maxWidth="md"
+        title={
+          actionModal ? (
+            <span className="flex items-center gap-2">
+              <DollarSign className="w-5 h-5 text-blue" />
               {actionModal.status === 'APPROVED' && 'Approve Payout Request'}
               {actionModal.status === 'REJECTED' && 'Reject Payout Request'}
               {actionModal.status === 'PAID' && 'Confirm Disbursement Complete'}
-            </h3>
+            </span>
+          ) : undefined
+        }
+        footer={
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => {
+                setActionModal(null);
+                setNotes('');
+              }}
+              className="px-4 py-2 bg-surface-tint hover:bg-border/60 text-text-body border border-border rounded-full text-xs font-semibold transition"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleProcessPayout}
+              disabled={processingId !== null}
+              className="px-4 py-2 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-semibold disabled:opacity-50 transition shadow-sm"
+            >
+              {processingId ? 'Processing...' : 'Confirm Action'}
+            </button>
+          </div>
+        }
+      >
+        {actionModal && (
+          <div className="space-y-4">
             <p className="text-xs text-text-muted">
               Disbursement of <strong className="text-navy">${actionModal.payout.amount}</strong> to{' '}
               <strong className="text-navy">
@@ -277,28 +309,9 @@ export default function AdminPayoutsPage() {
                 className="w-full bg-white border border-border rounded-xl p-3 text-xs text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
               />
             </div>
-
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                onClick={() => {
-                  setActionModal(null);
-                  setNotes('');
-                }}
-                className="px-4 py-2 bg-surface-tint hover:bg-border/60 text-text-body border border-border rounded-full text-xs font-semibold transition"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleProcessPayout}
-                disabled={processingId !== null}
-                className="px-4 py-2 bg-blue hover:bg-blue-hover text-white rounded-full text-xs font-semibold disabled:opacity-50 transition shadow-sm"
-              >
-                {processingId ? 'Processing...' : 'Confirm Action'}
-              </button>
-            </div>
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
     </div>
   );
 }

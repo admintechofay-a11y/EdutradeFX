@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -34,6 +35,13 @@ export const Navbar: React.FC = () => {
   const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState<any[]>([]);
+  const [mounted, setMounted] = useState(false);
+
+  useBodyScrollLock(mobileMenuOpen);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     hydrate();
@@ -361,17 +369,23 @@ export const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Drawer */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden flex justify-end">
+      {/* Mobile Drawer (Portaled to body to prevent clipping from navbar backdrop-blur containing block) */}
+      {mounted && mobileMenuOpen && createPortal(
+        <div className="fixed inset-0 z-[100] lg:hidden flex justify-end">
           {/* Backdrop */}
           <div
             className="fixed inset-0 bg-navy-deep/60 backdrop-blur-sm animate-in fade-in-0 duration-200"
             onClick={() => setMobileMenuOpen(false)}
+            aria-hidden="true"
           />
 
           {/* Drawer content */}
-          <div className="relative z-10 w-[85vw] max-w-sm bg-white dark:bg-slate-900 h-full p-5 flex flex-col justify-between overflow-y-auto shadow-2xl animate-in slide-in-from-right duration-200 pb-safe">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile Navigation"
+            className="relative z-10 w-[85vw] max-w-sm bg-white dark:bg-slate-900 h-[100dvh] max-h-screen p-5 flex flex-col justify-between overflow-y-auto shadow-2xl animate-in slide-in-from-right duration-200 pb-safe"
+          >
             <div className="space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-border/80">
                 <Link href="/" onClick={() => setMobileMenuOpen(false)} className="relative h-9 w-36">
@@ -460,7 +474,8 @@ export const Navbar: React.FC = () => {
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </nav>
   );

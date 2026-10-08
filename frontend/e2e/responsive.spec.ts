@@ -79,3 +79,27 @@ for (const vp of VIEWPORTS) {
     }
   });
 }
+
+test('Mobile Navigation Drawer Interaction @ 375x667', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(500);
+
+  const menuBtn = page.locator('button[aria-label="Toggle Menu"]');
+  await expect(menuBtn).toBeVisible();
+  await menuBtn.click();
+  await page.waitForTimeout(500);
+
+  const drawer = page.locator('div[aria-label="Mobile Navigation"]');
+  await expect(drawer).toBeVisible();
+
+  const box = await drawer.boundingBox();
+  expect(box?.height).toBeGreaterThan(600);
+
+  await page.screenshot({ path: 'e2e/__screens__/mobile_menu_open.png', fullPage: false });
+
+  const closeBtn = page.locator('button[aria-label="Close Menu"]');
+  await closeBtn.click();
+  await page.waitForTimeout(300);
+  await expect(drawer).not.toBeVisible();
+});

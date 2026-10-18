@@ -9,6 +9,8 @@
       "slug": "ic-markets-global",
       "logo": null,
       "website": "https://icmarkets.com",
+      "ibLink": null,
+      "mapLink": null,
       "description": "IC Markets is one of the world's premier True ECN Forex and CFD providers, offering raw spreads from 0.0 pips, institutional liquidity from 25+ providers, and ultra-fast optical fiber connectivity to the NY4 and LD4 financial exchanges.",
       "platformDescription": "Engineered specifically for day traders, scalpers, and algorithmic EA strategies with direct fiber links to Equinix NY4 and LD4 financial data centers.",
       "yearFounded": 2007,
@@ -18,9 +20,9 @@
       "state": "NSW",
       "postalCode": "2000",
       "country": "Australia",
+      "operatingCountries": [],
       "phone": "+61 2 8014 4280",
       "email": "support@icmarkets.com",
-      "mtRegisteredCountryRegion": "Sydney, Australia",
       "isRegulated": true,
       "totalTradableSymbols": 2250,
       "accountCurrencies": [
@@ -52,6 +54,7 @@
         "Web"
       ],
       "businessType": "RETAIL",
+      "businessModel": "RETAIL",
       "officeContactNumber": "+61 2 8014 4280",
       "officeContactEmail": "corporate@icmarkets.com",
       "countryRestrictions": [
@@ -74,7 +77,15 @@
         "Italian"
       ],
       "fundsSecurity": "Client money is held in segregated client trust accounts at Tier-1 Australian banks (National Australia Bank and Westpac Banking Corporation). ASIC regulatory oversight with strict net capital compliance.",
+      "liquidityProviders": [
+        "BNP Paribas",
+        " Goldman Sachs",
+        " Morgan Stanley",
+        " Citadel",
+        " Virtu Financial"
+      ],
       "liquidityProvider": "BNP Paribas, Goldman Sachs, Morgan Stanley, Citadel, Virtu Financial",
+      "regionalFootprint": [],
       "personalBookSize": "$40,000,000+ Liquidity Buffer",
       "prosList": [
         "True ECN trading environment with 0.0 pip spreads on major currency pairs",
@@ -95,6 +106,7 @@
       "avgRating": 4.7,
       "totalReviews": 35,
       "totalLeads": 110,
+      "openAccountClicks": 0,
       "status": "APPROVED",
       "isFeatured": true,
       "isPremium": false,
@@ -144,57 +156,63 @@
       ],
       "completenessPct": 100,
       "createdAt": "2026-10-08T05:42:19.045Z",
-      "updatedAt": "2026-10-08T05:42:38.448Z",
+      "updatedAt": "2026-10-08T07:02:04.228Z",
       "licenses": [
         {
-          "id": "02146388-e0c2-4d12-939d-44f41699ff42",
+          "id": "25dc4c82-05d2-40a6-b854-f3ff40bd1b65",
           "regulatoryBody": "ASIC",
+          "regulatorCode": null,
+          "regulatorOther": null,
           "licenseNumber": "335692",
           "licenseStatus": "Active",
           "companyAddress": "Level 6, 309 Kent Street, Sydney NSW 2000, Australia",
           "proofLink": "https://connectonline.asic.gov.au",
           "verifiedByAdmin": true,
-          "verifiedAt": "2026-10-08T05:42:22.920Z",
+          "verifiedAt": "2026-10-08T07:01:47.862Z",
           "sortOrder": 0
         },
         {
-          "id": "d563c320-c9e8-482e-9969-9a10540921ca",
+          "id": "2f99532c-a17a-4845-b49a-71bb1084dc95",
           "regulatoryBody": "CySEC",
+          "regulatorCode": null,
+          "regulatorOther": null,
           "licenseNumber": "362/18",
           "licenseStatus": "Active",
           "companyAddress": "Omonoias 141, The Maritime Centre, Block B, 1st Floor, 3045 Limassol, Cyprus",
           "proofLink": "https://cysec.gov.cy",
           "verifiedByAdmin": true,
-          "verifiedAt": "2026-10-08T05:42:22.920Z",
+          "verifiedAt": "2026-10-08T07:01:47.862Z",
           "sortOrder": 1
         },
         {
-          "id": "2cbdf417-e66f-4c1b-b5af-7930a5da3d81",
+          "id": "80a51ea9-8e3e-47b7-a5c5-99de490a323f",
           "regulatoryBody": "FSA",
+          "regulatorCode": null,
+          "regulatorOther": null,
           "licenseNumber": "SD018",
           "licenseStatus": "Active",
           "companyAddress": "Eden Plaza, Office 209, Eden Island, Seychelles",
           "proofLink": "https://fsaseychelles.sc",
           "verifiedByAdmin": true,
-          "verifiedAt": "2026-10-08T05:42:22.920Z",
+          "verifiedAt": "2026-10-08T07:01:47.862Z",
           "sortOrder": 2
         }
       ],
       "servers": [
         {
-          "id": "38598d7c-7ce0-4145-8668-c4b4c55df63f",
+          "id": "c294e4e0-56fb-4084-a6ea-f539a8fa0f7f",
           "name": "ICMarketsSC-Live01",
           "location": "LD4 London (Equinix)",
           "sortOrder": 0
         },
         {
-          "id": "3d2f3d8b-d625-4fcd-9a53-78fe6f142be2",
+          "id": "569f8087-04f1-4adb-a170-50a5aa6c21ca",
           "name": "ICMarketsSC-Live02",
           "location": "NY4 New York (Equinix)",
           "sortOrder": 1
         },
         {
-          "id": "99743521-24c9-4df6-8b16-5e10e92de38d",
+          "id": "ba4a755d-b718-44a9-bb57-56a1316ffa3d",
           "name": "ICMarketsSC-Demo01",
           "location": "LD4 London (Equinix)",
           "sortOrder": 2
@@ -202,7 +220,7 @@
       ],
       "boardMembers": [
         {
-          "id": "a05464e9-3405-4a89-af56-30cda1c27fb3",
+          "id": "2e780301-3737-40c7-8fbb-4449533cba0c",
           "name": "Andrew Budzinski",
           "designation": "Executive Director & Founder",
           "experience": "22+ years in financial services, FX trading infrastructure, and institutional brokerage",
@@ -211,7 +229,7 @@
           "sortOrder": 0
         },
         {
-          "id": "9ca66ca5-e380-47b4-89ed-e6808e1725ed",
+          "id": "67afb107-1b83-4584-9ae7-0f47eb11206b",
           "name": "Angus Walker",
           "designation": "Chief Risk Officer",
           "experience": "17 years risk governance, derivatives settlement, and regulatory reporting",
@@ -222,15 +240,23 @@
       ],
       "accountGroups": [
         {
-          "id": "5f5d2799-c19c-4287-b6ba-d6a4337b29c0",
+          "id": "da3f8e09-18f0-4c9e-94c2-0041a282be0f",
           "name": "Raw Spread",
           "demoAvailable": true,
           "currency": "USD",
+          "baseCurrencies": [
+            "USD"
+          ],
+          "currencyCode": null,
+          "currencyOther": null,
           "spreadTypesLabel": "Raw ECN Spreads",
           "spreadFrom": "0",
           "minDeposit": "200",
           "depositBonusPctUpTo": "0",
+          "depositBonusCode": null,
+          "depositBonusNum": null,
           "leverageUpTo": "1:500",
+          "leverageCode": null,
           "leverageNum": 500,
           "minTradeVolume": "0.01",
           "hasCommissionPerLot": true,
@@ -249,6 +275,7 @@
           "swapShort": null,
           "orderExecution": "INSTANT",
           "gtcMode": "AVAILABLE",
+          "gtcEnabled": true,
           "eaAllowed": true,
           "hedgingAllowed": true,
           "nettingAllowed": false,
@@ -267,15 +294,23 @@
           "sortOrder": 0
         },
         {
-          "id": "02d5e7ae-f626-47f7-8d9d-f2e73ed30cc7",
+          "id": "2ad2cf47-a6c6-4557-bd67-2568a97230e3",
           "name": "Standard Account",
           "demoAvailable": true,
           "currency": "USD",
+          "baseCurrencies": [
+            "USD"
+          ],
+          "currencyCode": null,
+          "currencyOther": null,
           "spreadTypesLabel": "Standard Floating Spreads",
           "spreadFrom": "0.8",
           "minDeposit": "200",
           "depositBonusPctUpTo": "0",
+          "depositBonusCode": null,
+          "depositBonusNum": null,
           "leverageUpTo": "1:500",
+          "leverageCode": null,
           "leverageNum": 500,
           "minTradeVolume": "0.01",
           "hasCommissionPerLot": false,
@@ -294,6 +329,7 @@
           "swapShort": null,
           "orderExecution": "INSTANT",
           "gtcMode": "AVAILABLE",
+          "gtcEnabled": true,
           "eaAllowed": true,
           "hedgingAllowed": true,
           "nettingAllowed": false,
@@ -314,7 +350,7 @@
       ],
       "ibPlans": [
         {
-          "id": "72f24397-2497-4367-b1e8-d5ebeea50371",
+          "id": "54895291-72cd-43fc-8ca4-c02250a4ca73",
           "accountGroupName": "Raw Spread",
           "settlement": [
             "DAILY"
@@ -325,7 +361,7 @@
           "sortOrder": 0
         },
         {
-          "id": "cc036629-7210-4e12-a905-6a67ad31fa60",
+          "id": "9bf25fbe-a175-47ce-9b95-b508d3d19f96",
           "accountGroupName": "Standard Account",
           "settlement": [
             "DAILY"
@@ -338,7 +374,7 @@
       ],
       "depositMethodItems": [
         {
-          "id": "809a314a-6ad1-4111-b70f-80fb05d92507",
+          "id": "f131e580-a13a-4f2f-bba9-d5202f3b4d3d",
           "method": "Visa / Mastercard",
           "charges": "Free / 0%",
           "exchangeRate": "Live market rate",
@@ -347,7 +383,7 @@
           "sortOrder": 0
         },
         {
-          "id": "57f726b9-403f-4c91-8023-92740ee27921",
+          "id": "3268a10e-1838-467e-bed1-beb849c17404",
           "method": "Bank Wire",
           "charges": "Free broker side",
           "exchangeRate": "Central bank fixing",
@@ -356,7 +392,7 @@
           "sortOrder": 1
         },
         {
-          "id": "b22697c8-e096-4193-9d5b-6149c4047056",
+          "id": "cb238024-bb68-420b-aaf9-50326b3a7a17",
           "method": "PayPal",
           "charges": "Free / 0%",
           "exchangeRate": "Live market rate",
@@ -365,7 +401,7 @@
           "sortOrder": 2
         },
         {
-          "id": "ee63ab9f-f02c-43af-962a-e49e278678e9",
+          "id": "c2cc99bf-5968-4f51-bd3a-c5bb79f4bf08",
           "method": "Neteller / Skrill",
           "charges": "Free / 0%",
           "exchangeRate": "Live market rate",
@@ -376,7 +412,7 @@
       ],
       "withdrawalMethodItems": [
         {
-          "id": "b9b13da0-efe4-44f5-9e75-a7c1553d0d2b",
+          "id": "9569807f-9712-4f96-92bf-2c6c1f1f037e",
           "method": "Visa / Mastercard",
           "charges": "Free / 0%",
           "exchangeRate": "Live market rate",
@@ -386,7 +422,7 @@
           "sortOrder": 0
         },
         {
-          "id": "71299fbc-66c2-4f26-9d17-d25fe8e13c81",
+          "id": "76e20dd5-2839-47a2-84ab-1adf35866b60",
           "method": "Bank Wire",
           "charges": "AUD 20 for international wires",
           "exchangeRate": "Central bank fixing",
@@ -396,7 +432,7 @@
           "sortOrder": 1
         },
         {
-          "id": "f12eeee3-208f-449a-b191-b341ed8621b6",
+          "id": "d4aa1a58-8cab-4167-9306-50b9fd6dc26c",
           "method": "PayPal",
           "charges": "Free / 0%",
           "exchangeRate": "Live market rate",
@@ -406,79 +442,9 @@
           "sortOrder": 2
         }
       ],
-      "symbolSpecs": [
-        {
-          "id": "286e7d2f-b7ea-48e3-9bc2-fdd368d49a9f",
-          "accountGroupId": "5f5d2799-c19c-4287-b6ba-d6a4337b29c0",
-          "symbol": "EURUSD",
-          "contractSize": "100000",
-          "digits": 5,
-          "stopLevel": "0",
-          "stopOutPct": "50%",
-          "commission": "$3.50/lot",
-          "spreadType": "FLOATING",
-          "spreadFrom": "0.0 pips",
-          "minVolume": "0.01",
-          "maxVolume": "100",
-          "swapLong": "-5.1",
-          "swapShort": "2.0",
-          "sortOrder": 0
-        },
-        {
-          "id": "6bba7143-5347-4195-b18d-8343b700e8e2",
-          "accountGroupId": "5f5d2799-c19c-4287-b6ba-d6a4337b29c0",
-          "symbol": "GBPUSD",
-          "contractSize": "100000",
-          "digits": 5,
-          "stopLevel": "0",
-          "stopOutPct": "50%",
-          "commission": "$3.50/lot",
-          "spreadType": "FLOATING",
-          "spreadFrom": "0.1 pips",
-          "minVolume": "0.01",
-          "maxVolume": "100",
-          "swapLong": "-4.6",
-          "swapShort": "1.7",
-          "sortOrder": 1
-        },
-        {
-          "id": "f34e4c97-0798-4f92-84fa-8a46787330c2",
-          "accountGroupId": "5f5d2799-c19c-4287-b6ba-d6a4337b29c0",
-          "symbol": "USDJPY",
-          "contractSize": "100000",
-          "digits": 3,
-          "stopLevel": "0",
-          "stopOutPct": "50%",
-          "commission": "$3.50/lot",
-          "spreadType": "FLOATING",
-          "spreadFrom": "0.1 pips",
-          "minVolume": "0.01",
-          "maxVolume": "100",
-          "swapLong": "8.2",
-          "swapShort": "-14.0",
-          "sortOrder": 2
-        },
-        {
-          "id": "3a920d7b-1efc-490c-ade8-e1a3b8cabadd",
-          "accountGroupId": "5f5d2799-c19c-4287-b6ba-d6a4337b29c0",
-          "symbol": "XAUUSD",
-          "contractSize": "100 oz",
-          "digits": 2,
-          "stopLevel": "0",
-          "stopOutPct": "50%",
-          "commission": "$3.50/lot",
-          "spreadType": "FLOATING",
-          "spreadFrom": "0.09 points",
-          "minVolume": "0.01",
-          "maxVolume": "50",
-          "swapLong": "-18.1",
-          "swapShort": "8.9",
-          "sortOrder": 3
-        }
-      ],
       "awards": [
         {
-          "id": "b37362f9-7bfc-4ef8-88ae-8d9bb06a3dc1",
+          "id": "3b4b0097-2c0e-4ec9-ad1c-2de7aa229b08",
           "year": 2023,
           "awardFor": "Best True ECN Forex Broker",
           "expo": "Global Forex Awards",
@@ -487,7 +453,7 @@
           "sortOrder": 0
         },
         {
-          "id": "94fd4884-996d-47fd-a511-747f9079281c",
+          "id": "ae95f444-34a1-4904-a62d-ac41694381a4",
           "year": 2022,
           "awardFor": "Best Execution Broker",
           "expo": "Finance Magnates Summit",
@@ -498,28 +464,28 @@
       ],
       "documents": [
         {
-          "id": "7c49ff55-c1cb-48ec-81a6-7f3fb41548d8",
+          "id": "95620c5a-7d3f-4d5f-9bee-fa7d74acf5e1",
           "fileUrl": "https://res.cloudinary.com/demo/image/upload/sample.pdf",
           "fileName": "ASIC_AFSL_335692_Certificate.pdf",
           "fileType": "application/pdf",
           "docType": "REGULATORY_LICENSE",
-          "createdAt": "2026-10-08T05:42:33.546Z"
+          "createdAt": "2026-10-08T07:01:58.907Z"
         },
         {
-          "id": "565316b2-1757-4970-9254-2ecad197de7d",
+          "id": "041c2f8d-edd3-4530-955f-ad403f75e90e",
           "fileUrl": "https://res.cloudinary.com/demo/image/upload/sample.pdf",
           "fileName": "CySEC_CIF_362_18_Certificate.pdf",
           "fileType": "application/pdf",
           "docType": "REGULATORY_LICENSE",
-          "createdAt": "2026-10-08T05:42:33.546Z"
+          "createdAt": "2026-10-08T07:01:58.907Z"
         },
         {
-          "id": "ce404804-f942-43e1-a1cc-a548b93cc507",
+          "id": "0b74f576-bd53-4d34-b8d9-24d4ebdd3cbd",
           "fileUrl": "https://res.cloudinary.com/demo/image/upload/sample.pdf",
           "fileName": "Client_Money_Handling_Policy_2024.pdf",
           "fileType": "application/pdf",
           "docType": "POLICY_AML",
-          "createdAt": "2026-10-08T05:42:33.546Z"
+          "createdAt": "2026-10-08T07:01:58.907Z"
         }
       ]
     },
@@ -530,6 +496,8 @@
       "slug": "nouman2-4974",
       "logo": null,
       "website": null,
+      "ibLink": null,
+      "mapLink": null,
       "description": null,
       "platformDescription": null,
       "yearFounded": null,
@@ -539,9 +507,9 @@
       "state": null,
       "postalCode": null,
       "country": null,
+      "operatingCountries": [],
       "phone": null,
       "email": null,
-      "mtRegisteredCountryRegion": null,
       "isRegulated": false,
       "totalTradableSymbols": null,
       "accountCurrencies": [],
@@ -550,6 +518,7 @@
       "platformLinks": null,
       "deviceSupport": [],
       "businessType": "ECN",
+      "businessModel": "ECN",
       "officeContactNumber": null,
       "officeContactEmail": null,
       "countryRestrictions": [],
@@ -559,7 +528,9 @@
       "supportAvailability": null,
       "languagesSupported": [],
       "fundsSecurity": null,
+      "liquidityProviders": [],
       "liquidityProvider": null,
+      "regionalFootprint": [],
       "personalBookSize": null,
       "prosList": [],
       "consList": [],
@@ -568,6 +539,7 @@
       "avgRating": 0,
       "totalReviews": 0,
       "totalLeads": 0,
+      "openAccountClicks": 0,
       "status": "APPROVED",
       "isFeatured": true,
       "isPremium": false,
@@ -599,7 +571,7 @@
       "countries": [],
       "completenessPct": 17,
       "createdAt": "2026-09-25T09:36:44.978Z",
-      "updatedAt": "2026-10-08T05:43:03.145Z",
+      "updatedAt": "2026-10-08T07:02:25.663Z",
       "licenses": [],
       "servers": [
         {
@@ -616,11 +588,19 @@
           "name": "Standard Account",
           "demoAvailable": true,
           "currency": "USD",
+          "baseCurrencies": [
+            "USD"
+          ],
+          "currencyCode": null,
+          "currencyOther": null,
           "spreadTypesLabel": "Standard Spreads",
           "spreadFrom": "1",
           "minDeposit": "100",
           "depositBonusPctUpTo": "0",
+          "depositBonusCode": null,
+          "depositBonusNum": null,
           "leverageUpTo": "1:500",
+          "leverageCode": null,
           "leverageNum": 500,
           "minTradeVolume": "0.01",
           "hasCommissionPerLot": false,
@@ -637,6 +617,7 @@
           "swapShort": null,
           "orderExecution": "INSTANT",
           "gtcMode": "AVAILABLE",
+          "gtcEnabled": true,
           "eaAllowed": true,
           "hedgingAllowed": true,
           "nettingAllowed": false,
@@ -658,7 +639,6 @@
       "ibPlans": [],
       "depositMethodItems": [],
       "withdrawalMethodItems": [],
-      "symbolSpecs": [],
       "awards": [],
       "documents": []
     },
@@ -669,6 +649,8 @@
       "slug": "nouman-kabutarwala-3356",
       "logo": null,
       "website": null,
+      "ibLink": null,
+      "mapLink": null,
       "description": null,
       "platformDescription": null,
       "yearFounded": null,
@@ -678,9 +660,9 @@
       "state": null,
       "postalCode": null,
       "country": null,
+      "operatingCountries": [],
       "phone": null,
       "email": null,
-      "mtRegisteredCountryRegion": null,
       "isRegulated": false,
       "totalTradableSymbols": null,
       "accountCurrencies": [],
@@ -689,6 +671,7 @@
       "platformLinks": null,
       "deviceSupport": [],
       "businessType": "ECN",
+      "businessModel": "ECN",
       "officeContactNumber": null,
       "officeContactEmail": null,
       "countryRestrictions": [],
@@ -698,7 +681,9 @@
       "supportAvailability": null,
       "languagesSupported": [],
       "fundsSecurity": null,
+      "liquidityProviders": [],
       "liquidityProvider": null,
+      "regionalFootprint": [],
       "personalBookSize": null,
       "prosList": [],
       "consList": [],
@@ -707,6 +692,7 @@
       "avgRating": 0,
       "totalReviews": 0,
       "totalLeads": 0,
+      "openAccountClicks": 0,
       "status": "APPROVED",
       "isFeatured": true,
       "isPremium": false,
@@ -738,7 +724,7 @@
       "countries": [],
       "completenessPct": 17,
       "createdAt": "2026-09-25T06:25:53.363Z",
-      "updatedAt": "2026-10-08T05:42:47.519Z",
+      "updatedAt": "2026-10-08T07:02:12.650Z",
       "licenses": [],
       "servers": [
         {
@@ -755,11 +741,19 @@
           "name": "Standard Account",
           "demoAvailable": true,
           "currency": "USD",
+          "baseCurrencies": [
+            "USD"
+          ],
+          "currencyCode": null,
+          "currencyOther": null,
           "spreadTypesLabel": "Standard Spreads",
           "spreadFrom": "1",
           "minDeposit": "100",
           "depositBonusPctUpTo": "0",
+          "depositBonusCode": null,
+          "depositBonusNum": null,
           "leverageUpTo": "1:500",
+          "leverageCode": null,
           "leverageNum": 500,
           "minTradeVolume": "0.01",
           "hasCommissionPerLot": false,
@@ -776,6 +770,7 @@
           "swapShort": null,
           "orderExecution": "INSTANT",
           "gtcMode": "AVAILABLE",
+          "gtcEnabled": true,
           "eaAllowed": true,
           "hedgingAllowed": true,
           "nettingAllowed": false,
@@ -797,7 +792,6 @@
       "ibPlans": [],
       "depositMethodItems": [],
       "withdrawalMethodItems": [],
-      "symbolSpecs": [],
       "awards": [],
       "documents": []
     },
@@ -808,6 +802,8 @@
       "slug": "techofay-markets-4848",
       "logo": null,
       "website": null,
+      "ibLink": null,
+      "mapLink": null,
       "description": null,
       "platformDescription": null,
       "yearFounded": null,
@@ -817,9 +813,9 @@
       "state": null,
       "postalCode": null,
       "country": null,
+      "operatingCountries": [],
       "phone": null,
       "email": null,
-      "mtRegisteredCountryRegion": null,
       "isRegulated": false,
       "totalTradableSymbols": null,
       "accountCurrencies": [],
@@ -828,6 +824,7 @@
       "platformLinks": null,
       "deviceSupport": [],
       "businessType": "ECN",
+      "businessModel": "ECN",
       "officeContactNumber": null,
       "officeContactEmail": null,
       "countryRestrictions": [],
@@ -837,7 +834,9 @@
       "supportAvailability": null,
       "languagesSupported": [],
       "fundsSecurity": null,
+      "liquidityProviders": [],
       "liquidityProvider": null,
+      "regionalFootprint": [],
       "personalBookSize": null,
       "prosList": [],
       "consList": [],
@@ -846,6 +845,7 @@
       "avgRating": 0,
       "totalReviews": 0,
       "totalLeads": 0,
+      "openAccountClicks": 0,
       "status": "APPROVED",
       "isFeatured": true,
       "isPremium": false,
@@ -877,7 +877,7 @@
       "countries": [],
       "completenessPct": 17,
       "createdAt": "2026-09-25T06:19:14.849Z",
-      "updatedAt": "2026-10-08T05:42:53.295Z",
+      "updatedAt": "2026-10-08T07:02:16.957Z",
       "licenses": [],
       "servers": [
         {
@@ -894,11 +894,19 @@
           "name": "Standard Account",
           "demoAvailable": true,
           "currency": "USD",
+          "baseCurrencies": [
+            "USD"
+          ],
+          "currencyCode": null,
+          "currencyOther": null,
           "spreadTypesLabel": "Standard Spreads",
           "spreadFrom": "1",
           "minDeposit": "100",
           "depositBonusPctUpTo": "0",
+          "depositBonusCode": null,
+          "depositBonusNum": null,
           "leverageUpTo": "1:500",
+          "leverageCode": null,
           "leverageNum": 500,
           "minTradeVolume": "0.01",
           "hasCommissionPerLot": false,
@@ -915,6 +923,7 @@
           "swapShort": null,
           "orderExecution": "INSTANT",
           "gtcMode": "AVAILABLE",
+          "gtcEnabled": true,
           "eaAllowed": true,
           "hedgingAllowed": true,
           "nettingAllowed": false,
@@ -936,7 +945,6 @@
       "ibPlans": [],
       "depositMethodItems": [],
       "withdrawalMethodItems": [],
-      "symbolSpecs": [],
       "awards": [],
       "documents": []
     },
@@ -947,6 +955,8 @@
       "slug": "global-fx-brokerage-3693",
       "logo": null,
       "website": null,
+      "ibLink": null,
+      "mapLink": null,
       "description": null,
       "platformDescription": null,
       "yearFounded": null,
@@ -956,9 +966,9 @@
       "state": null,
       "postalCode": null,
       "country": null,
+      "operatingCountries": [],
       "phone": null,
       "email": null,
-      "mtRegisteredCountryRegion": null,
       "isRegulated": false,
       "totalTradableSymbols": null,
       "accountCurrencies": [],
@@ -967,6 +977,7 @@
       "platformLinks": null,
       "deviceSupport": [],
       "businessType": "ECN",
+      "businessModel": "ECN",
       "officeContactNumber": null,
       "officeContactEmail": null,
       "countryRestrictions": [],
@@ -976,7 +987,9 @@
       "supportAvailability": null,
       "languagesSupported": [],
       "fundsSecurity": null,
+      "liquidityProviders": [],
       "liquidityProvider": null,
+      "regionalFootprint": [],
       "personalBookSize": null,
       "prosList": [],
       "consList": [],
@@ -985,6 +998,7 @@
       "avgRating": 0,
       "totalReviews": 0,
       "totalLeads": 0,
+      "openAccountClicks": 0,
       "status": "APPROVED",
       "isFeatured": true,
       "isPremium": false,
@@ -1016,7 +1030,7 @@
       "countries": [],
       "completenessPct": 17,
       "createdAt": "2026-09-24T23:16:53.695Z",
-      "updatedAt": "2026-10-08T05:42:58.260Z",
+      "updatedAt": "2026-10-08T07:02:21.379Z",
       "licenses": [],
       "servers": [
         {
@@ -1033,11 +1047,19 @@
           "name": "Standard Account",
           "demoAvailable": true,
           "currency": "USD",
+          "baseCurrencies": [
+            "USD"
+          ],
+          "currencyCode": null,
+          "currencyOther": null,
           "spreadTypesLabel": "Standard Spreads",
           "spreadFrom": "1",
           "minDeposit": "100",
           "depositBonusPctUpTo": "0",
+          "depositBonusCode": null,
+          "depositBonusNum": null,
           "leverageUpTo": "1:500",
+          "leverageCode": null,
           "leverageNum": 500,
           "minTradeVolume": "0.01",
           "hasCommissionPerLot": false,
@@ -1054,6 +1076,7 @@
           "swapShort": null,
           "orderExecution": "INSTANT",
           "gtcMode": "AVAILABLE",
+          "gtcEnabled": true,
           "eaAllowed": true,
           "hedgingAllowed": true,
           "nettingAllowed": false,
@@ -1075,7 +1098,6 @@
       "ibPlans": [],
       "depositMethodItems": [],
       "withdrawalMethodItems": [],
-      "symbolSpecs": [],
       "awards": [],
       "documents": []
     },
@@ -1086,6 +1108,8 @@
       "slug": "pepperstone-global-markets",
       "logo": null,
       "website": "https://pepperstone.com",
+      "ibLink": null,
+      "mapLink": null,
       "description": "Pepperstone is an internationally regulated Tier-1 Forex and CFD broker offering razor-thin spreads, institutional liquidity, lightning-fast execution under 30ms, and award-winning customer support.",
       "platformDescription": "Pepperstone provides access to raw interbank pricing across MetaTrader 4, MetaTrader 5, cTrader, and TradingView with institutional-grade low-latency bridge infrastructure hosted at Equinix LD4 London.",
       "yearFounded": 2010,
@@ -1095,9 +1119,9 @@
       "state": "Victoria",
       "postalCode": "3008",
       "country": "Australia",
+      "operatingCountries": [],
       "phone": "+61 3 9020 0155",
       "email": "support@pepperstone.com",
-      "mtRegisteredCountryRegion": "Melbourne, Australia",
       "isRegulated": true,
       "totalTradableSymbols": 1200,
       "accountCurrencies": [
@@ -1113,8 +1137,7 @@
       "availablePlatforms": [
         "MetaTrader 4",
         "MetaTrader 5",
-        "cTrader",
-        "TradingView"
+        "cTrader"
       ],
       "platformLinks": {
         "mt4": "https://pepperstone.com/en/trading-platforms/mt4",
@@ -1130,14 +1153,10 @@
         "Web"
       ],
       "businessType": "ECN",
+      "businessModel": "ECN",
       "officeContactNumber": "+61 3 9020 0155",
       "officeContactEmail": "corporate@pepperstone.com",
-      "countryRestrictions": [
-        "United States",
-        "North Korea",
-        "Iran",
-        "Syria"
-      ],
+      "countryRestrictions": [],
       "supportPhone": "+61 3 9020 0155",
       "supportWhatsapp": "+61 400 123 456",
       "supportEmail": "support@pepperstone.com",
@@ -1145,15 +1164,19 @@
       "languagesSupported": [
         "English",
         "Spanish",
-        "German",
-        "Chinese",
-        "Arabic",
-        "Russian",
-        "French",
-        "Vietnamese"
+        "French"
       ],
       "fundsSecurity": "Client funds are held in segregated trust accounts at Tier-1 Australian banks (National Australia Bank) and covered by the UK Financial Services Compensation Scheme (FSCS) up to £85,000 where applicable. We maintain full negative balance protection.",
+      "liquidityProviders": [
+        "Barclays",
+        " JPMorgan Chase",
+        " Citi",
+        " UBS",
+        " HSBC",
+        " Deutsche Bank"
+      ],
       "liquidityProvider": "Barclays, JPMorgan Chase, Citi, UBS, HSBC, Deutsche Bank",
+      "regionalFootprint": [],
       "personalBookSize": "$50,000,000+ Institutional Reserve Tier",
       "prosList": [
         "Raw ECN spreads from 0.0 pips on EUR/USD and major currency pairs",
@@ -1175,7 +1198,8 @@
       },
       "avgRating": 4.8,
       "totalReviews": 42,
-      "totalLeads": 128,
+      "totalLeads": 131,
+      "openAccountClicks": 0,
       "status": "APPROVED",
       "isFeatured": true,
       "isPremium": true,
@@ -1191,8 +1215,7 @@
       "tradingPlatforms": [
         "MetaTrader 4",
         "MetaTrader 5",
-        "cTrader",
-        "TradingView"
+        "cTrader"
       ],
       "accountTypes": [
         "Razor Account",
@@ -1227,68 +1250,76 @@
       ],
       "completenessPct": 100,
       "createdAt": "2026-09-24T23:14:54.902Z",
-      "updatedAt": "2026-10-08T05:42:16.011Z",
+      "updatedAt": "2026-10-18T14:56:17.075Z",
       "licenses": [
         {
-          "id": "3a3fbd98-3e73-46a4-97e5-e0e39ddb3b42",
+          "id": "9a5d22cb-640f-4cc6-8234-8758f422e75f",
           "regulatoryBody": "ASIC",
+          "regulatorCode": "ASIC",
+          "regulatorOther": null,
           "licenseNumber": "414530",
           "licenseStatus": "Active",
           "companyAddress": "Level 16, Tower 1, 727 Collins Street, Melbourne VIC 3008, Australia",
           "proofLink": "https://connectonline.asic.gov.au",
           "verifiedByAdmin": true,
-          "verifiedAt": "2026-10-08T05:41:53.794Z",
+          "verifiedAt": "2026-10-08T07:01:19.682Z",
           "sortOrder": 0
         },
         {
-          "id": "ffa68240-9315-45b0-97e1-5179ab3dd4cd",
+          "id": "8b7a4ad4-fd9c-49dd-907c-702b0576c37c",
           "regulatoryBody": "FCA",
+          "regulatorCode": "FCA",
+          "regulatorOther": null,
           "licenseNumber": "684312",
           "licenseStatus": "Active",
           "companyAddress": "70 Gracechurch Street, London EC3V 0HR, United Kingdom",
           "proofLink": "https://register.fca.org.uk",
           "verifiedByAdmin": true,
-          "verifiedAt": "2026-10-08T05:41:53.794Z",
+          "verifiedAt": "2026-10-08T07:01:19.682Z",
           "sortOrder": 1
         },
         {
-          "id": "b85f9b99-0c9d-437c-9cc1-f71ef0518a60",
+          "id": "d57cda1e-bea7-46d3-944c-9d7f8d096c30",
           "regulatoryBody": "CySEC",
+          "regulatorCode": "CYSEC",
+          "regulatorOther": null,
           "licenseNumber": "388/20",
           "licenseStatus": "Active",
           "companyAddress": "195 Makarios III Avenue, Neapolis, Limassol 3030, Cyprus",
           "proofLink": "https://cysec.gov.cy",
           "verifiedByAdmin": true,
-          "verifiedAt": "2026-10-08T05:41:53.794Z",
+          "verifiedAt": "2026-10-08T07:01:19.682Z",
           "sortOrder": 2
         },
         {
-          "id": "23ae6f3b-e99c-4602-93ff-6b4374a671e6",
+          "id": "e4fddc98-0168-4b82-b038-912fcbe46c55",
           "regulatoryBody": "DFSA",
+          "regulatorCode": "DFSA",
+          "regulatorOther": null,
           "licenseNumber": "F004356",
           "licenseStatus": "Active",
           "companyAddress": "Al Fattan Currency House, DIFC, Dubai, UAE",
           "proofLink": "https://dfsa.ae",
           "verifiedByAdmin": true,
-          "verifiedAt": "2026-10-08T05:41:53.794Z",
+          "verifiedAt": "2026-10-08T07:01:19.682Z",
           "sortOrder": 3
         }
       ],
       "servers": [
         {
-          "id": "5303ab52-8870-4382-a8f7-fed1c77a6a21",
+          "id": "fb2f41f4-a45f-4ade-b4f3-0d37ae6e9a85",
           "name": "Pepperstone-Live01",
           "location": "LD4 London (Equinix)",
           "sortOrder": 0
         },
         {
-          "id": "e3213535-8eee-4cf0-aec9-1535c2ec5a48",
+          "id": "5a69f61a-c5bf-436a-99d7-7bf56fbe78ed",
           "name": "Pepperstone-Live02",
           "location": "NY4 New York (Equinix)",
           "sortOrder": 1
         },
         {
-          "id": "d4d1afee-2003-47c3-9860-3d16db51b1fb",
+          "id": "30d4c844-4e4d-4a81-89f3-283dac4cf58e",
           "name": "Pepperstone-Demo01",
           "location": "TY3 Tokyo (Equinix)",
           "sortOrder": 2
@@ -1296,7 +1327,7 @@
       ],
       "boardMembers": [
         {
-          "id": "a7172369-6a48-4f62-af17-bee852e98a98",
+          "id": "63adf945-8e7c-4a81-aae2-745823c6e7ba",
           "name": "Tamas Szabo",
           "designation": "Group Chief Executive Officer",
           "experience": "25+ years in global capital markets and fintech leadership",
@@ -1305,7 +1336,7 @@
           "sortOrder": 0
         },
         {
-          "id": "1ae0d332-404e-4165-a7bc-a5b8e9b72279",
+          "id": "5c27ddd2-08a6-43ed-86a8-9518a598f066",
           "name": "Gordon Ketelbey",
           "designation": "Non-Executive Director & Co-Founder",
           "experience": "20+ years in financial derivatives & online brokerage",
@@ -1314,7 +1345,7 @@
           "sortOrder": 1
         },
         {
-          "id": "bcb6eecb-1686-481a-a4ca-42489f9c9362",
+          "id": "cca13596-1014-46f2-8544-de4b61f72dbf",
           "name": "Fiona Simpson",
           "designation": "Chief Financial Officer",
           "experience": "18 years senior financial management and tier-1 banking",
@@ -1325,15 +1356,23 @@
       ],
       "accountGroups": [
         {
-          "id": "b8555d1b-ba13-449f-8e2d-8b7d28d7280b",
+          "id": "9c71bcad-f4cb-48cd-ba96-00debed8be00",
           "name": "Razor Account",
           "demoAvailable": true,
           "currency": "USD",
+          "baseCurrencies": [
+            "USD"
+          ],
+          "currencyCode": "USD",
+          "currencyOther": null,
           "spreadTypesLabel": "Raw Floating Spreads",
           "spreadFrom": "0",
           "minDeposit": "0",
           "depositBonusPctUpTo": "0",
+          "depositBonusCode": "BONUS_0",
+          "depositBonusNum": 0,
           "leverageUpTo": "1:500",
+          "leverageCode": "1:500",
           "leverageNum": 500,
           "minTradeVolume": "0.01",
           "hasCommissionPerLot": true,
@@ -1353,6 +1392,7 @@
           "swapShort": null,
           "orderExecution": "INSTANT",
           "gtcMode": "AVAILABLE",
+          "gtcEnabled": true,
           "eaAllowed": true,
           "hedgingAllowed": true,
           "nettingAllowed": false,
@@ -1371,15 +1411,23 @@
           "sortOrder": 0
         },
         {
-          "id": "358d1e91-d184-4f62-86ea-164e1e50967d",
+          "id": "7309a82d-968d-4b85-8d5f-6b553916e341",
           "name": "Standard Account",
           "demoAvailable": true,
           "currency": "USD",
+          "baseCurrencies": [
+            "USD"
+          ],
+          "currencyCode": "USD",
+          "currencyOther": null,
           "spreadTypesLabel": "All-inclusive Spreads",
           "spreadFrom": "0.6",
           "minDeposit": "0",
           "depositBonusPctUpTo": "0",
+          "depositBonusCode": "BONUS_0",
+          "depositBonusNum": 0,
           "leverageUpTo": "1:500",
+          "leverageCode": "1:500",
           "leverageNum": 500,
           "minTradeVolume": "0.01",
           "hasCommissionPerLot": false,
@@ -1398,6 +1446,7 @@
           "swapShort": null,
           "orderExecution": "INSTANT",
           "gtcMode": "AVAILABLE",
+          "gtcEnabled": true,
           "eaAllowed": true,
           "hedgingAllowed": true,
           "nettingAllowed": false,
@@ -1418,7 +1467,7 @@
       ],
       "ibPlans": [
         {
-          "id": "0285c4e1-1bda-4c7a-942e-dd73a50564b2",
+          "id": "28ac6909-75f1-4c15-9b0b-22981a2f0b5a",
           "accountGroupName": "Razor Account",
           "settlement": [
             "DAILY",
@@ -1430,7 +1479,7 @@
           "sortOrder": 0
         },
         {
-          "id": "32eb0a8d-0dc1-427b-8cba-e057ec09e372",
+          "id": "e293eee2-62a7-4c33-95f0-3f8f1e7bd34e",
           "accountGroupName": "Standard Account",
           "settlement": [
             "DAILY",
@@ -1444,7 +1493,7 @@
       ],
       "depositMethodItems": [
         {
-          "id": "714d77a1-7726-4054-ad40-1989ed39a41e",
+          "id": "70720bb4-13ef-42f9-b2ec-2537bbba039b",
           "method": "Visa / Mastercard",
           "charges": "Zero / 0%",
           "exchangeRate": "Interbank Live",
@@ -1453,7 +1502,7 @@
           "sortOrder": 0
         },
         {
-          "id": "c2206afd-3720-446b-a1e2-8b3f3da1ad2a",
+          "id": "a3a26469-aafd-42c8-94c5-88991e421496",
           "method": "Bank Wire Transfer",
           "charges": "Zero broker fee",
           "exchangeRate": "Central Bank fixing",
@@ -1462,7 +1511,7 @@
           "sortOrder": 1
         },
         {
-          "id": "770c85c3-165b-449a-95b6-c5ca4ddc15bc",
+          "id": "592ad008-ca5b-4e70-8b81-cde5107a7735",
           "method": "Neteller / Skrill",
           "charges": "Zero / 0%",
           "exchangeRate": "Live market rate",
@@ -1471,7 +1520,7 @@
           "sortOrder": 2
         },
         {
-          "id": "b1615a63-27a7-412b-acfd-6b22b82d72c4",
+          "id": "1a393ec1-0d21-4363-b4e6-6bb6d4bdf549",
           "method": "USDT (Tether)",
           "charges": "Network miner fee only",
           "exchangeRate": "1.00 USD peg",
@@ -1482,7 +1531,7 @@
       ],
       "withdrawalMethodItems": [
         {
-          "id": "af087ab8-93f4-4a98-99c8-a70c5390d7e7",
+          "id": "825c1840-d7c3-4481-826a-efc42f383c72",
           "method": "Visa / Mastercard",
           "charges": "Free / $0",
           "exchangeRate": "Interbank Live",
@@ -1492,7 +1541,7 @@
           "sortOrder": 0
         },
         {
-          "id": "7a6f6635-2f73-4764-ae82-a6de69e210cd",
+          "id": "dc587da9-340c-4921-ba0a-df39d8dbd628",
           "method": "Bank Wire Transfer",
           "charges": "Free domestic, $20 international",
           "exchangeRate": "Central Bank rate",
@@ -1502,7 +1551,7 @@
           "sortOrder": 1
         },
         {
-          "id": "7d854f8e-d7cb-4a45-a89d-61d926b22d2f",
+          "id": "0dd2876c-05c5-44ed-a73d-7e188881247f",
           "method": "Neteller / Skrill",
           "charges": "Free / $0",
           "exchangeRate": "Live market rate",
@@ -1512,96 +1561,9 @@
           "sortOrder": 2
         }
       ],
-      "symbolSpecs": [
-        {
-          "id": "1c1717a6-57be-4dae-ba00-f2295678cf2b",
-          "accountGroupId": "b8555d1b-ba13-449f-8e2d-8b7d28d7280b",
-          "symbol": "EURUSD",
-          "contractSize": "100000",
-          "digits": 5,
-          "stopLevel": "0",
-          "stopOutPct": "20%",
-          "commission": "$3.50/lot",
-          "spreadType": "FLOATING",
-          "spreadFrom": "0.0 pips",
-          "minVolume": "0.01",
-          "maxVolume": "100",
-          "swapLong": "-5.2",
-          "swapShort": "2.1",
-          "sortOrder": 0
-        },
-        {
-          "id": "f68c4076-6915-4556-9956-f69fdb033916",
-          "accountGroupId": "b8555d1b-ba13-449f-8e2d-8b7d28d7280b",
-          "symbol": "GBPUSD",
-          "contractSize": "100000",
-          "digits": 5,
-          "stopLevel": "0",
-          "stopOutPct": "20%",
-          "commission": "$3.50/lot",
-          "spreadType": "FLOATING",
-          "spreadFrom": "0.2 pips",
-          "minVolume": "0.01",
-          "maxVolume": "100",
-          "swapLong": "-4.8",
-          "swapShort": "1.8",
-          "sortOrder": 1
-        },
-        {
-          "id": "d59ee681-fe08-48da-91a5-1fb4a0bf2a9a",
-          "accountGroupId": "b8555d1b-ba13-449f-8e2d-8b7d28d7280b",
-          "symbol": "USDJPY",
-          "contractSize": "100000",
-          "digits": 3,
-          "stopLevel": "0",
-          "stopOutPct": "20%",
-          "commission": "$3.50/lot",
-          "spreadType": "FLOATING",
-          "spreadFrom": "0.1 pips",
-          "minVolume": "0.01",
-          "maxVolume": "100",
-          "swapLong": "8.4",
-          "swapShort": "-14.2",
-          "sortOrder": 2
-        },
-        {
-          "id": "ebe9dda1-d88b-4985-98b4-adc8316f6fb5",
-          "accountGroupId": "b8555d1b-ba13-449f-8e2d-8b7d28d7280b",
-          "symbol": "XAUUSD",
-          "contractSize": "100 oz",
-          "digits": 2,
-          "stopLevel": "0",
-          "stopOutPct": "20%",
-          "commission": "$3.50/lot",
-          "spreadType": "FLOATING",
-          "spreadFrom": "0.08 points",
-          "minVolume": "0.01",
-          "maxVolume": "50",
-          "swapLong": "-18.5",
-          "swapShort": "9.2",
-          "sortOrder": 3
-        },
-        {
-          "id": "2ae4cb00-567d-4a5e-9865-2d81b079f4e6",
-          "accountGroupId": "b8555d1b-ba13-449f-8e2d-8b7d28d7280b",
-          "symbol": "BTCUSD",
-          "contractSize": "1 BTC",
-          "digits": 2,
-          "stopLevel": "0",
-          "stopOutPct": "20%",
-          "commission": "$0",
-          "spreadType": "FLOATING",
-          "spreadFrom": "15.00 points",
-          "minVolume": "0.01",
-          "maxVolume": "10",
-          "swapLong": "-22.0",
-          "swapShort": "-15.0",
-          "sortOrder": 4
-        }
-      ],
       "awards": [
         {
-          "id": "1ffd0861-3904-47ce-9ba7-03bfd51c563c",
+          "id": "d044b88e-e17c-4d7c-8fbe-88fbf436fe46",
           "year": 2024,
           "awardFor": "Best Overall Global Forex Broker",
           "expo": "Ultimate Fintech Awards",
@@ -1610,7 +1572,7 @@
           "sortOrder": 0
         },
         {
-          "id": "4033d62e-c925-4ebd-994d-4638c36bf3b5",
+          "id": "0e947d10-bce6-4064-8dbc-f3b99c2bbda6",
           "year": 2023,
           "awardFor": "Best ECN Broker & Lowest Spreads",
           "expo": "Finance Magnates London Summit",
@@ -1619,7 +1581,7 @@
           "sortOrder": 1
         },
         {
-          "id": "994dd09a-b2e0-409e-bddc-afd6b97ca887",
+          "id": "52db5dfa-f59a-41e1-aea7-1cf88b5870c2",
           "year": 2022,
           "awardFor": "Best Customer Service Provider",
           "expo": "Investment Trends Report",
@@ -1630,44 +1592,44 @@
       ],
       "documents": [
         {
-          "id": "0e1377b1-7b5a-4645-8447-00ad108ab47c",
+          "id": "62593d12-0473-4da6-8f05-cc9567609782",
           "fileUrl": "https://res.cloudinary.com/demo/image/upload/sample.pdf",
           "fileName": "ASIC_AFSL_414530_License_Certificate.pdf",
           "fileType": "application/pdf",
           "docType": "REGULATORY_LICENSE",
-          "createdAt": "2026-10-08T05:42:07.265Z"
+          "createdAt": "2026-10-08T07:01:32.534Z"
         },
         {
-          "id": "ae9763d2-aaf0-42ab-922a-9532e143931c",
+          "id": "81a15153-5d1a-4bc7-bd76-f8c08e67be6b",
           "fileUrl": "https://res.cloudinary.com/demo/image/upload/sample.pdf",
           "fileName": "FCA_Firm_Reference_684312_Certificate.pdf",
           "fileType": "application/pdf",
           "docType": "REGULATORY_LICENSE",
-          "createdAt": "2026-10-08T05:42:07.265Z"
+          "createdAt": "2026-10-08T07:01:32.534Z"
         },
         {
-          "id": "badf0abb-31ca-4bda-8c1b-e45cef7b63a1",
+          "id": "7ad61e12-4a36-4fef-9e79-0c1d98d6ef25",
           "fileUrl": "https://res.cloudinary.com/demo/image/upload/sample.pdf",
           "fileName": "PwC_Audited_Client_Fund_Segregation_2024.pdf",
           "fileType": "application/pdf",
           "docType": "POLICY_CLIENT",
-          "createdAt": "2026-10-08T05:42:07.265Z"
+          "createdAt": "2026-10-08T07:01:32.534Z"
         },
         {
-          "id": "049af2f7-7622-49fd-8011-c1d191842f7a",
+          "id": "f5f5cc13-e675-4090-90a7-978bce4d8eea",
           "fileUrl": "https://res.cloudinary.com/demo/image/upload/sample.pdf",
           "fileName": "AML_CTF_Corporate_Governance_Policy.pdf",
           "fileType": "application/pdf",
           "docType": "POLICY_AML",
-          "createdAt": "2026-10-08T05:42:07.265Z"
+          "createdAt": "2026-10-08T07:01:32.534Z"
         },
         {
-          "id": "fa9aee56-067e-43cb-a837-b3dc5a03ff4c",
+          "id": "de0a81ce-613b-4117-98dc-e2d1446e717a",
           "fileUrl": "https://res.cloudinary.com/demo/image/upload/sample.pdf",
           "fileName": "Order_Execution_Policy_RTS27_RTS28.pdf",
           "fileType": "application/pdf",
           "docType": "POLICY_OTHER",
-          "createdAt": "2026-10-08T05:42:07.265Z"
+          "createdAt": "2026-10-08T07:01:32.534Z"
         }
       ]
     }

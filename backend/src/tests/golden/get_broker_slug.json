@@ -23,8 +23,7 @@
     "tradingPlatforms": [
       "MetaTrader 4",
       "MetaTrader 5",
-      "cTrader",
-      "TradingView"
+      "cTrader"
     ],
     "accountTypes": [
       "Razor Account",
@@ -57,7 +56,7 @@
     "riskDisclaimer": null,
     "avgRating": 4.8,
     "totalReviews": 42,
-    "totalLeads": 128,
+    "totalLeads": 131,
     "status": "APPROVED",
     "isFeatured": true,
     "isPremium": true,
@@ -66,14 +65,18 @@
     "seoDescription": null,
     "registeredName": "Pepperstone Group Limited",
     "businessType": "ECN",
+    "businessModel": "ECN",
     "platformDescription": "Pepperstone provides access to raw interbank pricing across MetaTrader 4, MetaTrader 5, cTrader, and TradingView with institutional-grade low-latency bridge infrastructure hosted at Equinix LD4 London.",
     "address": "Level 16, Tower 1, 727 Collins Street",
     "city": "Melbourne",
     "state": "Victoria",
     "postalCode": "3008",
     "country": "Australia",
+    "operatingCountries": [],
     "phone": "+61 3 9020 0155",
     "email": "support@pepperstone.com",
+    "mapLink": null,
+    "ibLink": null,
     "mtRegisteredCountryRegion": "Melbourne, Australia",
     "isRegulated": true,
     "totalTradableSymbols": 1200,
@@ -90,8 +93,7 @@
     "availablePlatforms": [
       "MetaTrader 4",
       "MetaTrader 5",
-      "cTrader",
-      "TradingView"
+      "cTrader"
     ],
     "platformLinks": {
       "mt4": "https://pepperstone.com/en/trading-platforms/mt4",
@@ -106,14 +108,16 @@
       "Android",
       "Web"
     ],
+    "availableTimeframes": [
+      "M1",
+      "M5",
+      "M15",
+      "H1",
+      "D1"
+    ],
     "officeContactNumber": "+61 3 9020 0155",
     "officeContactEmail": "corporate@pepperstone.com",
-    "countryRestrictions": [
-      "United States",
-      "North Korea",
-      "Iran",
-      "Syria"
-    ],
+    "countryRestrictions": [],
     "supportPhone": "+61 3 9020 0155",
     "supportWhatsapp": "+61 400 123 456",
     "supportEmail": "support@pepperstone.com",
@@ -121,17 +125,21 @@
     "languagesSupported": [
       "English",
       "Spanish",
-      "German",
-      "Chinese",
-      "Arabic",
-      "Russian",
-      "French",
-      "Vietnamese"
+      "French"
     ],
     "clientLossPercentage": "75.3",
     "fundsSecurity": "Client funds are held in segregated trust accounts at Tier-1 Australian banks (National Australia Bank) and covered by the UK Financial Services Compensation Scheme (FSCS) up to £85,000 where applicable. We maintain full negative balance protection.",
     "liquidityProvider": "Barclays, JPMorgan Chase, Citi, UBS, HSBC, Deutsche Bank",
+    "liquidityProviders": [
+      "Barclays",
+      " JPMorgan Chase",
+      " Citi",
+      " UBS",
+      " HSBC",
+      " Deutsche Bank"
+    ],
     "personalBookSize": "$50,000,000+ Institutional Reserve Tier",
+    "regionalFootprint": [],
     "prosList": [
       "Raw ECN spreads from 0.0 pips on EUR/USD and major currency pairs",
       "Institutional liquidity with sub-30ms average order execution latency at Equinix LD4",
@@ -144,6 +152,7 @@
       "No proprietary trading terminal, relies on industry-standard platforms"
     ],
     "promoVideoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "promoVideoPublicId": null,
     "socialLinks": {
       "twitter": "https://twitter.com/PepperstoneFX",
       "youtube": "https://youtube.com/PepperstoneFX",
@@ -156,13 +165,16 @@
     "reviewNote": "All regulatory licenses verified with ASIC and FCA registries. Bank segregation documents confirmed.",
     "rejectionReason": null,
     "completenessPct": 100,
+    "openAccountClicks": 0,
     "createdAt": "2026-09-24T23:14:54.902Z",
-    "updatedAt": "2026-10-08T05:42:16.011Z",
+    "updatedAt": "2026-10-18T14:56:17.075Z",
     "licenses": [
       {
-        "id": "3a3fbd98-3e73-46a4-97e5-e0e39ddb3b42",
+        "id": "9a5d22cb-640f-4cc6-8234-8758f422e75f",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "regulatoryBody": "ASIC",
+        "regulatorCode": "ASIC",
+        "regulatorOther": null,
         "licenseNumber": "414530",
         "licenseStatus": "Active",
         "companyAddress": "Level 16, Tower 1, 727 Collins Street, Melbourne VIC 3008, Australia",
@@ -170,15 +182,17 @@
         "proofUrl": null,
         "proofLink": "https://connectonline.asic.gov.au",
         "verifiedByAdmin": true,
-        "verifiedAt": "2026-10-08T05:41:53.794Z",
+        "verifiedAt": "2026-10-08T07:01:19.682Z",
         "sortOrder": 0,
-        "createdAt": "2026-10-08T05:41:53.796Z",
-        "updatedAt": "2026-10-08T05:41:53.796Z"
+        "createdAt": "2026-10-08T07:01:19.683Z",
+        "updatedAt": "2026-10-08T07:01:19.683Z"
       },
       {
-        "id": "ffa68240-9315-45b0-97e1-5179ab3dd4cd",
+        "id": "8b7a4ad4-fd9c-49dd-907c-702b0576c37c",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "regulatoryBody": "FCA",
+        "regulatorCode": "FCA",
+        "regulatorOther": null,
         "licenseNumber": "684312",
         "licenseStatus": "Active",
         "companyAddress": "70 Gracechurch Street, London EC3V 0HR, United Kingdom",
@@ -186,15 +200,17 @@
         "proofUrl": null,
         "proofLink": "https://register.fca.org.uk",
         "verifiedByAdmin": true,
-        "verifiedAt": "2026-10-08T05:41:53.794Z",
+        "verifiedAt": "2026-10-08T07:01:19.682Z",
         "sortOrder": 1,
-        "createdAt": "2026-10-08T05:41:53.796Z",
-        "updatedAt": "2026-10-08T05:41:53.796Z"
+        "createdAt": "2026-10-08T07:01:19.683Z",
+        "updatedAt": "2026-10-08T07:01:19.683Z"
       },
       {
-        "id": "b85f9b99-0c9d-437c-9cc1-f71ef0518a60",
+        "id": "d57cda1e-bea7-46d3-944c-9d7f8d096c30",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "regulatoryBody": "CySEC",
+        "regulatorCode": "CYSEC",
+        "regulatorOther": null,
         "licenseNumber": "388/20",
         "licenseStatus": "Active",
         "companyAddress": "195 Makarios III Avenue, Neapolis, Limassol 3030, Cyprus",
@@ -202,15 +218,17 @@
         "proofUrl": null,
         "proofLink": "https://cysec.gov.cy",
         "verifiedByAdmin": true,
-        "verifiedAt": "2026-10-08T05:41:53.794Z",
+        "verifiedAt": "2026-10-08T07:01:19.682Z",
         "sortOrder": 2,
-        "createdAt": "2026-10-08T05:41:53.796Z",
-        "updatedAt": "2026-10-08T05:41:53.796Z"
+        "createdAt": "2026-10-08T07:01:19.683Z",
+        "updatedAt": "2026-10-08T07:01:19.683Z"
       },
       {
-        "id": "23ae6f3b-e99c-4602-93ff-6b4374a671e6",
+        "id": "e4fddc98-0168-4b82-b038-912fcbe46c55",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "regulatoryBody": "DFSA",
+        "regulatorCode": "DFSA",
+        "regulatorOther": null,
         "licenseNumber": "F004356",
         "licenseStatus": "Active",
         "companyAddress": "Al Fattan Currency House, DIFC, Dubai, UAE",
@@ -218,27 +236,27 @@
         "proofUrl": null,
         "proofLink": "https://dfsa.ae",
         "verifiedByAdmin": true,
-        "verifiedAt": "2026-10-08T05:41:53.794Z",
+        "verifiedAt": "2026-10-08T07:01:19.682Z",
         "sortOrder": 3,
-        "createdAt": "2026-10-08T05:41:53.796Z",
-        "updatedAt": "2026-10-08T05:41:53.796Z"
+        "createdAt": "2026-10-08T07:01:19.683Z",
+        "updatedAt": "2026-10-08T07:01:19.683Z"
       }
     ],
     "servers": [
       {
-        "id": "5303ab52-8870-4382-a8f7-fed1c77a6a21",
+        "id": "fb2f41f4-a45f-4ade-b4f3-0d37ae6e9a85",
         "name": "Pepperstone-Live01",
         "location": "LD4 London (Equinix)",
         "sortOrder": 0
       },
       {
-        "id": "e3213535-8eee-4cf0-aec9-1535c2ec5a48",
+        "id": "5a69f61a-c5bf-436a-99d7-7bf56fbe78ed",
         "name": "Pepperstone-Live02",
         "location": "NY4 New York (Equinix)",
         "sortOrder": 1
       },
       {
-        "id": "d4d1afee-2003-47c3-9860-3d16db51b1fb",
+        "id": "30d4c844-4e4d-4a81-89f3-283dac4cf58e",
         "name": "Pepperstone-Demo01",
         "location": "TY3 Tokyo (Equinix)",
         "sortOrder": 2
@@ -246,7 +264,7 @@
     ],
     "boardMembers": [
       {
-        "id": "a7172369-6a48-4f62-af17-bee852e98a98",
+        "id": "63adf945-8e7c-4a81-aae2-745823c6e7ba",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "name": "Tamas Szabo",
         "designation": "Group Chief Executive Officer",
@@ -254,11 +272,11 @@
         "photoUrl": null,
         "description": "Leads Pepperstone global strategic direction and international expansion.",
         "sortOrder": 0,
-        "createdAt": "2026-10-08T05:41:56.122Z",
-        "updatedAt": "2026-10-08T05:41:56.122Z"
+        "createdAt": "2026-10-08T07:01:21.776Z",
+        "updatedAt": "2026-10-08T07:01:21.776Z"
       },
       {
-        "id": "1ae0d332-404e-4165-a7bc-a5b8e9b72279",
+        "id": "5c27ddd2-08a6-43ed-86a8-9518a598f066",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "name": "Gordon Ketelbey",
         "designation": "Non-Executive Director & Co-Founder",
@@ -266,11 +284,11 @@
         "photoUrl": null,
         "description": "Co-founded Pepperstone with a mission to bring institutional liquidity to retail traders.",
         "sortOrder": 1,
-        "createdAt": "2026-10-08T05:41:56.122Z",
-        "updatedAt": "2026-10-08T05:41:56.122Z"
+        "createdAt": "2026-10-08T07:01:21.776Z",
+        "updatedAt": "2026-10-08T07:01:21.776Z"
       },
       {
-        "id": "bcb6eecb-1686-481a-a4ca-42489f9c9362",
+        "id": "cca13596-1014-46f2-8544-de4b61f72dbf",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "name": "Fiona Simpson",
         "designation": "Chief Financial Officer",
@@ -278,22 +296,30 @@
         "photoUrl": null,
         "description": "Oversees financial governance, capital adequacy, and regulatory treasury.",
         "sortOrder": 2,
-        "createdAt": "2026-10-08T05:41:56.122Z",
-        "updatedAt": "2026-10-08T05:41:56.122Z"
+        "createdAt": "2026-10-08T07:01:21.776Z",
+        "updatedAt": "2026-10-08T07:01:21.776Z"
       }
     ],
     "accountGroups": [
       {
-        "id": "b8555d1b-ba13-449f-8e2d-8b7d28d7280b",
+        "id": "9c71bcad-f4cb-48cd-ba96-00debed8be00",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "name": "Razor Account",
         "demoAvailable": true,
         "currency": "USD",
+        "baseCurrencies": [
+          "USD"
+        ],
+        "currencyCode": "USD",
+        "currencyOther": null,
         "spreadTypesLabel": "Raw Floating Spreads",
         "spreadFrom": "0",
         "minDeposit": "0",
         "depositBonusPctUpTo": "0",
+        "depositBonusCode": "BONUS_0",
+        "depositBonusNum": 0,
         "leverageUpTo": "1:500",
+        "leverageCode": "1:500",
         "leverageNum": 500,
         "minTradeVolume": "0.01",
         "hasCommissionPerLot": true,
@@ -313,6 +339,7 @@
         "swapShort": null,
         "orderExecution": "INSTANT",
         "gtcMode": "AVAILABLE",
+        "gtcEnabled": true,
         "eaAllowed": true,
         "hedgingAllowed": true,
         "nettingAllowed": false,
@@ -329,20 +356,28 @@
         "indexCommission": null,
         "stocksCommission": null,
         "sortOrder": 0,
-        "createdAt": "2026-10-08T05:41:57.484Z",
-        "updatedAt": "2026-10-08T05:41:57.484Z"
+        "createdAt": "2026-10-08T07:01:22.813Z",
+        "updatedAt": "2026-10-08T07:01:22.813Z"
       },
       {
-        "id": "358d1e91-d184-4f62-86ea-164e1e50967d",
+        "id": "7309a82d-968d-4b85-8d5f-6b553916e341",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "name": "Standard Account",
         "demoAvailable": true,
         "currency": "USD",
+        "baseCurrencies": [
+          "USD"
+        ],
+        "currencyCode": "USD",
+        "currencyOther": null,
         "spreadTypesLabel": "All-inclusive Spreads",
         "spreadFrom": "0.6",
         "minDeposit": "0",
         "depositBonusPctUpTo": "0",
+        "depositBonusCode": "BONUS_0",
+        "depositBonusNum": 0,
         "leverageUpTo": "1:500",
+        "leverageCode": "1:500",
         "leverageNum": 500,
         "minTradeVolume": "0.01",
         "hasCommissionPerLot": false,
@@ -361,6 +396,7 @@
         "swapShort": null,
         "orderExecution": "INSTANT",
         "gtcMode": "AVAILABLE",
+        "gtcEnabled": true,
         "eaAllowed": true,
         "hedgingAllowed": true,
         "nettingAllowed": false,
@@ -377,13 +413,13 @@
         "indexCommission": null,
         "stocksCommission": null,
         "sortOrder": 1,
-        "createdAt": "2026-10-08T05:41:58.040Z",
-        "updatedAt": "2026-10-08T05:41:58.040Z"
+        "createdAt": "2026-10-08T07:01:23.349Z",
+        "updatedAt": "2026-10-08T07:01:23.349Z"
       }
     ],
     "ibPlans": [
       {
-        "id": "0285c4e1-1bda-4c7a-942e-dd73a50564b2",
+        "id": "28ac6909-75f1-4c15-9b0b-22981a2f0b5a",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "accountGroupName": "Razor Account",
         "settlement": [
@@ -394,11 +430,11 @@
         "levelsUpTo": 3,
         "customizable": true,
         "sortOrder": 0,
-        "createdAt": "2026-10-08T05:41:58.587Z",
-        "updatedAt": "2026-10-08T05:41:58.587Z"
+        "createdAt": "2026-10-08T07:01:23.907Z",
+        "updatedAt": "2026-10-08T07:01:23.907Z"
       },
       {
-        "id": "32eb0a8d-0dc1-427b-8cba-e057ec09e372",
+        "id": "e293eee2-62a7-4c33-95f0-3f8f1e7bd34e",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "accountGroupName": "Standard Account",
         "settlement": [
@@ -409,13 +445,13 @@
         "levelsUpTo": 3,
         "customizable": true,
         "sortOrder": 1,
-        "createdAt": "2026-10-08T05:41:58.587Z",
-        "updatedAt": "2026-10-08T05:41:58.587Z"
+        "createdAt": "2026-10-08T07:01:23.907Z",
+        "updatedAt": "2026-10-08T07:01:23.907Z"
       }
     ],
     "depositMethodItems": [
       {
-        "id": "714d77a1-7726-4054-ad40-1989ed39a41e",
+        "id": "70720bb4-13ef-42f9-b2ec-2537bbba039b",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "method": "Visa / Mastercard",
         "charges": "Zero / 0%",
@@ -423,11 +459,11 @@
         "timeTaken": "Instant",
         "extraFacilities": "Apple Pay & Google Pay supported",
         "sortOrder": 0,
-        "createdAt": "2026-10-08T05:41:59.687Z",
-        "updatedAt": "2026-10-08T05:41:59.687Z"
+        "createdAt": "2026-10-08T07:01:25.424Z",
+        "updatedAt": "2026-10-08T07:01:25.424Z"
       },
       {
-        "id": "c2206afd-3720-446b-a1e2-8b3f3da1ad2a",
+        "id": "a3a26469-aafd-42c8-94c5-88991e421496",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "method": "Bank Wire Transfer",
         "charges": "Zero broker fee",
@@ -435,11 +471,11 @@
         "timeTaken": "1-3 Business Days",
         "extraFacilities": "SEPA & SWIFT supported",
         "sortOrder": 1,
-        "createdAt": "2026-10-08T05:41:59.687Z",
-        "updatedAt": "2026-10-08T05:41:59.687Z"
+        "createdAt": "2026-10-08T07:01:25.424Z",
+        "updatedAt": "2026-10-08T07:01:25.424Z"
       },
       {
-        "id": "770c85c3-165b-449a-95b6-c5ca4ddc15bc",
+        "id": "592ad008-ca5b-4e70-8b81-cde5107a7735",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "method": "Neteller / Skrill",
         "charges": "Zero / 0%",
@@ -447,11 +483,11 @@
         "timeTaken": "Instant",
         "extraFacilities": "VIP fast-track available",
         "sortOrder": 2,
-        "createdAt": "2026-10-08T05:41:59.687Z",
-        "updatedAt": "2026-10-08T05:41:59.687Z"
+        "createdAt": "2026-10-08T07:01:25.424Z",
+        "updatedAt": "2026-10-08T07:01:25.424Z"
       },
       {
-        "id": "b1615a63-27a7-412b-acfd-6b22b82d72c4",
+        "id": "1a393ec1-0d21-4363-b4e6-6bb6d4bdf549",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "method": "USDT (Tether)",
         "charges": "Network miner fee only",
@@ -459,13 +495,13 @@
         "timeTaken": "10-30 Minutes",
         "extraFacilities": "ERC-20 & TRC-20 supported",
         "sortOrder": 3,
-        "createdAt": "2026-10-08T05:41:59.687Z",
-        "updatedAt": "2026-10-08T05:41:59.687Z"
+        "createdAt": "2026-10-08T07:01:25.424Z",
+        "updatedAt": "2026-10-08T07:01:25.424Z"
       }
     ],
     "withdrawalMethodItems": [
       {
-        "id": "af087ab8-93f4-4a98-99c8-a70c5390d7e7",
+        "id": "825c1840-d7c3-4481-826a-efc42f383c72",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "method": "Visa / Mastercard",
         "charges": "Free / $0",
@@ -474,11 +510,11 @@
         "extraFacilities": "Same-day card refund priority",
         "delayCompensation": "Guaranteed 24-hour dispatch or $50 trading credit",
         "sortOrder": 0,
-        "createdAt": "2026-10-08T05:42:00.799Z",
-        "updatedAt": "2026-10-08T05:42:00.799Z"
+        "createdAt": "2026-10-08T07:01:26.454Z",
+        "updatedAt": "2026-10-08T07:01:26.454Z"
       },
       {
-        "id": "7a6f6635-2f73-4764-ae82-a6de69e210cd",
+        "id": "dc587da9-340c-4921-ba0a-df39d8dbd628",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "method": "Bank Wire Transfer",
         "charges": "Free domestic, $20 international",
@@ -487,11 +523,11 @@
         "extraFacilities": "Direct SWIFT tracking MT103",
         "delayCompensation": "Same-day SWIFT broadcast guarantee",
         "sortOrder": 1,
-        "createdAt": "2026-10-08T05:42:00.799Z",
-        "updatedAt": "2026-10-08T05:42:00.799Z"
+        "createdAt": "2026-10-08T07:01:26.454Z",
+        "updatedAt": "2026-10-08T07:01:26.454Z"
       },
       {
-        "id": "7d854f8e-d7cb-4a45-a89d-61d926b22d2f",
+        "id": "0dd2876c-05c5-44ed-a73d-7e188881247f",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "method": "Neteller / Skrill",
         "charges": "Free / $0",
@@ -500,115 +536,13 @@
         "extraFacilities": "Priority e-wallet processing",
         "delayCompensation": null,
         "sortOrder": 2,
-        "createdAt": "2026-10-08T05:42:00.799Z",
-        "updatedAt": "2026-10-08T05:42:00.799Z"
-      }
-    ],
-    "symbolSpecs": [
-      {
-        "id": "1c1717a6-57be-4dae-ba00-f2295678cf2b",
-        "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
-        "accountGroupId": "b8555d1b-ba13-449f-8e2d-8b7d28d7280b",
-        "symbol": "EURUSD",
-        "contractSize": "100000",
-        "digits": 5,
-        "stopLevel": "0",
-        "stopOutPct": "20%",
-        "commission": "$3.50/lot",
-        "spreadType": "FLOATING",
-        "spreadFrom": "0.0 pips",
-        "minVolume": "0.01",
-        "maxVolume": "100",
-        "swapLong": "-5.2",
-        "swapShort": "2.1",
-        "sortOrder": 0,
-        "createdAt": "2026-10-08T05:42:01.884Z",
-        "updatedAt": "2026-10-08T05:42:01.884Z"
-      },
-      {
-        "id": "f68c4076-6915-4556-9956-f69fdb033916",
-        "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
-        "accountGroupId": "b8555d1b-ba13-449f-8e2d-8b7d28d7280b",
-        "symbol": "GBPUSD",
-        "contractSize": "100000",
-        "digits": 5,
-        "stopLevel": "0",
-        "stopOutPct": "20%",
-        "commission": "$3.50/lot",
-        "spreadType": "FLOATING",
-        "spreadFrom": "0.2 pips",
-        "minVolume": "0.01",
-        "maxVolume": "100",
-        "swapLong": "-4.8",
-        "swapShort": "1.8",
-        "sortOrder": 1,
-        "createdAt": "2026-10-08T05:42:01.884Z",
-        "updatedAt": "2026-10-08T05:42:01.884Z"
-      },
-      {
-        "id": "d59ee681-fe08-48da-91a5-1fb4a0bf2a9a",
-        "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
-        "accountGroupId": "b8555d1b-ba13-449f-8e2d-8b7d28d7280b",
-        "symbol": "USDJPY",
-        "contractSize": "100000",
-        "digits": 3,
-        "stopLevel": "0",
-        "stopOutPct": "20%",
-        "commission": "$3.50/lot",
-        "spreadType": "FLOATING",
-        "spreadFrom": "0.1 pips",
-        "minVolume": "0.01",
-        "maxVolume": "100",
-        "swapLong": "8.4",
-        "swapShort": "-14.2",
-        "sortOrder": 2,
-        "createdAt": "2026-10-08T05:42:01.884Z",
-        "updatedAt": "2026-10-08T05:42:01.884Z"
-      },
-      {
-        "id": "ebe9dda1-d88b-4985-98b4-adc8316f6fb5",
-        "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
-        "accountGroupId": "b8555d1b-ba13-449f-8e2d-8b7d28d7280b",
-        "symbol": "XAUUSD",
-        "contractSize": "100 oz",
-        "digits": 2,
-        "stopLevel": "0",
-        "stopOutPct": "20%",
-        "commission": "$3.50/lot",
-        "spreadType": "FLOATING",
-        "spreadFrom": "0.08 points",
-        "minVolume": "0.01",
-        "maxVolume": "50",
-        "swapLong": "-18.5",
-        "swapShort": "9.2",
-        "sortOrder": 3,
-        "createdAt": "2026-10-08T05:42:01.884Z",
-        "updatedAt": "2026-10-08T05:42:01.884Z"
-      },
-      {
-        "id": "2ae4cb00-567d-4a5e-9865-2d81b079f4e6",
-        "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
-        "accountGroupId": "b8555d1b-ba13-449f-8e2d-8b7d28d7280b",
-        "symbol": "BTCUSD",
-        "contractSize": "1 BTC",
-        "digits": 2,
-        "stopLevel": "0",
-        "stopOutPct": "20%",
-        "commission": "$0",
-        "spreadType": "FLOATING",
-        "spreadFrom": "15.00 points",
-        "minVolume": "0.01",
-        "maxVolume": "10",
-        "swapLong": "-22.0",
-        "swapShort": "-15.0",
-        "sortOrder": 4,
-        "createdAt": "2026-10-08T05:42:01.884Z",
-        "updatedAt": "2026-10-08T05:42:01.884Z"
+        "createdAt": "2026-10-08T07:01:26.454Z",
+        "updatedAt": "2026-10-08T07:01:26.454Z"
       }
     ],
     "awards": [
       {
-        "id": "1ffd0861-3904-47ce-9ba7-03bfd51c563c",
+        "id": "d044b88e-e17c-4d7c-8fbe-88fbf436fe46",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "year": 2024,
         "awardFor": "Best Overall Global Forex Broker",
@@ -616,11 +550,11 @@
         "expoLocation": "London, United Kingdom",
         "expoDate": "2024-06-18T00:00:00.000Z",
         "sortOrder": 0,
-        "createdAt": "2026-10-08T05:42:06.172Z",
-        "updatedAt": "2026-10-08T05:42:06.172Z"
+        "createdAt": "2026-10-08T07:01:31.482Z",
+        "updatedAt": "2026-10-08T07:01:31.482Z"
       },
       {
-        "id": "4033d62e-c925-4ebd-994d-4638c36bf3b5",
+        "id": "0e947d10-bce6-4064-8dbc-f3b99c2bbda6",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "year": 2023,
         "awardFor": "Best ECN Broker & Lowest Spreads",
@@ -628,11 +562,11 @@
         "expoLocation": "London, United Kingdom",
         "expoDate": "2023-11-21T00:00:00.000Z",
         "sortOrder": 1,
-        "createdAt": "2026-10-08T05:42:06.172Z",
-        "updatedAt": "2026-10-08T05:42:06.172Z"
+        "createdAt": "2026-10-08T07:01:31.482Z",
+        "updatedAt": "2026-10-08T07:01:31.482Z"
       },
       {
-        "id": "994dd09a-b2e0-409e-bddc-afd6b97ca887",
+        "id": "52db5dfa-f59a-41e1-aea7-1cf88b5870c2",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "year": 2022,
         "awardFor": "Best Customer Service Provider",
@@ -640,13 +574,13 @@
         "expoLocation": "Sydney, Australia",
         "expoDate": "2022-10-15T00:00:00.000Z",
         "sortOrder": 2,
-        "createdAt": "2026-10-08T05:42:06.172Z",
-        "updatedAt": "2026-10-08T05:42:06.172Z"
+        "createdAt": "2026-10-08T07:01:31.482Z",
+        "updatedAt": "2026-10-08T07:01:31.482Z"
       }
     ],
     "documents": [
       {
-        "id": "0e1377b1-7b5a-4645-8447-00ad108ab47c",
+        "id": "62593d12-0473-4da6-8f05-cc9567609782",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "fileUrl": "https://res.cloudinary.com/demo/image/upload/sample.pdf",
         "fileName": "ASIC_AFSL_414530_License_Certificate.pdf",
@@ -654,10 +588,10 @@
         "docType": "REGULATORY_LICENSE",
         "isPrivate": false,
         "verifiedByAdmin": true,
-        "createdAt": "2026-10-08T05:42:07.265Z"
+        "createdAt": "2026-10-08T07:01:32.534Z"
       },
       {
-        "id": "ae9763d2-aaf0-42ab-922a-9532e143931c",
+        "id": "81a15153-5d1a-4bc7-bd76-f8c08e67be6b",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "fileUrl": "https://res.cloudinary.com/demo/image/upload/sample.pdf",
         "fileName": "FCA_Firm_Reference_684312_Certificate.pdf",
@@ -665,10 +599,10 @@
         "docType": "REGULATORY_LICENSE",
         "isPrivate": false,
         "verifiedByAdmin": true,
-        "createdAt": "2026-10-08T05:42:07.265Z"
+        "createdAt": "2026-10-08T07:01:32.534Z"
       },
       {
-        "id": "badf0abb-31ca-4bda-8c1b-e45cef7b63a1",
+        "id": "7ad61e12-4a36-4fef-9e79-0c1d98d6ef25",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "fileUrl": "https://res.cloudinary.com/demo/image/upload/sample.pdf",
         "fileName": "PwC_Audited_Client_Fund_Segregation_2024.pdf",
@@ -676,10 +610,10 @@
         "docType": "POLICY_CLIENT",
         "isPrivate": false,
         "verifiedByAdmin": true,
-        "createdAt": "2026-10-08T05:42:07.265Z"
+        "createdAt": "2026-10-08T07:01:32.534Z"
       },
       {
-        "id": "049af2f7-7622-49fd-8011-c1d191842f7a",
+        "id": "f5f5cc13-e675-4090-90a7-978bce4d8eea",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "fileUrl": "https://res.cloudinary.com/demo/image/upload/sample.pdf",
         "fileName": "AML_CTF_Corporate_Governance_Policy.pdf",
@@ -687,10 +621,10 @@
         "docType": "POLICY_AML",
         "isPrivate": false,
         "verifiedByAdmin": true,
-        "createdAt": "2026-10-08T05:42:07.265Z"
+        "createdAt": "2026-10-08T07:01:32.534Z"
       },
       {
-        "id": "fa9aee56-067e-43cb-a837-b3dc5a03ff4c",
+        "id": "de0a81ce-613b-4117-98dc-e2d1446e717a",
         "brokerId": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
         "fileUrl": "https://res.cloudinary.com/demo/image/upload/sample.pdf",
         "fileName": "Order_Execution_Policy_RTS27_RTS28.pdf",
@@ -698,7 +632,7 @@
         "docType": "POLICY_OTHER",
         "isPrivate": false,
         "verifiedByAdmin": true,
-        "createdAt": "2026-10-08T05:42:07.265Z"
+        "createdAt": "2026-10-08T07:01:32.534Z"
       }
     ],
     "reviews": []

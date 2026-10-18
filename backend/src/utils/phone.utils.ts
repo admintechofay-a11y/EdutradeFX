@@ -41,8 +41,12 @@ export function validatePhoneE164(
   if (!trimmed) return false;
 
   try {
-    return isValidPhoneNumber(trimmed, defaultCountry);
+    if (isValidPhoneNumber(trimmed, defaultCountry)) {
+      return true;
+    }
   } catch {
-    return false;
+    // continue
   }
+
+  return /^\+[1-9]\d{6,14}$/.test(trimmed);
 }

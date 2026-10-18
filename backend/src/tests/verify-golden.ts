@@ -18,6 +18,11 @@ function assertAdditiveOnly(golden: any, actual: any, pathStr = ''): string[] {
     return violations;
   }
 
+  if (actual === null || actual === undefined) {
+    violations.push(`Null/undefined mismatch at ${pathStr}: expected ${typeof golden}, got ${actual}`);
+    return violations;
+  }
+
   if (typeof golden !== typeof actual) {
     violations.push(`Type mismatch at ${pathStr}: expected ${typeof golden}, got ${typeof actual}`);
     return violations;
@@ -36,6 +41,10 @@ function assertAdditiveOnly(golden: any, actual: any, pathStr = ''): string[] {
   }
 
   if (typeof golden === 'object') {
+    if (typeof actual !== 'object') {
+      violations.push(`Expected object at ${pathStr}, got ${typeof actual}`);
+      return violations;
+    }
     for (const key of Object.keys(golden)) {
       if (!(key in actual)) {
         violations.push(`Missing key in response: ${pathStr}.${key}`);

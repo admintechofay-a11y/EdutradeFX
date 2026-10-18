@@ -10,7 +10,7 @@ export async function seedBrokerOptions(prisma: PrismaClient) {
     countsByGroup[opt.group] = (countsByGroup[opt.group] || 0) + 1;
   }
 
-  const EXPECTED_COUNTS: Record<BrokerOptionGroup, number> = {
+  const EXPECTED_COUNTS: Partial<Record<BrokerOptionGroup, number>> = {
     REGULATOR: 59, // 58 + OTHER
     LANGUAGE: 133,
     CURRENCY: 10, // 9 + OTHER
@@ -18,6 +18,7 @@ export async function seedBrokerOptions(prisma: PrismaClient) {
     DEPOSIT_BONUS: 21,
     LEVERAGE: 23,
     TIMEFRAME: 9,
+    REGIONAL_FOOTPRINT: 20,
   };
 
   for (const [group, expected] of Object.entries(EXPECTED_COUNTS)) {

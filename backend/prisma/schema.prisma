@@ -414,7 +414,7 @@ model Broker {
   symbolSpecs                BrokerSymbolSpec[]     // @deprecated (B23)
   fundingYears               BrokerFundingYear[]    // @deprecated (B26)
   clientActivity             BrokerClientActivity?  // @deprecated (B26)
-  businessAreas              BrokerBusinessArea[]   // @deprecated (B26)
+  businessAreas              BrokerBusinessArea[]   // Regional footprint (reused per Addendum Prompt)
   awards                     BrokerAward[]
 
   @@index([status])
@@ -663,13 +663,15 @@ model BrokerClientActivity {
 model BrokerBusinessArea {
   id              String   @id @default(uuid())
   brokerId        String
-  countryOrRegion String
-  clientsNote     String?  @db.Text
+  regionCode      String?
+  countryOrRegion String   // Stores region label for display/back-compat
+  clientsNote     String?  @db.Text // @deprecated (Addendum Prompt: stopped reading/writing)
   sortOrder       Int      @default(0)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   broker          Broker   @relation(fields: [brokerId], references: [id], onDelete: Cascade)
 
+  @@unique([brokerId, regionCode])
   @@index([brokerId])
 }
 

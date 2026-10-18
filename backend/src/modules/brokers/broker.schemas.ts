@@ -295,7 +295,113 @@ export const dealingSectionSchema = z
   })
   .passthrough();
 
-// ─── SECTION 12: Pros & Cons ──────────────────────────
+// ─── SECTION 12: Primary Regional Footprint (B19 / Addendum) ───
+export const REGIONAL_FOOTPRINT_CODES = [
+  'UK_EEA',
+  'EUROPE_NON_EEA',
+  'NORTH_AMERICA',
+  'CENTRAL_AMERICA',
+  'CARIBBEAN',
+  'SOUTH_AMERICA',
+  'MIDDLE_EAST',
+  'NORTH_AFRICA',
+  'WEST_AFRICA',
+  'EAST_AFRICA',
+  'CENTRAL_AFRICA',
+  'SOUTHERN_AFRICA',
+  'SOUTH_ASIA',
+  'CENTRAL_ASIA',
+  'EAST_ASIA',
+  'SOUTHEAST_ASIA',
+  'ANZ',
+  'PACIFIC_ISLANDS',
+  'GLOBAL',
+  'OTHER_EMERGING',
+] as const;
+
+export type RegionalFootprintCode = (typeof REGIONAL_FOOTPRINT_CODES)[number];
+
+export const REGIONAL_FOOTPRINT_LABELS: Record<RegionalFootprintCode, string> = {
+  UK_EEA: 'United Kingdom & Europe (EEA)',
+  EUROPE_NON_EEA: 'Europe (Non-EEA)',
+  NORTH_AMERICA: 'North America',
+  CENTRAL_AMERICA: 'Central America',
+  CARIBBEAN: 'Caribbean',
+  SOUTH_AMERICA: 'South America',
+  MIDDLE_EAST: 'Middle East',
+  NORTH_AFRICA: 'North Africa',
+  WEST_AFRICA: 'West Africa',
+  EAST_AFRICA: 'East Africa',
+  CENTRAL_AFRICA: 'Central Africa',
+  SOUTHERN_AFRICA: 'Southern Africa',
+  SOUTH_ASIA: 'South Asia',
+  CENTRAL_ASIA: 'Central Asia',
+  EAST_ASIA: 'East Asia',
+  SOUTHEAST_ASIA: 'Southeast Asia',
+  ANZ: 'Australia & New Zealand',
+  PACIFIC_ISLANDS: 'Pacific Islands',
+  GLOBAL: 'Global / Worldwide',
+  OTHER_EMERGING: 'Other / Emerging Markets',
+};
+
+export const businessAreaItemSchema = z
+  .object({
+    id: z.string().uuid().optional(),
+    regionCode: z.enum(REGIONAL_FOOTPRINT_CODES),
+    countryOrRegion: z.string().optional(),
+    sortOrder: z.coerce.number().int().optional(),
+  })
+  .strip();
+
+const businessAreasBaseSchema = z
+  .object({
+    businessAreas: z.array(businessAreaItemSchema).max(20, 'Maximum 20 regions allowed').default([]),
+  })
+  .strip()
+  .refine(
+    (data: { businessAreas: Array<z.infer<typeof businessAreaItemSchema>> }) => {
+      const codes = data.businessAreas.map((b) => b.regionCode);
+      const unique = new Set(codes);
+      return unique.size === codes.length;
+    },
+    {
+      message: 'Duplicate regions are not allowed',
+      path: ['businessAreas'],
+    }
+  )
+  .refine(
+    (data: { businessAreas: Array<z.infer<typeof businessAreaItemSchema>> }) => {
+      const codes = data.businessAreas.map((b) => b.regionCode);
+      if (codes.includes('GLOBAL') && codes.length > 1) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: 'Global / Worldwide is exclusive and cannot be combined with other regions',
+      path: ['businessAreas'],
+    }
+  );
+
+export const businessAreasSectionSchema = z.preprocess((val: any) => {
+  if (!val || typeof val !== 'object') return val;
+  // Normalize regionalFootprint array of codes or labels into businessAreas items
+  if (Array.isArray(val.regionalFootprint) && !val.businessAreas) {
+    return {
+      ...val,
+      businessAreas: val.regionalFootprint.map((rf: string, idx: number) => {
+        if (REGIONAL_FOOTPRINT_CODES.includes(rf as any)) {
+          return { regionCode: rf, sortOrder: idx + 1 };
+        }
+        const entry = Object.entries(REGIONAL_FOOTPRINT_LABELS).find(([_, label]) => label === rf);
+        return { regionCode: entry ? (entry[0] as RegionalFootprintCode) : 'OTHER_EMERGING', sortOrder: idx + 1 };
+      }),
+    };
+  }
+  return val;
+}, businessAreasBaseSchema);
+
+// ─── SECTION 13: Pros & Cons ──────────────────────────
 export const prosConsSectionSchema = z
   .object({
     prosList: z.array(z.string().max(250)).max(30).default([]),
@@ -386,7 +492,7 @@ export const sectionSchemas = {
   'symbol-specs': z.any(),
   funding: z.any(),
   activity: z.any(),
-  'business-areas': z.any(),
+  'business-areas': businessAreasSectionSchema,
 };
 
 export type WizardSectionKey = keyof typeof sectionSchemas;

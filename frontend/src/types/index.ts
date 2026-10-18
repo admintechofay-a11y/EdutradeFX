@@ -215,8 +215,8 @@ export interface BrokerClientActivity {
 export interface BrokerBusinessArea {
   id: string;
   brokerId?: string;
+  regionCode?: string | null;
   countryOrRegion: string;
-  clientsNote?: string | null;
   sortOrder: number;
   createdAt?: string;
 }

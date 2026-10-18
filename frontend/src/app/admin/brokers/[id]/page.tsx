@@ -31,6 +31,7 @@ import {
   Check,
   ShieldAlert,
   Save,
+  Globe,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '@/lib/api';
@@ -430,6 +431,32 @@ export default function AdminBrokerAuditDetailPage() {
             );
           })}
         </div>
+      </div>
+
+      {/* ── PRIMARY REGIONAL FOOTPRINT ────────────── */}
+      <div className="bg-white rounded-3xl p-6 border border-border shadow-sm space-y-4">
+        <div className="flex items-center gap-2">
+          <Globe className="w-5 h-5 text-blue" />
+          <h3 className="text-base font-black text-navy uppercase tracking-wider">
+            Primary Regional Footprint ({broker.businessAreas?.length || 0})
+          </h3>
+        </div>
+        {broker.businessAreas && broker.businessAreas.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {broker.businessAreas.map((area) => (
+              <span
+                key={area.id || area.regionCode || area.countryOrRegion}
+                className="px-3.5 py-1.5 rounded-full bg-blue/10 text-blue font-bold text-xs border border-blue/20"
+              >
+                {area.countryOrRegion}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <div className="p-4 rounded-xl bg-surface-tint text-xs text-text-muted">
+            No regional footprint areas recorded yet.
+          </div>
+        )}
       </div>
 
       {/* ── CONFIDENTIAL FINANCIAL AUDIT DATA ────────────── */}

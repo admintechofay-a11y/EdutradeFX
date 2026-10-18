@@ -18,7 +18,12 @@ import {
 } from '@prisma/client';
 import { transporter } from '../../config/email';
 import { sendLeadNotificationToAdmin } from '../../utils/email.utils';
-import { sectionSchemas, WizardSectionKey } from './broker.schemas';
+import {
+  sectionSchemas,
+  WizardSectionKey,
+  REGIONAL_FOOTPRINT_LABELS,
+  RegionalFootprintCode,
+} from './broker.schemas';
 import { encryptBrokerCredential } from '../../utils/crypto.utils';
 
 // ─── Explicit Public DTO Projection (Zero Leaks) ───────
@@ -244,6 +249,15 @@ export const publicBrokerSelect = {
       createdAt: true,
     },
   },
+  businessAreas: {
+    select: {
+      id: true,
+      regionCode: true,
+      countryOrRegion: true,
+      sortOrder: true,
+    },
+    orderBy: { sortOrder: 'asc' as const },
+  },
 };
 
 /**
@@ -353,7 +367,7 @@ export async function recomputeBrokerSummary(brokerId: string, tx: Prisma.Transa
   if (broker.depositMethodItems.length > 0) score++;
   if (broker.withdrawalMethodItems.length > 0) score++;
   if ((broker.liquidityProviders && broker.liquidityProviders.length > 0) || broker.liquidityProvider || broker.personalBookSize) score++;
-  if ((broker.regionalFootprint && broker.regionalFootprint.length > 0) || broker.businessAreas.length > 0) score++;
+  if (broker.businessAreas.length > 0) score++;
   if (broker.prosList.length > 0 || broker.consList.length > 0) score++;
   if (broker.awards.length > 0) score++;
   if (broker.socialLinks || broker.promoVideoUrl) score++;
@@ -476,7 +490,18 @@ export class BrokerService {
         symbolSpecs: { orderBy: { sortOrder: 'asc' } },
         fundingYears: { orderBy: { sortOrder: 'asc' } },
         clientActivity: true,
-        businessAreas: { orderBy: { sortOrder: 'asc' } },
+        businessAreas: {
+          select: {
+            id: true,
+            brokerId: true,
+            regionCode: true,
+            countryOrRegion: true,
+            sortOrder: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+          orderBy: { sortOrder: 'asc' },
+        },
         awards: { orderBy: { sortOrder: 'asc' } },
         documents: { orderBy: { createdAt: 'desc' } },
       },
@@ -803,11 +828,19 @@ export class BrokerService {
         }
 
         case 'business-areas': {
-          // B25: Deprecated, regional footprint now stored directly on Broker
-          if (validated.regionalFootprint) {
-            await tx.broker.update({
-              where: { id: broker.id },
-              data: { regionalFootprint: validated.regionalFootprint },
+          await tx.brokerBusinessArea.deleteMany({ where: { brokerId: broker.id } });
+          const areas = validated.businessAreas || [];
+          if (areas.length > 0) {
+            await tx.brokerBusinessArea.createMany({
+              data: areas.map((area: any, idx: number) => ({
+                brokerId: broker.id,
+                regionCode: area.regionCode,
+                countryOrRegion:
+                  REGIONAL_FOOTPRINT_LABELS[area.regionCode as RegionalFootprintCode] ||
+                  area.countryOrRegion ||
+                  area.regionCode,
+                sortOrder: area.sortOrder ?? idx + 1,
+              })),
             });
           }
           break;
@@ -970,6 +1003,12 @@ export class BrokerService {
     if (!docTypes.includes(BrokerDocType.POLICY_TERMS)) missingFields.push('Terms & Conditions Policy PDF');
     if (!docTypes.includes(BrokerDocType.POLICY_RISK_DISCLOSURE)) missingFields.push('Risk Disclosure Policy PDF');
     if (!docTypes.includes(BrokerDocType.POLICY_AML)) missingFields.push('Anti-Money Laundering (AML) Policy PDF');
+
+    // 6. Regional Footprint (Min 1 selection required at submit)
+    const businessAreasCount = await prisma.brokerBusinessArea.count({ where: { brokerId: broker.id } });
+    if (businessAreasCount === 0) {
+      missingFields.push('At least one Primary Regional Footprint selection');
+    }
 
     if (missingFields.length > 0) {
       throw new AppError(

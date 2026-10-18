@@ -524,6 +524,26 @@ export default function BrokerDetailPage() {
                   )}
                 </div>
               </div>
+
+              {/* Primary Regional Footprint */}
+              {broker.businessAreas && broker.businessAreas.length > 0 && (
+                <div className="p-6 rounded-3xl bg-white border border-border shadow-sm space-y-4">
+                  <h3 className="text-base font-black text-navy uppercase tracking-wider flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-blue" />
+                    Primary Regional Footprint
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {broker.businessAreas.map((area) => (
+                      <span
+                        key={area.id || area.regionCode || area.countryOrRegion}
+                        className="px-3.5 py-1.5 rounded-full bg-blue/10 text-blue text-xs font-bold border border-blue/20"
+                      >
+                        {area.countryOrRegion}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Sidebar Overview Snapshot */}

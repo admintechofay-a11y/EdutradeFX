@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Building2,
   Server,
@@ -52,8 +52,10 @@ import {
   DEPOSIT_PAYMENT_METHODS,
   WITHDRAWAL_PAYMENT_METHODS,
   POLICY_DOC_TYPES,
+  REGIONAL_FOOTPRINT_OPTIONS,
 } from '@/lib/brokerOptions';
 import { Broker, BrokerDocType } from '@/types';
+import { useBrokerOptions } from '@/lib/useBrokerOptions';
 import { OptionSelect } from '@/components/common/OptionSelect';
 import { PhoneInput } from '@/components/common/PhoneInput';
 import { NumericInput } from '@/components/common/NumericInput';
@@ -63,7 +65,6 @@ import {
   ISO_4217_CURRENCIES,
   COUNTRY_CITIES,
   BUSINESS_MODELS,
-  REGIONAL_FOOTPRINT_OPTIONS,
   FIXED_SPREADS,
 } from '@/lib/referenceData';
 
@@ -3182,34 +3183,159 @@ function StepRegionalFootprint({
   onSave: (data: any) => Promise<boolean>;
   onNext: () => void;
 }) {
-  const [regionalFootprint, setRegionalFootprint] = useState<string[]>(
-    broker.regionalFootprint && broker.regionalFootprint.length > 0
-      ? broker.regionalFootprint
-      : broker.businessAreas && broker.businessAreas.length > 0
-      ? broker.businessAreas.map((b) => b.countryOrRegion)
-      : ['United Kingdom & Europe (EEA)', 'Asia-Pacific (APAC)', 'Middle East & North Africa (MENA)']
-  );
+  const { data: remoteOptions } = useBrokerOptions('REGIONAL_FOOTPRINT');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Extract initial selected region codes from broker.businessAreas
+  const [selectedCodes, setSelectedCodes] = useState<string[]>(() => {
+    if (broker.businessAreas && broker.businessAreas.length > 0) {
+      const codes: string[] = [];
+      for (const area of broker.businessAreas) {
+        if (area.regionCode) {
+          codes.push(area.regionCode);
+        } else if (area.countryOrRegion) {
+          const found = REGIONAL_FOOTPRINT_OPTIONS.find(
+            (o) => o.label.toLowerCase() === area.countryOrRegion.toLowerCase()
+          );
+          if (found) {
+            codes.push(found.code);
+          }
+        }
+      }
+      if (codes.length > 0) return Array.from(new Set(codes));
+    }
+    if (broker.regionalFootprint && broker.regionalFootprint.length > 0) {
+      const codes: string[] = [];
+      for (const rf of broker.regionalFootprint) {
+        const foundByCode = REGIONAL_FOOTPRINT_OPTIONS.find((o) => o.code === rf);
+        if (foundByCode) {
+          codes.push(foundByCode.code);
+        } else {
+          const foundByLabel = REGIONAL_FOOTPRINT_OPTIONS.find(
+            (o) => o.label.toLowerCase() === rf.toLowerCase()
+          );
+          if (foundByLabel) codes.push(foundByLabel.code);
+        }
+      }
+      if (codes.length > 0) return Array.from(new Set(codes));
+    }
+    return [];
+  });
+
+  // Check for unmatched legacy rows (rows without regionCode where label couldn't be matched)
+  const hasUnmatchedLegacy = useMemo(() => {
+    if (!broker.businessAreas || broker.businessAreas.length === 0) return false;
+    return broker.businessAreas.some((b) => {
+      if (b.regionCode) return false;
+      const found = REGIONAL_FOOTPRINT_OPTIONS.find(
+        (o) => o.label.toLowerCase() === (b.countryOrRegion || '').toLowerCase()
+      );
+      return !found;
+    });
+  }, [broker.businessAreas]);
+
+  const isGlobalSelected = selectedCodes.includes('GLOBAL');
+
+  // Options list with coverage hint & dynamic disabling if GLOBAL selected
+  const options = useMemo(() => {
+    const source =
+      remoteOptions && remoteOptions.length > 0 ? remoteOptions : REGIONAL_FOOTPRINT_OPTIONS;
+    return source.map((opt) => ({
+      value: opt.code,
+      label: opt.label,
+      description: (opt as any).meta?.coverage || (opt as any).coverage || '',
+      disabled: isGlobalSelected && opt.code !== 'GLOBAL',
+    }));
+  }, [remoteOptions, isGlobalSelected]);
+
+  const handleRegionChange = (newCodes: string[]) => {
+    const previouslyHadGlobal = selectedCodes.includes('GLOBAL');
+    const nowHasGlobal = newCodes.includes('GLOBAL');
+
+    if (!previouslyHadGlobal && nowHasGlobal) {
+      // Just selected GLOBAL: clear all other regions
+      setSelectedCodes(['GLOBAL']);
+    } else if (previouslyHadGlobal && nowHasGlobal && newCodes.length > 1) {
+      // Already had GLOBAL, user picked another region: un-select GLOBAL
+      setSelectedCodes(newCodes.filter((c) => c !== 'GLOBAL'));
+    } else {
+      setSelectedCodes(newCodes);
+    }
+  };
+
+  const handleSave = async (isProceeding: boolean) => {
+    if (selectedCodes.length === 0) {
+      toast.error('Please select at least one regional footprint.');
+      return false;
+    }
+    if (selectedCodes.length > 20) {
+      toast.error('Maximum 20 regions allowed.');
+      return false;
+    }
+
+    const payload = {
+      businessAreas: selectedCodes.map((code, idx) => ({
+        regionCode: code,
+        sortOrder: idx + 1,
+      })),
+    };
+
+    const ok = await onSave(payload);
+    if (ok && isProceeding) {
+      onNext();
+    }
+    return ok;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const ok = await onSave({ regionalFootprint });
-    if (ok) onNext();
+    handleSave(true);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-2">
-        <label className="text-xs font-bold text-navy">Primary Regional Client Footprint</label>
-        <MultiSelect
-          options={REGIONAL_FOOTPRINT_OPTIONS.map((opt) => ({ value: opt, label: opt }))}
-          value={regionalFootprint}
-          onChange={setRegionalFootprint}
-          placeholder="Select active trading regions..."
-          disabled={isReadOnly}
-        />
-        <p className="text-[11px] text-text-muted">
-          Select all global regions and jurisdictions where your brokerage actively onboards traders and executes order flow.
-        </p>
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-lg font-black text-navy">Primary Regional Footprint</h2>
+          <p className="text-xs text-text-muted mt-1">
+            Select every region where you actively onboard clients. Choose Global / Worldwide if you accept clients everywhere.
+          </p>
+        </div>
+
+        {hasUnmatchedLegacy && (
+          <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-xs">
+            <AlertCircle className="w-4 h-4 shrink-0 text-amber-600" />
+            <span>Some previous entries couldn&apos;t be matched. Please re-select your regions.</span>
+          </div>
+        )}
+
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-navy">Target Geographic Jurisdictions</label>
+          <MultiSelect
+            options={options}
+            value={selectedCodes}
+            onChange={handleRegionChange}
+            placeholder="Search and select active regions..."
+            disabled={isReadOnly}
+            searchable={true}
+            maxSelected={20}
+          />
+          <div className="flex justify-between items-center text-[11px] text-text-muted">
+            <span>
+              {isGlobalSelected
+                ? 'Global / Worldwide selected (exclusive — all international markets enabled).'
+                : `${selectedCodes.length} / 20 regions selected`}
+            </span>
+            {selectedCodes.length > 0 && !isReadOnly && (
+              <button
+                type="button"
+                onClick={() => setSelectedCodes([])}
+                className="text-rose-500 hover:underline font-bold"
+              >
+                Clear all
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Action Footer */}
@@ -3217,7 +3343,7 @@ function StepRegionalFootprint({
         <button
           type="button"
           disabled={isReadOnly || saving}
-          onClick={() => onSave({ regionalFootprint })}
+          onClick={() => handleSave(false)}
           className="px-5 py-2.5 rounded-full border border-border text-navy font-bold text-xs hover:bg-surface-tint flex items-center gap-2 transition"
         >
           <Save className="w-3.5 h-3.5" />

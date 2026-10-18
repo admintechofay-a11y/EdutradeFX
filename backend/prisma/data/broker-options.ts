@@ -1,6 +1,6 @@
 // AUTO-GENERATED from Dropbox_of__broker_.pdf. Do not hand-edit counts.
-// Counts: REGULATOR 58 (+OTHER), LANGUAGE 133, CURRENCY 9 (+OTHER), LICENSE_STATUS 8, DEPOSIT_BONUS 21, LEVERAGE 23, TIMEFRAME 9
-export type BrokerOptionSeed = { group: 'REGULATOR'|'LANGUAGE'|'CURRENCY'|'LICENSE_STATUS'|'DEPOSIT_BONUS'|'LEVERAGE'|'TIMEFRAME'; code: string; label: string; sortOrder: number; meta: Record<string, unknown> };
+// Counts: REGULATOR 58 (+OTHER), LANGUAGE 133, CURRENCY 9 (+OTHER), LICENSE_STATUS 8, DEPOSIT_BONUS 21, LEVERAGE 23, TIMEFRAME 9, REGIONAL_FOOTPRINT 20
+export type BrokerOptionSeed = { group: 'REGULATOR'|'LANGUAGE'|'CURRENCY'|'LICENSE_STATUS'|'DEPOSIT_BONUS'|'LEVERAGE'|'TIMEFRAME'|'REGIONAL_FOOTPRINT'; code: string; label: string; sortOrder: number; meta: Record<string, unknown> };
 export const BROKER_OPTIONS: BrokerOptionSeed[] = [
   { group: "REGULATOR", code: "ASIC", label: "(ASIC) Australia Securities & Investment Commission", sortOrder: 1, meta: {"acronym": "ASIC", "kind": "REGULATOR", "pdfPosition": 1} },
   { group: "REGULATOR", code: "NFA", label: "(NFA) National Futures Association", sortOrder: 2, meta: {"acronym": "NFA", "kind": "REGULATOR", "pdfPosition": 2} },
@@ -265,4 +265,24 @@ export const BROKER_OPTIONS: BrokerOptionSeed[] = [
   { group: "TIMEFRAME", code: "D1", label: "D1", sortOrder: 7, meta: {} },
   { group: "TIMEFRAME", code: "W1", label: "W1", sortOrder: 8, meta: {} },
   { group: "TIMEFRAME", code: "MN", label: "MN", sortOrder: 9, meta: {} },
+  { group: "REGIONAL_FOOTPRINT", code: "UK_EEA", label: "United Kingdom & Europe (EEA)", sortOrder: 1, meta: { coverage: "UK and European Economic Area" } },
+  { group: "REGIONAL_FOOTPRINT", code: "EUROPE_NON_EEA", label: "Europe (Non-EEA)", sortOrder: 2, meta: { coverage: "Switzerland, Balkans and other non-EEA European markets" } },
+  { group: "REGIONAL_FOOTPRINT", code: "NORTH_AMERICA", label: "North America", sortOrder: 3, meta: { coverage: "United States, Canada and Mexico" } },
+  { group: "REGIONAL_FOOTPRINT", code: "CENTRAL_AMERICA", label: "Central America", sortOrder: 4, meta: { coverage: "Central American countries" } },
+  { group: "REGIONAL_FOOTPRINT", code: "CARIBBEAN", label: "Caribbean", sortOrder: 5, meta: { coverage: "Caribbean countries and territories" } },
+  { group: "REGIONAL_FOOTPRINT", code: "SOUTH_AMERICA", label: "South America", sortOrder: 6, meta: { coverage: "Brazil, Argentina, Chile, Colombia and others" } },
+  { group: "REGIONAL_FOOTPRINT", code: "MIDDLE_EAST", label: "Middle East", sortOrder: 7, meta: { coverage: "UAE, Saudi Arabia, Qatar, Bahrain and neighboring markets" } },
+  { group: "REGIONAL_FOOTPRINT", code: "NORTH_AFRICA", label: "North Africa", sortOrder: 8, meta: { coverage: "Egypt, Morocco, Tunisia, Algeria and Libya" } },
+  { group: "REGIONAL_FOOTPRINT", code: "WEST_AFRICA", label: "West Africa", sortOrder: 9, meta: { coverage: "Nigeria, Ghana, Senegal and neighbouring markets" } },
+  { group: "REGIONAL_FOOTPRINT", code: "EAST_AFRICA", label: "East Africa", sortOrder: 10, meta: { coverage: "Kenya, Tanzania, Ethiopia and neighbouring markets" } },
+  { group: "REGIONAL_FOOTPRINT", code: "CENTRAL_AFRICA", label: "Central Africa", sortOrder: 11, meta: { coverage: "Cameroon, Gabon, DRC and neighbouring markets" } },
+  { group: "REGIONAL_FOOTPRINT", code: "SOUTHERN_AFRICA", label: "Southern Africa", sortOrder: 12, meta: { coverage: "South Africa, Botswana, Namibia and neighbouring markets" } },
+  { group: "REGIONAL_FOOTPRINT", code: "SOUTH_ASIA", label: "South Asia", sortOrder: 13, meta: { coverage: "India, Pakistan, Bangladesh, Sri Lanka, Nepal and others" } },
+  { group: "REGIONAL_FOOTPRINT", code: "CENTRAL_ASIA", label: "Central Asia", sortOrder: 14, meta: { coverage: "Kazakhstan, Uzbekistan, Kyrgyzstan and neighbouring markets" } },
+  { group: "REGIONAL_FOOTPRINT", code: "EAST_ASIA", label: "East Asia", sortOrder: 15, meta: { coverage: "China, Japan, South Korea, Mongolia and Taiwan" } },
+  { group: "REGIONAL_FOOTPRINT", code: "SOUTHEAST_ASIA", label: "Southeast Asia", sortOrder: 16, meta: { coverage: "Singapore, Malaysia, Thailand, Indonesia, Vietnam and others" } },
+  { group: "REGIONAL_FOOTPRINT", code: "ANZ", label: "Australia & New Zealand", sortOrder: 17, meta: { coverage: "Australia, New Zealand and associated markets" } },
+  { group: "REGIONAL_FOOTPRINT", code: "PACIFIC_ISLANDS", label: "Pacific Islands", sortOrder: 18, meta: { coverage: "Pacific island countries and territories" } },
+  { group: "REGIONAL_FOOTPRINT", code: "GLOBAL", label: "Global / Worldwide", sortOrder: 19, meta: { coverage: "All regions" } },
+  { group: "REGIONAL_FOOTPRINT", code: "OTHER_EMERGING", label: "Other / Emerging Markets", sortOrder: 20, meta: { coverage: "Markets not otherwise classified" } },
 ];

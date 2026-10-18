@@ -76,6 +76,26 @@ export const BrokerCard: React.FC<BrokerCardProps> = ({ broker }) => {
           )}
         </div>
 
+        {/* Regional Footprint Tags */}
+        {broker.businessAreas && broker.businessAreas.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1.5 mb-3">
+            <span className="text-[10px] text-text-muted font-medium">Regions:</span>
+            {broker.businessAreas.slice(0, 2).map((area) => (
+              <span
+                key={area.id || area.regionCode || area.countryOrRegion}
+                className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue/10 text-blue border border-blue/20"
+              >
+                {area.countryOrRegion}
+              </span>
+            ))}
+            {broker.businessAreas.length > 2 && (
+              <span className="text-[10px] text-text-muted font-medium">
+                +{broker.businessAreas.length - 2}
+              </span>
+            )}
+          </div>
+        )}
+
         {/* Trading Parameters Grid */}
         <div className="grid grid-cols-3 gap-2 p-3.5 rounded-xl bg-surface-tint border border-border mb-4 text-center">
           <div>

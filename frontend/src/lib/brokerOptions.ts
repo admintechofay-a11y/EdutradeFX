@@ -334,3 +334,34 @@ export const POLICY_DOC_TYPES: { type: BrokerDocType; label: string; isMandatory
     desc: 'Additional audited statements, license certificates, or disclosures.',
   },
 ];
+
+export interface RegionalFootprintOption {
+  code: string;
+  label: string;
+  sortOrder: number;
+  coverage: string;
+}
+
+export const REGIONAL_FOOTPRINT_OPTIONS: RegionalFootprintOption[] = [
+  { code: 'UK_EEA', label: 'United Kingdom & Europe (EEA)', sortOrder: 1, coverage: 'UK and European Economic Area' },
+  { code: 'EUROPE_NON_EEA', label: 'Europe (Non-EEA)', sortOrder: 2, coverage: 'Switzerland, Balkans and other non-EEA European markets' },
+  { code: 'NORTH_AMERICA', label: 'North America', sortOrder: 3, coverage: 'United States, Canada and Mexico' },
+  { code: 'CENTRAL_AMERICA', label: 'Central America', sortOrder: 4, coverage: 'Central American countries' },
+  { code: 'CARIBBEAN', label: 'Caribbean', sortOrder: 5, coverage: 'Caribbean countries and territories' },
+  { code: 'SOUTH_AMERICA', label: 'South America', sortOrder: 6, coverage: 'Brazil, Argentina, Chile, Colombia and others' },
+  { code: 'MIDDLE_EAST', label: 'Middle East', sortOrder: 7, coverage: 'UAE, Saudi Arabia, Qatar, Bahrain and neighboring markets' },
+  { code: 'NORTH_AFRICA', label: 'North Africa', sortOrder: 8, coverage: 'Egypt, Morocco, Tunisia, Algeria and Libya' },
+  { code: 'WEST_AFRICA', label: 'West Africa', sortOrder: 9, coverage: 'Nigeria, Ghana, Senegal and neighbouring markets' },
+  { code: 'EAST_AFRICA', label: 'East Africa', sortOrder: 10, coverage: 'Kenya, Tanzania, Ethiopia and neighbouring markets' },
+  { code: 'CENTRAL_AFRICA', label: 'Central Africa', sortOrder: 11, coverage: 'Cameroon, Gabon, DRC and neighbouring markets' },
+  { code: 'SOUTHERN_AFRICA', label: 'Southern Africa', sortOrder: 12, coverage: 'South Africa, Botswana, Namibia and neighbouring markets' },
+  { code: 'SOUTH_ASIA', label: 'South Asia', sortOrder: 13, coverage: 'India, Pakistan, Bangladesh, Sri Lanka, Nepal and others' },
+  { code: 'CENTRAL_ASIA', label: 'Central Asia', sortOrder: 14, coverage: 'Kazakhstan, Uzbekistan, Kyrgyzstan and neighbouring markets' },
+  { code: 'EAST_ASIA', label: 'East Asia', sortOrder: 15, coverage: 'China, Japan, South Korea, Mongolia and Taiwan' },
+  { code: 'SOUTHEAST_ASIA', label: 'Southeast Asia', sortOrder: 16, coverage: 'Singapore, Malaysia, Thailand, Indonesia, Vietnam and others' },
+  { code: 'ANZ', label: 'Australia & New Zealand', sortOrder: 17, coverage: 'Australia, New Zealand and associated markets' },
+  { code: 'PACIFIC_ISLANDS', label: 'Pacific Islands', sortOrder: 18, coverage: 'Pacific island countries and territories' },
+  { code: 'GLOBAL', label: 'Global / Worldwide', sortOrder: 19, coverage: 'All regions' },
+  { code: 'OTHER_EMERGING', label: 'Other / Emerging Markets', sortOrder: 20, coverage: 'Markets not otherwise classified' },
+];
+

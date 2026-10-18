@@ -441,7 +441,18 @@ export class AdminService {
         symbolSpecs: { orderBy: { sortOrder: 'asc' } },
         fundingYears: { orderBy: { sortOrder: 'asc' } },
         clientActivity: true,
-        businessAreas: { orderBy: { sortOrder: 'asc' } },
+        businessAreas: {
+          select: {
+            id: true,
+            brokerId: true,
+            regionCode: true,
+            countryOrRegion: true,
+            sortOrder: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+          orderBy: { sortOrder: 'asc' },
+        },
         awards: { orderBy: { sortOrder: 'asc' } },
         documents: { orderBy: { createdAt: 'desc' } },
         reviews: {

@@ -487,6 +487,20 @@
           "docType": "POLICY_AML",
           "createdAt": "2026-10-08T07:01:58.907Z"
         }
+      ],
+      "businessAreas": [
+        {
+          "id": "1735aa61-2a75-4c8f-bbca-75e01c8a1f3f",
+          "regionCode": "ANZ",
+          "countryOrRegion": "Australia & New Zealand",
+          "sortOrder": 1
+        },
+        {
+          "id": "a4a3ef86-2a3a-498f-9c30-2be0324cfe59",
+          "regionCode": "UK_EEA",
+          "countryOrRegion": "United Kingdom & Europe (EEA)",
+          "sortOrder": 2
+        }
       ]
     },
     {
@@ -640,7 +654,8 @@
       "depositMethodItems": [],
       "withdrawalMethodItems": [],
       "awards": [],
-      "documents": []
+      "documents": [],
+      "businessAreas": []
     },
     {
       "id": "8ab6e289-7200-4d3e-b2f4-7a4524d093dd",
@@ -793,7 +808,8 @@
       "depositMethodItems": [],
       "withdrawalMethodItems": [],
       "awards": [],
-      "documents": []
+      "documents": [],
+      "businessAreas": []
     },
     {
       "id": "e2955d49-a0e7-45c6-9c3a-88ea7a2ac3bb",
@@ -946,7 +962,8 @@
       "depositMethodItems": [],
       "withdrawalMethodItems": [],
       "awards": [],
-      "documents": []
+      "documents": [],
+      "businessAreas": []
     },
     {
       "id": "cd419f4b-cf6f-4006-986d-cc468453d429",
@@ -1099,7 +1116,8 @@
       "depositMethodItems": [],
       "withdrawalMethodItems": [],
       "awards": [],
-      "documents": []
+      "documents": [],
+      "businessAreas": []
     },
     {
       "id": "6367c31d-a66f-4357-8a1a-0aef1c3820a6",
@@ -1250,7 +1268,7 @@
       ],
       "completenessPct": 100,
       "createdAt": "2026-09-24T23:14:54.902Z",
-      "updatedAt": "2026-10-18T14:56:17.075Z",
+      "updatedAt": "2026-10-18T15:32:48.187Z",
       "licenses": [
         {
           "id": "9a5d22cb-640f-4cc6-8234-8758f422e75f",
@@ -1630,6 +1648,20 @@
           "fileType": "application/pdf",
           "docType": "POLICY_OTHER",
           "createdAt": "2026-10-08T07:01:32.534Z"
+        }
+      ],
+      "businessAreas": [
+        {
+          "id": "28c44dac-987e-4a55-a183-e9cbd246bf7b",
+          "regionCode": "ANZ",
+          "countryOrRegion": "Australia & New Zealand",
+          "sortOrder": 1
+        },
+        {
+          "id": "1127d168-3c59-4ee9-a175-ad9204219c1b",
+          "regionCode": "EAST_ASIA",
+          "countryOrRegion": "East Asia",
+          "sortOrder": 2
         }
       ]
     }

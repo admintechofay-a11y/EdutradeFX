@@ -10,6 +10,7 @@ export interface MultiSelectOption {
   label: string;
   description?: string;
   group?: string;
+  disabled?: boolean;
 }
 
 export interface MultiSelectProps {
@@ -88,6 +89,8 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
   }, [normalizedOptions, search]);
 
   const toggleOption = (optVal: string) => {
+    const optObj = normalizedOptions.find((o) => o.value === optVal);
+    if (optObj?.disabled) return;
     if (value.includes(optVal)) {
       onChange(value.filter((v) => v !== optVal));
     } else {
@@ -180,9 +183,12 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
               <button
                 key={opt.value}
                 type="button"
+                disabled={opt.disabled}
                 onClick={() => toggleOption(opt.value)}
                 className={`w-full flex items-center justify-between px-3 py-2 text-left rounded-lg transition ${
-                  isSelected
+                  opt.disabled
+                    ? 'opacity-40 cursor-not-allowed bg-slate-50'
+                    : isSelected
                     ? 'bg-blue/10 text-blue font-bold'
                     : 'hover:bg-surface-tint text-text-heading'
                 }`}

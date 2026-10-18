@@ -220,6 +220,117 @@ async function runBrokerV2Suite() {
       Array.isArray(patchData.data.availableTimeframes) && patchData.data.availableTimeframes.length === 5,
       'availableTimeframes persisted and returned'
     );
+
+    // -----------------------------------------------------------------
+    // 6. Regional Footprint Addendum Tests
+    // -----------------------------------------------------------------
+    console.log('\n6. Regional Footprint Multi-Select & Exclusivity');
+
+    // 6a. Valid Multi-Select Save
+    const footprintRes = await fetch(`${baseUrl}/api/brokers/my/onboarding/business-areas`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${brokerToken}`,
+      },
+      body: JSON.stringify({
+        businessAreas: [
+          { regionCode: 'SOUTH_ASIA', sortOrder: 1 },
+          { regionCode: 'MIDDLE_EAST', sortOrder: 2 },
+        ],
+      }),
+    });
+    assert(footprintRes.status === 200, 'PATCH /api/brokers/my/onboarding/business-areas returns 200 OK');
+    const footprintData = (await footprintRes.json()) as any;
+    assert(
+      Array.isArray(footprintData.data.businessAreas) && footprintData.data.businessAreas.length === 2,
+      'businessAreas persisted with exactly 2 regions'
+    );
+    assert(
+      footprintData.data.businessAreas[0].countryOrRegion === 'South Asia',
+      'regionCode SOUTH_ASIA mapped to label "South Asia"'
+    );
+    assert(
+      footprintData.data.businessAreas[0].clientsNote === undefined,
+      'clientsNote is not present in response serializer'
+    );
+
+    // 6b. Global Exclusivity Enforced on Server
+    const globalConflictRes = await fetch(`${baseUrl}/api/brokers/my/onboarding/business-areas`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${brokerToken}`,
+      },
+      body: JSON.stringify({
+        businessAreas: [
+          { regionCode: 'GLOBAL', sortOrder: 1 },
+          { regionCode: 'NORTH_AMERICA', sortOrder: 2 },
+        ],
+      }),
+    });
+    assert(
+      globalConflictRes.status === 400,
+      'GLOBAL combined with other regions is rejected with 400 Bad Request'
+    );
+
+    // 6c. Duplicate Regions Rejected
+    const dupeRes = await fetch(`${baseUrl}/api/brokers/my/onboarding/business-areas`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${brokerToken}`,
+      },
+      body: JSON.stringify({
+        businessAreas: [
+          { regionCode: 'SOUTH_ASIA', sortOrder: 1 },
+          { regionCode: 'SOUTH_ASIA', sortOrder: 2 },
+        ],
+      }),
+    });
+    assert(
+      dupeRes.status === 400,
+      'Duplicate regions payload is rejected with 400 Bad Request'
+    );
+
+    // 6d. Legacy payload with clientsNote does NOT 400 (gracefully stripped)
+    const legacyPayloadRes = await fetch(`${baseUrl}/api/brokers/my/onboarding/business-areas`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${brokerToken}`,
+      },
+      body: JSON.stringify({
+        businessAreas: [
+          { regionCode: 'UK_EEA', clientsNote: '50% of active accounts', sortOrder: 1 },
+        ],
+      }),
+    });
+    assert(
+      legacyPayloadRes.status === 200,
+      'Legacy payload containing clientsNote is accepted without 400'
+    );
+
+    // 6e. Simplified payload format { regionalFootprint: [...] }
+    const simplifiedRes = await fetch(`${baseUrl}/api/brokers/my/onboarding/business-areas`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${brokerToken}`,
+      },
+      body: JSON.stringify({
+        regionalFootprint: ['ANZ', 'EAST_ASIA'],
+      }),
+    });
+    assert(
+      simplifiedRes.status === 200,
+      'Simplified payload { regionalFootprint: [...] } is accepted and normalized'
+    );
+    const simplifiedData = (await simplifiedRes.json()) as any;
+    assert(
+      Array.isArray(simplifiedData.data.businessAreas) && simplifiedData.data.businessAreas.length === 2,
+      'Normalized into 2 businessAreas rows'
+    );
   } finally {
     await new Promise<void>((resolve) => server.close(() => resolve()));
     await prisma.$disconnect();

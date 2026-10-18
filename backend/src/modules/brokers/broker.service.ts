@@ -17,6 +17,7 @@ import {
   SpreadType,
 } from '@prisma/client';
 import { transporter } from '../../config/email';
+import { sendLeadNotificationToAdmin } from '../../utils/email.utils';
 import { sectionSchemas, WizardSectionKey } from './broker.schemas';
 import { encryptBrokerCredential } from '../../utils/crypto.utils';
 
@@ -28,6 +29,8 @@ export const publicBrokerSelect = {
   slug: true,
   logo: true,
   website: true,
+  ibLink: true,
+  mapLink: true,
   description: true,
   platformDescription: true,
   yearFounded: true,
@@ -37,9 +40,9 @@ export const publicBrokerSelect = {
   state: true,
   postalCode: true,
   country: true,
+  operatingCountries: true,
   phone: true,
   email: true,
-  mtRegisteredCountryRegion: true,
   isRegulated: true,
   totalTradableSymbols: true,
   accountCurrencies: true,
@@ -47,8 +50,8 @@ export const publicBrokerSelect = {
   availablePlatforms: true,
   platformLinks: true,
   deviceSupport: true,
-  availableTimeframes: true,
   businessType: true,
+  businessModel: true,
   officeContactNumber: true,
   officeContactEmail: true,
   countryRestrictions: true,
@@ -58,7 +61,9 @@ export const publicBrokerSelect = {
   supportAvailability: true,
   languagesSupported: true,
   fundsSecurity: true,
+  liquidityProviders: true,
   liquidityProvider: true,
+  regionalFootprint: true,
   personalBookSize: true,
   prosList: true,
   consList: true,
@@ -67,6 +72,7 @@ export const publicBrokerSelect = {
   avgRating: true,
   totalReviews: true,
   totalLeads: true,
+  openAccountClicks: true,
   status: true,
   isFeatured: true,
   isPremium: true,
@@ -134,6 +140,7 @@ export const publicBrokerSelect = {
       name: true,
       demoAvailable: true,
       currency: true,
+      baseCurrencies: true,
       currencyCode: true,
       currencyOther: true,
       spreadTypesLabel: true,
@@ -156,6 +163,7 @@ export const publicBrokerSelect = {
       swapShort: true,
       orderExecution: true,
       gtcMode: true,
+      gtcEnabled: true,
       eaAllowed: true,
       hedgingAllowed: true,
       nettingAllowed: true,
@@ -209,26 +217,6 @@ export const publicBrokerSelect = {
       timeTaken: true,
       extraFacilities: true,
       delayCompensation: true,
-      sortOrder: true,
-    },
-    orderBy: { sortOrder: 'asc' as const },
-  },
-  symbolSpecs: {
-    select: {
-      id: true,
-      accountGroupId: true,
-      symbol: true,
-      contractSize: true,
-      digits: true,
-      stopLevel: true,
-      stopOutPct: true,
-      commission: true,
-      spreadType: true,
-      spreadFrom: true,
-      minVolume: true,
-      maxVolume: true,
-      swapLong: true,
-      swapShort: true,
       sortOrder: true,
     },
     orderBy: { sortOrder: 'asc' as const },
@@ -350,9 +338,9 @@ export async function recomputeBrokerSummary(brokerId: string, tx: Prisma.Transa
   // 11. Supported countries
   const countries = broker.country ? [broker.country] : broker.countries;
 
-  // 12. Calculate Completeness % across 18 wizard sections:
+  // 12. Calculate Completeness % across 16 active wizard sections:
   let score = 0;
-  const totalSections = 18;
+  const totalSections = 16;
 
   if (broker.companyName && broker.country && broker.city && broker.email && broker.website) score++;
   if (broker.availablePlatforms.length > 0 || broker.servers.length > 0) score++;
@@ -364,13 +352,11 @@ export async function recomputeBrokerSummary(brokerId: string, tx: Prisma.Transa
   if (broker.ibPlans.length > 0) score++;
   if (broker.depositMethodItems.length > 0) score++;
   if (broker.withdrawalMethodItems.length > 0) score++;
-  if (broker.symbolSpecs.length > 0) score++;
-  if (broker.liquidityProvider || broker.personalBookSize) score++;
-  if (broker.businessAreas.length > 0) score++;
-  if (broker.fundingYears.length > 0) score++;
-  if (broker.clientActivity) score++;
+  if ((broker.liquidityProviders && broker.liquidityProviders.length > 0) || broker.liquidityProvider || broker.personalBookSize) score++;
+  if ((broker.regionalFootprint && broker.regionalFootprint.length > 0) || broker.businessAreas.length > 0) score++;
   if (broker.prosList.length > 0 || broker.consList.length > 0) score++;
   if (broker.awards.length > 0) score++;
+  if (broker.socialLinks || broker.promoVideoUrl) score++;
   if (broker.documents.length >= 3) score++;
 
   const completenessPct = Math.min(100, Math.round((score / totalSections) * 100));
@@ -437,6 +423,7 @@ export class BrokerService {
             name: true,
             demoAvailable: true,
             currency: true,
+            baseCurrencies: true,
             currencyCode: true,
             currencyOther: true,
             spreadTypesLabel: true,
@@ -459,6 +446,7 @@ export class BrokerService {
             swapShort: true,
             orderExecution: true,
             gtcMode: true,
+            gtcEnabled: true,
             eaAllowed: true,
             hedgingAllowed: true,
             nettingAllowed: true,
@@ -530,21 +518,25 @@ export class BrokerService {
             data: {
               registeredName: validated.registeredName,
               companyName: validated.companyName,
-              businessType: validated.businessType,
+              businessType: validated.businessType || validated.businessModel,
+              businessModel: validated.businessModel || validated.businessType,
               address: validated.address,
               city: validated.city,
               state: validated.state,
               postalCode: validated.postalCode,
               country: validated.country,
+              operatingCountries: validated.operatingCountries || [],
+              mapLink: validated.mapLink,
+              ibLink: validated.ibLink,
               website: validated.website,
               phone: validated.phone,
               email: validated.email,
               yearFounded: validated.yearFounded,
-              mtRegisteredCountryRegion: validated.mtRegisteredCountryRegion,
               isRegulated: validated.isRegulated,
               totalTradableSymbols: validated.totalTradableSymbols,
               accountCurrencies: validated.accountCurrencies,
               negativeBalanceProtection: validated.negativeBalanceProtection,
+              regionalFootprint: validated.regionalFootprint || [],
             },
           });
           break;
@@ -672,12 +664,20 @@ export class BrokerService {
               if (!isNaN(numPart)) leverageNum = numPart;
             }
 
+            const baseCurrencies = g.baseCurrencies && g.baseCurrencies.length > 0
+              ? g.baseCurrencies
+              : (g.currency ? [g.currency] : ['USD']);
+            const gtcEnabled = g.gtcEnabled !== undefined
+              ? Boolean(g.gtcEnabled)
+              : (g.gtcMode === 'AVAILABLE' || g.gtcMode === 'HOLD_WEEKEND');
+
             await tx.brokerAccountGroup.create({
               data: {
                 brokerId: broker.id,
                 name: g.name,
                 demoAvailable: g.demoAvailable,
-                currency: g.currency || 'USD',
+                currency: g.currency || baseCurrencies[0] || 'USD',
+                baseCurrencies,
                 currencyCode: g.currencyCode || null,
                 currencyOther: g.currencyOther || null,
                 spreadTypesLabel: g.spreadTypesLabel,
@@ -699,7 +699,8 @@ export class BrokerService {
                 swapLong: g.swapLong,
                 swapShort: g.swapShort,
                 orderExecution: g.orderExecution,
-                gtcMode: g.gtcMode,
+                gtcMode: g.gtcMode || (gtcEnabled ? GtcMode.AVAILABLE : GtcMode.UNAVAILABLE),
+                gtcEnabled,
                 eaAllowed: g.eaAllowed,
                 hedgingAllowed: g.hedgingAllowed,
                 nettingAllowed: g.nettingAllowed,
@@ -785,28 +786,7 @@ export class BrokerService {
 
         case 'symbol-specs':
         case 'symbols': {
-          await tx.brokerSymbolSpec.deleteMany({ where: { brokerId: broker.id } });
-          if (validated.symbolSpecs && validated.symbolSpecs.length > 0) {
-            await tx.brokerSymbolSpec.createMany({
-              data: validated.symbolSpecs.map((s: any, idx: number) => ({
-                brokerId: broker.id,
-                accountGroupId: s.accountGroupId || null,
-                symbol: s.symbol,
-                contractSize: s.contractSize,
-                digits: s.digits ?? 5,
-                stopLevel: s.stopLevel,
-                stopOutPct: s.stopOutPct,
-                commission: s.commission,
-                spreadType: s.spreadType,
-                spreadFrom: s.spreadFrom,
-                minVolume: new Prisma.Decimal(s.minVolume || 0.01),
-                maxVolume: new Prisma.Decimal(s.maxVolume || 100),
-                swapLong: s.swapLong,
-                swapShort: s.swapShort,
-                sortOrder: s.sortOrder ?? idx,
-              })),
-            });
-          }
+          // B23: Section 11 removed - deprecated no-op
           break;
         }
 
@@ -814,7 +794,8 @@ export class BrokerService {
           await tx.broker.update({
             where: { id: broker.id },
             data: {
-              liquidityProvider: validated.liquidityProvider,
+              liquidityProviders: validated.liquidityProviders || (validated.liquidityProvider ? [validated.liquidityProvider] : []),
+              liquidityProvider: validated.liquidityProvider || (validated.liquidityProviders ? validated.liquidityProviders.join(', ') : null),
               personalBookSize: validated.personalBookSize,
             },
           });
@@ -822,54 +803,19 @@ export class BrokerService {
         }
 
         case 'business-areas': {
-          await tx.brokerBusinessArea.deleteMany({ where: { brokerId: broker.id } });
-          if (validated.businessAreas && validated.businessAreas.length > 0) {
-            await tx.brokerBusinessArea.createMany({
-              data: validated.businessAreas.map((b: any, idx: number) => ({
-                brokerId: broker.id,
-                countryOrRegion: b.countryOrRegion,
-                clientsNote: b.clientsNote,
-                sortOrder: b.sortOrder ?? idx,
-              })),
+          // B25: Deprecated, regional footprint now stored directly on Broker
+          if (validated.regionalFootprint) {
+            await tx.broker.update({
+              where: { id: broker.id },
+              data: { regionalFootprint: validated.regionalFootprint },
             });
           }
           break;
         }
 
-        case 'funding': {
-          await tx.brokerFundingYear.deleteMany({ where: { brokerId: broker.id } });
-          if (validated.fundingYears && validated.fundingYears.length > 0) {
-            await tx.brokerFundingYear.createMany({
-              data: validated.fundingYears.map((f: any, idx: number) => ({
-                brokerId: broker.id,
-                year: f.year,
-                netDepositUsd: new Prisma.Decimal(f.netDepositUsd || 0),
-                netWithdrawUsd: new Prisma.Decimal(f.netWithdrawUsd || 0),
-                netLots: new Prisma.Decimal(f.netLots || 0),
-                sortOrder: f.sortOrder ?? idx,
-              })),
-            });
-          }
-          break;
-        }
-
+        case 'funding':
         case 'activity': {
-          await tx.brokerClientActivity.upsert({
-            where: { brokerId: broker.id },
-            update: {
-              avgNewClientDeposit: new Prisma.Decimal(validated.avgNewClientDeposit || 0),
-              avgExistingClientDeposit: new Prisma.Decimal(validated.avgExistingClientDeposit || 0),
-              avgNewClientWithdrawal: new Prisma.Decimal(validated.avgNewClientWithdrawal || 0),
-              avgExistingClientWithdrawal: new Prisma.Decimal(validated.avgExistingClientWithdrawal || 0),
-            },
-            create: {
-              brokerId: broker.id,
-              avgNewClientDeposit: new Prisma.Decimal(validated.avgNewClientDeposit || 0),
-              avgExistingClientDeposit: new Prisma.Decimal(validated.avgExistingClientDeposit || 0),
-              avgNewClientWithdrawal: new Prisma.Decimal(validated.avgNewClientWithdrawal || 0),
-              avgExistingClientWithdrawal: new Prisma.Decimal(validated.avgExistingClientWithdrawal || 0),
-            },
-          });
+          // B26: Annual Funding & Volume removed - deprecated no-op
           break;
         }
 
@@ -983,8 +929,10 @@ export class BrokerService {
 
     const missingFields: string[] = [];
 
-    // 1. Core Identity
+    // 1. Core Identity & Legal (B4, B13)
+    if (!broker.registeredName || broker.registeredName.trim().length < 2) missingFields.push('Registered Entity Legal Name');
     if (!broker.companyName || broker.companyName.trim().length < 2) missingFields.push('Company Name');
+    if (!broker.logo) missingFields.push('Company/Broker Logo');
     if (!broker.country) missingFields.push('Operating Country');
     if (!broker.city) missingFields.push('City');
     if (!broker.email) missingFields.push('Contact Email');
@@ -1189,7 +1137,6 @@ export class BrokerService {
         ibPlans: { orderBy: { sortOrder: 'asc' } },
         depositMethodItems: { orderBy: { sortOrder: 'asc' } },
         withdrawalMethodItems: { orderBy: { sortOrder: 'asc' } },
-        symbolSpecs: { orderBy: { sortOrder: 'asc' } },
         awards: { orderBy: { sortOrder: 'asc' } },
         documents: { orderBy: { createdAt: 'desc' } },
         reviews: {
@@ -1277,25 +1224,32 @@ export class BrokerService {
       data: { totalLeads: { increment: 1 } },
     });
 
-    await prisma.notification.create({
-      data: {
-        userId: broker.userId,
-        type: NotificationType.ENQUIRY,
-        title: 'New Trader Lead Received',
-        message: `${data.name} is interested in opening an account with ${broker.companyName}.`,
-        link: `/dashboard/leads`,
-      },
-    });
+    // Notify all admins only (B29: inquiries go to admin only, never to broker)
+    const admins = await prisma.user.findMany({ where: { role: Role.ADMIN } });
+    if (admins.length > 0) {
+      await prisma.notification.createMany({
+        data: admins.map((admin) => ({
+          userId: admin.id,
+          type: NotificationType.ENQUIRY,
+          title: `New Inquiry for ${broker.companyName}`,
+          message: `${data.name} submitted an inquiry for ${broker.companyName}.`,
+          link: '/admin/enquiries',
+        })),
+      });
+    }
 
-    transporter
-      .sendMail({
-        to: broker.user.email,
-        subject: `New Trader Lead for ${broker.companyName}`,
-        text: `You have received a new inquiry from ${data.name} (${data.email}, Phone: ${data.phone || 'N/A'}):\n\n${data.message || 'No additional message.'}`,
-      })
-      .catch(() => {});
+    // Send email to admin notification inbox
+    await sendLeadNotificationToAdmin(broker.companyName, {
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      message: data.message,
+    }).catch(() => {});
 
-    return lead;
+    return {
+      success: true,
+      message: 'Your inquiry has been submitted to EdutradeFX team. We will review and respond shortly.',
+    };
   }
 
   /**
@@ -1408,27 +1362,49 @@ export class BrokerService {
   }
 
   /**
-   * Get broker leads with pagination for dashboard
+   * Get broker lead aggregate statistics (B28, B29: No PII exposed to broker)
    */
-  async getMyLeads(userId: string, query: any) {
+  async getMyLeads(userId: string, _query?: any) {
     const broker = await prisma.broker.findUnique({ where: { userId } });
     if (!broker) {
       throw new AppError('Broker profile not found.', StatusCodes.NOT_FOUND);
     }
 
-    const { skip, take, page, limit } = parsePagination(query);
-    const [leads, total] = await Promise.all([
-      prisma.brokerLead.findMany({
-        where: { brokerId: broker.id },
-        skip,
-        take,
-        orderBy: { createdAt: 'desc' },
-      }),
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const [totalLeads, recent30Days] = await Promise.all([
       prisma.brokerLead.count({ where: { brokerId: broker.id } }),
+      prisma.brokerLead.count({
+        where: {
+          brokerId: broker.id,
+          createdAt: { gte: thirtyDaysAgo },
+        },
+      }),
     ]);
 
-    const totalPages = Math.ceil(total / limit) || 1;
-    return { leads, total, page, limit, totalPages };
+    return {
+      totalLeads,
+      recent30Days,
+      openAccountClicks: broker.openAccountClicks || 0,
+      leads: [], // Broker endpoints must never return lead PII
+    };
+  }
+
+  /**
+   * Increment "Open Account" IB link clicks (B29)
+   */
+  async recordClick(brokerId: string) {
+    const broker = await prisma.broker.findUnique({ where: { id: brokerId } });
+    if (!broker) {
+      throw new AppError('Broker not found.', StatusCodes.NOT_FOUND);
+    }
+
+    return await prisma.broker.update({
+      where: { id: brokerId },
+      data: { openAccountClicks: { increment: 1 } },
+      select: { id: true, openAccountClicks: true },
+    });
   }
 
   /**

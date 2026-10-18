@@ -19,7 +19,7 @@ export const NAV_LINKS = [
 
 export const ROLE_LABELS: Record<string, string> = {
   STUDENT: 'Trader / Student',
-  BROKER: 'Brokerage Firm',
+  BROKER: 'Broker',
   ACCOUNT_MANAGER: 'Account Manager',
   SIGNAL_PROVIDER: 'Signal Provider',
   TUTOR: 'Instructor / Tutor',

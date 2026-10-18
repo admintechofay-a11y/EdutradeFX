@@ -20,11 +20,18 @@ import toast from 'react-hot-toast';
 const OPTION_GROUPS: { group: BrokerOptionGroup; label: string; countApprox: number }[] = [
   { group: 'REGULATOR', label: 'Regulators', countApprox: 59 },
   { group: 'LANGUAGE', label: 'Languages', countApprox: 133 },
-  { group: 'CURRENCY', label: 'Currencies', countApprox: 10 },
+  { group: 'CURRENCY', label: 'Currencies', countApprox: 158 },
   { group: 'LICENSE_STATUS', label: 'License Statuses', countApprox: 8 },
   { group: 'DEPOSIT_BONUS', label: 'Deposit Bonuses', countApprox: 21 },
   { group: 'LEVERAGE', label: 'Leverage Ratios', countApprox: 23 },
   { group: 'TIMEFRAME', label: 'Timeframes', countApprox: 9 },
+  { group: 'COUNTRY', label: 'Countries', countApprox: 249 },
+  { group: 'CITY', label: 'Cities', countApprox: 100 },
+  { group: 'BUSINESS_MODEL', label: 'Business Models', countApprox: 9 },
+  { group: 'REGIONAL_FOOTPRINT', label: 'Regional Footprints', countApprox: 50 },
+  { group: 'SPREAD_FROM', label: 'Spreads From', countApprox: 8 },
+  { group: 'PLATFORM', label: 'Trading Platforms', countApprox: 12 },
+  { group: 'DEVICE', label: 'Hardware & Devices', countApprox: 7 },
 ];
 
 export const BrokerOptionsManager: React.FC = () => {

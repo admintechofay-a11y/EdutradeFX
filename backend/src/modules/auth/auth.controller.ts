@@ -6,14 +6,26 @@ import { AuthenticatedRequest } from '../../types';
 import { AppError } from '../../middleware/error.middleware';
 
 export class AuthController {
+  checkEmail = async (req: Request, res: Response): Promise<void> => {
+    const email = req.query.email as string;
+    const result = await authService.checkEmail(email);
+    sendSuccess(res, result, 'Email availability checked', StatusCodes.OK);
+  };
+
   register = async (req: Request, res: Response): Promise<void> => {
     const result = await authService.register(req.body);
-    sendSuccess(res, result.user, result.message, StatusCodes.CREATED);
+    sendSuccess(res, { email: result.email }, result.message, StatusCodes.ACCEPTED);
   };
 
   registerPartner = async (req: Request, res: Response): Promise<void> => {
     const result = await authService.registerPartner(req.body);
-    sendSuccess(res, result.user, result.message, StatusCodes.CREATED);
+    sendSuccess(res, { email: result.email }, result.message, StatusCodes.ACCEPTED);
+  };
+
+  resendVerification = async (req: Request, res: Response): Promise<void> => {
+    const { email } = req.body;
+    const result = await authService.resendVerification(email);
+    sendSuccess(res, null, result.message, StatusCodes.OK);
   };
 
   login = async (req: Request, res: Response): Promise<void> => {

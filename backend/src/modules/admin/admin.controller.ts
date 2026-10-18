@@ -544,6 +544,25 @@ export class AdminController {
     });
     sendSuccess(res, result, `Website content for '${section}' updated`, StatusCodes.OK);
   };
+
+  // ── BROKER LEADS (B29) ──────────────────────────────
+  getBrokerLeads = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const result = await adminService.getBrokerLeads(req.query);
+    sendPaginated(res, result.leads, result.total, result.page, result.limit, 'Broker leads retrieved');
+  };
+
+  markBrokerLeadRead = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const { isRead } = req.body;
+    const lead = await adminService.markBrokerLeadRead(id as string, isRead !== undefined ? Boolean(isRead) : true);
+    sendSuccess(res, lead, 'Broker lead read status updated', StatusCodes.OK);
+  };
+
+  deleteBrokerLead = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const result = await adminService.deleteBrokerLead(id as string);
+    sendSuccess(res, result, 'Broker lead deleted', StatusCodes.OK);
+  };
 }
 
 export const adminController = new AdminController();

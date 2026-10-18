@@ -60,6 +60,7 @@ router.get('/compare', generalLimiter, validateQuery(compareBrokersSchema), brok
 router.get('/:slug', generalLimiter, optionalAuth, brokerController.getBrokerBySlug);
 router.get('/:id/reviews', generalLimiter, brokerController.getReviews);
 router.post('/:id/lead', generalLimiter, validate(brokerLeadSchema), brokerController.submitLead);
+router.post('/:id/click', generalLimiter, brokerController.recordClick);
 
 // ── PROTECTED (AUTHENTICATED USERS) ───────────────
 router.post('/:id/reviews', authenticate, reviewLimiter, validate(brokerReviewSchema), brokerController.addReview);

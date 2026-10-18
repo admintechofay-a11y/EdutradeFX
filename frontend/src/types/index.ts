@@ -636,7 +636,14 @@ export type BrokerOptionGroup =
   | 'LICENSE_STATUS'
   | 'DEPOSIT_BONUS'
   | 'LEVERAGE'
-  | 'TIMEFRAME';
+  | 'TIMEFRAME'
+  | 'COUNTRY'
+  | 'CITY'
+  | 'BUSINESS_MODEL'
+  | 'REGIONAL_FOOTPRINT'
+  | 'SPREAD_FROM'
+  | 'PLATFORM'
+  | 'DEVICE';
 
 export interface BrokerOption {
   id?: string;

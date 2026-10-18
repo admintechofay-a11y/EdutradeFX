@@ -13,11 +13,13 @@ export const transporter = nodemailer.createTransport({
   },
 });
 
-export const verifyEmailConnection = async (): Promise<void> => {
+export const verifyEmailConnection = async (): Promise<boolean> => {
   try {
     await transporter.verify();
     logger.info('SMTP Email Transporter verified successfully');
+    return true;
   } catch (error) {
-    logger.warn('SMTP connection could not be verified (check credentials in .env):', error);
+    logger.error('SMTP connection could not be verified (check credentials in .env):', error);
+    return false;
   }
 };

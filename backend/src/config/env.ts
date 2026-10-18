@@ -15,6 +15,7 @@ const envSchema = z.object({
   JWT_ACCESS_EXPIRY: z.string().default('15m'),
   JWT_REFRESH_EXPIRY: z.string().default('7d'),
   FRONTEND_URL: z.string().default('http://localhost:3000'),
+  ADMIN_NOTIFY_EMAIL: z.string().optional(),
   ALLOW_MOCK_PAYMENTS: z.string().optional(),
   RAZORPAY_KEY_ID: z.string().optional(),
   RAZORPAY_KEY_SECRET: z.string().optional(),
@@ -40,6 +41,10 @@ export const validateEnv = () => {
   // Production startup gate: log warnings for unconfigured third-party credentials
   if (validated.NODE_ENV === 'production') {
     const missingProdVars: string[] = [];
+
+    if (!validated.FRONTEND_URL || validated.FRONTEND_URL.includes('localhost')) {
+      missingProdVars.push('FRONTEND_URL (must be configured to real domain in production)');
+    }
 
     if (!validated.RAZORPAY_KEY_ID || validated.RAZORPAY_KEY_ID.includes('placeholder')) {
       missingProdVars.push('RAZORPAY_KEY_ID');

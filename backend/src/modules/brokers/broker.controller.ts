@@ -80,8 +80,14 @@ export class BrokerController {
 
   submitLead = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
-    const lead = await brokerService.submitLead(id as string, req.body);
-    sendSuccess(res, lead, 'Inquiry sent to broker successfully', StatusCodes.CREATED);
+    const result = await brokerService.submitLead(id as string, req.body);
+    sendSuccess(res, result, 'Inquiry submitted to EdutradeFX team successfully', StatusCodes.CREATED);
+  };
+
+  recordClick = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const result = await brokerService.recordClick(id as string);
+    sendSuccess(res, result, 'Open Account click recorded', StatusCodes.OK);
   };
 
   getMyOnboarding = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
@@ -144,8 +150,8 @@ export class BrokerController {
   };
 
   getMyLeads = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-    const result = await brokerService.getMyLeads(req.user!.userId, req.query);
-    sendPaginated(res, result.leads, result.total, result.page, result.limit, 'Broker leads retrieved');
+    const stats = await brokerService.getMyLeads(req.user!.userId, req.query);
+    sendSuccess(res, stats, 'Broker lead statistics retrieved', StatusCodes.OK);
   };
 }
 

@@ -191,15 +191,66 @@ export const uploadStructureDoc = multer({
   },
 });
 
+export const verifyImageMagicBytes = (buffer: Buffer): boolean => {
+  if (!buffer || buffer.length < 12) return false;
+
+  // JPEG: FF D8 FF
+  if (buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) {
+    return true;
+  }
+
+  // PNG: 89 50 4E 47 0D 0A 1A 0A
+  if (
+    buffer[0] === 0x89 &&
+    buffer[1] === 0x50 &&
+    buffer[2] === 0x4e &&
+    buffer[3] === 0x47 &&
+    buffer[4] === 0x0d &&
+    buffer[5] === 0x0a &&
+    buffer[6] === 0x1a &&
+    buffer[7] === 0x0a
+  ) {
+    return true;
+  }
+
+  // WebP: RIFF .... WEBP
+  const riff = buffer.toString('ascii', 0, 4);
+  const webp = buffer.toString('ascii', 8, 12);
+  if (riff === 'RIFF' && webp === 'WEBP') {
+    return true;
+  }
+
+  return false;
+};
+
+// Avatar upload middleware with 2MB limit in memory for magic-byte inspection
+export const uploadAvatarMemory = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 2 * 1024 * 1024 }, // <= 2 MB
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const isMimeValid = ['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype);
+    const isExtValid = ['.jpg', '.jpeg', '.png', '.webp'].includes(ext);
+
+    if (isMimeValid && isExtValid) {
+      cb(null, true);
+    } else {
+      cb(new AppError('Only JPG, PNG, and WebP image formats up to 2MB are permitted.', StatusCodes.BAD_REQUEST));
+    }
+  },
+});
+
 export const uploadPromoVideo = multer({
   storage: videoStorage,
   limits: { fileSize: 100 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
-    if (['video/mp4', 'video/quicktime'].includes(file.mimetype) && ['.mp4', '.mov'].includes(ext)) {
+    const allowedMimes = ['video/mp4', 'video/webm', 'video/quicktime'];
+    const allowedExts = ['.mp4', '.webm', '.mov'];
+    if (allowedMimes.includes(file.mimetype) && allowedExts.includes(ext)) {
       cb(null, true);
     } else {
-      cb(new AppError('Only MP4 and MOV videos up to 100MB are permitted for promotional videos.', StatusCodes.BAD_REQUEST));
+      cb(new AppError('Only MP4, WebM, and MOV videos up to 100MB are permitted for promotional videos.', StatusCodes.BAD_REQUEST));
     }
   },
 });

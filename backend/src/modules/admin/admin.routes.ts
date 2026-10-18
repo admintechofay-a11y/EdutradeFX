@@ -86,4 +86,9 @@ router.get('/broker-options', (req, res, next) => optionsController.getAdminOpti
 router.post('/broker-options', (req, res, next) => optionsController.createOption(req, res).catch(next));
 router.patch('/broker-options/:id', (req, res, next) => optionsController.updateOption(req, res).catch(next));
 
+// ── BROKER LEADS (B29) ──────────────────────────────
+router.get('/broker-leads', adminController.getBrokerLeads);
+router.patch('/broker-leads/:id/read', adminController.markBrokerLeadRead);
+router.delete('/broker-leads/:id', adminController.deleteBrokerLead);
+
 export default router;

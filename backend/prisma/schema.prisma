@@ -34,6 +34,8 @@ enum BrokerBusinessType {
   MARKET_MAKER
   INSTITUTIONAL
   OTHER
+  HYBRID
+  DMA
 }
 
 enum BrokerOnboardingStatus {
@@ -94,6 +96,13 @@ enum BrokerOptionGroup {
   DEPOSIT_BONUS
   LEVERAGE
   TIMEFRAME
+  COUNTRY
+  CITY
+  BUSINESS_MODEL
+  REGIONAL_FOOTPRINT
+  SPREAD_FROM
+  PLATFORM
+  DEVICE
 }
 
 model BrokerOption {
@@ -209,6 +218,13 @@ model User {
   role              Role      @default(STUDENT)
   avatar            String?
   phone             String?
+  whatsapp          String?
+  city              String?
+  country           String?
+  socialLinks       Json?
+  bio               String?   @db.Text
+  consentAt         DateTime?
+  consentVersion    String?
   isEmailVerified   Boolean   @default(false)
   emailVerifyToken  String?
   emailVerifyExpiry DateTime?
@@ -245,6 +261,23 @@ model User {
   @@index([email])
   @@index([phone])
   @@index([role])
+}
+
+model PendingRegistration {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  phone        String?
+  role         Role     @default(STUDENT)
+  payload      Json?
+  tokenHash    String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  @@index([email])
+  @@index([tokenHash])
+  @@index([expiresAt])
 }
 
 model RefreshToken {
@@ -296,18 +329,22 @@ model Broker {
   seoTitle         String?
   seoDescription   String?
 
-  // ── Extended Onboarding V2 Fields ──
+  // ── Extended Onboarding V2 & V3 Fields ──
   registeredName             String?
   businessType               BrokerBusinessType?
+  businessModel              BrokerBusinessType?
   platformDescription        String?                @db.Text
   address                    String?                @db.Text
   city                       String?
   state                      String?
   postalCode                 String?
   country                    String?
+  operatingCountries         String[]               @default([])
   phone                      String?
   email                      String?
-  mtRegisteredCountryRegion  String?
+  mapLink                    String?
+  ibLink                     String?
+  mtRegisteredCountryRegion  String?                // @deprecated (B11)
   isRegulated                Boolean?
   totalTradableSymbols       Int?
   accountCurrencies          String[]               @default([])
@@ -315,7 +352,7 @@ model Broker {
   availablePlatforms         String[]               @default([])
   platformLinks              Json?
   deviceSupport              String[]               @default([])
-  availableTimeframes        String[]               @default([])
+  availableTimeframes        String[]               @default([]) // @deprecated (B16)
 
   // Company
   officeContactNumber        String?
@@ -334,13 +371,16 @@ model Broker {
   fundsSecurity              String?                @db.Text
 
   // Dealing & Business
-  liquidityProvider          String?
+  liquidityProvider          String?                // @deprecated (B24)
+  liquidityProviders         String[]               @default([])
   personalBookSize           String?
+  regionalFootprint          String[]               @default([])
 
   // Content
   prosList                   String[]               @default([])
   consList                   String[]               @default([])
   promoVideoUrl              String?
+  promoVideoPublicId         String?
   socialLinks                Json?
 
   // Workflow
@@ -350,6 +390,7 @@ model Broker {
   reviewNote                 String?                @db.Text
   rejectionReason            String?                @db.Text
   completenessPct            Int                    @default(0)
+  openAccountClicks          Int                    @default(0)
 
   createdAt                  DateTime               @default(now())
   updatedAt                  DateTime               @updatedAt
@@ -362,7 +403,7 @@ model Broker {
   advertisements             Advertisement[]
   leads                      BrokerLead[]
 
-  // Child Relations V2
+  // Child Relations V2 & V3
   servers                    BrokerServer[]
   licenses                   BrokerLicense[]
   boardMembers               BrokerBoardMember[]
@@ -370,10 +411,10 @@ model Broker {
   ibPlans                    BrokerIbPlan[]
   depositMethodItems         BrokerDepositMethod[]
   withdrawalMethodItems      BrokerWithdrawalMethod[]
-  symbolSpecs                BrokerSymbolSpec[]
-  fundingYears               BrokerFundingYear[]
-  clientActivity             BrokerClientActivity?
-  businessAreas              BrokerBusinessArea[]
+  symbolSpecs                BrokerSymbolSpec[]     // @deprecated (B23)
+  fundingYears               BrokerFundingYear[]    // @deprecated (B26)
+  clientActivity             BrokerClientActivity?  // @deprecated (B26)
+  businessAreas              BrokerBusinessArea[]   // @deprecated (B26)
   awards                     BrokerAward[]
 
   @@index([status])
@@ -462,6 +503,7 @@ model BrokerAccountGroup {
   name                   String
   demoAvailable          Boolean            @default(false)
   currency               String             @default("USD")
+  baseCurrencies         String[]           @default([])
   currencyCode           String?
   currencyOther          String?
   spreadTypesLabel       String?
@@ -483,7 +525,8 @@ model BrokerAccountGroup {
   swapLong               String?
   swapShort              String?
   orderExecution         OrderExecution     @default(INSTANT)
-  gtcMode                GtcMode            @default(AVAILABLE)
+  gtcMode                GtcMode            @default(AVAILABLE) // @deprecated (B20 - use gtcEnabled)
+  gtcEnabled             Boolean            @default(false)
   eaAllowed              Boolean            @default(true)
   hedgingAllowed         Boolean            @default(true)
   nettingAllowed         Boolean            @default(false)
@@ -671,15 +714,21 @@ model BrokerReview {
 }
 
 model BrokerLead {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   brokerId   String
   name       String
   email      String
   phone      String?
-  message    String?  @db.Text
+  message    String?   @db.Text
   source     String?
-  createdAt  DateTime @default(now())
-  broker     Broker   @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+  isRead     Boolean   @default(false)
+  readAt     DateTime?
+  createdAt  DateTime  @default(now())
+  broker     Broker    @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+
+  @@index([brokerId])
+  @@index([isRead])
+  @@index([createdAt])
 }
 
 model SavedBroker {

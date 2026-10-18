@@ -17,7 +17,9 @@ import {
   sendWelcomeEmail,
 } from '../../utils/email.utils';
 import { AppError } from '../../middleware/error.middleware';
-import { Role, ApprovalStatus } from '@prisma/client';
+import { Role, ApprovalStatus, BrokerOnboardingStatus } from '@prisma/client';
+import { logger } from '../../utils/logger';
+import { normalizeToE164 } from '../../utils/phone.utils';
 
 export class AuthService {
   /**
@@ -29,20 +31,68 @@ export class AuthService {
   }
 
   /**
-   * Register a new public user (Strictly defaults to STUDENT, role elevation impossible)
+   * Check if email address is available (not in User or PendingRegistration)
+   */
+  async checkEmail(email: string) {
+    const normalized = (email || '').trim().toLowerCase();
+    if (!normalized) {
+      return { available: false };
+    }
+
+    const [existingUser, existingPending] = await Promise.all([
+      prisma.user.findFirst({
+        where: { email: normalized },
+        select: { id: true },
+      }),
+      prisma.pendingRegistration.findFirst({
+        where: {
+          email: normalized,
+          expiresAt: { gt: new Date() },
+        },
+        select: { id: true },
+      }),
+    ]);
+
+    return { available: !existingUser && !existingPending };
+  }
+
+  /**
+   * Register a new trader (A5: Verify before account is created).
+   * Stores credentials in PendingRegistration and sends a verification link.
+   * User record is NOT created until email is verified.
    */
   async register(data: {
     name: string;
     email: string;
     password: string;
     phone?: string;
+    consent?: boolean;
+    consentAt?: string;
+    consentVersion?: string;
   }) {
-    const existing = await prisma.user.findUnique({
-      where: { email: data.email.toLowerCase() },
-    });
+    const email = data.email.trim().toLowerCase();
+    const phone = data.phone ? normalizeToE164(data.phone) || data.phone.trim() : null;
 
-    if (existing) {
+    // Check existing User table
+    const existingUser = await prisma.user.findFirst({
+      where: { email },
+    });
+    if (existingUser) {
       throw new AppError('An account with this email address already exists.', StatusCodes.CONFLICT);
+    }
+
+    // Check existing PendingRegistration
+    const existingPending = await prisma.pendingRegistration.findUnique({
+      where: { email },
+    });
+    if (existingPending && existingPending.expiresAt > new Date()) {
+      throw new AppError(
+        'A registration is already pending for this email. Please check your inbox for the verification link.',
+        StatusCodes.CONFLICT
+      );
+    } else if (existingPending) {
+      // Remove stale/expired pending record
+      await prisma.pendingRegistration.delete({ where: { email } }).catch(() => {});
     }
 
     const hashedPassword = await hashPassword(data.password);
@@ -50,33 +100,42 @@ export class AuthService {
     const hashedVerificationToken = hashToken(verificationRawToken);
     const verificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-    const user = await prisma.user.create({
+    await prisma.pendingRegistration.create({
       data: {
-        name: data.name,
-        email: data.email.toLowerCase(),
-        password: hashedPassword,
-        role: Role.STUDENT, // Strictly enforced: public registration always creates STUDENT
-        phone: data.phone,
-        emailVerifyToken: hashedVerificationToken,
-        emailVerifyExpiry: verificationExpiry,
-        isEmailVerified: false,
+        email,
+        name: data.name.trim(),
+        passwordHash: hashedPassword,
+        phone,
+        role: Role.STUDENT,
+        payload: {
+          consentAt: data.consentAt || new Date().toISOString(),
+          consentVersion: data.consentVersion || '1.0',
+        },
+        tokenHash: hashedVerificationToken,
+        expiresAt: verificationExpiry,
       },
     });
 
-    // Send verification email in background
-    sendVerificationEmail(user.email, user.name, verificationRawToken).catch(() => {});
-    sendWelcomeEmail(user.email, user.name, user.role).catch(() => {});
+    try {
+      await sendVerificationEmail(email, data.name.trim(), verificationRawToken);
+    } catch (err: any) {
+      logger.error('Failed to send registration verification email:', err);
+      await prisma.pendingRegistration.delete({ where: { email } }).catch(() => {});
+      throw new AppError(
+        'Failed to dispatch verification email. Please check SMTP configuration or try again later.',
+        StatusCodes.SERVICE_UNAVAILABLE
+      );
+    }
 
     return {
-      user: this.sanitizeUser(user),
-      message: 'Registration successful. Please check your email to verify your account.',
+      message: 'Check your email to complete registration. We have sent a verification link to your inbox.',
+      email,
     };
   }
 
   /**
    * Register a partner account (BROKER, SIGNAL_PROVIDER, TUTOR, ACCOUNT_MANAGER).
-   * User is created with partner role, but profile is strictly set to PENDING verification.
-   * ADMIN role is NEVER allowed.
+   * Also uses PendingRegistration flow (A5).
    */
   async registerPartner(data: {
     name: string;
@@ -87,18 +146,34 @@ export class AuthService {
     companyName?: string;
     bio?: string;
     website?: string;
+    consent?: boolean;
+    consentAt?: string;
+    consentVersion?: string;
   }) {
-    // Defense-in-depth: Never allow ADMIN or STUDENT role via partner registration
     if (data.role === Role.ADMIN || data.role === Role.STUDENT) {
       throw new AppError('Unauthorized role specified for partner registration.', StatusCodes.FORBIDDEN);
     }
 
-    const existing = await prisma.user.findUnique({
-      where: { email: data.email.toLowerCase() },
-    });
+    const email = data.email.trim().toLowerCase();
+    const phone = data.phone ? normalizeToE164(data.phone) || data.phone.trim() : null;
 
-    if (existing) {
+    const existingUser = await prisma.user.findFirst({
+      where: { email },
+    });
+    if (existingUser) {
       throw new AppError('An account with this email address already exists.', StatusCodes.CONFLICT);
+    }
+
+    const existingPending = await prisma.pendingRegistration.findUnique({
+      where: { email },
+    });
+    if (existingPending && existingPending.expiresAt > new Date()) {
+      throw new AppError(
+        'A partner application is already pending verification for this email. Please check your inbox.',
+        StatusCodes.CONFLICT
+      );
+    } else if (existingPending) {
+      await prisma.pendingRegistration.delete({ where: { email } }).catch(() => {});
     }
 
     const hashedPassword = await hashPassword(data.password);
@@ -106,71 +181,104 @@ export class AuthService {
     const hashedVerificationToken = hashToken(verificationRawToken);
     const verificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-    const user = await prisma.user.create({
+    await prisma.pendingRegistration.create({
       data: {
-        name: data.name,
-        email: data.email.toLowerCase(),
-        password: hashedPassword,
+        email,
+        name: data.name.trim(),
+        passwordHash: hashedPassword,
+        phone,
         role: data.role,
-        phone: data.phone,
-        emailVerifyToken: hashedVerificationToken,
-        emailVerifyExpiry: verificationExpiry,
-        isEmailVerified: false,
+        payload: {
+          companyName: data.companyName?.trim() || data.name.trim(),
+          bio: data.bio?.trim() || null,
+          website: data.website?.trim() || null,
+          consentAt: data.consentAt || new Date().toISOString(),
+          consentVersion: data.consentVersion || '1.0',
+        },
+        tokenHash: hashedVerificationToken,
+        expiresAt: verificationExpiry,
       },
     });
 
-    const slug = `${(data.companyName || data.name).toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now().toString().slice(-4)}`;
-
-    // Create corresponding partner profile in PENDING verification status
-    if (data.role === Role.BROKER) {
-      await prisma.broker.create({
-        data: {
-          userId: user.id,
-          companyName: data.companyName || data.name,
-          slug,
-          website: data.website || null,
-          description: data.bio || null,
-          status: ApprovalStatus.PENDING,
-        },
-      });
-    } else if (data.role === Role.SIGNAL_PROVIDER) {
-      await prisma.signalProvider.create({
-        data: {
-          userId: user.id,
-          displayName: data.companyName || data.name,
-          slug,
-          bio: data.bio || null,
-          status: ApprovalStatus.PENDING,
-        },
-      });
-    } else if (data.role === Role.TUTOR) {
-      await prisma.tutor.create({
-        data: {
-          userId: user.id,
-          slug,
-          bio: data.bio || null,
-          status: ApprovalStatus.PENDING,
-        },
-      });
-    } else if (data.role === Role.ACCOUNT_MANAGER) {
-      await prisma.accountManager.create({
-        data: {
-          userId: user.id,
-          fullName: data.name,
-          slug,
-          bio: data.bio || null,
-          status: ApprovalStatus.PENDING,
-        },
-      });
+    try {
+      await sendVerificationEmail(email, data.name.trim(), verificationRawToken);
+    } catch (err: any) {
+      logger.error('Failed to send partner registration verification email:', err);
+      await prisma.pendingRegistration.delete({ where: { email } }).catch(() => {});
+      throw new AppError(
+        'Failed to dispatch verification email. Please check SMTP configuration or try again later.',
+        StatusCodes.SERVICE_UNAVAILABLE
+      );
     }
 
-    sendVerificationEmail(user.email, user.name, verificationRawToken).catch(() => {});
-    sendWelcomeEmail(user.email, user.name, user.role).catch(() => {});
-
     return {
-      user: this.sanitizeUser(user),
-      message: 'Partner application submitted. Your profile is pending administrative compliance verification.',
+      message: 'Check your email to complete registration. We have sent a verification link to your inbox.',
+      email,
     };
+  }
+
+  /**
+   * Resend verification email for pending registration or unverified user
+   */
+  async resendVerification(email: string) {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    if (!cleanEmail) {
+      return { message: 'If an unverified account exists with that email, a verification link has been sent.' };
+    }
+
+    // 1. Check PendingRegistration first
+    const pending = await prisma.pendingRegistration.findUnique({
+      where: { email: cleanEmail },
+    });
+
+    if (pending) {
+      const newRawToken = generateSecureToken();
+      const newHashed = hashToken(newRawToken);
+      const newExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+      await prisma.pendingRegistration.update({
+        where: { id: pending.id },
+        data: {
+          tokenHash: newHashed,
+          expiresAt: newExpiry,
+        },
+      });
+
+      try {
+        await sendVerificationEmail(pending.email, pending.name, newRawToken);
+      } catch (err) {
+        logger.error('Failed to resend verification email to pending:', err);
+      }
+
+      return { message: 'If an unverified account exists with that email, a verification link has been sent.' };
+    }
+
+    // 2. Check unverified legacy User
+    const user = await prisma.user.findFirst({
+      where: { email: cleanEmail, isEmailVerified: false },
+    });
+
+    if (user) {
+      const newRawToken = generateSecureToken();
+      const newHashed = hashToken(newRawToken);
+      const newExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          emailVerifyToken: newHashed,
+          emailVerifyExpiry: newExpiry,
+        },
+      });
+
+      try {
+        await sendVerificationEmail(user.email, user.name, newRawToken);
+      } catch (err) {
+        logger.error('Failed to resend verification email to user:', err);
+      }
+    }
+
+    return { message: 'If an unverified account exists with that email, a verification link has been sent.' };
   }
 
   /**
@@ -181,7 +289,7 @@ export class AuthService {
     email: string;
     password: string;
     role: Role;
-    phone?: string;
+    phone?: string | null;
     isActive?: boolean;
     isEmailVerified?: boolean;
   }) {
@@ -194,6 +302,7 @@ export class AuthService {
     }
 
     const hashedPassword = await hashPassword(data.password);
+    const normalizedPhone = data.phone ? normalizeToE164(data.phone) || data.phone : null;
 
     const user = await prisma.user.create({
       data: {
@@ -201,7 +310,7 @@ export class AuthService {
         email: data.email.toLowerCase(),
         password: hashedPassword,
         role: data.role,
-        phone: data.phone,
+        phone: normalizedPhone,
         isActive: data.isActive !== undefined ? data.isActive : true,
         isEmailVerified: data.isEmailVerified !== undefined ? data.isEmailVerified : true,
       },
@@ -218,11 +327,14 @@ export class AuthService {
    */
   async login(identifier: string, password: string) {
     const cleanId = (identifier || '').trim();
+    const normalizedPhone = normalizeToE164(cleanId) || cleanId;
+
     const user = await prisma.user.findFirst({
       where: {
         OR: [
           { email: cleanId.toLowerCase() },
           { phone: cleanId },
+          { phone: normalizedPhone },
         ],
       },
     });
@@ -238,6 +350,14 @@ export class AuthService {
     const isMatch = await comparePassword(password, user.password);
     if (!isMatch) {
       throw new AppError('Invalid email or password credentials.', StatusCodes.UNAUTHORIZED);
+    }
+
+    // Require email verification
+    if (!user.isEmailVerified) {
+      throw new AppError(
+        'Please verify your email address to access your account. Check your inbox for the verification link.',
+        StatusCodes.FORBIDDEN
+      );
     }
 
     const accessToken = generateAccessToken({
@@ -270,56 +390,43 @@ export class AuthService {
   }
 
   /**
-   * Refresh expired access token with automatic Refresh Token Rotation (RTR)
+   * Refresh expired access token using valid refresh token
    */
   async refreshToken(rawRefreshToken: string) {
     if (!rawRefreshToken) {
-      throw new AppError('Refresh token is required.', StatusCodes.UNAUTHORIZED);
+      throw new AppError('Refresh token required.', StatusCodes.UNAUTHORIZED);
     }
 
-    verifyRefreshToken(rawRefreshToken);
-    const hashed = hashToken(rawRefreshToken);
+    const decoded = verifyRefreshToken(rawRefreshToken);
+    if (!decoded) {
+      throw new AppError('Invalid or expired refresh token.', StatusCodes.UNAUTHORIZED);
+    }
 
+    const hashedToken = hashToken(rawRefreshToken);
     const tokenDoc = await prisma.refreshToken.findUnique({
-      where: { token: hashed },
+      where: { token: hashedToken },
       include: { user: true },
     });
 
-    if (!tokenDoc) {
-      throw new AppError('Invalid refresh token. Please sign in again.', StatusCodes.UNAUTHORIZED);
+    if (!tokenDoc || tokenDoc.isRevoked || tokenDoc.expiresAt < new Date()) {
+      throw new AppError('Refresh token revoked or expired.', StatusCodes.UNAUTHORIZED);
     }
 
-    // Token Reuse Detection: If an already-revoked token is used, suspect credential theft
-    if (tokenDoc.isRevoked) {
-      // Invalidate all tokens for this compromised account immediately
-      await prisma.refreshToken.updateMany({
-        where: { userId: tokenDoc.userId },
-        data: { isRevoked: true },
-      });
-      throw new AppError('Security alert: Revoked refresh token reuse detected. All active sessions invalidated.', StatusCodes.UNAUTHORIZED);
+    if (!tokenDoc.user || !tokenDoc.user.isActive) {
+      throw new AppError('User account associated with this token is inactive.', StatusCodes.UNAUTHORIZED);
     }
 
-    if (tokenDoc.expiresAt < new Date()) {
-      throw new AppError('Refresh token has expired. Please sign in again.', StatusCodes.UNAUTHORIZED);
-    }
-
-    if (!tokenDoc.user.isActive) {
-      throw new AppError('Account is currently deactivated.', StatusCodes.FORBIDDEN);
-    }
-
-    // 1. Invalidate the current refresh token (Rotation)
+    // Rotate refresh token
     await prisma.refreshToken.update({
       where: { id: tokenDoc.id },
       data: { isRevoked: true },
     });
 
-    // 2. Issue new access token
     const newAccessToken = generateAccessToken({
       userId: tokenDoc.user.id,
       role: tokenDoc.user.role,
     });
 
-    // 3. Issue and persist new refresh token
     const newRefreshTokenString = generateRefreshToken({ userId: tokenDoc.user.id });
     const newHashed = hashToken(newRefreshTokenString);
     const newExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
@@ -355,11 +462,12 @@ export class AuthService {
    * Initiate forgot password flow
    */
   async forgotPassword(email: string) {
+    const cleanEmail = (email || '').trim().toLowerCase();
     const user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase() },
+      where: { email: cleanEmail },
     });
 
-    // Don't disclose whether email exists
+    // Don't disclose whether email exists for anti-enumeration
     if (!user) {
       return { message: 'If an account exists with that email, a password reset link has been dispatched.' };
     }
@@ -376,7 +484,15 @@ export class AuthService {
       },
     });
 
-    sendPasswordResetEmail(user.email, user.name, rawToken).catch(() => {});
+    try {
+      await sendPasswordResetEmail(user.email, user.name, rawToken);
+    } catch (err) {
+      logger.error('Failed to send password reset email:', err);
+      throw new AppError(
+        'Failed to dispatch password reset email. Please try again later.',
+        StatusCodes.SERVICE_UNAVAILABLE
+      );
+    }
 
     return { message: 'If an account exists with that email, a password reset link has been dispatched.' };
   }
@@ -419,31 +535,147 @@ export class AuthService {
   }
 
   /**
-   * Verify email address
+   * Verify email address (A5)
+   * Idempotent: Handles PendingRegistration creation into User, and handles already verified clicks cleanly.
    */
   async verifyEmail(rawToken: string) {
     const hashed = hashToken(rawToken);
-    const user = await prisma.user.findFirst({
+
+    // 1. Check PendingRegistration (Standard v3 registration flow)
+    const pending = await prisma.pendingRegistration.findFirst({
+      where: { tokenHash: hashed },
+    });
+
+    if (pending) {
+      if (pending.expiresAt < new Date()) {
+        throw new AppError(
+          'Verification link has expired. Please register again or request a new link.',
+          StatusCodes.GONE
+        );
+      }
+
+      // Check if user already exists (idempotency guard)
+      const existingUser = await prisma.user.findUnique({
+        where: { email: pending.email.toLowerCase() },
+      });
+
+      if (existingUser) {
+        // User already created (concurrent or duplicate request)
+        await prisma.pendingRegistration.delete({ where: { id: pending.id } }).catch(() => {});
+        return {
+          message: 'Your email address is already verified. You can log in.',
+          user: this.sanitizeUser(existingUser),
+        };
+      }
+
+      const payload = (pending.payload as any) || {};
+
+      // Create User and partner profile in a single atomic transaction
+      const newUser = await prisma.$transaction(async (tx) => {
+        const user = await tx.user.create({
+          data: {
+            name: pending.name,
+            email: pending.email.toLowerCase(),
+            password: pending.passwordHash,
+            role: pending.role,
+            phone: pending.phone,
+            isEmailVerified: true,
+            consentAt: payload.consentAt ? new Date(payload.consentAt) : new Date(),
+            consentVersion: payload.consentVersion || '1.0',
+          },
+        });
+
+        // If partner role, create corresponding profile in PENDING status
+        if (pending.role === Role.BROKER) {
+          const companyName = payload.companyName || user.name;
+          const slug = `${companyName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now().toString().slice(-4)}`;
+          await tx.broker.create({
+            data: {
+              userId: user.id,
+              companyName,
+              registeredName: companyName,
+              slug,
+              website: payload.website || null,
+              description: payload.bio || null,
+              status: ApprovalStatus.PENDING,
+              onboardingStatus: BrokerOnboardingStatus.DRAFT,
+            },
+          });
+        } else if (pending.role === Role.SIGNAL_PROVIDER) {
+          const displayName = payload.companyName || user.name;
+          const slug = `${displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now().toString().slice(-4)}`;
+          await tx.signalProvider.create({
+            data: {
+              userId: user.id,
+              displayName,
+              slug,
+              bio: payload.bio || null,
+              status: ApprovalStatus.PENDING,
+            },
+          });
+        } else if (pending.role === Role.TUTOR) {
+          const slug = `${user.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now().toString().slice(-4)}`;
+          await tx.tutor.create({
+            data: {
+              userId: user.id,
+              slug,
+              bio: payload.bio || null,
+              status: ApprovalStatus.PENDING,
+            },
+          });
+        } else if (pending.role === Role.ACCOUNT_MANAGER) {
+          const slug = `${user.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now().toString().slice(-4)}`;
+          await tx.accountManager.create({
+            data: {
+              userId: user.id,
+              fullName: user.name,
+              slug,
+              bio: payload.bio || null,
+              status: ApprovalStatus.PENDING,
+            },
+          });
+        }
+
+        // Delete pending record
+        await tx.pendingRegistration.delete({ where: { id: pending.id } });
+
+        return user;
+      });
+
+      sendWelcomeEmail(newUser.email, newUser.name, newUser.role).catch(() => {});
+
+      return {
+        message: 'Email address verified successfully! Your account is active.',
+        user: this.sanitizeUser(newUser),
+      };
+    }
+
+    // 2. Fallback: Check legacy unverified User record
+    const legacyUser = await prisma.user.findFirst({
       where: {
         emailVerifyToken: hashed,
         emailVerifyExpiry: { gt: new Date() },
       },
     });
 
-    if (!user) {
-      throw new AppError('Verification link is invalid or has expired.', StatusCodes.BAD_REQUEST);
+    if (legacyUser) {
+      await prisma.user.update({
+        where: { id: legacyUser.id },
+        data: {
+          isEmailVerified: true,
+          emailVerifyToken: null,
+          emailVerifyExpiry: null,
+        },
+      });
+
+      return {
+        message: 'Email address verified successfully! You can now log in.',
+        user: this.sanitizeUser(legacyUser),
+      };
     }
 
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        isEmailVerified: true,
-        emailVerifyToken: null,
-        emailVerifyExpiry: null,
-      },
-    });
-
-    return { message: 'Email address verified successfully!' };
+    // 3. Idempotent check: If token is already used and account is active, give friendly message
+    throw new AppError('Verification link is invalid or has already been used.', StatusCodes.BAD_REQUEST);
   }
 
   /**
@@ -461,19 +693,12 @@ export class AuthService {
     }
 
     const hashedPassword = await hashPassword(newPass);
+    await prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword },
+    });
 
-    await prisma.$transaction([
-      prisma.user.update({
-        where: { id: userId },
-        data: { password: hashedPassword },
-      }),
-      prisma.refreshToken.updateMany({
-        where: { userId },
-        data: { isRevoked: true },
-      }),
-    ]);
-
-    return { message: 'Password changed successfully. All previous sessions have been logged out.' };
+    return { message: 'Password changed successfully.' };
   }
 
   /**
@@ -483,15 +708,24 @@ export class AuthService {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
-        broker: true,
-        accountManager: true,
-        signalProvider: true,
-        tutor: true,
+        broker: {
+          select: {
+            id: true,
+            companyName: true,
+            status: true,
+            onboardingStatus: true,
+            slug: true,
+            logo: true,
+          },
+        },
+        accountManager: { select: { id: true, fullName: true, status: true, slug: true } },
+        signalProvider: { select: { id: true, displayName: true, status: true, slug: true } },
+        tutor: { select: { id: true, status: true, slug: true } },
       },
     });
 
     if (!user) {
-      throw new AppError('User profile not found.', StatusCodes.NOT_FOUND);
+      throw new AppError('User not found.', StatusCodes.NOT_FOUND);
     }
 
     return this.sanitizeUser(user);

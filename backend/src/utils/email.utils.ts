@@ -55,8 +55,12 @@ export const escapeHtml = (text: string | null | undefined): string => {
     .replace(/'/g, '&#039;');
 };
 
-const sendMailSafely = async (to: string, subject: string, html: string, text: string) => {
+export const sendMailSafely = async (to: string, subject: string, html: string, text: string) => {
   try {
+    if (process.env.NODE_ENV === 'test' && !process.env.SMTP_USER) {
+      logger.info(`[TEST MODE] Mock email sent to ${to}: "${subject}"`);
+      return { messageId: 'mock-test-id' };
+    }
     const info = await transporter.sendMail({
       from: `"${FROM_NAME}" <${FROM_EMAIL}>`,
       to,
@@ -65,8 +69,10 @@ const sendMailSafely = async (to: string, subject: string, html: string, text: s
       html,
     });
     logger.info(`Email sent to ${to}: ${info.messageId}`);
+    return info;
   } catch (error) {
-    logger.warn(`Failed to dispatch email to ${to}:`, error);
+    logger.error(`Failed to dispatch email to ${to}:`, error);
+    throw error;
   }
 };
 
@@ -200,4 +206,34 @@ export const sendPayoutProcessed = async (email: string, name: string, amount: n
     `
   );
   await sendMailSafely(email, subject, html, `Your payout of ₹${amount} has been processed.`);
+};
+
+export const sendLeadNotificationToAdmin = async (
+  brokerName: string,
+  lead: { name: string; email: string; phone?: string | null; message?: string | null }
+): Promise<void> => {
+  const adminEmail = process.env.ADMIN_NOTIFY_EMAIL || process.env.SMTP_USER || 'admin@edutradefx.com';
+  const subject = `[Admin Alert] New Lead Inquiry for ${brokerName}`;
+  const html = baseEmailLayout(
+    subject,
+    `
+    <h2>New Trader Inquiry for ${escapeHtml(brokerName)}</h2>
+    <p>A trader has submitted an inquiry on the EdutradeFX platform:</p>
+    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+      <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #374151;">Name:</td><td style="padding: 8px; border-bottom: 1px solid #374151;">${escapeHtml(lead.name)}</td></tr>
+      <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #374151;">Email:</td><td style="padding: 8px; border-bottom: 1px solid #374151;">${escapeHtml(lead.email)}</td></tr>
+      <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #374151;">Phone:</td><td style="padding: 8px; border-bottom: 1px solid #374151;">${escapeHtml(lead.phone || 'N/A')}</td></tr>
+      <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #374151;">Target Broker:</td><td style="padding: 8px; border-bottom: 1px solid #374151;">${escapeHtml(brokerName)}</td></tr>
+      <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #374151;">Message:</td><td style="padding: 8px; border-bottom: 1px solid #374151;">${escapeHtml(lead.message || 'None')}</td></tr>
+    </table>
+    <div style="text-align: center;">
+      <a href="${FRONTEND_URL}/admin/enquiries" class="btn">View in Admin Panel</a>
+    </div>
+    `
+  );
+  try {
+    await sendMailSafely(adminEmail, subject, html, `New inquiry for ${brokerName} from ${lead.name} (${lead.email}, ${lead.phone || 'N/A'}): ${lead.message || 'None'}`);
+  } catch (err) {
+    logger.error('Failed to send lead notification email to admin:', err);
+  }
 };

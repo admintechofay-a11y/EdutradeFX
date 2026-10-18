@@ -98,40 +98,24 @@ export const WIZARD_STEPS: WizardStepMeta[] = [
     iconName: 'ArrowUpFromLine',
   },
   {
-    id: 'symbol-specs',
-    number: 11,
-    title: 'Tradable Symbol Specs',
-    shortTitle: 'Symbols',
-    description: 'Contract sizing, benchmark spreads, stop distance, precision, and margin requirements.',
-    iconName: 'BarChart3',
-  },
-  {
     id: 'dealing',
-    number: 12,
-    title: 'Dealing & Liquidity Setup',
+    number: 11,
+    title: 'Dealing & Our Liquidity Providers (LP)',
     shortTitle: 'Liquidity',
     description: 'Tier-1 liquidity providers and proprietary dealing desk / book size information.',
     iconName: 'Network',
   },
   {
     id: 'business-areas',
-    number: 13,
+    number: 12,
     title: 'Primary Business Regions',
     shortTitle: 'Regions',
     description: 'Active client density across continents and geographic jurisdictions.',
     iconName: 'Globe',
   },
   {
-    id: 'funding',
-    number: 14,
-    title: 'Annual Funding & Volume',
-    shortTitle: 'Financials',
-    description: 'Audited historical deposit volumes, withdrawals, and turnover lots (strictly private).',
-    iconName: 'TrendingUp',
-  },
-  {
     id: 'activity',
-    number: 15,
+    number: 13,
     title: 'Average Client Activity',
     shortTitle: 'Activity',
     description: 'Average new vs existing client deposit and withdrawal ticket sizes (strictly private).',
@@ -139,7 +123,7 @@ export const WIZARD_STEPS: WizardStepMeta[] = [
   },
   {
     id: 'pros-cons',
-    number: 16,
+    number: 14,
     title: 'Platform Pros & Cons',
     shortTitle: 'Pros & Cons',
     description: 'Official highlights, platform advantages, and transparent trade-offs for prospective traders.',
@@ -147,7 +131,7 @@ export const WIZARD_STEPS: WizardStepMeta[] = [
   },
   {
     id: 'awards',
-    number: 17,
+    number: 15,
     title: 'Industry Awards & Expos',
     shortTitle: 'Awards',
     description: 'Recognitions, fintech expo showcases, and prestigious trading achievements.',
@@ -155,7 +139,7 @@ export const WIZARD_STEPS: WizardStepMeta[] = [
   },
   {
     id: 'social',
-    number: 18,
+    number: 16,
     title: 'Social Channels & Video Pitch',
     shortTitle: 'Social Media',
     description: 'Official verified social profiles and embedded broker introductory video pitch.',
@@ -163,7 +147,7 @@ export const WIZARD_STEPS: WizardStepMeta[] = [
   },
   {
     id: 'policies',
-    number: 19,
+    number: 17,
     title: 'Policies & Legal Disclosures',
     shortTitle: 'Legal Docs',
     description: 'Terms of service, risk disclosure, AML regulations, order execution policy, and privacy policy PDFs.',
@@ -171,7 +155,7 @@ export const WIZARD_STEPS: WizardStepMeta[] = [
   },
   {
     id: 'review',
-    number: 20,
+    number: 18,
     title: 'Review & Submit Application',
     shortTitle: 'Review & Submit',
     description: 'Compliance verification audit checklist and final submission for administrative review.',
@@ -213,12 +197,12 @@ export const TRADING_PLATFORMS = [
   'MetaTrader 4 (MT4)',
   'MetaTrader 5 (MT5)',
   'cTrader',
-  'TradingView',
+  'TM9',
+  'C2C (Centroid Solution)',
+  'Vertex',
   'WebTrader (Proprietary)',
   'Mobile App (Proprietary)',
-  'IRESS',
   'Match-Trader',
-  'NinjaTrader',
 ];
 
 export const SUPPORTED_DEVICES = [
@@ -227,6 +211,7 @@ export const SUPPORTED_DEVICES = [
   'Web Browser',
   'iOS (iPhone / iPad)',
   'Android',
+  'Huawei',
   'Linux',
 ];
 

@@ -1340,6 +1340,83 @@ export class AdminService {
 
     return { logs, total, page, limit };
   }
+
+  // ── BROKER LEADS (B29) ──────────────────────────────
+  async getBrokerLeads(query: any) {
+    const { page, limit, skip } = parsePagination(query);
+    const where: Prisma.BrokerLeadWhereInput = {};
+
+    if (query.brokerId) {
+      where.brokerId = query.brokerId;
+    }
+
+    if (query.isRead !== undefined && query.isRead !== '') {
+      where.isRead = query.isRead === 'true' || query.isRead === true;
+    }
+
+    if (query.search) {
+      const s = String(query.search).trim();
+      where.OR = [
+        { name: { contains: s, mode: 'insensitive' } },
+        { email: { contains: s, mode: 'insensitive' } },
+        { phone: { contains: s, mode: 'insensitive' } },
+        { message: { contains: s, mode: 'insensitive' } },
+        { broker: { companyName: { contains: s, mode: 'insensitive' } } },
+      ];
+    }
+
+    if (query.startDate || query.endDate) {
+      where.createdAt = {};
+      if (query.startDate) where.createdAt.gte = new Date(query.startDate);
+      if (query.endDate) where.createdAt.lte = new Date(query.endDate);
+    }
+
+    const [leads, total] = await Promise.all([
+      prisma.brokerLead.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          broker: {
+            select: { id: true, companyName: true, slug: true, logo: true },
+          },
+        },
+      }),
+      prisma.brokerLead.count({ where }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit) || 1;
+    return { leads, total, page, limit, totalPages };
+  }
+
+  async markBrokerLeadRead(id: string, isRead = true) {
+    const lead = await prisma.brokerLead.findUnique({ where: { id } });
+    if (!lead) throw new AppError('Broker lead not found', StatusCodes.NOT_FOUND);
+
+    const updated = await prisma.brokerLead.update({
+      where: { id },
+      data: {
+        isRead,
+        readAt: isRead ? new Date() : null,
+      },
+      include: {
+        broker: {
+          select: { id: true, companyName: true, slug: true, logo: true },
+        },
+      },
+    });
+
+    return updated;
+  }
+
+  async deleteBrokerLead(id: string) {
+    const lead = await prisma.brokerLead.findUnique({ where: { id } });
+    if (!lead) throw new AppError('Broker lead not found', StatusCodes.NOT_FOUND);
+
+    await prisma.brokerLead.delete({ where: { id } });
+    return { success: true, message: 'Broker lead deleted successfully' };
+  }
 }
 
 export const adminService = new AdminService();

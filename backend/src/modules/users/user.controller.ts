@@ -11,8 +11,18 @@ export class UserController {
   };
 
   updateProfile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-    const profile = await userService.updateProfile(req.user!.userId, req.body, req.file);
+    const profile = await userService.updateProfile(req.user!.userId, req.body);
     sendSuccess(res, profile, 'Profile updated successfully', StatusCodes.OK);
+  };
+
+  uploadAvatar = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const updated = await userService.uploadAvatar(req.user!.userId, req.file);
+    sendSuccess(res, updated, 'Avatar updated successfully', StatusCodes.OK);
+  };
+
+  removeAvatar = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const updated = await userService.removeAvatar(req.user!.userId);
+    sendSuccess(res, updated, 'Avatar removed successfully', StatusCodes.OK);
   };
 
   getSavedBrokers = async (req: AuthenticatedRequest, res: Response): Promise<void> => {

@@ -9,6 +9,7 @@ export interface NumericInputProps {
   max?: number;
   step?: number | string;
   allowDecimal?: boolean;
+  allowDecimals?: boolean;
   maxDecimals?: number;
   placeholder?: string;
   prefix?: string;
@@ -30,6 +31,7 @@ export const NumericInput: React.FC<NumericInputProps> = ({
   max,
   step = 'any',
   allowDecimal = true,
+  allowDecimals,
   maxDecimals = 2,
   placeholder = '0.00',
   prefix,
@@ -49,8 +51,10 @@ export const NumericInput: React.FC<NumericInputProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value;
 
+    const isDecimalAllowed = allowDecimals !== undefined ? allowDecimals : allowDecimal;
+
     // Filter out non-numeric and invalid characters (disallow negatives, 'e', '+', etc.)
-    if (allowDecimal) {
+    if (isDecimalAllowed) {
       // Keep only digits and decimal point
       input = input.replace(/[^0-9.]/g, '');
       // Allow only one decimal point

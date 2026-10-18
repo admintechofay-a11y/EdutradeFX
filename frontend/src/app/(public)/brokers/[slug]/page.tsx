@@ -36,6 +36,7 @@ import {
   CheckCircle2,
   AlertCircle,
   Info,
+  MapPin,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '../../../../lib/api';
@@ -43,6 +44,7 @@ import { Broker, BrokerReview } from '../../../../types';
 import { StarRating } from '../../../../components/common/StarRating';
 import { Skeleton } from '../../../../components/common/Skeleton';
 import { Modal } from '@/components/ui/Modal';
+import PhoneInput from '../../../../components/common/PhoneInput';
 import { useCompareStore } from '../../../../store/compareStore';
 import { useAuthStore } from '../../../../store/authStore';
 
@@ -58,7 +60,6 @@ export default function BrokerDetailPage() {
     | 'regulation'
     | 'platforms'
     | 'accounts'
-    | 'symbols'
     | 'ib-program'
     | 'banking'
     | 'awards'
@@ -254,6 +255,11 @@ export default function BrokerDetailPage() {
               <div className="space-y-2">
                 <div className="flex flex-wrap items-center gap-2.5">
                   <h1 className="text-2xl sm:text-3xl font-black text-navy tracking-tight">{broker.companyName}</h1>
+                  {broker.registeredName && broker.registeredName !== broker.companyName && (
+                    <span className="px-2.5 py-0.5 rounded-full bg-surface-tint border border-border text-[11px] font-semibold text-text-muted">
+                      ({broker.registeredName})
+                    </span>
+                  )}
                   {broker.isRegulated && (
                     <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-black uppercase tracking-wider">
                       <ShieldCheck className="w-3.5 h-3.5" />
@@ -282,6 +288,20 @@ export default function BrokerDetailPage() {
                   <span>Founded: {broker.yearFounded || 'Established'}</span>
                   <span>•</span>
                   <span>HQ: {broker.headquarters || broker.country || 'Global'}</span>
+                  {broker.mapLink && (
+                    <>
+                      <span>•</span>
+                      <a
+                        href={broker.mapLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-blue hover:underline font-bold"
+                      >
+                        <MapPin className="w-3 h-3 text-orange" />
+                        Locate on Map
+                      </a>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -309,6 +329,18 @@ export default function BrokerDetailPage() {
                   <Bookmark className="w-4 h-4" />
                 </button>
 
+                {broker.mapLink && (
+                  <a
+                    href={broker.mapLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 sm:flex-none p-2.5 rounded-full bg-white border border-border text-navy hover:bg-surface-tint transition flex items-center justify-center min-h-[42px] min-w-[42px]"
+                    title="Locate on Google Maps"
+                  >
+                    <MapPin className="w-4 h-4 text-orange" />
+                  </a>
+                )}
+
                 {broker.website && (
                   <a
                     href={broker.website}
@@ -322,13 +354,45 @@ export default function BrokerDetailPage() {
                 )}
               </div>
 
+              {/* Inquiry CTA */}
               <button
                 onClick={() => setIsLeadModalOpen(true)}
-                className="px-6 py-2.5 rounded-full bg-orange hover:bg-orange-hover text-white text-xs font-black uppercase tracking-wider transition shadow-sm flex items-center justify-center gap-1.5 min-h-[44px] w-full sm:w-auto"
+                className="px-5 py-2.5 rounded-full bg-white border border-border text-navy hover:bg-surface-tint text-xs font-bold transition shadow-sm flex items-center justify-center gap-1.5 min-h-[44px]"
               >
-                Open Account / Inquiry
-                <ArrowRight className="w-4 h-4" />
+                <MessageSquare className="w-4 h-4 text-blue" />
+                Send Inquiry
               </button>
+
+              {/* Open Account CTA */}
+              {broker.ibLink ? (
+                <a
+                  href={broker.ibLink}
+                  target="_blank"
+                  rel="noopener noreferrer sponsored"
+                  onClick={() => {
+                    api.post(`/brokers/${broker.id}/click`).catch(() => {});
+                  }}
+                  className="px-6 py-2.5 rounded-full bg-orange hover:bg-orange-hover text-white text-xs font-black uppercase tracking-wider transition shadow-sm flex items-center justify-center gap-1.5 min-h-[44px]"
+                >
+                  Open Account
+                  <ArrowRight className="w-4 h-4" />
+                </a>
+              ) : (
+                <button
+                  onClick={() => {
+                    if (broker.website) {
+                      api.post(`/brokers/${broker.id}/click`).catch(() => {});
+                      window.open(broker.website, '_blank', 'noopener,noreferrer');
+                    } else {
+                      setIsLeadModalOpen(true);
+                    }
+                  }}
+                  className="px-6 py-2.5 rounded-full bg-orange hover:bg-orange-hover text-white text-xs font-black uppercase tracking-wider transition shadow-sm flex items-center justify-center gap-1.5 min-h-[44px]"
+                >
+                  Open Account
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
 
@@ -356,7 +420,7 @@ export default function BrokerDetailPage() {
         </div>
       </div>
 
-      {/* ── 10 TAB NAVIGATION STRIP ─────────────────────────── */}
+      {/* ── 9 TAB NAVIGATION STRIP ──────────────────────────── */}
       <div className="sticky top-16 z-20 bg-white border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex space-x-6 overflow-x-auto no-scrollbar py-3 text-xs font-bold">
@@ -365,7 +429,6 @@ export default function BrokerDetailPage() {
               { id: 'regulation', label: `Regulation (${licenses.length})` },
               { id: 'platforms', label: 'Platforms & Servers' },
               { id: 'accounts', label: `Accounts (${accountGroups.length})` },
-              { id: 'symbols', label: `Tradable Symbols (${symbolSpecs.length})` },
               { id: 'ib-program', label: 'IB Program' },
               { id: 'banking', label: 'Deposit & Withdrawal' },
               { id: 'awards', label: 'Awards & Highlights' },
@@ -472,6 +535,12 @@ export default function BrokerDetailPage() {
                     <span className="text-text-muted">Legal Entity</span>
                     <span className="font-bold text-navy text-right">{broker.registeredName || broker.companyName}</span>
                   </div>
+                  {broker.businessModel && (
+                    <div className="flex justify-between py-1.5 border-b border-border">
+                      <span className="text-text-muted">Business Model</span>
+                      <span className="font-bold text-navy">{broker.businessModel}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between py-1.5 border-b border-border">
                     <span className="text-text-muted">Country</span>
                     <span className="font-bold text-navy">{broker.country || 'Global'}</span>
@@ -480,6 +549,26 @@ export default function BrokerDetailPage() {
                     <span className="text-text-muted">City / Address</span>
                     <span className="font-bold text-navy text-right">{broker.city || broker.headquarters || '—'}</span>
                   </div>
+                  {broker.mapLink && (
+                    <div className="flex justify-between py-1.5 border-b border-border items-center">
+                      <span className="text-text-muted">Office Map</span>
+                      <a
+                        href={broker.mapLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-bold text-blue hover:underline inline-flex items-center gap-1 text-right"
+                      >
+                        <MapPin className="w-3.5 h-3.5 text-orange" />
+                        Locate on Map
+                      </a>
+                    </div>
+                  )}
+                  {broker.corporatePhone && (
+                    <div className="flex justify-between py-1.5 border-b border-border">
+                      <span className="text-text-muted">Corporate Phone</span>
+                      <span className="font-bold text-navy text-right">{broker.corporatePhone}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between py-1.5 border-b border-border">
                     <span className="text-text-muted">Negative Balance Protection</span>
                     <span className="font-bold text-emerald-600">
@@ -488,8 +577,14 @@ export default function BrokerDetailPage() {
                   </div>
                   <div className="flex justify-between py-1.5 border-b border-border">
                     <span className="text-text-muted">Tradable Symbols</span>
-                    <span className="font-bold text-navy">{broker.totalTradableSymbols || '500+'}</span>
+                    <span className="font-bold text-navy">{broker.totalTradableSymbols ? `${broker.totalTradableSymbols}+` : '500+'}</span>
                   </div>
+                  {broker.operatingCountries && broker.operatingCountries.length > 0 && (
+                    <div className="flex justify-between py-1.5 border-b border-border">
+                      <span className="text-text-muted">Operating Regions</span>
+                      <span className="font-bold text-navy text-right">{broker.operatingCountries.length} Countries</span>
+                    </div>
+                  )}
                   <div className="flex justify-between py-1.5">
                     <span className="text-text-muted">Customer Support</span>
                     <span className="font-bold text-navy">{broker.supportAvailability || '24/5 Live Chat'}</span>
@@ -743,42 +838,6 @@ export default function BrokerDetailPage() {
           </div>
         )}
 
-        {/* TAB 5: TRADABLE SYMBOL SPECS */}
-        {activeTab === 'symbols' && (
-          <div className="p-6 rounded-3xl bg-white border border-border shadow-sm space-y-4">
-            <h3 className="text-base font-black text-navy uppercase tracking-wider">
-              Benchmark Symbol Specifications
-            </h3>
-            <p className="text-xs text-text-muted">
-              Live spreads, contract sizes, and margin requirements across key instruments.
-            </p>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left">
-                <thead className="bg-surface-tint border-b border-border text-navy font-black uppercase text-[10px]">
-                  <tr>
-                    <th className="p-3">Symbol</th>
-                    <th className="p-3">Asset Category</th>
-                    <th className="p-3">Contract Size</th>
-                    <th className="p-3">Average Spread</th>
-                    <th className="p-3">Decimals / Precision</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border text-navy">
-                  {symbolSpecs.map((s) => (
-                    <tr key={s.id} className="hover:bg-surface-tint/50">
-                      <td className="p-3 font-bold text-blue">{s.symbol}</td>
-                      <td className="p-3">{s.category}</td>
-                      <td className="p-3">{s.contractSize || 'Standard Lot'}</td>
-                      <td className="p-3 font-bold text-emerald-600">{s.spreadAvg || '0.1 pips'}</td>
-                      <td className="p-3">{s.precision ?? 5}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
 
         {/* TAB 6: IB PROGRAM */}
         {activeTab === 'ib-program' && (
@@ -1061,40 +1120,61 @@ export default function BrokerDetailPage() {
         isOpen={isLeadModalOpen}
         onClose={() => setIsLeadModalOpen(false)}
         maxWidth="md"
-        title="Open Account / Direct Inquiry"
-        subtitle={`Direct contact with ${broker.companyName}`}
+        title="Institutional & Account Inquiry"
+        subtitle={`Inquiry handled exclusively by EdutradeFX Concierge for ${broker.companyName}`}
       >
+        <div className="p-3.5 mb-3.5 rounded-2xl bg-blue/10 border border-blue/20 text-xs text-navy space-y-1">
+          <div className="font-bold flex items-center gap-1.5 text-blue">
+            <ShieldCheck className="w-4 h-4 shrink-0" />
+            Inquiry goes directly to EdutradeFX Team
+          </div>
+          <p className="text-text-muted text-[11px] leading-relaxed">
+            Our institutional relations desk handles all broker inquiries. Your personal contact details are never shared with or sold directly to third-party brokers.
+          </p>
+        </div>
+
         <form onSubmit={handleLeadSubmit} className="space-y-3.5">
-          <input
-            type="text"
-            required
-            value={leadForm.name}
-            onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
-            placeholder="Full Name"
-            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
-          />
-          <input
-            type="email"
-            required
-            value={leadForm.email}
-            onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
-            placeholder="Email Address"
-            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
-          />
-          <input
-            type="tel"
-            value={leadForm.phone}
-            onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
-            placeholder="Phone / WhatsApp"
-            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
-          />
-          <input
-            type="text"
-            value={leadForm.country}
-            onChange={(e) => setLeadForm({ ...leadForm, country: e.target.value })}
-            placeholder="Residence Country"
-            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
-          />
+          <div>
+            <label className="text-[11px] font-bold text-navy block mb-1">Full Name</label>
+            <input
+              type="text"
+              required
+              value={leadForm.name}
+              onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
+              placeholder="Full Name"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
+            />
+          </div>
+          <div>
+            <label className="text-[11px] font-bold text-navy block mb-1">Email Address</label>
+            <input
+              type="email"
+              required
+              value={leadForm.email}
+              onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
+              placeholder="Email Address"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
+            />
+          </div>
+          <div>
+            <label className="text-[11px] font-bold text-navy block mb-1">Phone Number</label>
+            <PhoneInput
+              value={leadForm.phone}
+              onChange={(val) => setLeadForm({ ...leadForm, phone: val })}
+              placeholder="Phone / WhatsApp"
+              className="w-full text-xs"
+            />
+          </div>
+          <div>
+            <label className="text-[11px] font-bold text-navy block mb-1">Country of Residence</label>
+            <input
+              type="text"
+              value={leadForm.country}
+              onChange={(e) => setLeadForm({ ...leadForm, country: e.target.value })}
+              placeholder="Residence Country"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
+            />
+          </div>
 
           <div className="flex justify-end gap-2 pt-2">
             <button
@@ -1109,7 +1189,7 @@ export default function BrokerDetailPage() {
               disabled={leadSubmitting}
               className="px-5 py-2 rounded-full bg-blue text-white text-xs font-bold hover:bg-blue-hover disabled:opacity-40"
             >
-              {leadSubmitting ? 'Sending...' : 'Send Inquiry'}
+              {leadSubmitting ? 'Sending...' : 'Send Inquiry to EdutradeFX'}
             </button>
           </div>
         </form>

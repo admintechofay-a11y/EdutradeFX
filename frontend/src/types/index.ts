@@ -39,6 +39,11 @@ export interface User {
   role: Role;
   avatar?: string | null;
   phone?: string | null;
+  whatsapp?: string | null;
+  city?: string | null;
+  country?: string | null;
+  bio?: string | null;
+  socialLinks?: Record<string, string> | null;
   isEmailVerified: boolean;
   isActive: boolean;
   createdAt: string;
@@ -268,6 +273,13 @@ export interface Broker {
   platformLinks?: Record<string, string> | null;
   deviceSupport: string[];
   businessType?: BrokerBusinessType | null;
+  businessModel?: string | null;
+  operatingCountries?: string[];
+  mapLink?: string | null;
+  corporatePhone?: string | null;
+  ibLink?: string | null;
+  liquidityProviders?: string[];
+  regionalFootprint?: string[];
   officeContactNumber?: string | null;
   officeContactEmail?: string | null;
   countryRestrictions: string[];

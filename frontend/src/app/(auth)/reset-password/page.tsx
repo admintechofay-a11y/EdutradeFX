@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Lock, Eye, EyeOff, CheckCircle, AlertCircle, ArrowRight, Loader2 } from 'lucide-react';
 import { api } from '../../../lib/api';
+import PasswordStrengthMeter, { evaluatePasswordStrength } from '../../../components/common/PasswordStrengthMeter';
 
 function ResetPasswordFormContent() {
   const router = useRouter();
@@ -14,18 +15,28 @@ function ResetPasswordFormContent() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [isPasswordStrong, setIsPasswordStrong] = useState(false);
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
+
+    if (!token) {
+      setError('Invalid or missing password reset token. Please request a new link.');
       return;
     }
-    if (!token) {
-      setError('Invalid or expired reset link.');
+
+    const { isSufficient } = evaluatePasswordStrength(password);
+    if (!isSufficient) {
+      setError('Password is too weak. Please meet all password requirements.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match. Please re-enter your new password.');
       return;
     }
 
@@ -36,10 +47,15 @@ function ResetPasswordFormContent() {
       await api.post('/auth/reset-password', { token, password });
       setSuccess(true);
       setTimeout(() => {
-        router.push('/login');
-      }, 2000);
+        router.push('/login?reset=success');
+      }, 2500);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Password reset failed. Link may have expired.');
+      const status = err.response?.status;
+      if (status === 429) {
+        setError('Too many attempts. Please wait 15 minutes before trying again.');
+      } else {
+        setError(err.response?.data?.message || 'Password reset link has expired or is invalid. Please request a new one.');
+      }
     } finally {
       setLoading(false);
     }
@@ -51,19 +67,28 @@ function ResetPasswordFormContent() {
         <Link href="/" className="inline-flex items-center gap-2 mb-4">
           <img src="/logos/logo-color.svg" alt="EduTradeFX" className="h-8 sm:h-9 w-auto" />
         </Link>
-        <h2 className="text-xl sm:text-2xl font-black text-text-heading">Choose New Password</h2>
+        <h1 className="text-xl sm:text-2xl font-black text-text-heading">Choose New Password</h1>
         <p className="text-xs sm:text-sm text-text-muted mt-1">
-          Ensure your account uses a secure combination of characters
+          Create a strong password to protect your trading account
         </p>
       </div>
 
       {success ? (
-        <div className="text-center py-6 space-y-3">
-          <CheckCircle className="w-14 h-14 text-green mx-auto" />
-          <h3 className="text-lg font-bold text-text-heading">Password Updated!</h3>
-          <p className="text-xs text-text-body">
-            Your password has been changed. Redirecting to login...
+        <div className="text-center py-6 space-y-4">
+          <div className="w-16 h-16 rounded-full bg-emerald-50 text-green flex items-center justify-center mx-auto">
+            <CheckCircle className="w-10 h-10 text-green" />
+          </div>
+          <h2 className="text-xl font-bold text-text-heading">Password Updated!</h2>
+          <p className="text-xs sm:text-sm text-text-body">
+            Your password has been changed and all previous sessions revoked. Redirecting to login...
           </p>
+          <Link
+            href="/login?reset=success"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-orange hover:bg-orange-hover text-white rounded-full text-xs sm:text-sm font-bold transition shadow-soft min-h-[44px]"
+          >
+            <span>Proceed to Login</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       ) : (
         <form onSubmit={handleReset} className="space-y-4">
@@ -75,18 +100,17 @@ function ResetPasswordFormContent() {
           )}
 
           <div>
-            <label className="block text-xs font-semibold text-text-heading mb-1.5">
-              New Password
+            <label className="block text-xs font-semibold text-text-heading mb-1.5 uppercase tracking-wider">
+              New Password *
             </label>
             <div className="relative">
               <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 required
-                minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Min 8 characters"
+                placeholder="Enter new password"
                 className="w-full pl-10 pr-12 py-2.5 sm:py-3 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
               />
               <button
@@ -98,33 +122,63 @@ function ResetPasswordFormContent() {
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
+
+            {/* Live Strength Meter */}
+            <PasswordStrengthMeter
+              password={password}
+              onStrengthChange={(isStrong) => setIsPasswordStrong(isStrong)}
+            />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-text-heading mb-1.5">
-              Confirm Password
+            <label className="block text-xs font-semibold text-text-heading mb-1.5 uppercase tracking-wider">
+              Confirm New Password *
             </label>
             <div className="relative">
               <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
               <input
-                type={showPassword ? 'text' : 'password'}
+                type={showConfirmPassword ? 'text' : 'password'}
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm new password"
-                className="w-full pl-10 pr-12 py-2.5 sm:py-3 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
+                className={`w-full pl-10 pr-12 py-2.5 sm:py-3 bg-white border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:ring-1 transition ${
+                  confirmPassword && confirmPassword !== password
+                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                    : 'border-border focus:border-blue focus:ring-blue'
+                }`}
               />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                className="absolute right-1 top-1/2 -translate-y-1/2 p-2 text-text-muted hover:text-text-heading min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg"
+              >
+                {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
+            {confirmPassword && confirmPassword !== password && (
+              <p className="mt-1 text-[11px] text-red-500 font-medium">Passwords do not match.</p>
+            )}
           </div>
 
           <button
             type="submit"
-            disabled={loading}
-            className="w-full py-3.5 sm:py-4 bg-orange hover:bg-orange-hover disabled:opacity-50 text-white font-bold text-sm rounded-full transition shadow-soft flex items-center justify-center gap-2 min-h-[48px]"
+            disabled={loading || !isPasswordStrong || confirmPassword !== password}
+            className="w-full py-3.5 sm:py-4 bg-orange hover:bg-orange-hover disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-sm rounded-full transition shadow-soft flex items-center justify-center gap-2 min-h-[48px]"
           >
             <span>{loading ? 'Updating Password...' : 'Save New Password'}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
+
+          <div className="text-center pt-2">
+            <Link
+              href="/login"
+              className="text-xs text-text-muted hover:text-blue font-semibold transition"
+            >
+              Remember your password? Sign In
+            </Link>
+          </div>
         </form>
       )}
     </div>

@@ -55,6 +55,17 @@ import {
 } from '@/lib/brokerOptions';
 import { Broker, BrokerDocType } from '@/types';
 import { OptionSelect } from '@/components/common/OptionSelect';
+import { PhoneInput } from '@/components/common/PhoneInput';
+import { NumericInput } from '@/components/common/NumericInput';
+import { MultiSelect } from '@/components/common/MultiSelect';
+import { COUNTRIES } from '@/lib/countries';
+import {
+  ISO_4217_CURRENCIES,
+  COUNTRY_CITIES,
+  BUSINESS_MODELS,
+  REGIONAL_FOOTPRINT_OPTIONS,
+  FIXED_SPREADS,
+} from '@/lib/referenceData';
 
 export default function BrokerOnboardingPage() {
   const [loading, setLoading] = useState(true);
@@ -281,7 +292,7 @@ export default function BrokerOnboardingPage() {
         {/* Left: Desktop Wizard Navigation List (lg+) */}
         <aside className="hidden lg:block lg:col-span-3 bg-white rounded-3xl p-3 border border-border shadow-sm space-y-1 max-h-[80vh] overflow-y-auto sticky top-20">
           <div className="px-3 py-2 text-[11px] font-black uppercase tracking-wider text-text-muted">
-            Onboarding Sections (18)
+            Onboarding Sections (17)
           </div>
           {WIZARD_STEPS.map((step, idx) => {
             const isActive = activeStepIndex === idx;
@@ -463,82 +474,52 @@ export default function BrokerOnboardingPage() {
           )}
 
           {activeStepIndex === 10 && (
-            <StepSymbolSpecs
-              broker={broker}
-              isReadOnly={isReadOnly}
-              saving={saving}
-              onSave={(data) => saveSection('symbol-specs', data)}
-              onNext={() => setActiveStepIndex(11)}
-            />
-          )}
-
-          {activeStepIndex === 11 && (
             <StepDealingLiquidity
               broker={broker}
               isReadOnly={isReadOnly}
               saving={saving}
               onSave={(data) => saveSection('dealing', data)}
+              onNext={() => setActiveStepIndex(11)}
+            />
+          )}
+
+          {activeStepIndex === 11 && (
+            <StepRegionalFootprint
+              broker={broker}
+              isReadOnly={isReadOnly}
+              saving={saving}
+              onSave={(data) => saveSection('business-areas', data)}
               onNext={() => setActiveStepIndex(12)}
             />
           )}
 
           {activeStepIndex === 12 && (
-            <StepBusinessAreas
-              broker={broker}
-              isReadOnly={isReadOnly}
-              saving={saving}
-              onSave={(data) => saveSection('business-areas', data)}
-              onNext={() => setActiveStepIndex(13)}
-            />
-          )}
-
-          {activeStepIndex === 13 && (
-            <StepFundingVolume
-              broker={broker}
-              isReadOnly={isReadOnly}
-              saving={saving}
-              onSave={(data) => saveSection('funding', data)}
-              onNext={() => setActiveStepIndex(14)}
-            />
-          )}
-
-          {activeStepIndex === 14 && (
-            <StepClientActivity
-              broker={broker}
-              isReadOnly={isReadOnly}
-              saving={saving}
-              onSave={(data) => saveSection('activity', data)}
-              onNext={() => setActiveStepIndex(15)}
-            />
-          )}
-
-          {activeStepIndex === 15 && (
             <StepProsCons
               broker={broker}
               isReadOnly={isReadOnly}
               saving={saving}
               onSave={(data) => saveSection('pros-cons', data)}
-              onNext={() => setActiveStepIndex(16)}
+              onNext={() => setActiveStepIndex(13)}
             />
           )}
 
-          {activeStepIndex === 16 && (
+          {activeStepIndex === 13 && (
             <StepAwards
               broker={broker}
               isReadOnly={isReadOnly}
               saving={saving}
               onSave={(data) => saveSection('awards', data)}
-              onNext={() => setActiveStepIndex(17)}
+              onNext={() => setActiveStepIndex(14)}
             />
           )}
 
-          {activeStepIndex === 17 && (
+          {activeStepIndex === 14 && (
             <StepSocialVideo
               broker={broker}
               isReadOnly={isReadOnly}
               saving={saving}
               onSave={(data) => saveSection('social', data)}
-              onNext={() => setActiveStepIndex(18)}
+              onNext={() => setActiveStepIndex(15)}
               onUploadVideo={(file) =>
                 handleFileUpload('/brokers/my/upload/promo-video', file, 'promo-video')
               }
@@ -546,13 +527,13 @@ export default function BrokerOnboardingPage() {
             />
           )}
 
-          {activeStepIndex === 18 && (
+          {activeStepIndex === 15 && (
             <StepPoliciesLegal
               broker={broker}
               isReadOnly={isReadOnly}
               saving={saving}
               onSave={(data) => saveSection('policies', data)}
-              onNext={() => setActiveStepIndex(19)}
+              onNext={() => setActiveStepIndex(16)}
               onUploadPolicyPdf={(file, key) =>
                 handleFileUpload('/brokers/my/upload/policy-pdf', file, key)
               }
@@ -560,7 +541,7 @@ export default function BrokerOnboardingPage() {
             />
           )}
 
-          {activeStepIndex === 19 && (
+          {activeStepIndex === 16 && (
             <StepReviewSubmit
               broker={broker}
               submitting={submitting}
@@ -600,33 +581,69 @@ function StepGeneralInfo({
     companyName: broker.companyName || '',
     registeredName: broker.registeredName || '',
     businessType: broker.businessType || 'STP',
+    businessModel: (broker as any).businessModel || broker.businessType || 'STP',
+    operatingCountries: (broker as any).operatingCountries || (broker.country ? [broker.country] : []),
     address: broker.address || '',
     city: broker.city || '',
     state: broker.state || '',
     postalCode: broker.postalCode || '',
     country: broker.country || '',
+    mapLink: (broker as any).mapLink || '',
     website: broker.website || '',
     phone: broker.phone || '',
     email: broker.email || '',
     yearFounded: broker.yearFounded || new Date().getFullYear(),
-    mtRegisteredCountryRegion: broker.mtRegisteredCountryRegion || '',
     isRegulated: broker.isRegulated ?? true,
     totalTradableSymbols: broker.totalTradableSymbols || 500,
     accountCurrencies: broker.accountCurrencies || ['USD', 'EUR', 'GBP'],
     negativeBalanceProtection: broker.negativeBalanceProtection ?? true,
     logo: broker.logo || '',
+    ibLink: (broker as any).ibLink || '',
   });
 
-  const toggleCurrency = (cur: string) => {
-    if (formData.accountCurrencies.includes(cur)) {
-      setFormData({ ...formData, accountCurrencies: formData.accountCurrencies.filter((c) => c !== cur) });
-    } else {
-      setFormData({ ...formData, accountCurrencies: [...formData.accountCurrencies, cur] });
+  const [isOtherCity, setIsOtherCity] = useState(false);
+
+  const predefinedCities = formData.country && (COUNTRY_CITIES as Record<string, string[]>)[formData.country]
+    ? (COUNTRY_CITIES as Record<string, string[]>)[formData.country]
+    : [];
+
+  useEffect(() => {
+    if (predefinedCities.length > 0 && formData.city && !predefinedCities.includes(formData.city)) {
+      setIsOtherCity(true);
     }
-  };
+  }, [formData.country]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.companyName.trim()) {
+      toast.error('Company Name is required');
+      return;
+    }
+    if (!formData.registeredName.trim() || formData.registeredName.trim().length < 2) {
+      toast.error('Registered Legal Entity Name is mandatory (minimum 2 characters)');
+      return;
+    }
+    if (!formData.logo) {
+      toast.error('Company Logo is required before proceeding');
+      return;
+    }
+    if (!formData.country) {
+      toast.error('Operating Country is required');
+      return;
+    }
+    if (!formData.city) {
+      toast.error('City is required');
+      return;
+    }
+    if (!formData.email) {
+      toast.error('Official Contact Email is required');
+      return;
+    }
+    if (!formData.website) {
+      toast.error('Official Broker Website is required');
+      return;
+    }
+
     const ok = await onSave(formData);
     if (ok) onNext();
   };
@@ -634,6 +651,76 @@ function StepGeneralInfo({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Company Logo Upload (Mandatory) */}
+        <div className="space-y-1.5 md:col-span-2 p-4 rounded-2xl bg-surface-tint border border-border">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold text-navy flex items-center gap-1">
+              Company Logo <span className="text-rose-500">*</span>
+            </label>
+            {formData.logo && (
+              <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Logo Uploaded
+              </span>
+            )}
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center gap-4 pt-1">
+            {formData.logo ? (
+              <div className="relative group p-2 bg-white rounded-xl border border-border shadow-xs">
+                <img
+                  src={formData.logo}
+                  alt="Company Logo"
+                  className="h-16 w-32 object-contain rounded-lg"
+                />
+              </div>
+            ) : (
+              <div className="h-16 w-32 rounded-xl border-2 border-dashed border-border bg-white flex flex-col items-center justify-center text-text-muted text-[11px]">
+                <Upload className="w-5 h-5 mb-0.5 text-blue" />
+                No Logo
+              </div>
+            )}
+
+            {!isReadOnly && (
+              <div className="flex flex-wrap items-center gap-2">
+                <label className="px-4 py-2 rounded-full bg-white border border-border text-navy text-xs font-bold hover:bg-surface-tint cursor-pointer transition shadow-xs flex items-center gap-1.5">
+                  <Upload className="w-3.5 h-3.5 text-blue" />
+                  {uploading ? 'Uploading...' : formData.logo ? 'Change Logo' : 'Upload Logo (PNG / JPG / SVG)'}
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                    className="hidden"
+                    disabled={uploading}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const url = await onLogoUpload(file);
+                        if (url) {
+                          setFormData((prev) => ({ ...prev, logo: url }));
+                        }
+                      }
+                    }}
+                  />
+                </label>
+                {formData.logo && (
+                  <button
+                    type="button"
+                    onClick={() => setFormData((prev) => ({ ...prev, logo: '' }))}
+                    className="px-3 py-2 rounded-full border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-bold transition flex items-center gap-1"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Remove
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+          {!formData.logo && (
+            <p className="text-[11px] text-rose-600 font-semibold">
+              * Official broker logo is mandatory to pass compliance verification and appear in public listings.
+            </p>
+          )}
+        </div>
+
         {/* Company Name */}
         <div className="space-y-1.5">
           <label className="text-xs font-bold text-navy">
@@ -650,12 +737,15 @@ function StepGeneralInfo({
           />
         </div>
 
-        {/* Registered Name */}
+        {/* Registered Legal Entity Name (Mandatory) */}
         <div className="space-y-1.5">
-          <label className="text-xs font-bold text-navy">Registered Entity Legal Name</label>
+          <label className="text-xs font-bold text-navy">
+            Registered Legal Entity Name <span className="text-rose-500">*</span>
+          </label>
           <input
             disabled={isReadOnly}
             type="text"
+            required
             value={formData.registeredName}
             onChange={(e) => setFormData({ ...formData, registeredName: e.target.value })}
             className="w-full px-3.5 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue"
@@ -663,18 +753,18 @@ function StepGeneralInfo({
           />
         </div>
 
-        {/* Business Type */}
+        {/* Business Model */}
         <div className="space-y-1.5">
           <label className="text-xs font-bold text-navy">Business Model</label>
           <select
             disabled={isReadOnly}
-            value={formData.businessType}
-            onChange={(e) => setFormData({ ...formData, businessType: e.target.value as any })}
+            value={formData.businessModel}
+            onChange={(e) => setFormData({ ...formData, businessModel: e.target.value, businessType: e.target.value as any })}
             className="w-full px-3.5 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue bg-white"
           >
-            {BUSINESS_TYPES.map((bt) => (
-              <option key={bt.value} value={bt.value}>
-                {bt.label}
+            {BUSINESS_MODELS.map((bm) => (
+              <option key={bm.value} value={bm.value}>
+                {bm.label}
               </option>
             ))}
           </select>
@@ -699,30 +789,92 @@ function StepGeneralInfo({
           <label className="text-xs font-bold text-navy">
             Operating Country <span className="text-rose-500">*</span>
           </label>
-          <input
+          <select
             disabled={isReadOnly}
-            type="text"
             required
             value={formData.country}
-            onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue"
-            placeholder="e.g. Australia"
-          />
+            onChange={(e) => {
+              const newCountry = e.target.value;
+              setFormData({ ...formData, country: newCountry, city: '' });
+              setIsOtherCity(false);
+            }}
+            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue bg-white"
+          >
+            <option value="">Select country...</option>
+            {COUNTRIES.map((c) => (
+              <option key={c.code} value={c.name}>
+                {c.name} ({c.code})
+              </option>
+            ))}
+          </select>
         </div>
 
-        {/* City */}
+        {/* City (Cascading from country) */}
         <div className="space-y-1.5">
           <label className="text-xs font-bold text-navy">
             City <span className="text-rose-500">*</span>
           </label>
-          <input
+          {predefinedCities.length > 0 && !isOtherCity ? (
+            <div className="space-y-1.5">
+              <select
+                disabled={isReadOnly}
+                required
+                value={formData.city}
+                onChange={(e) => {
+                  if (e.target.value === '__OTHER__') {
+                    setIsOtherCity(true);
+                    setFormData({ ...formData, city: '' });
+                  } else {
+                    setFormData({ ...formData, city: e.target.value });
+                  }
+                }}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue bg-white"
+              >
+                <option value="">Select a city...</option>
+                {predefinedCities.map((city) => (
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
+                ))}
+                <option value="__OTHER__">Other (enter manually)...</option>
+              </select>
+            </div>
+          ) : (
+            <div className="space-y-1.5">
+              <input
+                disabled={isReadOnly}
+                type="text"
+                required
+                value={formData.city}
+                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue"
+                placeholder="Enter city name..."
+              />
+              {predefinedCities.length > 0 && isOtherCity && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsOtherCity(false);
+                    setFormData({ ...formData, city: '' });
+                  }}
+                  className="text-[11px] font-bold text-blue hover:underline"
+                >
+                  ← Select from standard city list
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Operating Countries MultiSelect */}
+        <div className="space-y-1.5 md:col-span-2">
+          <label className="text-xs font-bold text-navy">Licensed Operating Countries & Jurisdictions</label>
+          <MultiSelect
+            options={COUNTRIES.map((c) => ({ value: c.name, label: `${c.name} (${c.code})` }))}
+            value={formData.operatingCountries}
+            onChange={(val) => setFormData({ ...formData, operatingCountries: val })}
+            placeholder="Select all serviced / operating countries..."
             disabled={isReadOnly}
-            type="text"
-            required
-            value={formData.city}
-            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue"
-            placeholder="e.g. Melbourne"
           />
         </div>
 
@@ -736,6 +888,31 @@ function StepGeneralInfo({
             onChange={(e) => setFormData({ ...formData, address: e.target.value })}
             className="w-full px-3.5 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue"
             placeholder="e.g. Level 16, Tower One, 727 Collins Street"
+          />
+        </div>
+
+        {/* Google Maps Link */}
+        <div className="space-y-1.5 md:col-span-2">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold text-navy">Google Maps Link (Locate Us)</label>
+            {formData.mapLink && (
+              <a
+                href={formData.mapLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[11px] font-bold text-blue hover:underline flex items-center gap-1"
+              >
+                Open to test <ExternalLink className="w-3 h-3" />
+              </a>
+            )}
+          </div>
+          <input
+            disabled={isReadOnly}
+            type="url"
+            value={formData.mapLink}
+            onChange={(e) => setFormData({ ...formData, mapLink: e.target.value })}
+            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue"
+            placeholder="https://maps.google.com/?q=..."
           />
         </div>
 
@@ -771,43 +948,50 @@ function StepGeneralInfo({
           />
         </div>
 
-        {/* Phone */}
+        {/* Corporate Phone */}
         <div className="space-y-1.5">
           <label className="text-xs font-bold text-navy">Corporate Phone Number</label>
-          <input
-            disabled={isReadOnly}
-            type="text"
+          <PhoneInput
             value={formData.phone}
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue"
-            placeholder="+61 3 9020 0155"
+            onChange={(val) => setFormData({ ...formData, phone: val })}
+            disabled={isReadOnly}
+            placeholder="Enter corporate phone..."
           />
         </div>
 
-        {/* Total Tradable Symbols */}
+        {/* Total Tradable Instruments + */}
         <div className="space-y-1.5">
-          <label className="text-xs font-bold text-navy">Total Tradable Instruments</label>
-          <input
-            disabled={isReadOnly}
-            type="number"
-            value={formData.totalTradableSymbols}
-            onChange={(e) => setFormData({ ...formData, totalTradableSymbols: parseInt(e.target.value) || 0 })}
-            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue"
-            placeholder="e.g. 1200"
-          />
+          <label className="text-xs font-bold text-navy">Total Tradable Instruments +</label>
+          <div className="relative">
+            <input
+              disabled={isReadOnly}
+              type="number"
+              min={1}
+              value={formData.totalTradableSymbols}
+              onChange={(e) => setFormData({ ...formData, totalTradableSymbols: parseInt(e.target.value) || 0 })}
+              className="w-full pl-3.5 pr-8 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue"
+              placeholder="e.g. 1200"
+            />
+            <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-sm font-black text-navy/60 pointer-events-none">
+              +
+            </span>
+          </div>
         </div>
 
-        {/* MT Registered Country Region */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-bold text-navy">MetaQuotes / Tech Server Jurisdiction</label>
+        {/* Master IB Link */}
+        <div className="space-y-1.5 md:col-span-2">
+          <label className="text-xs font-bold text-navy">Master IB / Affiliate Referral Link</label>
           <input
             disabled={isReadOnly}
-            type="text"
-            value={formData.mtRegisteredCountryRegion}
-            onChange={(e) => setFormData({ ...formData, mtRegisteredCountryRegion: e.target.value })}
+            type="url"
+            value={formData.ibLink}
+            onChange={(e) => setFormData({ ...formData, ibLink: e.target.value })}
             className="w-full px-3.5 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue"
-            placeholder="e.g. London LD4 / New York NY4"
+            placeholder="https://broker.com/register?ib=12345"
           />
+          <p className="text-[11px] text-text-muted">
+            Traders clicking Open Account will be redirected to this link. Use your master IB / affiliate URL.
+          </p>
         </div>
 
         {/* Negative Balance Protection */}
@@ -842,16 +1026,17 @@ function StepGeneralInfo({
 
       {/* Account Base Currencies */}
       <div className="space-y-2 pt-2 border-t border-border">
-        <OptionSelect
-          group="CURRENCY"
-          mode="multiple"
-          label="Supported Base Account Currencies"
-          disabled={isReadOnly}
+        <label className="text-xs font-bold text-navy">Supported Base Account Currencies</label>
+        <MultiSelect
+          options={ISO_4217_CURRENCIES.map((c) => ({ value: c.code, label: `${c.code} — ${c.name}` }))}
           value={formData.accountCurrencies}
           onChange={(val) => setFormData({ ...formData, accountCurrencies: val })}
-          placeholder="Select or search account base currencies..."
-          helperText="Select all native account balance currencies offered to clients."
+          placeholder="Select or search supported base account currencies..."
+          disabled={isReadOnly}
         />
+        <p className="text-[11px] text-text-muted">
+          Select all native account balance currencies offered to clients.
+        </p>
       </div>
 
       {/* Action Footer */}
@@ -1522,13 +1707,11 @@ function StepBoardHeadOffice({
         </div>
         <div className="space-y-1.5">
           <label className="text-xs font-bold text-navy">Office Desk Direct Phone</label>
-          <input
+          <PhoneInput
             disabled={isReadOnly}
-            type="text"
             value={formData.officeContactNumber}
-            onChange={(e) => setFormData({ ...formData, officeContactNumber: e.target.value })}
-            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue"
-            placeholder="+61 3 9020 0155"
+            onChange={(val) => setFormData({ ...formData, officeContactNumber: val })}
+            placeholder="Enter office direct phone..."
           />
         </div>
         <div className="space-y-1.5">
@@ -1723,25 +1906,21 @@ function StepSupportRestrictions({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-1.5">
           <label className="text-xs font-bold text-navy">Customer Support Helpline</label>
-          <input
+          <PhoneInput
             disabled={isReadOnly}
-            type="text"
             value={formData.supportPhone}
-            onChange={(e) => setFormData({ ...formData, supportPhone: e.target.value })}
-            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue"
-            placeholder="+1 800 ..."
+            onChange={(val) => setFormData({ ...formData, supportPhone: val })}
+            placeholder="Enter support phone..."
           />
         </div>
 
         <div className="space-y-1.5">
           <label className="text-xs font-bold text-navy">Official Support WhatsApp</label>
-          <input
+          <PhoneInput
             disabled={isReadOnly}
-            type="text"
             value={formData.supportWhatsapp}
-            onChange={(e) => setFormData({ ...formData, supportWhatsapp: e.target.value })}
-            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue"
-            placeholder="+44 7 ..."
+            onChange={(val) => setFormData({ ...formData, supportWhatsapp: val })}
+            placeholder="Enter support WhatsApp..."
           />
         </div>
 
@@ -1781,20 +1960,6 @@ function StepSupportRestrictions({
           onChange={(val) => setFormData({ ...formData, languagesSupported: val })}
           placeholder="Select or search supported languages (133 languages)..."
           helperText="Select all languages supported across live chat, phone, and ticketing."
-        />
-      </div>
-
-      {/* Available Timeframes */}
-      <div className="space-y-2 pt-2 border-t border-border">
-        <OptionSelect
-          group="TIMEFRAME"
-          mode="multiple"
-          label="Supported Charting Timeframes"
-          disabled={isReadOnly}
-          value={formData.availableTimeframes}
-          onChange={(val) => setFormData({ ...formData, availableTimeframes: val })}
-          placeholder="Select supported chart timeframes (e.g. 1M, 5M, 1H, 1D)..."
-          helperText="Standard charting intervals available in your trading platforms."
         />
       </div>
 
@@ -2144,18 +2309,16 @@ function StepAccountGroups({
           </div>
 
           <div className="space-y-1">
-            <OptionSelect
-              group="CURRENCY"
-              label="Base Currency"
-              disabled={isReadOnly}
-              value={currentGroup.currencyCode || currentGroup.currency || 'USD'}
-              otherValue={currentGroup.currencyOther || ''}
-              onOtherChange={(txt) => updateCurrent('currencyOther', txt)}
+            <label className="text-[11px] font-bold text-navy">Base Currencies</label>
+            <MultiSelect
+              options={ISO_4217_CURRENCIES.map((c) => ({ value: c.code, label: `${c.code} — ${c.name}` }))}
+              value={currentGroup.baseCurrencies || (currentGroup.currency ? [currentGroup.currency] : ['USD'])}
               onChange={(val) => {
-                updateCurrent('currencyCode', val);
-                updateCurrent('currency', val);
+                updateCurrent('baseCurrencies', val);
+                if (val.length > 0) updateCurrent('currency', val[0]);
               }}
-              placeholder="Select currency..."
+              placeholder="Select base currencies..."
+              disabled={isReadOnly}
             />
           </div>
 
@@ -2177,13 +2340,18 @@ function StepAccountGroups({
 
           <div className="space-y-1">
             <label className="text-[11px] font-bold text-navy">Spreads From</label>
-            <input
+            <select
               disabled={isReadOnly}
-              type="text"
-              value={currentGroup.spreadFrom || '0.0 pips'}
+              value={currentGroup.spreadFrom || '0.10'}
               onChange={(e) => updateCurrent('spreadFrom', e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
-            />
+              className="w-full px-3 py-2 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue bg-white"
+            >
+              {FIXED_SPREADS.map((sp) => (
+                <option key={sp} value={sp}>
+                  {sp} pips
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="space-y-1">
@@ -2225,13 +2393,15 @@ function StepAccountGroups({
           </div>
 
           <div className="space-y-1">
-            <label className="text-[11px] font-bold text-navy">Commission Per Lot</label>
-            <input
+            <label className="text-[11px] font-bold text-navy">Commission Per Lot ($)</label>
+            <NumericInput
               disabled={isReadOnly}
-              type="text"
-              value={currentGroup.feesPerLot || '$0'}
-              onChange={(e) => updateCurrent('feesPerLot', e.target.value)}
+              value={currentGroup.feesPerLot ? parseFloat(String(currentGroup.feesPerLot).replace(/[^0-9.]/g, '')) || 0 : 0}
+              onChange={(num) => updateCurrent('feesPerLot', `$${num}`)}
               className="w-full px-3 py-2 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue"
+              placeholder="0.00"
+              allowDecimals
+              maxDecimals={2}
             />
           </div>
 
@@ -2252,19 +2422,37 @@ function StepAccountGroups({
           </div>
 
           <div className="space-y-1">
-            <label className="text-[11px] font-bold text-navy">GTC (Good Till Cancelled) Mode</label>
-            <select
-              disabled={isReadOnly}
-              value={currentGroup.gtcMode || 'HOLD_WEEKEND'}
-              onChange={(e) => updateCurrent('gtcMode', e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue bg-white"
-            >
-              {GTC_MODES.map((gtc) => (
-                <option key={gtc.value} value={gtc.value}>
-                  {gtc.label}
-                </option>
-              ))}
-            </select>
+            <label className="text-[11px] font-bold text-navy">GTC (Good Till Cancelled)</label>
+            <div className="flex items-center gap-4 py-2">
+              <label className="flex items-center gap-2 text-xs font-semibold text-navy cursor-pointer">
+                <input
+                  disabled={isReadOnly}
+                  type="radio"
+                  name={`gtc-${activeGroupIdx}`}
+                  checked={currentGroup.gtcEnabled === true || currentGroup.gtcMode === 'AVAILABLE'}
+                  onChange={() => {
+                    updateCurrent('gtcEnabled', true);
+                    updateCurrent('gtcMode', 'AVAILABLE');
+                  }}
+                  className="text-blue"
+                />
+                Yes (Active)
+              </label>
+              <label className="flex items-center gap-2 text-xs font-semibold text-navy cursor-pointer">
+                <input
+                  disabled={isReadOnly}
+                  type="radio"
+                  name={`gtc-${activeGroupIdx}`}
+                  checked={currentGroup.gtcEnabled === false || currentGroup.gtcMode === 'UNAVAILABLE'}
+                  onChange={() => {
+                    updateCurrent('gtcEnabled', false);
+                    updateCurrent('gtcMode', 'UNAVAILABLE');
+                  }}
+                  className="text-blue"
+                />
+                No (Disabled)
+              </label>
+            </div>
           </div>
         </div>
 
@@ -2463,13 +2651,15 @@ function StepIbProgram({
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[11px] font-bold text-navy">Commission Per Lot</label>
-                <input
+                <label className="text-[11px] font-bold text-navy">Commission Per Lot ($)</label>
+                <NumericInput
                   disabled={isReadOnly}
-                  type="text"
-                  value={plan.commissionPerLot || ''}
-                  onChange={(e) => updatePlan(idx, 'commissionPerLot', e.target.value)}
+                  value={plan.commissionPerLot ? parseFloat(String(plan.commissionPerLot).replace(/[^0-9.]/g, '')) || 0 : 0}
+                  onChange={(num) => updatePlan(idx, 'commissionPerLot', `$${num}`)}
                   className="w-full px-3 py-2 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue bg-white"
+                  placeholder="0.00"
+                  allowDecimals
+                  maxDecimals={2}
                 />
               </div>
               <div className="space-y-1">
@@ -2486,16 +2676,6 @@ function StepIbProgram({
                     </option>
                   ))}
                 </select>
-              </div>
-              <div className="space-y-1 md:col-span-3">
-                <label className="text-[11px] font-bold text-navy">Notes & Tier Structure</label>
-                <input
-                  disabled={isReadOnly}
-                  type="text"
-                  value={plan.notes || ''}
-                  onChange={(e) => updatePlan(idx, 'notes', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue bg-white"
-                />
               </div>
             </div>
           </div>
@@ -2826,160 +3006,7 @@ function StepWithdrawalMethods({
   );
 }
 
-/* 11. TRADABLE SYMBOL SPECIFICATIONS */
-function StepSymbolSpecs({
-  broker,
-  isReadOnly,
-  saving,
-  onSave,
-  onNext,
-}: {
-  broker: Broker;
-  isReadOnly: boolean;
-  saving: boolean;
-  onSave: (data: any) => Promise<boolean>;
-  onNext: () => void;
-}) {
-  const [symbolSpecs, setSymbolSpecs] = useState<any[]>(
-    broker.symbolSpecs && broker.symbolSpecs.length > 0
-      ? broker.symbolSpecs
-      : [
-          { symbol: 'EURUSD', category: 'Forex Major', contractSize: '100,000', spreadAvg: '0.1 pips', stopDistance: '0.0', precision: 5 },
-          { symbol: 'GBPUSD', category: 'Forex Major', contractSize: '100,000', spreadAvg: '0.4 pips', stopDistance: '0.0', precision: 5 },
-          { symbol: 'XAUUSD', category: 'Metals', contractSize: '100 oz', spreadAvg: '1.2 pips', stopDistance: '0.0', precision: 2 },
-          { symbol: 'BTCUSD', category: 'Crypto', contractSize: '1 BTC', spreadAvg: '$15.0', stopDistance: '0.0', precision: 2 },
-        ]
-  );
-
-  const addSpec = () => {
-    setSymbolSpecs([
-      ...symbolSpecs,
-      { symbol: 'US30', category: 'Indices', contractSize: '1', spreadAvg: '1.5 pts', stopDistance: '0.0', precision: 1, sortOrder: symbolSpecs.length },
-    ]);
-  };
-
-  const removeSpec = (idx: number) => {
-    setSymbolSpecs(symbolSpecs.filter((_, i) => i !== idx));
-  };
-
-  const updateSpec = (idx: number, field: string, val: any) => {
-    const updated = [...symbolSpecs];
-    updated[idx] = { ...updated[idx], [field]: val };
-    setSymbolSpecs(updated);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const ok = await onSave({ symbolSpecs });
-    if (ok) onNext();
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-xs font-black uppercase text-navy tracking-wider">Tradable Symbol Specifications</h3>
-          <p className="text-[11px] text-text-muted">Representative benchmark pairs (normalized e.g. EURUSD, XAUUSD).</p>
-        </div>
-        {!isReadOnly && (
-          <button
-            type="button"
-            onClick={addSpec}
-            className="px-3 py-1.5 rounded-full border border-blue text-blue text-xs font-bold hover:bg-blue/10 flex items-center gap-1.5 transition"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            Add Symbol
-          </button>
-        )}
-      </div>
-
-      <div className="space-y-3">
-        {symbolSpecs.map((s, idx) => (
-          <div
-            key={idx}
-            className="p-3.5 rounded-2xl border border-border bg-surface-tint/50 grid grid-cols-2 sm:grid-cols-6 gap-2.5 items-center"
-          >
-            <input
-              disabled={isReadOnly}
-              type="text"
-              required
-              value={s.symbol}
-              onChange={(e) => updateSpec(idx, 'symbol', e.target.value)}
-              placeholder="Symbol"
-              className="px-2.5 py-1.5 rounded-xl border border-border text-xs text-navy font-bold focus:outline-none focus:border-blue bg-white"
-            />
-            <input
-              disabled={isReadOnly}
-              type="text"
-              value={s.category || ''}
-              onChange={(e) => updateSpec(idx, 'category', e.target.value)}
-              placeholder="Category"
-              className="px-2.5 py-1.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue bg-white"
-            />
-            <input
-              disabled={isReadOnly}
-              type="text"
-              value={s.contractSize || ''}
-              onChange={(e) => updateSpec(idx, 'contractSize', e.target.value)}
-              placeholder="Contract Size"
-              className="px-2.5 py-1.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue bg-white"
-            />
-            <input
-              disabled={isReadOnly}
-              type="text"
-              value={s.spreadAvg || ''}
-              onChange={(e) => updateSpec(idx, 'spreadAvg', e.target.value)}
-              placeholder="Avg Spread"
-              className="px-2.5 py-1.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue bg-white"
-            />
-            <input
-              disabled={isReadOnly}
-              type="number"
-              value={s.precision ?? 5}
-              onChange={(e) => updateSpec(idx, 'precision', parseInt(e.target.value) || 0)}
-              placeholder="Decimals"
-              className="px-2.5 py-1.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue bg-white"
-            />
-            <div className="flex justify-end">
-              {symbolSpecs.length > 1 && !isReadOnly && (
-                <button
-                  type="button"
-                  onClick={() => removeSpec(idx)}
-                  className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Action Footer */}
-      <div className="pt-4 border-t border-border flex justify-between items-center">
-        <button
-          type="button"
-          disabled={isReadOnly || saving}
-          onClick={() => onSave({ symbolSpecs })}
-          className="px-5 py-2.5 rounded-full border border-border text-navy font-bold text-xs hover:bg-surface-tint flex items-center gap-2 transition"
-        >
-          <Save className="w-3.5 h-3.5" />
-          Save Draft
-        </button>
-        <button
-          type="submit"
-          disabled={isReadOnly || saving}
-          className="px-6 py-2.5 rounded-full bg-blue text-white font-bold text-xs hover:bg-blue-hover flex items-center gap-2 transition shadow-sm"
-        >
-          Save & Next
-          <ChevronRight className="w-4 h-4" />
-        </button>
-      </div>
-    </form>
-  );
-}
-
-/* 12. DEALING & LIQUIDITY SETUP */
+/* 11. DEALING & OUR LIQUIDITY PROVIDERS (LP) */
 function StepDealingLiquidity({
   broker,
   isReadOnly,
@@ -2993,38 +3020,119 @@ function StepDealingLiquidity({
   onSave: (data: any) => Promise<boolean>;
   onNext: () => void;
 }) {
-  const [formData, setFormData] = useState({
-    liquidityProvider: broker.liquidityProvider || 'Tier 1 Prime of Prime (J.P. Morgan, UBS, BNP Paribas, Citadel)',
-    personalBookSize: broker.personalBookSize || 'Proprietary B-Book internal matching / A-Book STP aggregate hedge pool',
-  });
+  const [providers, setProviders] = useState<string[]>(
+    broker.liquidityProviders && broker.liquidityProviders.length > 0
+      ? broker.liquidityProviders
+      : broker.liquidityProvider
+      ? broker.liquidityProvider.split(/[,;\n]+/).map((s) => s.trim()).filter(Boolean)
+      : ['J.P. Morgan', 'UBS', 'Citadel', 'XTX Markets']
+  );
+  const [tagInput, setTagInput] = useState('');
+  const [personalBookSize, setPersonalBookSize] = useState(
+    broker.personalBookSize || 'Proprietary B-Book internal matching / A-Book STP aggregate hedge pool'
+  );
+
+  const addTag = (val?: string) => {
+    const raw = (val ?? tagInput).trim();
+    if (!raw) return;
+    const pieces = raw.split(/[,;\n]+/).map((s) => s.trim()).filter(Boolean);
+    const combined = Array.from(new Set([...providers, ...pieces])).slice(0, 20);
+    setProviders(combined);
+    setTagInput('');
+  };
+
+  const removeTag = (idx: number) => {
+    setProviders(providers.filter((_, i) => i !== idx));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const ok = await onSave(formData);
+    const ok = await onSave({
+      liquidityProviders: providers,
+      liquidityProvider: providers.join(', '),
+      personalBookSize,
+    });
     if (ok) onNext();
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-1.5">
-        <label className="text-xs font-bold text-navy">Tier-1 Liquidity Providers & Interbank Aggregators</label>
-        <textarea
-          disabled={isReadOnly}
-          rows={3}
-          value={formData.liquidityProvider}
-          onChange={(e) => setFormData({ ...formData, liquidityProvider: e.target.value })}
-          className="w-full px-3.5 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue"
-          placeholder="e.g. J.P. Morgan, Citi, Barclays, XTX Markets, Flow Traders"
-        />
+      {/* Liquidity Providers Chips Input */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label className="text-xs font-bold text-navy">
+            Tier-1 Liquidity Providers & Aggregators (Max 20)
+          </label>
+          <span className="text-[11px] font-bold text-text-muted">{providers.length} / 20</span>
+        </div>
+
+        <div className="p-3.5 rounded-2xl border border-border bg-white min-h-[52px] flex flex-wrap items-center gap-2">
+          {providers.map((p, idx) => (
+            <span
+              key={idx}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-surface-tint text-navy border border-border animate-in fade-in"
+            >
+              {p}
+              {!isReadOnly && (
+                <button
+                  type="button"
+                  onClick={() => removeTag(idx)}
+                  className="hover:text-rose-600 transition ml-0.5"
+                  title="Remove provider"
+                >
+                  ✕
+                </button>
+              )}
+            </span>
+          ))}
+
+          {!isReadOnly && providers.length < 20 && (
+            <div className="flex items-center gap-2 flex-1 min-w-[200px]">
+              <input
+                type="text"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    addTag();
+                  }
+                }}
+                onPaste={(e) => {
+                  const pasted = e.clipboardData.getData('text');
+                  if (pasted && (pasted.includes(',') || pasted.includes('\n'))) {
+                    e.preventDefault();
+                    addTag(pasted);
+                  }
+                }}
+                placeholder={providers.length === 0 ? "Type provider name (press Enter or comma to add)..." : "Add another provider..."}
+                className="w-full text-xs text-navy focus:outline-none py-1 px-1 bg-transparent"
+              />
+              {tagInput.trim() && (
+                <button
+                  type="button"
+                  onClick={() => addTag()}
+                  className="px-3 py-1 rounded-full bg-blue text-white text-xs font-bold hover:bg-blue-hover shrink-0"
+                >
+                  Add
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+        <p className="text-[11px] text-text-muted">
+          Type a liquidity provider name (e.g. BNP Paribas, Barclays, Flow Traders) and press Enter or comma. You can also paste a comma-separated list.
+        </p>
       </div>
 
+      {/* Proprietary Dealing Book Architecture */}
       <div className="space-y-1.5">
         <label className="text-xs font-bold text-navy">Personal / Proprietary Dealing Book Architecture</label>
         <textarea
           disabled={isReadOnly}
           rows={3}
-          value={formData.personalBookSize}
-          onChange={(e) => setFormData({ ...formData, personalBookSize: e.target.value })}
+          value={personalBookSize}
+          onChange={(e) => setPersonalBookSize(e.target.value)}
           className="w-full px-3.5 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue"
           placeholder="Details on risk management framework, internal hedging percentage, and DMA routing."
         />
@@ -3035,7 +3143,13 @@ function StepDealingLiquidity({
         <button
           type="button"
           disabled={isReadOnly || saving}
-          onClick={() => onSave(formData)}
+          onClick={() =>
+            onSave({
+              liquidityProviders: providers,
+              liquidityProvider: providers.join(', '),
+              personalBookSize,
+            })
+          }
           className="px-5 py-2.5 rounded-full border border-border text-navy font-bold text-xs hover:bg-surface-tint flex items-center gap-2 transition"
         >
           <Save className="w-3.5 h-3.5" />
@@ -3054,8 +3168,8 @@ function StepDealingLiquidity({
   );
 }
 
-/* 13. PRIMARY BUSINESS REGIONS */
-function StepBusinessAreas({
+/* 12. PRIMARY REGIONAL FOOTPRINT */
+function StepRegionalFootprint({
   broker,
   isReadOnly,
   saving,
@@ -3068,367 +3182,42 @@ function StepBusinessAreas({
   onSave: (data: any) => Promise<boolean>;
   onNext: () => void;
 }) {
-  const [businessAreas, setBusinessAreas] = useState<any[]>(
-    broker.businessAreas && broker.businessAreas.length > 0
-      ? broker.businessAreas
-      : [
-          { countryOrRegion: 'United Kingdom & Europe (EEA)', clientsNote: '38% of active accounts' },
-          { countryOrRegion: 'Asia-Pacific (APAC)', clientsNote: '42% of active accounts' },
-          { countryOrRegion: 'Middle East & North Africa (MENA)', clientsNote: '20% of active accounts' },
-        ]
+  const [regionalFootprint, setRegionalFootprint] = useState<string[]>(
+    broker.regionalFootprint && broker.regionalFootprint.length > 0
+      ? broker.regionalFootprint
+      : broker.businessAreas && broker.businessAreas.length > 0
+      ? broker.businessAreas.map((b) => b.countryOrRegion)
+      : ['United Kingdom & Europe (EEA)', 'Asia-Pacific (APAC)', 'Middle East & North Africa (MENA)']
   );
-
-  const addArea = () => {
-    setBusinessAreas([
-      ...businessAreas,
-      { countryOrRegion: 'Latin America (LATAM)', clientsNote: '', sortOrder: businessAreas.length },
-    ]);
-  };
-
-  const removeArea = (idx: number) => {
-    setBusinessAreas(businessAreas.filter((_, i) => i !== idx));
-  };
-
-  const updateArea = (idx: number, field: string, val: any) => {
-    const updated = [...businessAreas];
-    updated[idx] = { ...updated[idx], [field]: val };
-    setBusinessAreas(updated);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const ok = await onSave({ businessAreas });
+    const ok = await onSave({ regionalFootprint });
     if (ok) onNext();
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-xs font-black uppercase text-navy tracking-wider">Primary Regional Footprint</h3>
-          <p className="text-[11px] text-text-muted">Jurisdictions and geographic concentrations of retail flow.</p>
-        </div>
-        {!isReadOnly && (
-          <button
-            type="button"
-            onClick={addArea}
-            className="px-3 py-1.5 rounded-full border border-blue text-blue text-xs font-bold hover:bg-blue/10 flex items-center gap-1.5 transition"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            Add Region
-          </button>
-        )}
-      </div>
-
-      <div className="space-y-3">
-        {businessAreas.map((a, idx) => (
-          <div
-            key={idx}
-            className="p-3.5 rounded-2xl border border-border bg-surface-tint/50 flex flex-col md:flex-row items-center gap-3"
-          >
-            <div className="w-full md:w-1/2">
-              <input
-                disabled={isReadOnly}
-                type="text"
-                required
-                value={a.countryOrRegion}
-                onChange={(e) => updateArea(idx, 'countryOrRegion', e.target.value)}
-                placeholder="Country or Geographic Region"
-                className="w-full px-3 py-2 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue bg-white"
-              />
-            </div>
-            <div className="w-full md:w-1/2 flex items-center gap-2">
-              <input
-                disabled={isReadOnly}
-                type="text"
-                value={a.clientsNote || ''}
-                onChange={(e) => updateArea(idx, 'clientsNote', e.target.value)}
-                placeholder="Clients Note (e.g. 35% of total retail base)"
-                className="w-full px-3 py-2 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue bg-white"
-              />
-              {businessAreas.length > 1 && !isReadOnly && (
-                <button
-                  type="button"
-                  onClick={() => removeArea(idx)}
-                  className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Action Footer */}
-      <div className="pt-4 border-t border-border flex justify-between items-center">
-        <button
-          type="button"
-          disabled={isReadOnly || saving}
-          onClick={() => onSave({ businessAreas })}
-          className="px-5 py-2.5 rounded-full border border-border text-navy font-bold text-xs hover:bg-surface-tint flex items-center gap-2 transition"
-        >
-          <Save className="w-3.5 h-3.5" />
-          Save Draft
-        </button>
-        <button
-          type="submit"
-          disabled={isReadOnly || saving}
-          className="px-6 py-2.5 rounded-full bg-blue text-white font-bold text-xs hover:bg-blue-hover flex items-center gap-2 transition shadow-sm"
-        >
-          Save & Next
-          <ChevronRight className="w-4 h-4" />
-        </button>
-      </div>
-    </form>
-  );
-}
-
-/* 14. ANNUAL FUNDING & TURNOVER VOLUMES (STRICTLY PRIVATE) */
-function StepFundingVolume({
-  broker,
-  isReadOnly,
-  saving,
-  onSave,
-  onNext,
-}: {
-  broker: Broker;
-  isReadOnly: boolean;
-  saving: boolean;
-  onSave: (data: any) => Promise<boolean>;
-  onNext: () => void;
-}) {
-  const [fundingYears, setFundingYears] = useState<any[]>(
-    broker.fundingYears && broker.fundingYears.length > 0
-      ? broker.fundingYears
-      : [
-          { year: 2024, netDepositUsd: 150000000, netWithdrawUsd: 110000000, netLots: 18500000 },
-          { year: 2025, netDepositUsd: 210000000, netWithdrawUsd: 155000000, netLots: 24200000 },
-        ]
-  );
-
-  const addYear = () => {
-    const nextYear = new Date().getFullYear();
-    setFundingYears([
-      ...fundingYears,
-      { year: nextYear, netDepositUsd: 0, netWithdrawUsd: 0, netLots: 0, sortOrder: fundingYears.length },
-    ]);
-  };
-
-  const removeYear = (idx: number) => {
-    setFundingYears(fundingYears.filter((_, i) => i !== idx));
-  };
-
-  const updateYear = (idx: number, field: string, val: any) => {
-    const updated = [...fundingYears];
-    updated[idx] = { ...updated[idx], [field]: val };
-    setFundingYears(updated);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const ok = await onSave({ fundingYears });
-    if (ok) onNext();
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-start gap-3">
-        <Lock className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-        <p className="text-xs text-amber-800">
-          <strong>Strictly Confidential Compliance Data:</strong> Financial figures entered here are visible strictly to
-          EdutradeFX administrative auditors and broker leadership. They are never published on the public broker comparison.
+      <div className="space-y-2">
+        <label className="text-xs font-bold text-navy">Primary Regional Client Footprint</label>
+        <MultiSelect
+          options={REGIONAL_FOOTPRINT_OPTIONS.map((opt) => ({ value: opt, label: opt }))}
+          value={regionalFootprint}
+          onChange={setRegionalFootprint}
+          placeholder="Select active trading regions..."
+          disabled={isReadOnly}
+        />
+        <p className="text-[11px] text-text-muted">
+          Select all global regions and jurisdictions where your brokerage actively onboards traders and executes order flow.
         </p>
       </div>
 
-      <div className="flex items-center justify-between">
-        <h3 className="text-xs font-black uppercase text-navy tracking-wider">Audited Financial History</h3>
-        {!isReadOnly && (
-          <button
-            type="button"
-            onClick={addYear}
-            className="px-3 py-1.5 rounded-full border border-blue text-blue text-xs font-bold hover:bg-blue/10 flex items-center gap-1.5 transition"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            Add Year
-          </button>
-        )}
-      </div>
-
-      <div className="space-y-3">
-        {fundingYears.map((fy, idx) => (
-          <div
-            key={idx}
-            className="p-3.5 rounded-2xl border border-border bg-surface-tint/50 grid grid-cols-2 md:grid-cols-5 gap-3 items-center"
-          >
-            <div>
-              <label className="text-[10px] font-bold text-navy">Year</label>
-              <input
-                disabled={isReadOnly}
-                type="number"
-                value={fy.year}
-                onChange={(e) => updateYear(idx, 'year', parseInt(e.target.value) || 2024)}
-                className="w-full px-2.5 py-1.5 rounded-xl border border-border text-xs text-navy font-bold focus:outline-none focus:border-blue bg-white"
-              />
-            </div>
-            <div>
-              <label className="text-[10px] font-bold text-navy">Net Deposits (USD)</label>
-              <input
-                disabled={isReadOnly}
-                type="number"
-                value={fy.netDepositUsd ?? 0}
-                onChange={(e) => updateYear(idx, 'netDepositUsd', parseFloat(e.target.value) || 0)}
-                className="w-full px-2.5 py-1.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue bg-white"
-              />
-            </div>
-            <div>
-              <label className="text-[10px] font-bold text-navy">Net Withdrawals (USD)</label>
-              <input
-                disabled={isReadOnly}
-                type="number"
-                value={fy.netWithdrawUsd ?? 0}
-                onChange={(e) => updateYear(idx, 'netWithdrawUsd', parseFloat(e.target.value) || 0)}
-                className="w-full px-2.5 py-1.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue bg-white"
-              />
-            </div>
-            <div>
-              <label className="text-[10px] font-bold text-navy">Volume (Total Lots)</label>
-              <input
-                disabled={isReadOnly}
-                type="number"
-                value={fy.netLots ?? 0}
-                onChange={(e) => updateYear(idx, 'netLots', parseFloat(e.target.value) || 0)}
-                className="w-full px-2.5 py-1.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue bg-white"
-              />
-            </div>
-            <div className="flex justify-end pt-3">
-              {fundingYears.length > 1 && !isReadOnly && (
-                <button
-                  type="button"
-                  onClick={() => removeYear(idx)}
-                  className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-
       {/* Action Footer */}
       <div className="pt-4 border-t border-border flex justify-between items-center">
         <button
           type="button"
           disabled={isReadOnly || saving}
-          onClick={() => onSave({ fundingYears })}
-          className="px-5 py-2.5 rounded-full border border-border text-navy font-bold text-xs hover:bg-surface-tint flex items-center gap-2 transition"
-        >
-          <Save className="w-3.5 h-3.5" />
-          Save Draft
-        </button>
-        <button
-          type="submit"
-          disabled={isReadOnly || saving}
-          className="px-6 py-2.5 rounded-full bg-blue text-white font-bold text-xs hover:bg-blue-hover flex items-center gap-2 transition shadow-sm"
-        >
-          Save & Next
-          <ChevronRight className="w-4 h-4" />
-        </button>
-      </div>
-    </form>
-  );
-}
-
-/* 15. AVERAGE CLIENT ACTIVITY (STRICTLY PRIVATE) */
-function StepClientActivity({
-  broker,
-  isReadOnly,
-  saving,
-  onSave,
-  onNext,
-}: {
-  broker: Broker;
-  isReadOnly: boolean;
-  saving: boolean;
-  onSave: (data: any) => Promise<boolean>;
-  onNext: () => void;
-}) {
-  const [formData, setFormData] = useState({
-    avgNewClientDeposit: broker.clientActivity?.avgNewClientDeposit ?? 850,
-    avgExistingClientDeposit: broker.clientActivity?.avgExistingClientDeposit ?? 2400,
-    avgNewClientWithdrawal: broker.clientActivity?.avgNewClientWithdrawal ?? 420,
-    avgExistingClientWithdrawal: broker.clientActivity?.avgExistingClientWithdrawal ?? 1900,
-  });
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const ok = await onSave(formData);
-    if (ok) onNext();
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-start gap-3">
-        <Lock className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-        <p className="text-xs text-amber-800">
-          <strong>Private Benchmark Averages:</strong> Ticket sizes are used solely to categorize your broker account
-          profile (Micro / Standard / Institutional Prime) and are strictly concealed from public profiles.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-1.5">
-          <label className="text-xs font-bold text-navy">Average New Client First Deposit (USD)</label>
-          <input
-            disabled={isReadOnly}
-            type="number"
-            value={formData.avgNewClientDeposit}
-            onChange={(e) => setFormData({ ...formData, avgNewClientDeposit: parseFloat(e.target.value) || 0 })}
-            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue"
-          />
-        </div>
-
-        <div className="space-y-1.5">
-          <label className="text-xs font-bold text-navy">Average Existing Client Ongoing Deposit (USD)</label>
-          <input
-            disabled={isReadOnly}
-            type="number"
-            value={formData.avgExistingClientDeposit}
-            onChange={(e) => setFormData({ ...formData, avgExistingClientDeposit: parseFloat(e.target.value) || 0 })}
-            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue"
-          />
-        </div>
-
-        <div className="space-y-1.5">
-          <label className="text-xs font-bold text-navy">Average New Client First Withdrawal (USD)</label>
-          <input
-            disabled={isReadOnly}
-            type="number"
-            value={formData.avgNewClientWithdrawal}
-            onChange={(e) => setFormData({ ...formData, avgNewClientWithdrawal: parseFloat(e.target.value) || 0 })}
-            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue"
-          />
-        </div>
-
-        <div className="space-y-1.5">
-          <label className="text-xs font-bold text-navy">Average Existing Client Ongoing Withdrawal (USD)</label>
-          <input
-            disabled={isReadOnly}
-            type="number"
-            value={formData.avgExistingClientWithdrawal}
-            onChange={(e) => setFormData({ ...formData, avgExistingClientWithdrawal: parseFloat(e.target.value) || 0 })}
-            className="w-full px-3.5 py-2.5 rounded-xl border border-border text-sm text-navy focus:outline-none focus:border-blue"
-          />
-        </div>
-      </div>
-
-      {/* Action Footer */}
-      <div className="pt-4 border-t border-border flex justify-between items-center">
-        <button
-          type="button"
-          disabled={isReadOnly || saving}
-          onClick={() => onSave(formData)}
+          onClick={() => onSave({ regionalFootprint })}
           className="px-5 py-2.5 rounded-full border border-border text-navy font-bold text-xs hover:bg-surface-tint flex items-center gap-2 transition"
         >
           <Save className="w-3.5 h-3.5" />
@@ -3827,40 +3616,77 @@ function StepSocialVideo({
       </div>
 
       {/* Video Pitch */}
-      <div className="p-5 rounded-3xl bg-surface-tint border border-border space-y-3">
-        <div className="flex items-center justify-between">
+      <div className="p-5 rounded-3xl bg-surface-tint border border-border space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h4 className="text-xs font-black uppercase text-navy tracking-wider">Promotional Video Pitch</h4>
             <p className="text-[11px] text-text-muted">
-              Embed a video link (YouTube / Vimeo / MP4 Cloudinary URL) showcasing your brokerage.
+              Upload an MP4 promotional video or paste a video link (YouTube / Vimeo / MP4 URL).
             </p>
           </div>
           {!isReadOnly && (
-            <label className="px-4 py-2 rounded-full bg-white border border-border text-navy text-xs font-bold hover:bg-surface-tint cursor-pointer transition">
-              {uploading ? 'Uploading MP4...' : 'Upload Video File'}
+            <label className="px-4 py-2 rounded-full bg-white border border-border text-navy text-xs font-bold hover:bg-surface-tint cursor-pointer transition shadow-xs flex items-center gap-1.5 self-start sm:self-auto shrink-0">
+              <Upload className="w-3.5 h-3.5 text-blue" />
+              {uploading ? 'Uploading Video...' : 'Choose Video File (MP4/MOV)'}
               <input
                 type="file"
-                accept="video/mp4,video/quicktime"
+                accept="video/mp4,video/quicktime,video/webm"
                 className="hidden"
+                disabled={uploading}
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (file) {
                     const url = await onUploadVideo(file);
-                    if (url) setFormData({ ...formData, promoVideoUrl: url });
+                    if (url) setFormData((prev) => ({ ...prev, promoVideoUrl: url }));
                   }
                 }}
               />
             </label>
           )}
         </div>
+
         <input
           disabled={isReadOnly}
           type="url"
           value={formData.promoVideoUrl}
           onChange={(e) => setFormData({ ...formData, promoVideoUrl: e.target.value })}
-          placeholder="https://www.youtube.com/watch?v=..."
+          placeholder="https://www.youtube.com/watch?v=... or direct MP4 URL"
           className="w-full px-3.5 py-2.5 rounded-xl border border-border text-xs text-navy focus:outline-none focus:border-blue bg-white"
         />
+
+        {/* Video Preview Player */}
+        {formData.promoVideoUrl && (
+          <div className="space-y-1.5 pt-2">
+            <span className="text-[11px] font-bold text-navy">Video Preview</span>
+            <div className="w-full max-w-xl aspect-video rounded-2xl overflow-hidden border border-border bg-black shadow-sm">
+              {formData.promoVideoUrl.includes('youtube.com') || formData.promoVideoUrl.includes('youtu.be') ? (
+                <iframe
+                  src={
+                    formData.promoVideoUrl.includes('youtu.be/')
+                      ? `https://www.youtube.com/embed/${formData.promoVideoUrl.split('youtu.be/')[1].split('?')[0]}`
+                      : formData.promoVideoUrl.replace('watch?v=', 'embed/')
+                  }
+                  className="w-full h-full"
+                  allowFullScreen
+                  title="Promotional Video Pitch"
+                />
+              ) : formData.promoVideoUrl.includes('vimeo.com') ? (
+                <iframe
+                  src={`https://player.vimeo.com/video/${formData.promoVideoUrl.split('/').pop()}`}
+                  className="w-full h-full"
+                  allowFullScreen
+                  title="Promotional Video Pitch"
+                />
+              ) : (
+                <video
+                  src={formData.promoVideoUrl}
+                  controls
+                  className="w-full h-full object-contain"
+                />
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Action Footer */}
@@ -4031,8 +3857,18 @@ function StepReviewSubmit({
   // Mandatory checks
   const checks = [
     {
-      label: 'Core Identity (Name, Operating Country, City, Email, Website)',
+      label: 'Core Identity (Company Name, Operating Country, City, Email, Website)',
       passed: Boolean(broker.companyName && broker.country && broker.city && broker.email && broker.website),
+      stepIdx: 0,
+    },
+    {
+      label: 'Registered Legal Entity Name (Mandatory)',
+      passed: Boolean(broker.registeredName && broker.registeredName.trim().length >= 2),
+      stepIdx: 0,
+    },
+    {
+      label: 'Company Logo Upload (Mandatory)',
+      passed: Boolean(broker.logo),
       stepIdx: 0,
     },
     {
@@ -4058,17 +3894,17 @@ function StepReviewSubmit({
     {
       label: 'Mandatory Policy: Terms & Conditions PDF',
       passed: docTypes.includes('POLICY_TERMS'),
-      stepIdx: 18,
+      stepIdx: 15,
     },
     {
       label: 'Mandatory Policy: Risk Disclosure Notice PDF',
       passed: docTypes.includes('POLICY_RISK_DISCLOSURE'),
-      stepIdx: 18,
+      stepIdx: 15,
     },
     {
       label: 'Mandatory Policy: AML / KYC Regulations PDF',
       passed: docTypes.includes('POLICY_AML'),
-      stepIdx: 18,
+      stepIdx: 15,
     },
   ];
 

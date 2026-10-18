@@ -82,7 +82,9 @@ export const BrokerFilters: React.FC<BrokerFiltersProps> = ({
           <option value="MetaTrader 4">MetaTrader 4 (MT4)</option>
           <option value="MetaTrader 5">MetaTrader 5 (MT5)</option>
           <option value="cTrader">cTrader</option>
-          <option value="TradingView">TradingView</option>
+          <option value="TM9">TM9</option>
+          <option value="C2C">C2C (Centroid Solution)</option>
+          <option value="Vertex FX">Vertex FX</option>
         </select>
       </div>
 

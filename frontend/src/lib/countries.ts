@@ -253,3 +253,6 @@ export function findCountryByCallingCode(dialCode: string): CountryInfo | undefi
 export function findCountryByCode(code: string): CountryInfo | undefined {
   return ALL_COUNTRIES.find((c) => c.code.toUpperCase() === code.toUpperCase());
 }
+
+export const COUNTRIES = ALL_COUNTRIES;
+export default ALL_COUNTRIES;

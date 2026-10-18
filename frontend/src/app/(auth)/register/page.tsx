@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -9,7 +9,6 @@ import {
   Lock,
   Eye,
   EyeOff,
-  Phone,
   Building2,
   Users,
   Radio,
@@ -17,11 +16,17 @@ import {
   ArrowRight,
   AlertCircle,
   CheckCircle,
-  Briefcase
+  Briefcase,
+  MailCheck,
+  RefreshCw,
+  ExternalLink,
+  ShieldAlert,
 } from 'lucide-react';
 import { api } from '../../../lib/api';
 import { Role } from '../../../types';
-import { useAuthStore } from '../../../store/authStore';
+import PhoneInput from '../../../components/common/PhoneInput';
+import PasswordStrengthMeter, { evaluatePasswordStrength } from '../../../components/common/PasswordStrengthMeter';
+import TermsAndConditionsModal from '../../../components/common/TermsAndConditionsModal';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -30,21 +35,111 @@ export default function RegisterPage() {
   const [mode, setMode] = useState<'TRADER' | 'PARTNER'>('TRADER');
   const [partnerRole, setPartnerRole] = useState<Role>('BROKER');
 
+  // Form Fields
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
-  const [consent, setConsent] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [consent, setConsent] = useState(false);
 
+  // Email validation & duplicate check (A2)
+  const [emailChecking, setEmailChecking] = useState(false);
+  const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
+
+  // Password strength (A3)
+  const [isPasswordStrong, setIsPasswordStrong] = useState(false);
+
+  // Terms Modal (A4)
+  const [termsModalOpen, setTermsModalOpen] = useState(false);
+
+  // Submission & Pending Verification (A5)
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [pendingVerification, setPendingVerification] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState<string | null>(null);
 
-  const { setAuth } = useAuthStore();
+  // Debounced email check
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
+  const checkEmailAvailability = useCallback(async (emailToCheck: string) => {
+    const trimmed = emailToCheck.trim().toLowerCase();
+    const isValidFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
+
+    if (!trimmed || !isValidFormat) {
+      setEmailAvailable(null);
+      setEmailError(trimmed ? 'Please enter a valid email address.' : null);
+      return;
+    }
+
+    setEmailChecking(true);
+    setEmailError(null);
+
+    try {
+      const res = await api.get('/auth/check-email', { params: { email: trimmed } });
+      const available = res.data?.data?.available ?? true;
+      setEmailAvailable(available);
+      if (!available) {
+        setEmailError('This email is already registered.');
+      } else {
+        setEmailError(null);
+      }
+    } catch (err: any) {
+      // Non-blocking on network failure
+      setEmailAvailable(null);
+    } finally {
+      setEmailChecking(false);
+    }
+  }, []);
+
+  const handleEmailChange = (val: string) => {
+    setEmail(val);
+    setEmailAvailable(null);
+    setEmailError(null);
+
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+
+    debounceTimer.current = setTimeout(() => {
+      checkEmailAvailability(val);
+    }, 500);
+  };
+
+  // Cooldown timer for resend verification
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (resendCooldown > 0) {
+      interval = setInterval(() => {
+        setResendCooldown((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendCooldown]);
+
+  const handleResendVerification = async () => {
+    if (resendCooldown > 0 || !email) return;
+    setResendLoading(true);
+    setResendMessage(null);
+    try {
+      await api.post('/auth/resend-verification', { email: email.trim().toLowerCase() });
+      setResendMessage('A new verification email has been sent. Please check your inbox.');
+      setResendCooldown(60);
+    } catch (err: any) {
+      setResendMessage(err.response?.data?.message || 'Failed to resend. Please try again shortly.');
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
+  // B1: Partner Role card label changed from "Brokerage Firm" to "Broker"
   const partnerOptions = [
-    { role: 'BROKER' as Role, label: 'Brokerage Firm', desc: 'List your regulated brokerage & acquire verified trader leads', icon: Building2 },
+    { role: 'BROKER' as Role, label: 'Broker', desc: 'List your regulated broker & acquire verified trader leads', icon: Building2 },
     { role: 'ACCOUNT_MANAGER' as Role, label: 'Account Manager', desc: 'Offer audited PAMM / MAM portfolio management', icon: Users },
     { role: 'SIGNAL_PROVIDER' as Role, label: 'Signal Provider', desc: 'Publish audited trading signals & execution analytics', icon: Radio },
     { role: 'TUTOR' as Role, label: 'Course Instructor', desc: 'Create Academy masterclasses & monetize lessons', icon: GraduationCap },
@@ -55,20 +150,28 @@ export default function RegisterPage() {
     setError(null);
 
     if (!consent) {
-      setError('You must accept the Terms of Service, Privacy Policy, and High-Risk Investment Warning.');
+      setError('You must review and accept the Terms of Service, Privacy Policy, and High-Risk Warning.');
       return;
     }
 
     if (!phone || phone.trim().length < 7) {
-      setError('A valid mobile phone number with country code is required for account security.');
+      setError('A valid mobile phone number with country code is required.');
       return;
     }
 
-    const hasUpper = /[A-Z]/.test(password);
-    const hasNumber = /[0-9]/.test(password);
-    const hasSpecial = /[^A-Za-z0-9]/.test(password);
-    if (password.length < 8 || !hasUpper || !hasNumber || !hasSpecial) {
-      setError('Password must be at least 8 characters and contain at least 1 uppercase letter, 1 number, and 1 special symbol (e.g. Password@123).');
+    if (emailAvailable === false) {
+      setError('This email is already registered. Please log in or use a different email.');
+      return;
+    }
+
+    const { isSufficient } = evaluatePasswordStrength(password);
+    if (!isSufficient) {
+      setError('Password is too weak. Ensure it is at least 8 characters and includes uppercase, lowercase, numbers, and special symbols.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match. Please re-enter your password.');
       return;
     }
 
@@ -89,28 +192,95 @@ export default function RegisterPage() {
         payload.role = partnerRole;
       }
 
-      const res = await api.post(endpoint, payload);
-      const data = res.data?.data;
+      await api.post(endpoint, payload);
 
-      if (data?.accessToken && data?.user) {
-        setAuth(data.user, data.accessToken, data.refreshToken);
-      }
-      setSuccess(true);
-
-      setTimeout(() => {
-        if (isPartner) {
-          router.push('/login?registered=partner');
-        } else {
-          router.push('/dashboard');
-        }
-      }, 1500);
+      // Verify before create (A5) - account is pending email confirmation
+      setPendingVerification(true);
+      setResendCooldown(60);
     } catch (err: any) {
-      setError(err.message || err.response?.data?.message || 'Registration failed. Please review your details.');
+      setError(err.response?.data?.message || err.message || 'Registration failed. Please check your information.');
     } finally {
       setLoading(false);
     }
   };
 
+  // ── Render Pending Verification Screen (A5) ──────────────
+  if (pendingVerification) {
+    return (
+      <div className="min-h-screen min-h-dvh flex items-center justify-center py-8 sm:py-16 px-4 sm:px-6 lg:px-8 bg-surface-tint">
+        <div className="w-full max-w-lg space-y-6 bg-white border border-border p-6 sm:p-10 rounded-2xl sm:rounded-3xl shadow-lift text-center">
+          <Link href="/" className="inline-flex items-center gap-2 mb-2">
+            <img src="/logos/logo-color.svg" alt="EduTradeFX" className="h-8 sm:h-9 w-auto mx-auto" />
+          </Link>
+
+          <div className="w-16 h-16 rounded-full bg-blue-50 text-blue flex items-center justify-center mx-auto shadow-inner">
+            <MailCheck className="w-8 h-8 text-blue" />
+          </div>
+
+          <div className="space-y-2">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-text-heading">
+              Verify Your Email
+            </h2>
+            <p className="text-xs sm:text-sm text-text-muted max-w-md mx-auto">
+              We sent an activation link to <strong className="text-navy">{email}</strong>. Please check your inbox and click the link to activate your account.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 text-left space-y-1.5">
+            <div className="font-bold flex items-center gap-1.5 text-amber-800">
+              <ShieldAlert className="w-4 h-4 shrink-0" />
+              <span>Activation Required:</span>
+            </div>
+            <p>
+              Your account is not created until you verify your email address. The link expires in 24 hours. Be sure to check your spam/junk folder if not received within 2 minutes.
+            </p>
+          </div>
+
+          {resendMessage && (
+            <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue font-medium">
+              {resendMessage}
+            </div>
+          )}
+
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={handleResendVerification}
+              disabled={resendLoading || resendCooldown > 0}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-surface-tint hover:bg-border/60 disabled:opacity-50 text-navy font-bold text-xs rounded-full border border-border transition min-h-[44px]"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${resendLoading ? 'animate-spin' : ''}`} />
+              <span>
+                {resendCooldown > 0
+                  ? `Resend in ${resendCooldown}s`
+                  : 'Resend Verification Email'}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setPendingVerification(false);
+                setError(null);
+              }}
+              className="w-full sm:w-auto px-5 py-3 text-xs font-semibold text-text-muted hover:text-text-heading transition"
+            >
+              Wrong email? Go back
+            </button>
+          </div>
+
+          <div className="pt-4 border-t border-border text-xs text-text-muted">
+            Already verified?{' '}
+            <Link href="/login" className="font-bold text-blue hover:underline">
+              Log in here
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Render Registration Form ──────────────────────────────
   return (
     <div className="min-h-screen min-h-dvh flex items-center justify-center py-8 sm:py-16 px-4 sm:px-6 lg:px-8 bg-surface-tint">
       <div className="w-full max-w-xl space-y-5 sm:space-y-6 bg-white border border-border p-5 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl shadow-lift">
@@ -120,7 +290,7 @@ export default function RegisterPage() {
           <Link href="/" className="inline-flex items-center gap-2 mb-4">
             <img src="/logos/logo-color.svg" alt="EduTradeFX" className="h-8 sm:h-9 w-auto" />
           </Link>
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-text-heading">Create Your Account</h2>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-text-heading">Create Your Account</h1>
           <p className="text-xs sm:text-sm text-text-muted mt-1">
             Access verified broker audits, institutional courses, and dispute protection
           </p>
@@ -154,16 +324,6 @@ export default function RegisterPage() {
           </button>
         </div>
 
-        {/* Success Alert */}
-        {success && (
-          <div className="p-4 rounded-2xl bg-green-50 border border-green-200 flex items-center gap-3 text-green">
-            <CheckCircle className="w-5 h-5 shrink-0" />
-            <div className="text-xs sm:text-sm font-semibold">
-              Account created successfully! Redirecting...
-            </div>
-          </div>
-        )}
-
         {/* Error Alert */}
         {error && (
           <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 flex items-start gap-2.5 text-xs text-red-600">
@@ -172,7 +332,7 @@ export default function RegisterPage() {
           </div>
         )}
 
-        {/* Partner Role Picker (Only shown in Institutional Partner mode) */}
+        {/* Partner Role Picker (B1: Renamed Brokerage Firm -> Broker) */}
         {mode === 'PARTNER' && (
           <div className="space-y-2">
             <label className="block text-xs font-bold uppercase tracking-wider text-text-muted">
@@ -189,7 +349,7 @@ export default function RegisterPage() {
                     onClick={() => setPartnerRole(opt.role)}
                     className={`p-3 rounded-xl border text-left transition flex items-start gap-2.5 ${
                       isSelected
-                        ? 'bg-blue-50 border-blue text-text-heading'
+                        ? 'bg-blue-50 border-blue text-text-heading ring-1 ring-blue'
                         : 'bg-white border-border text-text-muted hover:border-blue'
                     }`}
                   >
@@ -227,102 +387,185 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
+            {/* Email Field with Live Duplicate Check (A2) */}
             <div>
-              <label className="block text-xs font-semibold text-text-heading mb-1.5 uppercase tracking-wider">
-                Email Address *
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-semibold text-text-heading uppercase tracking-wider">
+                  Email Address *
+                </label>
+                {emailChecking && (
+                  <span className="text-[10px] text-blue font-medium animate-pulse">Checking availability...</span>
+                )}
+                {emailAvailable === true && (
+                  <span className="text-[10px] text-green font-semibold flex items-center gap-1">
+                    <CheckCircle className="w-3 h-3" /> Email available
+                  </span>
+                )}
+              </div>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
                 <input
                   type="email"
                   required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => handleEmailChange(e.target.value)}
+                  onBlur={() => checkEmailAvailability(email)}
                   placeholder="alex@example.com"
-                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
+                  className={`w-full pl-10 pr-4 py-2.5 bg-white border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:ring-1 ${
+                    emailError
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                      : emailAvailable === true
+                      ? 'border-green focus:border-green focus:ring-green'
+                      : 'border-border focus:border-blue focus:ring-blue'
+                  }`}
                 />
               </div>
+              {emailError && (
+                <div className="mt-1.5 flex items-center justify-between text-xs text-red-600">
+                  <span>{emailError}</span>
+                  <Link href="/login" className="font-bold text-blue hover:underline">
+                    Log in instead &rarr;
+                  </Link>
+                </div>
+              )}
             </div>
 
+            {/* Mobile with Country-Code Dropdown (A1, B12) */}
+            <div>
+              <PhoneInput
+                label="Mobile Number *"
+                name="phone"
+                value={phone}
+                onChange={setPhone}
+                required
+              />
+            </div>
+          </div>
+
+          {/* Password with Strength Meter (A3) */}
+          <div className="space-y-3">
             <div>
               <label className="block text-xs font-semibold text-text-heading mb-1.5 uppercase tracking-wider">
-                Mobile Number *
+                Password *
               </label>
               <div className="relative">
-                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
                 <input
-                  type="tel"
+                  type={showPassword ? 'text' : 'password'}
                   required
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+44 7911 123456"
-                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Create secure password"
+                  className="w-full pl-10 pr-12 py-2.5 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 p-2 text-text-muted hover:text-text-heading min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
-            </div>
-          </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-text-heading mb-1.5 uppercase tracking-wider">
-              Password * <span className="text-[10px] text-text-muted lowercase font-normal">(min 8 chars, 1 uppercase, 1 number, 1 symbol)</span>
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-              <input
-                type={showPassword ? 'text' : 'password'}
-                required
-                minLength={8}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full pl-10 pr-12 py-2.5 sm:py-3 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue"
+              {/* Password Strength Meter (A3) */}
+              <PasswordStrengthMeter
+                password={password}
+                onStrengthChange={(isStrong) => setIsPasswordStrong(isStrong)}
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-                className="absolute right-1 top-1/2 -translate-y-1/2 p-2 text-text-muted hover:text-text-heading min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg"
-              >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
+            </div>
+
+            {/* Confirm Password */}
+            <div>
+              <label className="block text-xs font-semibold text-text-heading mb-1.5 uppercase tracking-wider">
+                Confirm Password *
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Repeat your password"
+                  className={`w-full pl-10 pr-12 py-2.5 bg-white border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:ring-1 ${
+                    confirmPassword && confirmPassword !== password
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                      : 'border-border focus:border-blue focus:ring-blue'
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 p-2 text-text-muted hover:text-text-heading min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg"
+                >
+                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              {confirmPassword && confirmPassword !== password && (
+                <p className="mt-1 text-[11px] text-red-500">Passwords do not match.</p>
+              )}
             </div>
           </div>
 
-          {/* Mandatory Consent Checkbox */}
-          <div className="p-3 sm:p-3.5 rounded-xl bg-surface-tint border border-border">
-            <label className="flex items-start gap-3 cursor-pointer">
+          {/* Mandatory T&C Checkbox with Modal Trigger (A4) */}
+          <div className="p-3 sm:p-4 rounded-2xl bg-surface-tint border border-border space-y-2">
+            <div className="flex items-start gap-3">
               <input
                 type="checkbox"
-                required
+                id="consentCheckbox"
                 checked={consent}
+                disabled={!consent}
                 onChange={(e) => setConsent(e.target.checked)}
-                className="mt-0.5 w-4 h-4 rounded text-blue border-border focus:ring-blue shrink-0"
+                className="mt-1 w-4 h-4 rounded text-blue border-border focus:ring-blue shrink-0 disabled:opacity-50 cursor-pointer"
               />
-              <span className="text-[11px] sm:text-xs text-text-body leading-relaxed">
-                I agree to the{' '}
-                <Link href="/terms" target="_blank" className="text-blue hover:underline font-semibold">
-                  Terms of Service
-                </Link>
-                ,{' '}
-                <Link href="/privacy" target="_blank" className="text-blue hover:underline font-semibold">
-                  Privacy Policy
-                </Link>
-                , and acknowledge the{' '}
-                <Link href="/risk-disclaimer" target="_blank" className="text-red-600 hover:underline font-semibold">
-                  High-Risk Investment Warning
-                </Link>
-                .
-              </span>
-            </label>
+              <div className="text-xs text-text-body leading-relaxed">
+                <span>
+                  I have read and agree to the{' '}
+                  <button
+                    type="button"
+                    onClick={() => setTermsModalOpen(true)}
+                    className="text-blue hover:underline font-bold inline-flex items-center gap-0.5"
+                  >
+                    <span>Terms & Conditions, Privacy Policy & Risk Warning</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </button>
+                </span>
+                {!consent && (
+                  <p className="text-[11px] text-amber-700 mt-1 font-medium">
+                    ⚠️ You must review the legal terms in full before enabling this checkbox.
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {!consent && (
+              <button
+                type="button"
+                onClick={() => setTermsModalOpen(true)}
+                className="w-full py-2 px-3 bg-white hover:bg-slate-50 border border-border rounded-xl text-xs font-semibold text-blue flex items-center justify-center gap-1.5 transition"
+              >
+                <span>Read & Review Terms</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
-            disabled={loading}
-            className="w-full py-3.5 sm:py-4 bg-orange hover:bg-orange-hover disabled:opacity-50 text-white font-bold text-sm rounded-full transition shadow-soft flex items-center justify-center gap-2 min-h-[48px]"
+            disabled={loading || !consent || !isPasswordStrong || (confirmPassword !== '' && confirmPassword !== password) || emailAvailable === false}
+            className="w-full py-3.5 sm:py-4 bg-orange hover:bg-orange-hover disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-sm rounded-full transition shadow-soft flex items-center justify-center gap-2 min-h-[48px]"
           >
-            <span>{loading ? 'Creating Account...' : (mode === 'PARTNER' ? 'Submit Partner Application' : 'Create Free Trader Account')}</span>
+            <span>
+              {loading
+                ? 'Submitting...'
+                : mode === 'PARTNER'
+                ? 'Submit Partner Registration'
+                : 'Create Free Trader Account'}
+            </span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </form>
@@ -336,6 +579,13 @@ export default function RegisterPage() {
         </div>
 
       </div>
+
+      {/* Terms & Conditions Modal (A4) */}
+      <TermsAndConditionsModal
+        isOpen={termsModalOpen}
+        onClose={() => setTermsModalOpen(false)}
+        onAccept={() => setConsent(true)}
+      />
     </div>
   );
 }

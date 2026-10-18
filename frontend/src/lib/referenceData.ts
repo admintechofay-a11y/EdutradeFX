@@ -201,3 +201,17 @@ export const REGIONAL_FOOTPRINTS = [
   { value: 'AUSTRALASIA', label: 'Australasia (Australia & New Zealand)' },
   { value: 'GLOBAL', label: 'Global / Worldwide Coverage' },
 ];
+
+export const FIXED_SPREADS = SPREADS_FROM_LIST;
+export const REGIONAL_FOOTPRINT_OPTIONS = [
+  'Africa (Sub-Saharan & North Africa)',
+  'Asia-Pacific (APAC)',
+  'Middle East & GCC',
+  'Europe (EU & EEA)',
+  'United Kingdom',
+  'North America (US & Canada)',
+  'Latin America (LATAM)',
+  'Commonwealth of Independent States (CIS)',
+  'Australasia (Australia & New Zealand)',
+  'Global / Worldwide Coverage',
+];

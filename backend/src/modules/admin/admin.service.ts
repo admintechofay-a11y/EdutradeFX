@@ -23,9 +23,14 @@ import {
   PayoutStatus,
   Prisma,
   Role,
+  StatementAccountType,
+  SpSubscriptionModel,
+  SpUpdateFrequency,
+  SpPlanPeriod,
 } from '@prisma/client';
 import { decryptBrokerCredential } from '../../utils/crypto.utils';
 import { generateSignedDocumentUrl } from '../../utils/cloudinary.utils';
+import { computeSPReviewFlags } from '../signal-providers/sp.utils';
 
 export class AdminService {
   // ── 1. DASHBOARD OVERVIEW & KPIS ───────────────────────────
@@ -1244,6 +1249,18 @@ export class AdminService {
     const { skip, take, page, limit } = parsePagination(query);
     const where: Prisma.SignalProviderWhereInput = {};
     if (query.status) where.status = query.status as ApprovalStatus;
+    if (query.onboardingStatus) where.onboardingStatus = query.onboardingStatus as OnboardingStatus;
+    if (query.verificationStatus !== undefined) where.verificationStatus = query.verificationStatus === 'true';
+
+    if (query.q || query.search) {
+      const term = (query.q || query.search) as string;
+      where.OR = [
+        { displayName: { contains: term, mode: 'insensitive' } },
+        { legalFullName: { contains: term, mode: 'insensitive' } },
+        { strategy: { contains: term, mode: 'insensitive' } },
+        { user: { email: { contains: term, mode: 'insensitive' } } },
+      ];
+    }
 
     const [signalProviders, total] = await Promise.all([
       prisma.signalProvider.findMany({
@@ -1253,6 +1270,8 @@ export class AdminService {
         orderBy: { createdAt: 'desc' },
         include: {
           user: { select: { id: true, name: true, email: true } },
+          documents: { select: { id: true, docType: true, reviewStatus: true, fileName: true, createdAt: true } },
+          plans: true,
           _count: { select: { signals: true, reviews: true, enquiries: true } },
         },
       }),
@@ -1263,11 +1282,311 @@ export class AdminService {
     return { signalProviders, total, page, limit, totalPages };
   }
 
-  async updateSPStatus(spId: string, status: ApprovalStatus) {
-    return await prisma.signalProvider.update({
+  async getSPByIdAdmin(spId: string) {
+    const sp = await prisma.signalProvider.findUnique({
       where: { id: spId },
-      data: { status },
+      include: {
+        user: { select: { id: true, name: true, email: true, createdAt: true } },
+        documents: { orderBy: { createdAt: 'desc' } },
+        plans: { orderBy: { sortOrder: 'asc' } },
+        agreementAcceptances: { orderBy: { acceptedAt: 'desc' } },
+        signals: { orderBy: { createdAt: 'desc' }, take: 20 },
+        reviews: {
+          include: { user: { select: { id: true, name: true, avatar: true } } },
+          orderBy: { createdAt: 'desc' },
+        },
+        enquiries: { orderBy: { createdAt: 'desc' } },
+      },
     });
+
+    if (!sp) {
+      throw new AppError('Signal Provider not found.', StatusCodes.NOT_FOUND);
+    }
+
+    // Compute fresh review flags if not stored
+    const flags = sp.reviewFlags || computeSPReviewFlags(sp);
+
+    // Fetch related audit logs
+    const auditLogs = await prisma.auditLog.findMany({
+      where: { targetId: spId, targetType: 'SIGNAL_PROVIDER' },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+    });
+
+    return { ...sp, reviewFlags: flags, auditLogs };
+  }
+
+  async getSPDocumentSignedUrl(spId: string, docId: string, adminUserId: string) {
+    const doc = await prisma.signalProviderDocument.findFirst({
+      where: { id: docId, signalProviderId: spId },
+    });
+
+    if (!doc) {
+      throw new AppError('Document not found.', StatusCodes.NOT_FOUND);
+    }
+
+    if (!doc.publicId) {
+      return { url: doc.fileUrl, expiresInSeconds: 300 };
+    }
+
+    const isImage = ['.jpg', '.jpeg', '.png', '.webp'].some((ext) => doc.fileName.toLowerCase().endsWith(ext));
+    const signedUrl = generateSignedDocumentUrl(doc.publicId, isImage ? 'image' : 'raw', 300);
+
+    // Audit log the signed URL generation
+    await prisma.auditLog.create({
+      data: {
+        actorId: adminUserId,
+        action: 'ACCESS_SP_DOCUMENT_URL',
+        targetType: 'SIGNAL_PROVIDER_DOCUMENT',
+        targetId: docId,
+        metadata: { spId, docType: doc.docType, fileName: doc.fileName },
+      },
+    });
+
+    return { url: signedUrl, expiresInSeconds: 300 };
+  }
+
+  async updateSPStatus(spId: string, status: ApprovalStatus, reason?: string, adminUserId?: string) {
+    const sp = await prisma.signalProvider.findUnique({
+      where: { id: spId },
+      include: { user: true },
+    });
+    if (!sp) throw new AppError('Signal Provider not found.', StatusCodes.NOT_FOUND);
+
+    if (status === ApprovalStatus.REJECTED && (!reason || !reason.trim())) {
+      throw new AppError('A rejection reason is required when rejecting a Signal Provider application.', StatusCodes.BAD_REQUEST);
+    }
+
+    let snapshotUpdate: Record<string, any> = {};
+    if (status === ApprovalStatus.APPROVED) {
+      const { serializePublicSP } = await import('../signal-providers/sp.serializer');
+      snapshotUpdate = {
+        publicSnapshot: serializePublicSP(sp),
+      };
+    }
+
+    const updated = await prisma.signalProvider.update({
+      where: { id: spId },
+      data: {
+        status,
+        rejectionReason: status === ApprovalStatus.REJECTED ? reason?.trim() : null,
+        reviewedById: adminUserId || null,
+        reviewedAt: new Date(),
+        ...snapshotUpdate,
+      },
+    });
+
+    // In-app notification
+    await prisma.notification.create({
+      data: {
+        userId: sp.userId,
+        type: status === ApprovalStatus.APPROVED ? NotificationType.APPROVAL : NotificationType.REJECTION,
+        title: status === ApprovalStatus.APPROVED ? 'Signal Provider Profile Approved!' : 'Signal Provider Application Update',
+        message: status === ApprovalStatus.APPROVED
+          ? 'Your Signal Provider profile has been approved and is now publicly listed on EdutradeFX.'
+          : `Your application was rejected: ${reason}`,
+        link: '/dashboard/signal-provider',
+      },
+    }).catch(() => {});
+
+    // Safe email dispatch
+    if (status === ApprovalStatus.APPROVED) {
+      sendApprovalEmail(sp.user.email, sp.user.name, 'Signal Provider Profile').catch(() => {});
+    } else if (status === ApprovalStatus.REJECTED) {
+      sendRejectionEmail(sp.user.email, sp.user.name, 'Signal Provider Profile', reason).catch(() => {});
+    }
+
+    await prisma.auditLog.create({
+      data: {
+        actorId: adminUserId || sp.userId,
+        action: `SP_STATUS_${status}`,
+        targetType: 'SIGNAL_PROVIDER',
+        targetId: spId,
+        metadata: { previousStatus: sp.status, newStatus: status, reason },
+      },
+    }).catch(() => {});
+
+    return updated;
+  }
+
+  async requestSPChanges(spId: string, note: string, adminUserId?: string) {
+    const sp = await prisma.signalProvider.findUnique({
+      where: { id: spId },
+      include: { user: true },
+    });
+    if (!sp) throw new AppError('Signal Provider not found.', StatusCodes.NOT_FOUND);
+
+    if (!note || !note.trim()) {
+      throw new AppError('A detailed note is required when requesting changes.', StatusCodes.BAD_REQUEST);
+    }
+
+    const updated = await prisma.signalProvider.update({
+      where: { id: spId },
+      data: {
+        onboardingStatus: OnboardingStatus.CHANGES_REQUESTED,
+        changesRequestedNote: note.trim(),
+        reviewedById: adminUserId || null,
+        reviewedAt: new Date(),
+      },
+    });
+
+    await prisma.notification.create({
+      data: {
+        userId: sp.userId,
+        type: NotificationType.WARNING,
+        title: 'Changes Requested on Signal Provider Profile',
+        message: `EdutradeFX compliance requested changes to your Signal Provider profile: ${note.trim()}`,
+        link: '/dashboard/signal-provider/onboarding',
+      },
+    }).catch(() => {});
+
+    sendChangesRequestedEmail(sp.user.email, sp.user.name, 'Signal Provider Profile', note.trim()).catch(() => {});
+
+    await prisma.auditLog.create({
+      data: {
+        actorId: adminUserId || sp.userId,
+        action: 'REQUEST_SP_CHANGES',
+        targetType: 'SIGNAL_PROVIDER',
+        targetId: spId,
+        metadata: { note: note.trim() },
+      },
+    }).catch(() => {});
+
+    return updated;
+  }
+
+  async updateSPVerification(
+    spId: string,
+    data: { idVerified?: boolean; statementVerified?: boolean; performanceLinkVerified?: boolean },
+    adminUserId?: string
+  ) {
+    const sp = await prisma.signalProvider.findUnique({ where: { id: spId } });
+    if (!sp) throw new AppError('Signal Provider not found.', StatusCodes.NOT_FOUND);
+
+    const idVerified = data.idVerified !== undefined ? Boolean(data.idVerified) : sp.idVerified;
+    const statementVerified = data.statementVerified !== undefined ? Boolean(data.statementVerified) : sp.statementVerified;
+    const performanceLinkVerified = data.performanceLinkVerified !== undefined ? Boolean(data.performanceLinkVerified) : sp.performanceLinkVerified;
+
+    // Spec 4.2: verificationStatus is set ONLY when idVerified && statementVerified && statementAccountType = LIVE
+    const newVerificationStatus = Boolean(
+      idVerified && statementVerified && sp.statementAccountType === StatementAccountType.LIVE
+    );
+
+    const updated = await prisma.signalProvider.update({
+      where: { id: spId },
+      data: {
+        idVerified,
+        statementVerified,
+        performanceLinkVerified,
+        verificationStatus: newVerificationStatus,
+      },
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        actorId: adminUserId || sp.userId,
+        action: 'UPDATE_SP_VERIFICATION',
+        targetType: 'SIGNAL_PROVIDER',
+        targetId: spId,
+        metadata: {
+          idVerified,
+          statementVerified,
+          performanceLinkVerified,
+          verificationStatus: newVerificationStatus,
+        },
+      },
+    }).catch(() => {});
+
+    return updated;
+  }
+
+  async updateSPDocument(
+    spId: string,
+    docId: string,
+    data: { reviewStatus: ApprovalStatus; reviewNote?: string },
+    adminUserId?: string
+  ) {
+    const doc = await prisma.signalProviderDocument.findFirst({
+      where: { id: docId, signalProviderId: spId },
+    });
+    if (!doc) throw new AppError('Document not found.', StatusCodes.NOT_FOUND);
+
+    const updated = await prisma.signalProviderDocument.update({
+      where: { id: docId },
+      data: {
+        reviewStatus: data.reviewStatus,
+        reviewNote: data.reviewNote ? data.reviewNote.trim() : null,
+      },
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        actorId: adminUserId || 'system',
+        action: 'REVIEW_SP_DOCUMENT',
+        targetType: 'SIGNAL_PROVIDER_DOCUMENT',
+        targetId: docId,
+        metadata: { spId, reviewStatus: data.reviewStatus, reviewNote: data.reviewNote },
+      },
+    }).catch(() => {});
+
+    return updated;
+  }
+
+  async getSPAgreements() {
+    return await prisma.partnerAgreement.findMany({
+      where: { audience: AgreementAudience.SIGNAL_PROVIDER },
+      orderBy: { id: 'asc' },
+    });
+  }
+
+  async updateSPAgreementAdmin(
+    key: string,
+    data: { title?: string; body: string; isActive?: boolean },
+    adminUserId?: string
+  ) {
+    const agreement = await prisma.partnerAgreement.findUnique({
+      where: {
+        audience_key: {
+          audience: AgreementAudience.SIGNAL_PROVIDER,
+          key,
+        },
+      },
+    });
+    if (!agreement) throw new AppError('Agreement not found.', StatusCodes.NOT_FOUND);
+
+    const isBodyChanged = data.body && data.body.trim() !== agreement.body.trim();
+    const newVersion = isBodyChanged ? agreement.version + 1 : agreement.version;
+
+    const updated = await prisma.partnerAgreement.update({
+      where: {
+        audience_key: {
+          audience: AgreementAudience.SIGNAL_PROVIDER,
+          key,
+        },
+      },
+      data: {
+        ...(data.title ? { title: data.title.trim() } : {}),
+        body: data.body.trim(),
+        version: newVersion,
+        ...(data.isActive !== undefined ? { isActive: data.isActive } : {}),
+        updatedById: adminUserId || null,
+        updatedAt: new Date(),
+      },
+    });
+
+    if (isBodyChanged) {
+      await prisma.auditLog.create({
+        data: {
+          actorId: adminUserId || 'system',
+          action: 'BUMP_SP_AGREEMENT_VERSION',
+          targetType: 'PARTNER_AGREEMENT',
+          targetId: agreement.id,
+          metadata: { key, oldVersion: agreement.version, newVersion },
+        },
+      }).catch(() => {});
+    }
+
+    return updated;
   }
 
   async toggleSPVerification(spId: string, verificationStatus: boolean) {
@@ -1298,19 +1617,40 @@ export class AdminService {
       data: {
         userId,
         displayName: data.displayName,
+        legalFullName: data.legalFullName || null,
+        contactPhone: data.contactPhone || null,
+        residenceCountryCode: data.residenceCountryCode || null,
+        residenceCountry: data.residenceCountry || null,
         slug,
         photo: data.photo || null,
         bio: data.bio || null,
-        instruments: Array.isArray(data.instruments) ? data.instruments : (data.instruments ? String(data.instruments).split(',').map((s: string) => s.trim()) : ['EUR/USD', 'GBP/USD']),
+        instruments: Array.isArray(data.instruments) ? data.instruments : (data.instruments ? String(data.instruments).split(',').map((s: string) => s.trim()) : ['EURUSD', 'GBPUSD']),
+        tradingStyles: Array.isArray(data.tradingStyles) ? data.tradingStyles : [],
+        tradingStyleDescription: data.tradingStyleDescription || null,
+        yearsTrading: data.yearsTrading !== undefined ? parseInt(data.yearsTrading, 10) : null,
         strategy: data.strategy || null,
-        riskCategory: data.riskCategory || 'Medium',
-        winRate: data.winRate ? parseFloat(data.winRate) : 75,
-        subscriptionPrice: data.subscriptionPrice ? parseFloat(data.subscriptionPrice) : 0,
-        historicalPerformance: data.historicalPerformance || null,
+        strategyDetail: data.strategyDetail || null,
+        riskCategory: data.riskCategory || null,
+        declaredAvgMonthlyReturn: data.declaredAvgMonthlyReturn ? parseFloat(data.declaredAvgMonthlyReturn) : null,
+        declaredMaxDrawdown: data.declaredMaxDrawdown ? parseFloat(data.declaredMaxDrawdown) : null,
+        declaredWinRate: data.declaredWinRate ? parseFloat(data.declaredWinRate) : null,
+        maxLeverageUsed: data.maxLeverageUsed ? parseInt(data.maxLeverageUsed, 10) : null,
+        riskRewardPreference: data.riskRewardPreference || null,
+        riskPhilosophy: data.riskPhilosophy || null,
+        usesHedgingOrMartingale: Boolean(data.usesHedgingOrMartingale),
+        usesHedging: Boolean(data.usesHedging),
+        usesMartingale: Boolean(data.usesMartingale),
+        hedgingMartingaleNotes: data.hedgingMartingaleNotes || null,
+        subscriptionModel: data.subscriptionModel || SpSubscriptionModel.FREE,
+        updateFrequency: data.updateFrequency || null,
+        inquiryHandlingApproach: data.inquiryHandlingApproach || null,
+        offersLiveQA: Boolean(data.offersLiveQA),
+        liveQAFrequency: data.liveQAFrequency || null,
         website: data.website || null,
-        disclaimer: data.disclaimer || null,
+        telegramChannelUrl: data.telegramChannelUrl || null,
         verificationStatus: data.verificationStatus === true || data.verificationStatus === 'true',
         status: data.status || ApprovalStatus.APPROVED,
+        onboardingStatus: data.onboardingStatus || OnboardingStatus.SUBMITTED,
         isFeatured: data.isFeatured === true || data.isFeatured === 'true',
       },
     });
@@ -1324,18 +1664,39 @@ export class AdminService {
       where: { id: spId },
       data: {
         displayName: data.displayName !== undefined ? data.displayName : sp.displayName,
+        legalFullName: data.legalFullName !== undefined ? data.legalFullName : sp.legalFullName,
+        contactPhone: data.contactPhone !== undefined ? data.contactPhone : sp.contactPhone,
+        residenceCountryCode: data.residenceCountryCode !== undefined ? data.residenceCountryCode : sp.residenceCountryCode,
+        residenceCountry: data.residenceCountry !== undefined ? data.residenceCountry : sp.residenceCountry,
         photo: data.photo !== undefined ? data.photo : sp.photo,
         bio: data.bio !== undefined ? data.bio : sp.bio,
         instruments: Array.isArray(data.instruments) ? data.instruments : (data.instruments !== undefined ? String(data.instruments).split(',').map((s: string) => s.trim()) : sp.instruments),
+        tradingStyles: Array.isArray(data.tradingStyles) ? data.tradingStyles : sp.tradingStyles,
+        tradingStyleDescription: data.tradingStyleDescription !== undefined ? data.tradingStyleDescription : sp.tradingStyleDescription,
+        yearsTrading: data.yearsTrading !== undefined ? (data.yearsTrading ? parseInt(data.yearsTrading, 10) : null) : sp.yearsTrading,
         strategy: data.strategy !== undefined ? data.strategy : sp.strategy,
+        strategyDetail: data.strategyDetail !== undefined ? data.strategyDetail : sp.strategyDetail,
         riskCategory: data.riskCategory !== undefined ? data.riskCategory : sp.riskCategory,
-        winRate: data.winRate !== undefined ? (data.winRate ? parseFloat(data.winRate) : null) : sp.winRate,
-        subscriptionPrice: data.subscriptionPrice !== undefined ? (data.subscriptionPrice ? parseFloat(data.subscriptionPrice) : null) : sp.subscriptionPrice,
-        historicalPerformance: data.historicalPerformance !== undefined ? data.historicalPerformance : sp.historicalPerformance,
+        declaredAvgMonthlyReturn: data.declaredAvgMonthlyReturn !== undefined ? (data.declaredAvgMonthlyReturn ? parseFloat(data.declaredAvgMonthlyReturn) : null) : sp.declaredAvgMonthlyReturn,
+        declaredMaxDrawdown: data.declaredMaxDrawdown !== undefined ? (data.declaredMaxDrawdown ? parseFloat(data.declaredMaxDrawdown) : null) : sp.declaredMaxDrawdown,
+        declaredWinRate: data.declaredWinRate !== undefined ? (data.declaredWinRate ? parseFloat(data.declaredWinRate) : null) : sp.declaredWinRate,
+        maxLeverageUsed: data.maxLeverageUsed !== undefined ? (data.maxLeverageUsed ? parseInt(data.maxLeverageUsed, 10) : null) : sp.maxLeverageUsed,
+        riskRewardPreference: data.riskRewardPreference !== undefined ? data.riskRewardPreference : sp.riskRewardPreference,
+        riskPhilosophy: data.riskPhilosophy !== undefined ? data.riskPhilosophy : sp.riskPhilosophy,
+        usesHedgingOrMartingale: data.usesHedgingOrMartingale !== undefined ? Boolean(data.usesHedgingOrMartingale) : sp.usesHedgingOrMartingale,
+        usesHedging: data.usesHedging !== undefined ? Boolean(data.usesHedging) : sp.usesHedging,
+        usesMartingale: data.usesMartingale !== undefined ? Boolean(data.usesMartingale) : sp.usesMartingale,
+        hedgingMartingaleNotes: data.hedgingMartingaleNotes !== undefined ? data.hedgingMartingaleNotes : sp.hedgingMartingaleNotes,
+        subscriptionModel: data.subscriptionModel !== undefined ? data.subscriptionModel : sp.subscriptionModel,
+        updateFrequency: data.updateFrequency !== undefined ? data.updateFrequency : sp.updateFrequency,
+        inquiryHandlingApproach: data.inquiryHandlingApproach !== undefined ? data.inquiryHandlingApproach : sp.inquiryHandlingApproach,
+        offersLiveQA: data.offersLiveQA !== undefined ? Boolean(data.offersLiveQA) : sp.offersLiveQA,
+        liveQAFrequency: data.liveQAFrequency !== undefined ? data.liveQAFrequency : sp.liveQAFrequency,
         website: data.website !== undefined ? data.website : sp.website,
-        disclaimer: data.disclaimer !== undefined ? data.disclaimer : sp.disclaimer,
+        telegramChannelUrl: data.telegramChannelUrl !== undefined ? data.telegramChannelUrl : sp.telegramChannelUrl,
         verificationStatus: data.verificationStatus !== undefined ? Boolean(data.verificationStatus) : sp.verificationStatus,
         status: data.status !== undefined ? data.status : sp.status,
+        onboardingStatus: data.onboardingStatus !== undefined ? data.onboardingStatus : sp.onboardingStatus,
         isFeatured: data.isFeatured !== undefined ? Boolean(data.isFeatured) : sp.isFeatured,
       },
     });

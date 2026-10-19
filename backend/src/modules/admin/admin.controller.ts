@@ -428,18 +428,53 @@ export class AdminController {
     sendPaginated(res, result.signalProviders, result.total, result.page, result.limit, 'Signal providers retrieved');
   };
 
+  getSPById = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const sp = await adminService.getSPByIdAdmin(id as string);
+    sendSuccess(res, sp, 'Signal Provider details retrieved', StatusCodes.OK);
+  };
+
+  getSPDocumentSignedUrl = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id, docId } = req.params;
+    const result = await adminService.getSPDocumentSignedUrl(id as string, docId as string, req.user!.userId);
+    sendSuccess(res, result, 'Document access URL generated', StatusCodes.OK);
+  };
+
   updateSPStatus = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     const { id } = req.params;
-    const { status } = req.body;
-    const sp = await adminService.updateSPStatus(id as string, status);
-    await adminService.createAuditLog({
-      actorId: req.user!.userId,
-      action: `UPDATE_STATUS_${status}`,
-      targetType: 'SIGNAL_PROVIDER',
-      targetId: id as string,
-      metadata: { status },
-    });
+    const { status, reason } = req.body;
+    const sp = await adminService.updateSPStatus(id as string, status, reason, req.user!.userId);
     sendSuccess(res, sp, `Signal Provider status updated to ${status}`, StatusCodes.OK);
+  };
+
+  requestSPChanges = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const { note } = req.body;
+    const sp = await adminService.requestSPChanges(id as string, note, req.user!.userId);
+    sendSuccess(res, sp, 'Changes requested successfully', StatusCodes.OK);
+  };
+
+  updateSPVerification = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const sp = await adminService.updateSPVerification(id as string, req.body, req.user!.userId);
+    sendSuccess(res, sp, 'Verification flags updated', StatusCodes.OK);
+  };
+
+  updateSPDocument = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id, docId } = req.params;
+    const updated = await adminService.updateSPDocument(id as string, docId as string, req.body, req.user!.userId);
+    sendSuccess(res, updated, 'Document reviewed successfully', StatusCodes.OK);
+  };
+
+  getSPAgreements = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const agreements = await adminService.getSPAgreements();
+    sendSuccess(res, agreements, 'Agreements retrieved', StatusCodes.OK);
+  };
+
+  updateSPAgreement = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { key } = req.params;
+    const updated = await adminService.updateSPAgreementAdmin(key as string, req.body, req.user!.userId);
+    sendSuccess(res, updated, `Agreement ${key} updated to version ${updated.version}`, StatusCodes.OK);
   };
 
   toggleSPVerification = async (req: AuthenticatedRequest, res: Response): Promise<void> => {

@@ -56,11 +56,18 @@ router.delete('/reviews/am/:id', adminController.deleteAccountManagerReview);
 
 // ── SIGNAL PROVIDERS ───────────────────────────────
 router.get('/signal-providers', adminController.getAllSPs);
+router.get('/signal-providers/agreements', adminController.getSPAgreements);
+router.put('/signal-providers/agreements/:key', adminController.updateSPAgreement);
+router.get('/signal-providers/:id', adminController.getSPById);
+router.get('/signal-providers/:id/documents/:docId/url', adminController.getSPDocumentSignedUrl);
 router.post('/signal-providers', adminController.createSP);
 router.put('/signal-providers/:id', adminController.updateSP);
 router.delete('/signal-providers/:id', adminController.deleteSP);
 router.patch('/signal-providers/:id/status', adminController.updateSPStatus);
+router.post('/signal-providers/:id/request-changes', adminController.requestSPChanges);
+router.patch('/signal-providers/:id/verification', adminController.updateSPVerification);
 router.patch('/signal-providers/:id/verify', adminController.toggleSPVerification);
+router.patch('/signal-providers/:id/documents/:docId', adminController.updateSPDocument);
 router.patch('/signal-providers/:id/feature', adminController.toggleSPFeatured);
 router.patch('/reviews/sp/:id/approve', adminController.approveSignalProviderReview);
 router.delete('/reviews/sp/:id', adminController.deleteSignalProviderReview);

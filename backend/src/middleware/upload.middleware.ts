@@ -336,3 +336,56 @@ export const uploadAmDocumentMemory = multer({
   },
 });
 
+// SP Photo Upload (5MB in-memory for magic byte checking)
+export const uploadSpPhotoMemory = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const isMimeValid = APP_CONSTANTS.ALLOWED_IMAGE_TYPES.includes(file.mimetype);
+    const isExtValid = APP_CONSTANTS.ALLOWED_IMAGE_EXTENSIONS.includes(ext);
+
+    if (isMimeValid && isExtValid) {
+      cb(null, true);
+    } else {
+      cb(new AppError('Only JPG, PNG, and WebP images up to 5MB are permitted.', StatusCodes.BAD_REQUEST));
+    }
+  },
+});
+
+// SP Document Upload (10MB in-memory for magic byte checking)
+// Strictly no HTML/HTM, allows PDF, CSV, XLSX, XLS, JPG, PNG, WEBP
+export const uploadSpDocumentMemory = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (['.html', '.htm', '.svg', '.exe', '.bat', '.cmd', '.sh', '.js'].includes(ext)) {
+      cb(new AppError(`File type ${ext} is prohibited for security reasons. Please export as PDF or CSV.`, StatusCodes.BAD_REQUEST));
+      return;
+    }
+    const allowedExts = [
+      '.pdf',
+      '.csv',
+      '.xlsx',
+      '.xls',
+      '.jpg',
+      '.jpeg',
+      '.png',
+      '.webp',
+      '.doc',
+      '.docx',
+    ];
+    if (allowedExts.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(
+        new AppError(
+          'File format not accepted. Allowed: PDF, CSV, XLSX, XLS, JPG, PNG, WebP up to 10MB.',
+          StatusCodes.BAD_REQUEST
+        )
+      );
+    }
+  },
+});
+

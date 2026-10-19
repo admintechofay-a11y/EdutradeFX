@@ -177,19 +177,8 @@ export const Footer: React.FC = () => {
 
       {/* Copyright Bottom Bar */}
       <div className="border-t border-[#0A2A6B] bg-[#051336] py-5 px-4 sm:px-6 lg:px-8 text-slate-400 text-[11px]">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+        <div className="max-w-7xl mx-auto text-center">
           <p>&copy; {new Date().getFullYear()} EduTradeFX Ecosystem. All rights reserved.</p>
-          <p className="text-center sm:text-right">
-            Designed and developed by{' '}
-            <a
-              href="https://techofay-global-ventures.vercel.app/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 hover:text-white underline underline-offset-2 transition-colors font-semibold"
-            >
-              Techofay Global Ventures
-            </a>
-          </p>
         </div>
       </div>
     </footer>

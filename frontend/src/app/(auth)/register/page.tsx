@@ -128,7 +128,11 @@ export default function RegisterPage() {
     setResendLoading(true);
     setResendMessage(null);
     try {
-      await api.post('/auth/resend-verification', { email: email.trim().toLowerCase() });
+      const res = await api.post('/auth/resend-verification', { email: email.trim().toLowerCase() });
+      const devUrl = res.data?.data?.devVerificationUrl || res.data?.devVerificationUrl;
+      if (devUrl) {
+        setDevVerificationUrl(devUrl);
+      }
       setResendMessage('A new verification email has been sent. Please check your inbox.');
       setResendCooldown(60);
     } catch (err: any) {

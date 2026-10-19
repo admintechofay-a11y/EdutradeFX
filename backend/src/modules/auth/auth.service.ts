@@ -262,7 +262,12 @@ export class AuthService {
         logger.error('Failed to resend verification email to pending:', err);
       }
 
-      return { message: 'If an unverified account exists with that email, a verification link has been sent.' };
+      return {
+        message: 'If an unverified account exists with that email, a verification link has been sent.',
+        ...(process.env.NODE_ENV === 'development' && {
+          devVerificationUrl: `${FRONTEND_URL}/verify-email/${encodeURIComponent(newRawToken)}`,
+        }),
+      };
     }
 
     // 2. Check unverified legacy User
@@ -288,6 +293,13 @@ export class AuthService {
       } catch (err) {
         logger.error('Failed to resend verification email to user:', err);
       }
+
+      return {
+        message: 'If an unverified account exists with that email, a verification link has been sent.',
+        ...(process.env.NODE_ENV === 'development' && {
+          devVerificationUrl: `${FRONTEND_URL}/verify-email/${encodeURIComponent(newRawToken)}`,
+        }),
+      };
     }
 
     return { message: 'If an unverified account exists with that email, a verification link has been sent.' };

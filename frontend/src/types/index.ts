@@ -21,6 +21,18 @@ export type OrderExecution = 'INSTANT' | 'MARKET' | 'EXCHANGE';
 export type GtcMode = 'CANCEL' | 'HOLD_WEEKEND';
 export type IbSettlement = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'INSTANT';
 
+export type AmEntityType = 'INDIVIDUAL' | 'CORPORATE';
+export type AmOnboardingStatus = 'DRAFT' | 'SUBMITTED' | 'CHANGES_REQUESTED';
+export type SettlementCycle = 'DAILY' | 'WEEKLY' | 'MONTHLY';
+export type RiskTolerance = 'LOW' | 'MODERATE' | 'HIGH';
+export type AmDocType =
+  | 'CV_RESUME'
+  | 'PERFORMANCE_RECORD'
+  | 'STRATEGY_DOCUMENT'
+  | 'CERTIFICATE'
+  | 'PAST_RESULT_SCREENSHOT'
+  | 'REGULATORY_PROOF';
+
 export type CourseStatus = 'DRAFT' | 'REVIEW' | 'APPROVED' | 'PUBLISHED' | 'ARCHIVED';
 export type LessonType = 'VIDEO' | 'PDF' | 'QUIZ' | 'TEXT';
 export type SignalDirection = 'BUY' | 'SELL';
@@ -359,9 +371,46 @@ export interface BrokerReview {
   user?: { id: string; name: string; avatar?: string | null };
 }
 
+export interface AccountManagerDocument {
+  id: string;
+  accountManagerId: string;
+  fileUrl: string;
+  fileName: string;
+  fileSize: number;
+  mimeType: string;
+  docType: AmDocType | string;
+  isPublic: boolean;
+  caption?: string | null;
+  periodNote?: string | null;
+  reviewStatus: ApprovalStatus;
+  publicId?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AccountManagerAgreement {
+  id: string;
+  key: string;
+  title: string;
+  body: string;
+  version: number;
+  isActive: boolean;
+  updatedAt: string;
+}
+
+export interface AccountManagerAgreementAcceptance {
+  id: string;
+  accountManagerId: string;
+  agreementKey: string;
+  version: number;
+  acceptedAt: string;
+  ipAddress?: string | null;
+  userAgent?: string | null;
+}
+
 export interface AccountManager {
   id: string;
-  userId: string;
+  userId?: string;
   fullName: string;
   slug: string;
   photo?: string | null;
@@ -386,9 +435,85 @@ export interface AccountManager {
   status: ApprovalStatus;
   isFeatured: boolean;
   createdAt: string;
+  updatedAt?: string;
+
+  // AM v2 fields
+  entityType?: AmEntityType;
+  companyLegalName?: string | null;
+  companyRegistrationNumber?: string | null;
+  incorporationCountry?: string | null;
+  companyWebsite?: string | null;
+  address?: string | null;
+  stateRegion?: string | null;
+  stateCode?: string | null;
+  countryCode?: string | null;
+  zipCode?: string | null;
+  contactEmail?: string | null;
+  contactPhone?: string | null;
+  socialLinks?: Record<string, string> | null;
+  socialLinksPublic?: boolean;
+
+  isRegulated?: boolean | null;
+  regulatorName?: string | null;
+  regulatorRegistrationNumber?: string | null;
+  regulatorCountry?: string | null;
+  regulatoryProofUrl?: string | null;
+  regulatoryVerified?: boolean;
+
+  speciality?: string | null;
+  marketEventExperience?: string | null;
+
+  preferredInstruments?: string[];
+  tradingStyles?: string[];
+  accuracyLevel?: number | null;
+  accuracyPeriodNote?: string | null;
+  preferredPlatforms?: string[];
+  otherPlatformName?: string | null;
+  preferredBrokerTypes?: string[];
+
+  indicators?: string | null;
+  signals?: string | null;
+  fundamentals?: string | null;
+  technical?: string | null;
+  newsTrade?: string | null;
+
+  riskRewardRatio?: string | null;
+  riskRewardValue?: number | null;
+  riskTolerance?: RiskTolerance | null;
+  lossPerTradePercent?: number | null;
+  dailyTrades?: number | null;
+  dailyLots?: number | null;
+  dailyStopLossPoints?: number | null;
+  dailyTakeProfitPoints?: number | null;
+  favouriteTimeframe?: string | null;
+  tradingTimeFrom?: string | null;
+  tradingTimeTo?: string | null;
+  lossRecoveryStrategy?: string | null;
+
+  settlementCycle?: SettlementCycle | null;
+  clientFundSecurity?: string | null;
+  recommendsBroker?: boolean | null;
+  recommendedBrokerId?: string | null;
+  recommendedBrokerName?: string | null;
+  recommendedBrokerPlatform?: string | null;
+  profitSharingPercent?: number | null;
+  lossSharingPercent?: number | null;
+
+  onboardingStatus?: AmOnboardingStatus;
+  submittedAt?: string | null;
+  reviewedAt?: string | null;
+  reviewedById?: string | null;
+  rejectionReason?: string | null;
+  changesRequestedNote?: string | null;
+  completionPercent?: number;
+  profileUpdateRequiredBy?: string | null;
+
   reviews?: AccountManagerReview[];
-  documents?: any[];
+  documents?: AccountManagerDocument[];
+  agreements?: AccountManagerAgreementAcceptance[];
+  missingFields?: string[];
   user?: { name: string; email: string };
+  recommendedBroker?: { id: string; name: string; slug: string; logo?: string | null } | null;
 }
 
 export interface AccountManagerReview {

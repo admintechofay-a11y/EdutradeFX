@@ -24,6 +24,7 @@ router.get('/agreements', generalLimiter, accountManagerController.getAgreements
 router.get('/:slug', generalLimiter, optionalAuth, accountManagerController.getAccountManagerBySlug);
 router.get('/:id/reviews', generalLimiter, accountManagerController.getReviews);
 router.post('/:id/enquiry', generalLimiter, optionalAuth, validate(amEnquirySchema), accountManagerController.sendEnquiry);
+router.post('/:id/enquiries', generalLimiter, optionalAuth, validate(amEnquirySchema), accountManagerController.sendEnquiry);
 
 // ── AUTHENTICATED USER (Reviews) ───────────────────
 router.post('/:id/reviews', authenticate, reviewLimiter, validate(amReviewSchema), accountManagerController.addReview);

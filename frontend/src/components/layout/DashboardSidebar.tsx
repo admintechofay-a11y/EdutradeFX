@@ -21,6 +21,7 @@ import {
   ShieldAlert,
   ChevronRight,
   PlusCircle,
+  Star,
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { Role } from '../../types';
@@ -53,10 +54,12 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ onNavigate }
         ];
       case 'ACCOUNT_MANAGER':
         return [
-          { label: 'Overview', href: '/dashboard', icon: LayoutDashboard },
-          { label: 'Manager Profile', href: '/dashboard/profile', icon: Users },
-          { label: 'Investor Enquiries', href: '/dashboard/enquiries', icon: MessageSquare },
-          { label: 'Account Settings', href: '/dashboard/settings', icon: Settings },
+          { label: 'Overview', href: '/dashboard/account-manager', icon: LayoutDashboard },
+          { label: 'Onboarding Form', href: '/dashboard/account-manager/onboarding', icon: ShieldCheck },
+          { label: 'Public Profile Preview', href: '/dashboard/account-manager/profile', icon: Users },
+          { label: 'Investor Enquiries', href: '/dashboard/account-manager/enquiries', icon: MessageSquare },
+          { label: 'Reviews', href: '/dashboard/account-manager/reviews', icon: Star },
+          { label: 'Account Settings', href: '/dashboard/account-manager/settings', icon: Settings },
         ];
       case 'SIGNAL_PROVIDER':
         return [

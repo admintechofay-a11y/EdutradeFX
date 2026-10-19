@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Settings, Save, CheckCircle, ShieldCheck, Database, Cpu, Mail } from 'lucide-react';
 import { api } from '../../../lib/api';
 import { BrokerOptionsManager } from './BrokerOptionsManager';
+import { AMAgreementsManager } from './AMAgreementsManager';
 
 export default function AdminSettingsPage() {
   const [platformFee, setPlatformFee] = useState(15);
@@ -143,6 +144,9 @@ export default function AdminSettingsPage() {
 
       {/* Broker Dropdown Options Management */}
       <BrokerOptionsManager />
+
+      {/* Account Manager Agreements & Legal Contracts */}
+      <AMAgreementsManager />
     </div>
   );
 }

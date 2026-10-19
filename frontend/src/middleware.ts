@@ -73,6 +73,13 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
     if (
+      pathname.startsWith('/dashboard/account-manager') &&
+      payload.role !== 'ACCOUNT_MANAGER' &&
+      payload.role !== 'ADMIN'
+    ) {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+    if (
       pathname.startsWith('/dashboard/signal-provider') &&
       payload.role !== 'SIGNAL_PROVIDER' &&
       payload.role !== 'ADMIN'

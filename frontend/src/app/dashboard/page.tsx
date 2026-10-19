@@ -17,18 +17,25 @@ import {
   ShieldCheck,
   CheckCircle2,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../../store/authStore';
 import { api } from '../../lib/api';
 import { Skeleton } from '../../components/common/Skeleton';
 
 export default function DashboardOverviewPage() {
   const { user } = useAuthStore();
+  const router = useRouter();
   const role = user?.role || 'STUDENT';
 
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>(null);
 
   useEffect(() => {
+    if (role === 'ACCOUNT_MANAGER') {
+      router.replace('/dashboard/account-manager');
+      return;
+    }
+
     async function loadRoleData() {
       setLoading(true);
       try {
@@ -38,9 +45,6 @@ export default function DashboardOverviewPage() {
         } else if (role === 'BROKER') {
           const res = await api.get('/brokers/my/profile');
           setData({ broker: res.data?.data || null });
-        } else if (role === 'ACCOUNT_MANAGER') {
-          const res = await api.get('/account-managers/my/profile');
-          setData({ am: res.data?.data || null });
         } else if (role === 'SIGNAL_PROVIDER') {
           const res = await api.get('/signal-providers/my/profile');
           setData({ sp: res.data?.data || null });
@@ -56,7 +60,7 @@ export default function DashboardOverviewPage() {
     }
 
     loadRoleData();
-  }, [role]);
+  }, [role, router]);
 
   if (loading) {
     return (
@@ -418,7 +422,7 @@ export default function DashboardOverviewPage() {
             <div className="p-5 rounded-2xl bg-white border border-border shadow-soft">
               <div className="text-xs font-semibold text-text-muted">Experience</div>
               <div className="text-2xl font-black text-text-heading mt-1">
-                {data?.am?.yearsExperience || 5} Years
+                {data?.am?.yearsExperience != null ? `${data.am.yearsExperience} Years` : '—'}
               </div>
             </div>
             <div className="p-5 rounded-2xl bg-white border border-border shadow-soft">

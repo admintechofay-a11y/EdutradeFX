@@ -38,12 +38,12 @@ async function runAMSuite() {
   const amUser = await prisma.user.findFirst({ where: { email: 'accountmanager@demo.com' } });
   if (!amUser) throw new Error('No demo AM user found');
 
-  const regularUser = await prisma.user.findFirst({ where: { role: Role.USER } });
-  if (!regularUser) throw new Error('No regular USER found');
+  const regularUser = await prisma.user.findFirst({ where: { role: Role.STUDENT } });
+  if (!regularUser) throw new Error('No regular STUDENT found');
 
   const adminToken = generateAccessToken({ userId: adminUser.id, role: Role.ADMIN });
   const amToken = generateAccessToken({ userId: amUser.id, role: Role.ACCOUNT_MANAGER });
-  const userToken = generateAccessToken({ userId: regularUser.id, role: Role.USER });
+  const userToken = generateAccessToken({ userId: regularUser.id, role: Role.STUDENT });
 
   const server = http.createServer(app);
   await new Promise<void>((resolve) => server.listen(0, resolve));
@@ -111,7 +111,7 @@ async function runAMSuite() {
         contactPhone: '+12125550198',
       }),
     });
-    const personalData = await personalRes.json();
+    const personalData = (await personalRes.json()) as any;
     assert(personalRes.status === 200, 'PUT /my/sections/personal succeeds with 200');
     assert(personalData.data.city === 'New York', 'Updated city correctly saved');
 
@@ -136,7 +136,7 @@ async function runAMSuite() {
         lossRecoveryStrategy: 'Conservative capital preservation protocol on high drawdowns.',
       }),
     });
-    const riskData = await riskRes.json();
+    const riskData = (await riskRes.json()) as any;
     assert(riskRes.status === 200, 'PUT /my/sections/risk succeeds with 200');
     assert(riskData.data.riskRewardValue === 3, 'Calculated riskRewardValue parsed 1:3 -> 3.0');
 
@@ -168,7 +168,7 @@ async function runAMSuite() {
       method: 'POST',
       headers: { Authorization: `Bearer ${incToken}` },
     });
-    const submitFailData = await submitFailRes.json();
+    const submitFailData = (await submitFailRes.json()) as any;
     assert(submitFailRes.status === 400, 'Submit fails with 400 when profile is incomplete');
     assert(
       submitFailData.message.includes('incomplete profile requirements') ||
@@ -179,7 +179,7 @@ async function runAMSuite() {
     // ── TEST 4: Agreements Scroll-Gate & Version Bump ───────────
     console.log('\n--- 4. Agreements & Version Enforcement ---');
     const agreementsRes = await fetch(`${baseUrl}/account-managers/agreements`);
-    const agreementsData = await agreementsRes.json();
+    const agreementsData = (await agreementsRes.json()) as any;
     assert(agreementsRes.status === 200, 'GET /agreements returns active agreements');
     assert(agreementsData.data.length >= 8, 'All 7 agreements + master agreement exist in database');
 
@@ -212,7 +212,7 @@ async function runAMSuite() {
         body: '[DRAFT — replace with legal-approved text before launch]\nAmended body version with increased escrow protection.',
       }),
     });
-    const bumpData = await bumpRes.json();
+    const bumpData = (await bumpRes.json()) as any;
     assert(bumpRes.status === 200, 'Admin can update agreement body');
     assert(bumpData.data.version >= 2, 'Updating agreement body automatically bumps version');
 

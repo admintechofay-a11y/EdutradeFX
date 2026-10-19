@@ -35,6 +35,11 @@ const TEST_ROUTES = [
   '/dashboard/broker/onboarding',
   '/dashboard/tutor',
   '/dashboard/signal-provider',
+  '/dashboard/signal-provider/onboarding',
+  '/dashboard/signal-provider/profile',
+  '/dashboard/signal-provider/enquiries',
+  '/dashboard/signals',
+  '/signal-providers',
   '/account-managers',
   '/dashboard/account-manager',
   '/dashboard/account-manager/onboarding',
@@ -43,6 +48,7 @@ const TEST_ROUTES = [
   '/admin',
   '/admin/brokers',
   '/admin/account-managers',
+  '/admin/signal-providers',
 ];
 
 for (const vp of VIEWPORTS) {

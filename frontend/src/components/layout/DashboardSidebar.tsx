@@ -64,6 +64,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ onNavigate }
       case 'SIGNAL_PROVIDER':
         return [
           { label: 'Overview', href: '/dashboard/signal-provider', icon: LayoutDashboard },
+          { label: 'Onboarding Form', href: '/dashboard/signal-provider/onboarding', icon: FileText },
           { label: 'Signals Terminal', href: '/dashboard/signal-provider/signals', icon: Radio },
           { label: 'Subscribers / Enquiries', href: '/dashboard/signal-provider/enquiries', icon: Users },
           { label: 'Provider Profile', href: '/dashboard/signal-provider/profile', icon: ShieldCheck },

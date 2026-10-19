@@ -5,6 +5,7 @@ import { Settings, Save, CheckCircle, ShieldCheck, Database, Cpu, Mail } from 'l
 import { api } from '../../../lib/api';
 import { BrokerOptionsManager } from './BrokerOptionsManager';
 import { AMAgreementsManager } from './AMAgreementsManager';
+import { SPAgreementsManager } from './SPAgreementsManager';
 
 export default function AdminSettingsPage() {
   const [platformFee, setPlatformFee] = useState(15);
@@ -147,6 +148,9 @@ export default function AdminSettingsPage() {
 
       {/* Account Manager Agreements & Legal Contracts */}
       <AMAgreementsManager />
+
+      {/* Signal Provider Agreements & Legal Contracts */}
+      <SPAgreementsManager />
     </div>
   );
 }

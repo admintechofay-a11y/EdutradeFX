@@ -22,7 +22,8 @@ export type GtcMode = 'CANCEL' | 'HOLD_WEEKEND';
 export type IbSettlement = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'INSTANT';
 
 export type AmEntityType = 'INDIVIDUAL' | 'CORPORATE';
-export type AmOnboardingStatus = 'DRAFT' | 'SUBMITTED' | 'CHANGES_REQUESTED';
+export type OnboardingStatus = 'DRAFT' | 'SUBMITTED' | 'CHANGES_REQUESTED';
+export type AmOnboardingStatus = OnboardingStatus;
 export type SettlementCycle = 'DAILY' | 'WEEKLY' | 'MONTHLY';
 export type RiskTolerance = 'LOW' | 'MODERATE' | 'HIGH';
 export type AmDocType =
@@ -527,31 +528,164 @@ export interface AccountManagerReview {
   user?: { id: string; name: string; avatar?: string | null };
 }
 
+export type SpUpdateFrequency = 'PER_SIGNAL' | 'DAILY' | 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY';
+export type SpSubscriptionModel = 'FREE' | 'PAID';
+export type SpPlanPeriod = 'MONTHLY' | 'QUARTERLY' | 'HALF_YEARLY' | 'YEARLY' | 'ONE_TIME';
+export type StatementAccountType = 'LIVE' | 'DEMO';
+
+export interface PartnerAgreement {
+  id: string;
+  key: string;
+  audience: 'ACCOUNT_MANAGER' | 'SIGNAL_PROVIDER' | 'BROKER' | 'ALL';
+  kind: 'AGREEMENT' | 'COMMITMENT' | 'DECLARATION';
+  title: string;
+  body: string;
+  version: number;
+  isActive: boolean;
+  updatedAt: string;
+}
+
+export interface PartnerAgreementAcceptance {
+  id: string;
+  partnerId: string;
+  partnerType: string;
+  agreementKey: string;
+  version: number;
+  acceptedAt: string;
+  ipAddress?: string | null;
+  userAgent?: string | null;
+}
+
+export interface SignalProviderPlan {
+  id: string;
+  signalProviderId?: string;
+  name: string;
+  period: SpPlanPeriod;
+  price: number;
+  currency: string;
+  description?: string | null;
+  sortOrder?: number;
+  isActive?: boolean;
+}
+
+export interface SignalProviderDocument {
+  id: string;
+  signalProviderId: string;
+  fileUrl: string;
+  fileName: string;
+  docType: string;
+  reviewStatus: ApprovalStatus;
+  reviewNote?: string | null;
+  publicId?: string | null;
+  isSensitive: boolean;
+  periodFrom?: string | null;
+  periodTo?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface SignalProvider {
   id: string;
   userId: string;
   displayName: string;
+  legalFullName?: string | null;
+  contactPhone?: string | null;
+  residenceCountryCode?: string | null;
+  residenceCountry?: string | null;
   slug: string;
   photo?: string | null;
   bio?: string | null;
   instruments: string[];
+  tradingStyles?: string[];
+  tradingStyleDescription?: string | null;
+  yearsTrading?: number | null;
+  previouslySignalProvider?: boolean | null;
+  previousProviderDetails?: string | null;
   strategy?: string | null;
+  strategyDetail?: string | null;
   riskCategory?: string | null;
   winRate?: number | null;
   totalSignals: number;
   subscriptionPrice?: number | null;
   historicalPerformance?: string | null;
   website?: string | null;
+  telegramChannelUrl?: string | null;
   disclaimer?: string | null;
   avgRating: number;
   totalReviews: number;
   verificationStatus: boolean;
+  idVerified?: boolean;
+  statementVerified?: boolean;
+  performanceLinkVerified?: boolean;
+  statementPeriodFrom?: string | null;
+  statementPeriodTo?: string | null;
+  statementAccountType?: StatementAccountType | null;
+  performanceLink?: string | null;
+  performanceLinkPlatform?: string | null;
+  declaredAvgMonthlyReturn?: number | null;
+  declaredMaxDrawdown?: number | null;
+  declaredWinRate?: number | null;
+  preferredTimeframes?: string[];
+  maxConsecutiveLosses?: number | null;
+  performancePeriodNote?: string | null;
+  maxLeverageUsed?: number | null;
+  riskRewardPreference?: string | null;
+  riskRewardValue?: number | null;
+  riskPhilosophy?: string | null;
+  usesHedgingOrMartingale?: boolean | null;
+  usesHedging?: boolean;
+  usesMartingale?: boolean;
+  hedgingMartingaleNotes?: string | null;
+  specializedExpertise?: string | null;
+  marketAdaptation?: string | null;
+  uniqueValue?: string | null;
+  updateFrequency?: SpUpdateFrequency | null;
+  inquiryHandlingApproach?: string | null;
+  offersLiveQA?: boolean | null;
+  liveQAFrequency?: string | null;
+  subscriptionModel?: SpSubscriptionModel | null;
+  declarationAcceptedAt?: string | null;
+  onboardingStatus?: OnboardingStatus;
+  submittedAt?: string | null;
+  reviewedAt?: string | null;
+  reviewedById?: string | null;
+  rejectionReason?: string | null;
+  changesRequestedNote?: string | null;
+  completionPercent?: number;
+  reviewFlags?: string[] | null;
+  publicSnapshot?: any;
+  profileUpdateRequiredBy?: string | null;
   status: ApprovalStatus;
   isFeatured: boolean;
   createdAt: string;
   signals?: Signal[];
   reviews?: SignalProviderReview[];
-  user?: { name: string; email: string };
+  plans?: SignalProviderPlan[];
+  documents?: SignalProviderDocument[];
+  agreementAcceptances?: PartnerAgreementAcceptance[];
+  user?: { id?: string; name: string; email: string };
+  // Public serialized shapes
+  declaredMetrics?: {
+    avgMonthlyReturn: number | null;
+    maxDrawdown: number | null;
+    winRate: number | null;
+    maxConsecutiveLosses: number | null;
+    periodNote: string | null;
+    declared: boolean;
+    label: string;
+  };
+  computedMetrics?: {
+    winRate: number | null;
+    totalSignals: number;
+    label: string;
+  };
+  martingaleDisclosure?: {
+    usesHedgingOrMartingale: boolean;
+    usesHedging: boolean;
+    usesMartingale: boolean;
+    notes: string | null;
+    warning: string | null;
+  };
 }
 
 export interface Signal {

@@ -35,6 +35,10 @@ export default function DashboardOverviewPage() {
       router.replace('/dashboard/account-manager');
       return;
     }
+    if (role === 'SIGNAL_PROVIDER') {
+      router.replace('/dashboard/signal-provider');
+      return;
+    }
 
     async function loadRoleData() {
       setLoading(true);
@@ -250,9 +254,9 @@ export default function DashboardOverviewPage() {
               </div>
             </div>
             <div className="p-5 rounded-2xl bg-white border border-border shadow-soft">
-              <div className="text-xs font-semibold text-text-muted">Audited Win Rate</div>
+              <div className="text-xs font-semibold text-text-muted">Win Rate on EdutradeFX</div>
               <div className="text-2xl font-black text-green mt-1">
-                {data?.sp?.winRate ? `${data.sp.winRate}%` : '80.0%'}
+                {data?.sp?.winRate != null ? `${data.sp.winRate}%` : '—'}
               </div>
             </div>
             <div className="p-5 rounded-2xl bg-white border border-border shadow-soft">
@@ -264,7 +268,7 @@ export default function DashboardOverviewPage() {
             <div className="p-5 rounded-2xl bg-white border border-border shadow-soft">
               <div className="text-xs font-semibold text-text-muted">Verification</div>
               <div className="text-sm font-bold text-blue mt-2">
-                {data?.sp?.verificationStatus ? 'Audited & Verified' : 'Pending Audit'}
+                {data?.sp?.verificationStatus ? 'Verified Provider' : 'Pending Verification'}
               </div>
             </div>
           </div>

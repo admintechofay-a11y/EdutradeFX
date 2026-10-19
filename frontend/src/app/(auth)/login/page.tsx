@@ -127,6 +127,45 @@ function LoginFormContent() {
         </button>
       </form>
 
+      {/* Demo Accounts Quick-Fill Section */}
+      <div className="pt-4 border-t border-border space-y-2.5">
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-text-muted flex items-center gap-1.5">
+            <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            Demo Test Accounts (Click to Fill)
+          </span>
+          <span className="text-[10px] text-text-muted font-mono bg-surface-tint px-2 py-0.5 rounded border border-border">
+            Password: Demo@1234!
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+          {[
+            { role: 'Admin', email: 'admin@edutradefx.com', badge: 'bg-red-50 text-red-700 border-red-200' },
+            { role: 'Broker', email: 'broker@edutradefx.com', badge: 'bg-blue-50 text-blue-700 border-blue-200' },
+            { role: 'Account Mgr', email: 'accountmanager@edutradefx.com', badge: 'bg-purple-50 text-purple-700 border-purple-200' },
+            { role: 'Signal Provider', email: 'signals@edutradefx.com', badge: 'bg-amber-50 text-amber-700 border-amber-200' },
+            { role: 'Tutor', email: 'tutor@edutradefx.com', badge: 'bg-teal-50 text-teal-700 border-teal-200' },
+            { role: 'Trader', email: 'trader@edutradefx.com', badge: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+          ].map((demo) => (
+            <button
+              key={demo.role}
+              type="button"
+              onClick={() => {
+                setIdentifier(demo.email);
+                setPassword('Demo@1234!');
+                setError(null);
+              }}
+              className={`p-2 rounded-xl border text-[11px] font-bold text-left transition hover:scale-[1.02] active:scale-[0.98] ${demo.badge}`}
+              title={`Click to fill ${demo.email}`}
+            >
+              <div className="truncate font-extrabold">{demo.role}</div>
+              <div className="text-[9px] opacity-75 truncate">{demo.email.split('@')[0]}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Footer */}
       <div className="text-center pt-2 border-t border-border text-xs text-text-muted">
         Don't have an account?{' '}

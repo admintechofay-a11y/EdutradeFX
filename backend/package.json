@@ -10,6 +10,8 @@
     "test:security": "ts-node src/tests/security-suite.ts",
     "test:golden": "ts-node src/tests/verify-golden.ts",
     "test:broker-v2": "ts-node src/tests/broker-v2-suite.ts",
+    "test:am-v2": "ts-node src/tests/am-v2-suite.ts",
+    "test": "npm run test:security && npm run test:am-v2",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate deploy",

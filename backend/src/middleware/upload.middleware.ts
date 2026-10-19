@@ -254,3 +254,85 @@ export const uploadPromoVideo = multer({
     }
   },
 });
+
+/**
+ * Validates document magic bytes (PDF, DOCX/XLSX PK zip, DOC/XLS OLE, CSV, Images).
+ */
+export const verifyDocumentMagicBytes = (buffer: Buffer, ext: string): boolean => {
+  if (!buffer || buffer.length < 4) return false;
+  const cleanExt = ext.toLowerCase().replace(/^\./, '');
+
+  if (cleanExt === 'pdf') {
+    // %PDF- (0x25 0x50 0x44 0x46)
+    return buffer[0] === 0x25 && buffer[1] === 0x50 && buffer[2] === 0x44 && buffer[3] === 0x46;
+  }
+
+  if (['docx', 'xlsx'].includes(cleanExt)) {
+    // PK zip signature (0x50 0x4B 0x03 0x04)
+    return buffer[0] === 0x50 && buffer[1] === 0x4b;
+  }
+
+  if (['doc', 'xls'].includes(cleanExt)) {
+    // OLE CFB signature (D0 CF 11 E0)
+    return buffer[0] === 0xd0 && buffer[1] === 0xcf && buffer[2] === 0x11 && buffer[3] === 0xe0;
+  }
+
+  if (['jpg', 'jpeg', 'png', 'webp'].includes(cleanExt)) {
+    return verifyImageMagicBytes(buffer);
+  }
+
+  if (cleanExt === 'csv' || cleanExt === 'txt') {
+    // Must be valid text without null bytes in initial sample
+    const sample = buffer.subarray(0, Math.min(buffer.length, 512));
+    for (let i = 0; i < sample.length; i++) {
+      if (sample[i] === 0x00) return false;
+    }
+    return true;
+  }
+
+  return false;
+};
+
+// AM Photo Upload (5MB in-memory for magic byte checking)
+export const uploadAmPhotoMemory = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const isMimeValid = APP_CONSTANTS.ALLOWED_IMAGE_TYPES.includes(file.mimetype);
+    const isExtValid = APP_CONSTANTS.ALLOWED_IMAGE_EXTENSIONS.includes(ext);
+
+    if (isMimeValid && isExtValid) {
+      cb(null, true);
+    } else {
+      cb(new AppError('Only JPG, PNG, and WebP images up to 5MB are permitted.', StatusCodes.BAD_REQUEST));
+    }
+  },
+});
+
+// AM Document Upload (10MB in-memory for magic byte checking)
+export const uploadAmDocumentMemory = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const allowedExts = [
+      ...APP_CONSTANTS.ALLOWED_DOC_EXTENSIONS,
+      ...APP_CONSTANTS.ALLOWED_IMAGE_EXTENSIONS,
+      '.xls',
+      '.xlsx',
+      '.csv',
+    ];
+    if (allowedExts.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(
+        new AppError(
+          'File format not accepted. Allowed: PDF, DOC, DOCX, XLS, XLSX, CSV, JPG, PNG, WebP up to 10MB.',
+          StatusCodes.BAD_REQUEST
+        )
+      );
+    }
+  },
+});
+

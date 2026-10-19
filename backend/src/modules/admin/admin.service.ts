@@ -6,12 +6,14 @@ import { hashPassword, generateSecureToken, hashToken } from '../../utils/bcrypt
 import {
   sendApprovalEmail,
   sendRejectionEmail,
+  sendChangesRequestedEmail,
   sendPayoutProcessed,
   sendPasswordResetEmail,
 } from '../../utils/email.utils';
 import {
   ApprovalStatus,
   BrokerOnboardingStatus,
+  AmOnboardingStatus,
   CourseStatus,
   NotificationType,
   OrderStatus,
@@ -20,6 +22,7 @@ import {
   Role,
 } from '@prisma/client';
 import { decryptBrokerCredential } from '../../utils/crypto.utils';
+import { generateSignedDocumentUrl } from '../../utils/cloudinary.utils';
 
 export class AdminService {
   // ── 1. DASHBOARD OVERVIEW & KPIS ───────────────────────────
@@ -883,7 +886,20 @@ export class AdminService {
   async getAllAMsAdmin(query: any) {
     const { skip, take, page, limit } = parsePagination(query);
     const where: Prisma.AccountManagerWhereInput = {};
+
     if (query.status) where.status = query.status as ApprovalStatus;
+    if (query.onboardingStatus) where.onboardingStatus = query.onboardingStatus as AmOnboardingStatus;
+    if (query.regulated === 'true') where.isRegulated = true;
+    if (query.regulatoryVerified === 'true') where.regulatoryVerified = true;
+
+    if (query.search || query.q) {
+      const term = (query.search || query.q) as string;
+      where.OR = [
+        { fullName: { contains: term, mode: 'insensitive' } },
+        { bio: { contains: term, mode: 'insensitive' } },
+        { user: { email: { contains: term, mode: 'insensitive' } } },
+      ];
+    }
 
     const [accountManagers, total] = await Promise.all([
       prisma.accountManager.findMany({
@@ -893,7 +909,7 @@ export class AdminService {
         orderBy: { createdAt: 'desc' },
         include: {
           user: { select: { id: true, name: true, email: true } },
-          _count: { select: { reviews: true, enquiries: true } },
+          _count: { select: { reviews: true, enquiries: true, documents: true } },
         },
       }),
       prisma.accountManager.count({ where }),
@@ -903,10 +919,206 @@ export class AdminService {
     return { accountManagers, total, page, limit, totalPages };
   }
 
-  async updateAMStatus(amId: string, status: ApprovalStatus) {
-    return await prisma.accountManager.update({
+  async getAMByIdAdmin(amId: string) {
+    const am = await prisma.accountManager.findUnique({
       where: { id: amId },
-      data: { status },
+      include: {
+        user: { select: { id: true, name: true, email: true, createdAt: true } },
+        documents: { orderBy: { createdAt: 'desc' } },
+        agreementAcceptances: { orderBy: { acceptedAt: 'desc' } },
+        reviews: {
+          include: { user: { select: { id: true, name: true, avatar: true } } },
+          orderBy: { createdAt: 'desc' },
+        },
+        enquiries: { orderBy: { createdAt: 'desc' } },
+      },
+    });
+
+    if (!am) {
+      throw new AppError('Account manager not found.', StatusCodes.NOT_FOUND);
+    }
+
+    // Fetch related audit logs
+    const auditLogs = await prisma.auditLog.findMany({
+      where: { targetId: amId, targetType: 'ACCOUNT_MANAGER' },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+    });
+
+    return { ...am, auditLogs };
+  }
+
+  async getAMDocumentSignedUrl(amId: string, docId: string, adminUserId: string) {
+    const doc = await prisma.accountManagerDocument.findFirst({
+      where: { id: docId, accountManagerId: amId },
+    });
+
+    if (!doc) {
+      throw new AppError('Document not found.', StatusCodes.NOT_FOUND);
+    }
+
+    if (!doc.publicId) {
+      // If no Cloudinary publicId, return direct fileUrl
+      return { url: doc.fileUrl, expiresInSeconds: 300 };
+    }
+
+    const isImage = doc.docType === 'PAST_RESULT_SCREENSHOT';
+    const signedUrl = generateSignedDocumentUrl(doc.publicId, isImage ? 'image' : 'raw', 300);
+
+    // Audit log the signed URL generation
+    await prisma.auditLog.create({
+      data: {
+        actorId: adminUserId,
+        action: 'ACCESS_AM_DOCUMENT_URL',
+        targetType: 'ACCOUNT_MANAGER_DOCUMENT',
+        targetId: docId,
+        metadata: { amId, docType: doc.docType, fileName: doc.fileName },
+      },
+    });
+
+    return { url: signedUrl, expiresInSeconds: 300 };
+  }
+
+  async updateAMStatus(amId: string, status: ApprovalStatus, reason?: string, adminUserId?: string) {
+    const am = await prisma.accountManager.findUnique({
+      where: { id: amId },
+      include: { user: true },
+    });
+    if (!am) throw new AppError('Account manager not found.', StatusCodes.NOT_FOUND);
+
+    if (status === ApprovalStatus.REJECTED && (!reason || !reason.trim())) {
+      throw new AppError('A rejection reason is required when rejecting an Account Manager application.', StatusCodes.BAD_REQUEST);
+    }
+
+    const updated = await prisma.accountManager.update({
+      where: { id: amId },
+      data: {
+        status,
+        rejectionReason: status === ApprovalStatus.REJECTED ? reason?.trim() : null,
+        reviewedById: adminUserId || null,
+        reviewedAt: new Date(),
+      },
+    });
+
+    // Send in-app notification
+    await prisma.notification.create({
+      data: {
+        userId: am.userId,
+        type: status === ApprovalStatus.APPROVED ? NotificationType.APPROVAL : NotificationType.REJECTION,
+        title: status === ApprovalStatus.APPROVED ? 'Account Manager Profile Approved!' : 'Account Manager Application Update',
+        message: status === ApprovalStatus.APPROVED
+          ? 'Your Account Manager profile has been approved and is now publicly listed on EdutradeFX.'
+          : `Your application was rejected: ${reason}`,
+        link: '/dashboard/account-manager',
+      },
+    }).catch(() => {});
+
+    // Send email safely
+    if (status === ApprovalStatus.APPROVED) {
+      sendApprovalEmail(am.user.email, am.user.name, 'Account Manager Profile').catch(() => {});
+    } else if (status === ApprovalStatus.REJECTED) {
+      sendRejectionEmail(am.user.email, am.user.name, 'Account Manager Profile', reason).catch(() => {});
+    }
+
+    return updated;
+  }
+
+  async requestAMChanges(amId: string, note: string, adminUserId?: string) {
+    const am = await prisma.accountManager.findUnique({
+      where: { id: amId },
+      include: { user: true },
+    });
+    if (!am) throw new AppError('Account manager not found.', StatusCodes.NOT_FOUND);
+
+    if (!note || !note.trim()) {
+      throw new AppError('A detailed note is required when requesting changes.', StatusCodes.BAD_REQUEST);
+    }
+
+    const updated = await prisma.accountManager.update({
+      where: { id: amId },
+      data: {
+        onboardingStatus: AmOnboardingStatus.CHANGES_REQUESTED,
+        changesRequestedNote: note.trim(),
+        reviewedById: adminUserId || null,
+        reviewedAt: new Date(),
+      },
+    });
+
+    // Send notification
+    await prisma.notification.create({
+      data: {
+        userId: am.userId,
+        type: NotificationType.WARNING,
+        title: 'Action Required: Information Update Requested',
+        message: `Admin requested changes on your Account Manager application: ${note.trim()}`,
+        link: '/dashboard/account-manager/onboarding',
+      },
+    }).catch(() => {});
+
+    // Send email
+    sendChangesRequestedEmail(am.user.email, am.user.name, 'Account Manager', note.trim()).catch(() => {});
+
+    return updated;
+  }
+
+  async toggleAMRegulatoryVerified(amId: string, regulatoryVerified: boolean) {
+    const am = await prisma.accountManager.findUnique({ where: { id: amId } });
+    if (!am) throw new AppError('Account manager not found.', StatusCodes.NOT_FOUND);
+
+    return prisma.accountManager.update({
+      where: { id: amId },
+      data: { regulatoryVerified: Boolean(regulatoryVerified) },
+    });
+  }
+
+  async updateAMDocument(
+    amId: string,
+    docId: string,
+    data: { isPublic?: boolean; reviewStatus?: ApprovalStatus; caption?: string; periodNote?: string }
+  ) {
+    const doc = await prisma.accountManagerDocument.findFirst({
+      where: { id: docId, accountManagerId: amId },
+    });
+    if (!doc) throw new AppError('Document not found.', StatusCodes.NOT_FOUND);
+
+    return prisma.accountManagerDocument.update({
+      where: { id: doc.id },
+      data: {
+        ...(data.isPublic !== undefined ? { isPublic: data.isPublic } : {}),
+        ...(data.reviewStatus ? { reviewStatus: data.reviewStatus } : {}),
+        ...(data.caption !== undefined ? { caption: data.caption } : {}),
+        ...(data.periodNote !== undefined ? { periodNote: data.periodNote } : {}),
+      },
+    });
+  }
+
+  async getAllAMAgreementsAdmin() {
+    return prisma.accountManagerAgreement.findMany({
+      orderBy: { id: 'asc' },
+    });
+  }
+
+  async updateAMAgreementAdmin(
+    key: string,
+    data: { title?: string; body: string; isActive?: boolean },
+    adminUserId?: string
+  ) {
+    const agreement = await prisma.accountManagerAgreement.findUnique({ where: { key } });
+    if (!agreement) throw new AppError('Agreement not found.', StatusCodes.NOT_FOUND);
+
+    const isBodyChanged = data.body && data.body.trim() !== agreement.body.trim();
+    const newVersion = isBodyChanged ? agreement.version + 1 : agreement.version;
+
+    return prisma.accountManagerAgreement.update({
+      where: { key },
+      data: {
+        ...(data.title ? { title: data.title.trim() } : {}),
+        body: data.body.trim(),
+        version: newVersion,
+        ...(data.isActive !== undefined ? { isActive: data.isActive } : {}),
+        updatedById: adminUserId || null,
+        updatedAt: new Date(),
+      },
     });
   }
 
@@ -932,24 +1144,34 @@ export class AdminService {
         userId,
         fullName: data.fullName,
         slug,
+        entityType: data.entityType || AmEntityType.INDIVIDUAL,
         photo: data.photo || null,
         tagline: data.tagline || null,
         bio: data.bio || null,
-        expertise: Array.isArray(data.expertise) ? data.expertise : (data.expertise ? String(data.expertise).split(',').map((s: string) => s.trim()) : []),
-        languages: Array.isArray(data.languages) ? data.languages : (data.languages ? String(data.languages).split(',').map((s: string) => s.trim()) : ['English']),
+        speciality: data.speciality || null,
         country: data.country || null,
+        countryCode: data.countryCode || null,
+        stateRegion: data.stateRegion || null,
+        stateCode: data.stateCode || null,
         city: data.city || null,
-        yearsExperience: data.yearsExperience ? parseInt(data.yearsExperience) : null,
-        services: Array.isArray(data.services) ? data.services : (data.services ? String(data.services).split(',').map((s: string) => s.trim()) : ['PAMM', 'MAM']),
-        availability: data.availability || 'Accepting New Clients',
-        strategy: data.strategy || null,
-        minInvestment: data.minInvestment ? parseFloat(data.minInvestment) : null,
-        historicalPerformance: data.historicalPerformance || null,
-        riskInfo: data.riskInfo || null,
-        tradingStyle: data.tradingStyle || null,
-        website: data.website || null,
-        disclaimer: data.disclaimer || null,
+        zipCode: data.zipCode || null,
+        contactEmail: data.contactEmail || null,
+        contactPhone: data.contactPhone || null,
+        yearsExperience: data.yearsExperience ? parseInt(data.yearsExperience, 10) : null,
+        tradingStyles: Array.isArray(data.tradingStyles) ? data.tradingStyles : [],
+        preferredInstruments: Array.isArray(data.preferredInstruments) ? data.preferredInstruments : [],
+        preferredPlatforms: Array.isArray(data.preferredPlatforms) ? data.preferredPlatforms : [],
+        preferredBrokerTypes: Array.isArray(data.preferredBrokerTypes) ? data.preferredBrokerTypes : [],
+        riskTolerance: data.riskTolerance || null,
+        riskRewardRatio: data.riskRewardRatio || null,
+        riskRewardValue: data.riskRewardValue ? parseFloat(data.riskRewardValue) : null,
+        settlementCycle: data.settlementCycle || null,
+        profitSharingPercent: data.profitSharingPercent ? parseFloat(data.profitSharingPercent) : null,
+        lossSharingPercent: data.lossSharingPercent ? parseFloat(data.lossSharingPercent) : null,
+        isRegulated: Boolean(data.isRegulated),
+        regulatoryVerified: Boolean(data.regulatoryVerified),
         status: data.status || ApprovalStatus.APPROVED,
+        onboardingStatus: data.onboardingStatus || AmOnboardingStatus.SUBMITTED,
         isFeatured: data.isFeatured === true || data.isFeatured === 'true',
       },
     });
@@ -966,21 +1188,30 @@ export class AdminService {
         photo: data.photo !== undefined ? data.photo : am.photo,
         tagline: data.tagline !== undefined ? data.tagline : am.tagline,
         bio: data.bio !== undefined ? data.bio : am.bio,
-        expertise: Array.isArray(data.expertise) ? data.expertise : (data.expertise !== undefined ? String(data.expertise).split(',').map((s: string) => s.trim()) : am.expertise),
-        languages: Array.isArray(data.languages) ? data.languages : (data.languages !== undefined ? String(data.languages).split(',').map((s: string) => s.trim()) : am.languages),
+        speciality: data.speciality !== undefined ? data.speciality : am.speciality,
         country: data.country !== undefined ? data.country : am.country,
+        countryCode: data.countryCode !== undefined ? data.countryCode : am.countryCode,
+        stateRegion: data.stateRegion !== undefined ? data.stateRegion : am.stateRegion,
+        stateCode: data.stateCode !== undefined ? data.stateCode : am.stateCode,
         city: data.city !== undefined ? data.city : am.city,
-        yearsExperience: data.yearsExperience !== undefined ? (data.yearsExperience ? parseInt(data.yearsExperience) : null) : am.yearsExperience,
-        services: Array.isArray(data.services) ? data.services : (data.services !== undefined ? String(data.services).split(',').map((s: string) => s.trim()) : am.services),
-        availability: data.availability !== undefined ? data.availability : am.availability,
-        strategy: data.strategy !== undefined ? data.strategy : am.strategy,
-        minInvestment: data.minInvestment !== undefined ? (data.minInvestment ? parseFloat(data.minInvestment) : null) : am.minInvestment,
-        historicalPerformance: data.historicalPerformance !== undefined ? data.historicalPerformance : am.historicalPerformance,
-        riskInfo: data.riskInfo !== undefined ? data.riskInfo : am.riskInfo,
-        tradingStyle: data.tradingStyle !== undefined ? data.tradingStyle : am.tradingStyle,
-        website: data.website !== undefined ? data.website : am.website,
-        disclaimer: data.disclaimer !== undefined ? data.disclaimer : am.disclaimer,
+        zipCode: data.zipCode !== undefined ? data.zipCode : am.zipCode,
+        contactEmail: data.contactEmail !== undefined ? data.contactEmail : am.contactEmail,
+        contactPhone: data.contactPhone !== undefined ? data.contactPhone : am.contactPhone,
+        yearsExperience: data.yearsExperience !== undefined ? (data.yearsExperience ? parseInt(data.yearsExperience, 10) : null) : am.yearsExperience,
+        tradingStyles: data.tradingStyles !== undefined ? data.tradingStyles : am.tradingStyles,
+        preferredInstruments: data.preferredInstruments !== undefined ? data.preferredInstruments : am.preferredInstruments,
+        preferredPlatforms: data.preferredPlatforms !== undefined ? data.preferredPlatforms : am.preferredPlatforms,
+        preferredBrokerTypes: data.preferredBrokerTypes !== undefined ? data.preferredBrokerTypes : am.preferredBrokerTypes,
+        riskTolerance: data.riskTolerance !== undefined ? data.riskTolerance : am.riskTolerance,
+        riskRewardRatio: data.riskRewardRatio !== undefined ? data.riskRewardRatio : am.riskRewardRatio,
+        riskRewardValue: data.riskRewardValue !== undefined ? (data.riskRewardValue ? parseFloat(data.riskRewardValue) : null) : am.riskRewardValue,
+        settlementCycle: data.settlementCycle !== undefined ? data.settlementCycle : am.settlementCycle,
+        profitSharingPercent: data.profitSharingPercent !== undefined ? (data.profitSharingPercent ? parseFloat(data.profitSharingPercent) : null) : am.profitSharingPercent,
+        lossSharingPercent: data.lossSharingPercent !== undefined ? (data.lossSharingPercent ? parseFloat(data.lossSharingPercent) : null) : am.lossSharingPercent,
+        isRegulated: data.isRegulated !== undefined ? Boolean(data.isRegulated) : am.isRegulated,
+        regulatoryVerified: data.regulatoryVerified !== undefined ? Boolean(data.regulatoryVerified) : am.regulatoryVerified,
         status: data.status !== undefined ? data.status : am.status,
+        onboardingStatus: data.onboardingStatus !== undefined ? data.onboardingStatus : am.onboardingStatus,
         isFeatured: data.isFeatured !== undefined ? Boolean(data.isFeatured) : am.isFeatured,
       },
     });

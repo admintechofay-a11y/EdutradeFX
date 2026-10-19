@@ -3,20 +3,74 @@ import { StatusCodes } from 'http-status-codes';
 import { accountManagerService } from './am.service';
 import { sendSuccess, sendPaginated } from '../../utils/response.utils';
 import { AuthenticatedRequest } from '../../types';
+import { AppError } from '../../middleware/error.middleware';
 
 export class AccountManagerController {
-  registerAccountManager = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
-    const photoFile = files?.['photo']?.[0];
-    const docFiles = files?.['docs'];
+  getMyAMProfile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const profile = await accountManagerService.getMyAMProfile(req.user!.userId);
+    sendSuccess(res, profile, 'Dashboard profile retrieved', StatusCodes.OK);
+  };
 
-    const am = await accountManagerService.registerAccountManager(
+  saveSection = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { section } = req.params;
+    const updated = await accountManagerService.saveSection(req.user!.userId, section as string, req.body);
+    sendSuccess(res, updated, `Section ${section} saved successfully`, StatusCodes.OK);
+  };
+
+  uploadPhoto = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    if (!req.file) {
+      throw new AppError('No photo file uploaded.', StatusCodes.BAD_REQUEST);
+    }
+    const result = await accountManagerService.uploadPhoto(req.user!.userId, req.file);
+    sendSuccess(res, result, 'Photo uploaded successfully', StatusCodes.OK);
+  };
+
+  uploadDocument = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    if (!req.file) {
+      throw new AppError('No document file uploaded.', StatusCodes.BAD_REQUEST);
+    }
+    const { docType, caption, periodNote } = req.body;
+    if (!docType) {
+      throw new AppError('docType field is required.', StatusCodes.BAD_REQUEST);
+    }
+
+    const doc = await accountManagerService.uploadDocument(
+      req.user!.userId,
+      req.file,
+      docType,
+      caption,
+      periodNote
+    );
+    sendSuccess(res, doc, 'Document uploaded successfully', StatusCodes.CREATED);
+  };
+
+  deleteDocument = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    await accountManagerService.deleteDocument(req.user!.userId, id as string);
+    sendSuccess(res, null, 'Document deleted successfully', StatusCodes.OK);
+  };
+
+  getAgreements = async (req: Request, res: Response): Promise<void> => {
+    const agreements = await accountManagerService.getAgreements();
+    sendSuccess(res, agreements, 'Agreements retrieved', StatusCodes.OK);
+  };
+
+  acceptAgreements = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const ipAddress = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.ip || '127.0.0.1';
+    const userAgent = req.headers['user-agent'] || 'Unknown';
+
+    const result = await accountManagerService.acceptAgreements(
       req.user!.userId,
       req.body,
-      photoFile,
-      docFiles
+      ipAddress,
+      userAgent
     );
-    sendSuccess(res, am, 'Account Manager application submitted successfully.', StatusCodes.CREATED);
+    sendSuccess(res, result, 'Agreements accepted successfully', StatusCodes.OK);
+  };
+
+  submitOnboarding = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const am = await accountManagerService.submitOnboarding(req.user!.userId);
+    sendSuccess(res, am, 'Onboarding application submitted for review', StatusCodes.OK);
   };
 
   getAccountManagers = async (req: Request, res: Response): Promise<void> => {
@@ -30,16 +84,15 @@ export class AccountManagerController {
     sendSuccess(res, am, 'Account Manager retrieved', StatusCodes.OK);
   };
 
-  updateAccountManager = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-    const photoFile = req.file;
-    const am = await accountManagerService.updateAccountManager(req.user!.userId, req.body, photoFile);
-    sendSuccess(res, am, 'Profile updated successfully', StatusCodes.OK);
+  getMyEnquiries = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const result = await accountManagerService.getMyEnquiries(req.user!.userId, req.query);
+    sendPaginated(res, result.enquiries, result.total, result.page, result.limit, 'Enquiries retrieved');
   };
 
-  uploadDocuments = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-    const files = req.files as Express.Multer.File[];
-    await accountManagerService.uploadDocuments(req.user!.userId, files);
-    sendSuccess(res, null, 'Documents uploaded successfully', StatusCodes.OK);
+  markEnquiryRead = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const enquiry = await accountManagerService.markEnquiryRead(req.user!.userId, id as string);
+    sendSuccess(res, enquiry, 'Inquiry marked as read', StatusCodes.OK);
   };
 
   addReview = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
@@ -60,14 +113,15 @@ export class AccountManagerController {
     sendSuccess(res, enquiry, 'Inquiry submitted successfully', StatusCodes.CREATED);
   };
 
-  getMyAMProfile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-    const profile = await accountManagerService.getMyAMProfile(req.user!.userId);
-    sendSuccess(res, profile, 'Dashboard profile retrieved', StatusCodes.OK);
+  // Backward compatible endpoints
+  registerAccountManager = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const am = await accountManagerService.registerAccountManager(req.user!.userId, req.body);
+    sendSuccess(res, am, 'Account Manager application submitted successfully.', StatusCodes.CREATED);
   };
 
-  getMyEnquiries = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-    const result = await accountManagerService.getMyEnquiries(req.user!.userId, req.query);
-    sendPaginated(res, result.enquiries, result.total, result.page, result.limit, 'Enquiries retrieved');
+  updateAccountManager = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const am = await accountManagerService.updateAccountManager(req.user!.userId, req.body);
+    sendSuccess(res, am, 'Profile updated successfully', StatusCodes.OK);
   };
 }
 

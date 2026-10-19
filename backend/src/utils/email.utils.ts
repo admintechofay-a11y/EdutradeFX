@@ -172,6 +172,27 @@ export const sendRejectionEmail = async (email: string, name: string, type: stri
   await sendMailSafely(email, subject, html, `Update on your EdutradeFX application: ${reason || 'Application not approved'}`);
 };
 
+export const sendChangesRequestedEmail = async (email: string, name: string, type: string, note: string): Promise<void> => {
+  const safeName = escapeHtml(name);
+  const safeType = escapeHtml(type);
+  const safeNote = escapeHtml(note);
+  const subject = `Changes Requested: Your EdutradeFX ${safeType} Profile`;
+  const html = baseEmailLayout(
+    subject,
+    `
+    <h2>Action Required: Information Update Requested</h2>
+    <p>Hello ${safeName},</p>
+    <p>Our verification team reviewed your ${safeType} profile and requested modifications before it can be published.</p>
+    <div style="background-color: #1F2937; padding: 16px; border-left: 4px solid #F59E0B; margin: 16px 0;"><strong>Reviewer Feedback:</strong><br/>${safeNote}</div>
+    <p>Please log in to your dashboard to update the requested sections and re-submit your profile.</p>
+    <div style="text-align: center;">
+      <a href="${FRONTEND_URL}/dashboard" class="btn">Update Profile</a>
+    </div>
+    `
+  );
+  await sendMailSafely(email, subject, html, `Changes requested on your ${type} application: ${note}`);
+};
+
 export const sendEnrollmentConfirmation = async (email: string, name: string, courseName: string): Promise<void> => {
   const safeName = escapeHtml(name);
   const safeCourse = escapeHtml(courseName);

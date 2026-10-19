@@ -286,18 +286,89 @@ export class AdminController {
     sendPaginated(res, result.accountManagers, result.total, result.page, result.limit, 'Account managers retrieved');
   };
 
+  getAMById = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const am = await adminService.getAMByIdAdmin(id as string);
+    sendSuccess(res, am, 'Account Manager retrieved', StatusCodes.OK);
+  };
+
+  getAMDocumentSignedUrl = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id, docId } = req.params;
+    const result = await adminService.getAMDocumentSignedUrl(id as string, docId as string, req.user!.userId);
+    sendSuccess(res, result, 'Document access URL generated', StatusCodes.OK);
+  };
+
   updateAMStatus = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     const { id } = req.params;
-    const { status } = req.body;
-    const am = await adminService.updateAMStatus(id as string, status);
+    const { status, reason } = req.body;
+    const am = await adminService.updateAMStatus(id as string, status, reason, req.user!.userId);
     await adminService.createAuditLog({
       actorId: req.user!.userId,
-      action: `UPDATE_STATUS_${status}`,
+      action: `UPDATE_AM_STATUS_${status}`,
       targetType: 'ACCOUNT_MANAGER',
       targetId: id as string,
-      metadata: { status },
+      metadata: { status, reason },
     });
     sendSuccess(res, am, `Account Manager status updated to ${status}`, StatusCodes.OK);
+  };
+
+  requestAMChanges = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const { note } = req.body;
+    const am = await adminService.requestAMChanges(id as string, note, req.user!.userId);
+    await adminService.createAuditLog({
+      actorId: req.user!.userId,
+      action: 'REQUEST_AM_CHANGES',
+      targetType: 'ACCOUNT_MANAGER',
+      targetId: id as string,
+      metadata: { note },
+    });
+    sendSuccess(res, am, 'Changes requested successfully', StatusCodes.OK);
+  };
+
+  toggleAMRegulatoryVerified = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const { regulatoryVerified } = req.body;
+    const am = await adminService.toggleAMRegulatoryVerified(id as string, regulatoryVerified);
+    await adminService.createAuditLog({
+      actorId: req.user!.userId,
+      action: regulatoryVerified ? 'VERIFY_AM_REGULATION' : 'UNVERIFY_AM_REGULATION',
+      targetType: 'ACCOUNT_MANAGER',
+      targetId: id as string,
+      metadata: { regulatoryVerified },
+    });
+    sendSuccess(res, am, `Account Manager regulatory verification set to ${regulatoryVerified}`, StatusCodes.OK);
+  };
+
+  updateAMDocument = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { id, docId } = req.params;
+    const updated = await adminService.updateAMDocument(id as string, docId as string, req.body);
+    await adminService.createAuditLog({
+      actorId: req.user!.userId,
+      action: 'UPDATE_AM_DOCUMENT',
+      targetType: 'ACCOUNT_MANAGER_DOCUMENT',
+      targetId: docId as string,
+      metadata: req.body,
+    });
+    sendSuccess(res, updated, 'Document updated successfully', StatusCodes.OK);
+  };
+
+  getAMAgreements = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const agreements = await adminService.getAllAMAgreementsAdmin();
+    sendSuccess(res, agreements, 'Agreements retrieved', StatusCodes.OK);
+  };
+
+  updateAMAgreement = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { key } = req.params;
+    const updated = await adminService.updateAMAgreementAdmin(key as string, req.body, req.user!.userId);
+    await adminService.createAuditLog({
+      actorId: req.user!.userId,
+      action: 'UPDATE_AM_AGREEMENT',
+      targetType: 'ACCOUNT_MANAGER_AGREEMENT',
+      targetId: key as string,
+      metadata: { version: updated.version, title: updated.title },
+    });
+    sendSuccess(res, updated, `Agreement ${key} updated to version ${updated.version}`, StatusCodes.OK);
   };
 
   toggleAMFeatured = async (req: AuthenticatedRequest, res: Response): Promise<void> => {

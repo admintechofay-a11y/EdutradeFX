@@ -23,4 +23,15 @@ export const APP_CONSTANTS = {
   ALLOWED_DOC_EXTENSIONS: ['.pdf', '.doc', '.docx'],
   ALLOWED_VIDEO_TYPES: ['video/mp4', 'video/quicktime', 'video/x-msvideo'],
   ALLOWED_VIDEO_EXTENSIONS: ['.mp4', '.mov', '.avi'],
+  AM_PERFORMANCE_DOC_TYPES: [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'text/csv',
+    'application/csv',
+    'text/plain',
+  ],
+  AM_PERFORMANCE_DOC_EXTENSIONS: ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.csv'],
 };

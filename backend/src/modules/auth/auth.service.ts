@@ -17,7 +17,7 @@ import {
   sendWelcomeEmail,
 } from '../../utils/email.utils';
 import { AppError } from '../../middleware/error.middleware';
-import { Role, ApprovalStatus, BrokerOnboardingStatus } from '@prisma/client';
+import { Role, ApprovalStatus, BrokerOnboardingStatus, AmOnboardingStatus } from '@prisma/client';
 import { logger } from '../../utils/logger';
 import { normalizeToE164 } from '../../utils/phone.utils';
 
@@ -632,6 +632,7 @@ export class AuthService {
               slug,
               bio: payload.bio || null,
               status: ApprovalStatus.PENDING,
+              onboardingStatus: AmOnboardingStatus.DRAFT,
             },
           });
         }

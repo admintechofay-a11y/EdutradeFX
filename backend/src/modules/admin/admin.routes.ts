@@ -39,10 +39,17 @@ router.delete('/reviews/broker/:id', adminController.deleteBrokerReview);
 
 // ── ACCOUNT MANAGERS ───────────────────────────────
 router.get('/account-managers', adminController.getAllAMs);
+router.get('/account-managers/agreements', adminController.getAMAgreements);
+router.put('/account-managers/agreements/:key', adminController.updateAMAgreement);
+router.get('/account-managers/:id', adminController.getAMById);
+router.get('/account-managers/:id/documents/:docId/url', adminController.getAMDocumentSignedUrl);
 router.post('/account-managers', adminController.createAM);
 router.put('/account-managers/:id', adminController.updateAM);
 router.delete('/account-managers/:id', adminController.deleteAM);
 router.patch('/account-managers/:id/status', adminController.updateAMStatus);
+router.post('/account-managers/:id/request-changes', adminController.requestAMChanges);
+router.patch('/account-managers/:id/regulatory-verify', adminController.toggleAMRegulatoryVerified);
+router.patch('/account-managers/:id/documents/:docId', adminController.updateAMDocument);
 router.patch('/account-managers/:id/feature', adminController.toggleAMFeatured);
 router.patch('/reviews/am/:id/approve', adminController.approveAccountManagerReview);
 router.delete('/reviews/am/:id', adminController.deleteAccountManagerReview);

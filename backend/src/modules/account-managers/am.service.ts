@@ -1,70 +1,599 @@
 import { StatusCodes } from 'http-status-codes';
+import path from 'path';
 import { prisma } from '../../config/database';
 import { AppError } from '../../middleware/error.middleware';
 import { generateUniqueSlug } from '../../utils/slug.utils';
 import { parsePagination } from '../../utils/pagination.utils';
-import { ApprovalStatus, EnquiryTargetType, NotificationType, Prisma, Role } from '@prisma/client';
+import {
+  ApprovalStatus,
+  AmEntityType,
+  AmOnboardingStatus,
+  EnquiryTargetType,
+  NotificationType,
+  Prisma,
+  Role,
+} from '@prisma/client';
 import { transporter } from '../../config/email';
+import {
+  calculateAMCompletion,
+  mapLegacyTradingStyle,
+  ALL_AGREEMENT_KEYS,
+  MASTER_TERMS_KEY,
+} from './am.utils';
+import { serializePublicAM } from './am.serializer';
+import {
+  personalSchema,
+  regulatorySchema,
+  aboutSchema,
+  experienceSchema,
+  styleSchema,
+  strategySchema,
+  riskSchema,
+  settlementSchema,
+  sharingSchema,
+  acceptAgreementsSchema,
+  amSubmitSchema,
+} from './am.schemas';
+import {
+  uploadBufferToCloudinary,
+  deleteCloudinaryAsset,
+} from '../../utils/cloudinary.utils';
+import {
+  verifyImageMagicBytes,
+  verifyDocumentMagicBytes,
+} from '../../middleware/upload.middleware';
+import { logger } from '../../utils/logger';
+
+const DOC_LIMITS: Record<string, number> = {
+  CV_RESUME: 1,
+  PERFORMANCE_RECORD: 5,
+  STRATEGY_DOCUMENT: 5,
+  CERTIFICATE: 10,
+  PAST_RESULT_SCREENSHOT: 10,
+  REGULATORY_PROOF: 3,
+};
+
+const SENSITIVE_AM_FIELDS = [
+  'entityType',
+  'isRegulated',
+  'regulatorName',
+  'regulatorRegistrationNumber',
+  'regulatorCountry',
+  'yearsExperience',
+  'tradingStyles',
+  'preferredInstruments',
+  'riskTolerance',
+  'riskRewardRatio',
+  'lossPerTradePercent',
+  'dailyTrades',
+  'dailyLots',
+  'dailyStopLossPoints',
+  'dailyTakeProfitPoints',
+  'settlementCycle',
+  'profitSharingPercent',
+  'lossSharingPercent',
+  'clientFundSecurity',
+  'recommendsBroker',
+  'recommendedBrokerName',
+  'recommendedBrokerPlatform',
+];
 
 export class AccountManagerService {
-  async registerAccountManager(userId: string, data: any, photoFile?: Express.Multer.File, docFiles?: Express.Multer.File[]) {
-    const existing = await prisma.accountManager.findUnique({ where: { userId } });
-    if (existing) {
-      throw new AppError('An account manager profile is already associated with this account.', StatusCodes.CONFLICT);
-    }
-
-    const slug = await generateUniqueSlug(data.fullName, 'accountManager');
-    const photoUrl = photoFile ? (photoFile as any).path || (photoFile as any).secure_url : undefined;
-
-    const am = await prisma.accountManager.create({
-      data: {
-        userId,
-        fullName: data.fullName,
-        slug,
-        photo: photoUrl,
-        tagline: data.tagline,
-        bio: data.bio,
-        expertise: Array.isArray(data.expertise) ? data.expertise : [data.expertise],
-        languages: Array.isArray(data.languages) ? data.languages : [data.languages],
-        country: data.country,
-        city: data.city,
-        yearsExperience: data.yearsExperience ? parseInt(data.yearsExperience, 10) : undefined,
-        services: Array.isArray(data.services) ? data.services : [data.services],
-        availability: data.availability,
-        seoTitle: data.seoTitle,
-        seoDescription: data.seoDescription,
-        status: ApprovalStatus.PENDING,
+  /**
+   * Retrieves full private profile for the logged in Account Manager.
+   */
+  async getMyAMProfile(userId: string) {
+    const am = await prisma.accountManager.findUnique({
+      where: { userId },
+      include: {
+        documents: { orderBy: { createdAt: 'desc' } },
+        agreementAcceptances: { orderBy: { acceptedAt: 'desc' } },
+        enquiries: { orderBy: { createdAt: 'desc' }, take: 5 },
+        reviews: { orderBy: { createdAt: 'desc' }, take: 5 },
       },
     });
 
-    if (docFiles && docFiles.length > 0) {
-      await prisma.accountManagerDocument.createMany({
-        data: docFiles.map((f) => ({
-          accountManagerId: am.id,
-          fileUrl: (f as any).path || (f as any).secure_url || f.filename,
-          fileName: f.originalname,
-          docType: 'PROFESSIONAL_CERTIFICATION',
-        })),
+    if (!am) {
+      throw new AppError('Account Manager profile not found.', StatusCodes.NOT_FOUND);
+    }
+
+    const completion = calculateAMCompletion(am, am.documents, am.agreementAcceptances);
+
+    // Sync completionPercent if changed
+    if (am.completionPercent !== completion.percent) {
+      await prisma.accountManager.update({
+        where: { id: am.id },
+        data: { completionPercent: completion.percent },
+      });
+      am.completionPercent = completion.percent;
+    }
+
+    return {
+      ...am,
+      completionPercent: completion.percent,
+      missingFields: completion.missingFields,
+      missingSections: completion.missingSections,
+      isSubmittable: completion.isSubmittable,
+    };
+  }
+
+  /**
+   * Saves one section in draft mode (partial).
+   */
+  async saveSection(userId: string, section: string, data: any) {
+    const am = await prisma.accountManager.findUnique({
+      where: { userId },
+      include: { documents: true, agreementAcceptances: true },
+    });
+    if (!am) {
+      throw new AppError('Account Manager profile not found.', StatusCodes.NOT_FOUND);
+    }
+
+    let parsedData: any = {};
+
+    switch (section) {
+      case 'personal':
+        parsedData = personalSchema.parse(data);
+        break;
+      case 'regulatory':
+        parsedData = regulatorySchema.parse(data);
+        break;
+      case 'about':
+        parsedData = aboutSchema.parse(data);
+        break;
+      case 'experience':
+        parsedData = experienceSchema.parse(data);
+        break;
+      case 'style':
+        parsedData = styleSchema.parse(data);
+        break;
+      case 'strategy':
+        parsedData = strategySchema.parse(data);
+        break;
+      case 'risk': {
+        parsedData = riskSchema.parse(data);
+        if (parsedData.riskRewardRatio) {
+          const parts = parsedData.riskRewardRatio.split(':').map((s: string) => parseFloat(s.trim()));
+          if (parts.length === 2 && parts[0] > 0 && !isNaN(parts[1])) {
+            parsedData.riskRewardValue = parts[1] / parts[0];
+          }
+        }
+        break;
+      }
+      case 'settlement':
+        parsedData = settlementSchema.parse(data);
+        break;
+      case 'sharing':
+        parsedData = sharingSchema.parse(data);
+        break;
+      default:
+        throw new AppError(`Invalid section: ${section}`, StatusCodes.BAD_REQUEST);
+    }
+
+    // Check sensitive fields re-review trigger if APPROVED
+    let newStatus = am.status;
+    let newSnapshot = am.publicSnapshot;
+    if (am.status === ApprovalStatus.APPROVED) {
+      const hasSensitiveChanges = SENSITIVE_AM_FIELDS.some((field) => {
+        if (parsedData[field] === undefined) return false;
+        return JSON.stringify(parsedData[field]) !== JSON.stringify((am as any)[field]);
+      });
+
+      if (hasSensitiveChanges) {
+        newStatus = ApprovalStatus.PENDING;
+        newSnapshot = serializePublicAM(am);
+        logger.info(`AM ${am.id} modified sensitive fields in section ${section}. Moving from APPROVED to PENDING.`);
+
+        // Notify admins of re-review
+        const admins = await prisma.user.findMany({ where: { role: Role.ADMIN } });
+        if (admins.length > 0) {
+          await prisma.notification.createMany({
+            data: admins.map((admin) => ({
+              userId: admin.id,
+              type: NotificationType.APPROVAL,
+              title: 'Account Manager Re-Review Triggered',
+              message: `${am.fullName} made sensitive updates to ${section} section. Re-review required.`,
+              link: `/admin/account-managers/${am.id}`,
+            })),
+          });
+        }
+      }
+    }
+
+    // Merge updated fields
+    const updated = await prisma.accountManager.update({
+      where: { id: am.id },
+      data: {
+        ...parsedData,
+        status: newStatus,
+        publicSnapshot: newSnapshot as any,
+      },
+      include: {
+        documents: true,
+        agreementAcceptances: true,
+      },
+    });
+
+    // Recompute completion %
+    const completion = calculateAMCompletion(updated, updated.documents, updated.agreementAcceptances);
+    await prisma.accountManager.update({
+      where: { id: am.id },
+      data: { completionPercent: completion.percent },
+    });
+    updated.completionPercent = completion.percent;
+
+    return {
+      ...updated,
+      completionPercent: completion.percent,
+      missingFields: completion.missingFields,
+      missingSections: completion.missingSections,
+      isSubmittable: completion.isSubmittable,
+    };
+  }
+
+  /**
+   * Uploads profile photo with magic-byte verification and Cloudinary storage.
+   */
+  async uploadPhoto(userId: string, file: Express.Multer.File) {
+    const am = await prisma.accountManager.findUnique({ where: { userId } });
+    if (!am) {
+      throw new AppError('Account Manager profile not found.', StatusCodes.NOT_FOUND);
+    }
+
+    if (!file || !file.buffer) {
+      throw new AppError('No photo file provided.', StatusCodes.BAD_REQUEST);
+    }
+
+    const isValidMagic = verifyImageMagicBytes(file.buffer);
+    if (!isValidMagic) {
+      throw new AppError('Invalid image file format. Magic-byte signature check failed.', StatusCodes.BAD_REQUEST);
+    }
+
+    // Upload to Cloudinary
+    const uploadResult = await uploadBufferToCloudinary(file.buffer, {
+      folder: 'account-managers/photos',
+      publicIdPrefix: `am_${am.id}`,
+      resourceType: 'image',
+      type: 'upload',
+      transformation: [{ width: 500, height: 500, crop: 'fill', gravity: 'face' }],
+    });
+
+    const updated = await prisma.accountManager.update({
+      where: { id: am.id },
+      data: { photo: uploadResult.secure_url },
+      include: { documents: true, agreementAcceptances: true },
+    });
+
+    const completion = calculateAMCompletion(updated, updated.documents, updated.agreementAcceptances);
+    await prisma.accountManager.update({
+      where: { id: am.id },
+      data: { completionPercent: completion.percent },
+    });
+
+    return { photo: uploadResult.secure_url, completionPercent: completion.percent };
+  }
+
+  /**
+   * Uploads a document or screenshot for Account Manager.
+   */
+  async uploadDocument(
+    userId: string,
+    file: Express.Multer.File,
+    docType: string,
+    caption?: string,
+    periodNote?: string
+  ) {
+    const am = await prisma.accountManager.findUnique({
+      where: { userId },
+      include: { documents: true },
+    });
+    if (!am) {
+      throw new AppError('Account Manager profile not found.', StatusCodes.NOT_FOUND);
+    }
+
+    if (!DOC_LIMITS[docType]) {
+      throw new AppError(`Invalid document type: ${docType}`, StatusCodes.BAD_REQUEST);
+    }
+
+    const currentCount = am.documents.filter((d) => d.docType === docType).length;
+    if (currentCount >= DOC_LIMITS[docType]) {
+      throw new AppError(
+        `Maximum limit of ${DOC_LIMITS[docType]} file(s) reached for ${docType}.`,
+        StatusCodes.BAD_REQUEST
+      );
+    }
+
+    const ext = path.extname(file.originalname).toLowerCase();
+    const isValidBytes = verifyDocumentMagicBytes(file.buffer, ext);
+    if (!isValidBytes) {
+      throw new AppError('File failed magic-byte verification.', StatusCodes.BAD_REQUEST);
+    }
+
+    // Determine privacy & resource type
+    const isScreenshot = docType === 'PAST_RESULT_SCREENSHOT';
+    const resourceType = isScreenshot ? 'image' : 'raw';
+    // Private documents use authenticated storage
+    const storageType = 'authenticated';
+
+    const uploadRes = await uploadBufferToCloudinary(file.buffer, {
+      folder: 'account-managers/documents',
+      publicIdPrefix: `am_${am.id}_${docType.toLowerCase()}`,
+      resourceType,
+      type: storageType,
+    });
+
+    const doc = await prisma.accountManagerDocument.create({
+      data: {
+        accountManagerId: am.id,
+        fileUrl: uploadRes.secure_url,
+        fileName: file.originalname,
+        docType,
+        caption: caption || null,
+        periodNote: periodNote || null,
+        isPublic: false,
+        reviewStatus: ApprovalStatus.PENDING,
+        publicId: uploadRes.public_id,
+      },
+    });
+
+    // Sensitive upload triggers re-review if currently APPROVED
+    if (am.status === ApprovalStatus.APPROVED) {
+      await prisma.accountManager.update({
+        where: { id: am.id },
+        data: {
+          status: ApprovalStatus.PENDING,
+          publicSnapshot: serializePublicAM(am) as any,
+        },
       });
     }
 
-    // Notify Admins
-    const admins = await prisma.user.findMany({ where: { role: 'ADMIN' } });
+    // Recompute completion
+    const refreshedDocs = await prisma.accountManagerDocument.findMany({ where: { accountManagerId: am.id } });
+    const acceptances = await prisma.accountManagerAgreementAcceptance.findMany({ where: { accountManagerId: am.id } });
+    const completion = calculateAMCompletion(am, refreshedDocs, acceptances);
+    await prisma.accountManager.update({
+      where: { id: am.id },
+      data: { completionPercent: completion.percent },
+    });
+
+    return doc;
+  }
+
+  /**
+   * Deletes an Account Manager document. Owner only.
+   */
+  async deleteDocument(userId: string, docId: string) {
+    const am = await prisma.accountManager.findUnique({ where: { userId } });
+    if (!am) {
+      throw new AppError('Account Manager profile not found.', StatusCodes.NOT_FOUND);
+    }
+
+    const doc = await prisma.accountManagerDocument.findFirst({
+      where: { id: docId, accountManagerId: am.id },
+    });
+    if (!doc) {
+      throw new AppError('Document not found or unauthorized.', StatusCodes.NOT_FOUND);
+    }
+
+    // Delete asset from Cloudinary
+    if (doc.publicId) {
+      const isScreenshot = doc.docType === 'PAST_RESULT_SCREENSHOT';
+      await deleteCloudinaryAsset(doc.publicId, isScreenshot ? 'image' : 'raw');
+    }
+
+    await prisma.accountManagerDocument.delete({ where: { id: doc.id } });
+
+    // If AM was APPROVED, moving to PENDING
+    if (am.status === ApprovalStatus.APPROVED) {
+      await prisma.accountManager.update({
+        where: { id: am.id },
+        data: {
+          status: ApprovalStatus.PENDING,
+          publicSnapshot: serializePublicAM(am) as any,
+        },
+      });
+    }
+
+    // Recompute completion
+    const refreshedDocs = await prisma.accountManagerDocument.findMany({ where: { accountManagerId: am.id } });
+    const acceptances = await prisma.accountManagerAgreementAcceptance.findMany({ where: { accountManagerId: am.id } });
+    const completion = calculateAMCompletion(am, refreshedDocs, acceptances);
+    await prisma.accountManager.update({
+      where: { id: am.id },
+      data: { completionPercent: completion.percent },
+    });
+
+    return { success: true };
+  }
+
+  /**
+   * Retrieves active agreements for onboarding acceptance.
+   */
+  async getAgreements() {
+    return prisma.accountManagerAgreement.findMany({
+      where: { isActive: true },
+      select: {
+        id: true,
+        key: true,
+        title: true,
+        body: true,
+        version: true,
+        updatedAt: true,
+      },
+      orderBy: { id: 'asc' },
+    });
+  }
+
+  /**
+   * Records acceptance of agreements.
+   */
+  async acceptAgreements(
+    userId: string,
+    payload: { acceptances: Array<{ key: string; version: number }>; master: boolean },
+    ipAddress = '127.0.0.1',
+    userAgent = 'Unknown'
+  ) {
+    const am = await prisma.accountManager.findUnique({ where: { userId } });
+    if (!am) {
+      throw new AppError('Account Manager profile not found.', StatusCodes.NOT_FOUND);
+    }
+
+    const validated = acceptAgreementsSchema.parse(payload);
+
+    for (const item of validated.acceptances) {
+      await prisma.accountManagerAgreementAcceptance.upsert({
+        where: {
+          accountManagerId_agreementKey_version: {
+            accountManagerId: am.id,
+            agreementKey: item.key,
+            version: item.version,
+          },
+        },
+        update: {
+          acceptedAt: new Date(),
+          ipAddress,
+          userAgent,
+        },
+        create: {
+          accountManagerId: am.id,
+          agreementKey: item.key,
+          version: item.version,
+          ipAddress,
+          userAgent,
+        },
+      });
+    }
+
+    // Master terms acceptance
+    if (validated.master) {
+      const masterAg = await prisma.accountManagerAgreement.findUnique({
+        where: { key: MASTER_TERMS_KEY },
+      });
+      const masterVersion = masterAg ? masterAg.version : 1;
+      await prisma.accountManagerAgreementAcceptance.upsert({
+        where: {
+          accountManagerId_agreementKey_version: {
+            accountManagerId: am.id,
+            agreementKey: MASTER_TERMS_KEY,
+            version: masterVersion,
+          },
+        },
+        update: {
+          acceptedAt: new Date(),
+          ipAddress,
+          userAgent,
+        },
+        create: {
+          accountManagerId: am.id,
+          agreementKey: MASTER_TERMS_KEY,
+          version: masterVersion,
+          ipAddress,
+          userAgent,
+        },
+      });
+    }
+
+    // Recompute completion
+    const docs = await prisma.accountManagerDocument.findMany({ where: { accountManagerId: am.id } });
+    const acceptances = await prisma.accountManagerAgreementAcceptance.findMany({
+      where: { accountManagerId: am.id },
+    });
+    const completion = calculateAMCompletion(am, docs, acceptances);
+    await prisma.accountManager.update({
+      where: { id: am.id },
+      data: { completionPercent: completion.percent },
+    });
+
+    return {
+      success: true,
+      completionPercent: completion.percent,
+      missingFields: completion.missingFields,
+      isSubmittable: completion.isSubmittable,
+    };
+  }
+
+  /**
+   * Final submission gating: validates all required fields, CV presence, and 7 agreements + master.
+   */
+  async submitOnboarding(userId: string) {
+    const am = await prisma.accountManager.findUnique({
+      where: { userId },
+      include: {
+        documents: true,
+        agreementAcceptances: true,
+      },
+    });
+    if (!am) {
+      throw new AppError('Account Manager profile not found.', StatusCodes.NOT_FOUND);
+    }
+
+    // 1. Validate full submit fields
+    const parsed = amSubmitSchema.safeParse(am);
+    if (!parsed.success) {
+      const errors = parsed.error.issues.map((i) => ({
+        field: i.path.join('.'),
+        message: i.message,
+      }));
+      throw new AppError(
+        `Onboarding cannot be submitted due to incomplete profile requirements: ${errors.map((e) => e.message).join('; ')}`,
+        StatusCodes.BAD_REQUEST,
+        errors
+      );
+    }
+
+    // 2. Validate CV document presence
+    const hasCV = am.documents.some((d) => d.docType === 'CV_RESUME');
+    if (!hasCV) {
+      throw new AppError('A CV or Resume document must be uploaded prior to submission.', StatusCodes.BAD_REQUEST);
+    }
+
+    // 3. Validate agreements acceptance (all 7 + master)
+    const activeAgreements = await prisma.accountManagerAgreement.findMany({ where: { isActive: true } });
+    for (const ag of activeAgreements) {
+      const hasAccepted = am.agreementAcceptances.some(
+        (acc) => acc.agreementKey === ag.key && acc.version >= ag.version
+      );
+      if (!hasAccepted) {
+        throw new AppError(
+          `Agreement ${ag.title} must be reviewed and accepted before submission.`,
+          StatusCodes.BAD_REQUEST
+        );
+      }
+    }
+
+    // 4. Update status to SUBMITTED & PENDING
+    const updated = await prisma.accountManager.update({
+      where: { id: am.id },
+      data: {
+        onboardingStatus: AmOnboardingStatus.SUBMITTED,
+        status: ApprovalStatus.PENDING,
+        submittedAt: new Date(),
+        rejectionReason: null,
+        changesRequestedNote: null,
+        completionPercent: 100,
+      },
+    });
+
+    // 5. Notify Admins
+    const admins = await prisma.user.findMany({ where: { role: Role.ADMIN } });
     if (admins.length > 0) {
       await prisma.notification.createMany({
         data: admins.map((admin) => ({
           userId: admin.id,
           type: NotificationType.APPROVAL,
-          title: 'New Account Manager Application',
-          message: `${data.fullName} registered for Account Manager verification.`,
+          title: 'Account Manager Dossier Submitted',
+          message: `${am.fullName} submitted their complete onboarding application for review.`,
           link: `/admin/account-managers/${am.id}`,
         })),
       });
     }
 
-    return am;
+    return updated;
   }
 
+  /**
+   * Public directory list of approved Account Managers.
+   */
   async getAccountManagers(query: any) {
     const { skip, take, page, limit } = parsePagination(query);
 
@@ -72,24 +601,50 @@ export class AccountManagerService {
       status: ApprovalStatus.APPROVED,
     };
 
-    if (query.search) {
+    if (query.search || query.q) {
+      const term = (query.search || query.q) as string;
       where.OR = [
-        { fullName: { contains: query.search as string, mode: 'insensitive' } },
-        { bio: { contains: query.search as string, mode: 'insensitive' } },
-        { tagline: { contains: query.search as string, mode: 'insensitive' } },
+        { fullName: { contains: term, mode: 'insensitive' } },
+        { bio: { contains: term, mode: 'insensitive' } },
+        { tagline: { contains: term, mode: 'insensitive' } },
+        { speciality: { contains: term, mode: 'insensitive' } },
       ];
     }
 
-    if (query.expertise) {
-      where.expertise = { has: query.expertise as string };
+    if (query.tradingStyle) {
+      where.tradingStyles = { has: query.tradingStyle as string };
+    }
+
+    if (query.riskTolerance) {
+      where.riskTolerance = query.riskTolerance as any;
+    }
+
+    if (query.settlementCycle) {
+      where.settlementCycle = query.settlementCycle as any;
+    }
+
+    if (query.platform) {
+      where.preferredPlatforms = { has: query.platform as string };
+    }
+
+    if (query.instrument) {
+      where.preferredInstruments = { has: query.instrument as string };
     }
 
     if (query.country) {
-      where.country = { equals: query.country as string, mode: 'insensitive' };
+      where.OR = [
+        { country: { equals: query.country as string, mode: 'insensitive' } },
+        { countryCode: { equals: query.country as string, mode: 'insensitive' } },
+      ];
     }
 
-    if (query.language) {
-      where.languages = { has: query.language as string };
+    if (query.minYears) {
+      where.yearsExperience = { gte: parseInt(query.minYears as string, 10) };
+    }
+
+    if (query.regulated === 'true') {
+      where.isRegulated = true;
+      where.regulatoryVerified = true;
     }
 
     if (query.isFeatured !== undefined) {
@@ -97,12 +652,12 @@ export class AccountManagerService {
     }
 
     let orderBy: Prisma.AccountManagerOrderByWithRelationInput = { createdAt: 'desc' };
-    if (query.sortBy === 'avgRating') {
+    if (query.sortBy === 'avgRating' || query.sortBy === 'rating') {
       orderBy = { avgRating: query.sortOrder === 'asc' ? 'asc' : 'desc' };
-    } else if (query.sortBy === 'totalReviews') {
-      orderBy = { totalReviews: query.sortOrder === 'asc' ? 'asc' : 'desc' };
-    } else if (query.sortBy === 'yearsExperience') {
+    } else if (query.sortBy === 'yearsExperience' || query.sortBy === 'experience') {
       orderBy = { yearsExperience: query.sortOrder === 'asc' ? 'asc' : 'desc' };
+    } else if (query.sortBy === 'newest') {
+      orderBy = { createdAt: 'desc' };
     }
 
     const [accountManagers, total] = await Promise.all([
@@ -111,14 +666,22 @@ export class AccountManagerService {
         skip,
         take,
         orderBy,
+        include: {
+          documents: { where: { isPublic: true, reviewStatus: ApprovalStatus.APPROVED } },
+          reviews: { where: { isApproved: true } },
+        },
       }),
       prisma.accountManager.count({ where }),
     ]);
 
+    const serialized = accountManagers.map((am) => serializePublicAM(am));
     const totalPages = Math.ceil(total / limit) || 1;
-    return { accountManagers, total, page, limit, totalPages };
+    return { accountManagers: serialized, total, page, limit, totalPages };
   }
 
+  /**
+   * Public or authenticated retrieval of an Account Manager by slug.
+   */
   async getAccountManagerBySlug(slug: string, currentUserId?: string) {
     const am = await prisma.accountManager.findUnique({
       where: { slug },
@@ -145,85 +708,81 @@ export class AccountManagerService {
       isAdmin = viewer?.role === Role.ADMIN;
     }
 
+    // If profile is not APPROVED
     if (am.status !== ApprovalStatus.APPROVED && !isOwner && !isAdmin) {
+      // If approved snapshot exists while under re-review, return the snapshot
+      if (am.publicSnapshot) {
+        return am.publicSnapshot;
+      }
       throw new AppError('Profile is currently unavailable.', StatusCodes.NOT_FOUND);
     }
 
-    // Never leak private compliance documents to public visitors
-    if (!isOwner && !isAdmin) {
-      const { documents: _docs, ...publicAm } = am as any;
-      return publicAm;
+    // Owner or Admin gets full object (including private documents and contact info)
+    if (isOwner || isAdmin) {
+      return am;
     }
 
-    return am;
+    // Public visitor gets strictly serialized allowlisted fields
+    return serializePublicAM(am);
   }
 
-  async updateAccountManager(userId: string, data: any, photoFile?: Express.Multer.File) {
+  /**
+   * Retrieves enquiries for the logged-in Account Manager with pagination and status filter.
+   */
+  async getMyEnquiries(userId: string, query: any) {
     const am = await prisma.accountManager.findUnique({ where: { userId } });
     if (!am) {
       throw new AppError('Account Manager profile not found.', StatusCodes.NOT_FOUND);
     }
 
-    const photoUrl = photoFile ? (photoFile as any).path || (photoFile as any).secure_url : am.photo;
+    const { skip, take, page, limit } = parsePagination(query);
+    const where: Prisma.EnquiryWhereInput = {
+      accountManagerId: am.id,
+    };
 
-    // Compliance Re-Review: If sensitive service qualifications or experience are changed, revert APPROVED to PENDING
-    const hasSensitiveChanges = Boolean(
-      (data.services && JSON.stringify(data.services) !== JSON.stringify(am.services)) ||
-      (data.yearsExperience !== undefined && parseInt(data.yearsExperience, 10) !== am.yearsExperience) ||
-      (data.expertise && JSON.stringify(data.expertise) !== JSON.stringify(am.expertise))
-    );
+    if (query.isRead !== undefined) {
+      where.isRead = query.isRead === 'true';
+    }
 
-    const newStatus = (am.status === ApprovalStatus.APPROVED && hasSensitiveChanges)
-      ? ApprovalStatus.PENDING
-      : am.status;
+    const [enquiries, total] = await Promise.all([
+      prisma.enquiry.findMany({
+        where,
+        skip,
+        take,
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.enquiry.count({ where }),
+    ]);
 
-    return await prisma.accountManager.update({
-      where: { id: am.id },
-      data: {
-        status: newStatus,
-        ...(photoUrl && { photo: photoUrl }),
-        ...(data.fullName && { fullName: data.fullName }),
-        ...(data.tagline !== undefined && { tagline: data.tagline }),
-        ...(data.bio !== undefined && { bio: data.bio }),
-        ...(data.expertise && { expertise: Array.isArray(data.expertise) ? data.expertise : [data.expertise] }),
-        ...(data.languages && { languages: Array.isArray(data.languages) ? data.languages : [data.languages] }),
-        ...(data.country && { country: data.country }),
-        ...(data.city !== undefined && { city: data.city }),
-        ...(data.yearsExperience !== undefined && { yearsExperience: parseInt(data.yearsExperience, 10) }),
-        ...(data.services && { services: Array.isArray(data.services) ? data.services : [data.services] }),
-        ...(data.availability !== undefined && { availability: data.availability }),
-        ...(data.seoTitle !== undefined && { seoTitle: data.seoTitle }),
-        ...(data.seoDescription !== undefined && { seoDescription: data.seoDescription }),
-      },
-    });
+    const totalPages = Math.ceil(total / limit) || 1;
+    return { enquiries, total, page, limit, totalPages };
   }
 
-  async uploadDocuments(userId: string, files: Express.Multer.File[]) {
+  /**
+   * Marks an inquiry as read.
+   */
+  async markEnquiryRead(userId: string, enquiryId: string) {
     const am = await prisma.accountManager.findUnique({ where: { userId } });
     if (!am) {
       throw new AppError('Account Manager profile not found.', StatusCodes.NOT_FOUND);
     }
 
-    const created = await prisma.accountManagerDocument.createMany({
-      data: files.map((f) => ({
-        accountManagerId: am.id,
-        fileUrl: (f as any).path || (f as any).secure_url || f.filename,
-        fileName: f.originalname,
-        docType: 'CREDENTIAL_DOCUMENT',
-      })),
+    const enquiry = await prisma.enquiry.findFirst({
+      where: { id: enquiryId, accountManagerId: am.id },
     });
-
-    // Submitting new compliance documents moves profile back to PENDING for admin review
-    if (am.status === ApprovalStatus.APPROVED) {
-      await prisma.accountManager.update({
-        where: { id: am.id },
-        data: { status: ApprovalStatus.PENDING },
-      });
+    if (!enquiry) {
+      throw new AppError('Inquiry not found.', StatusCodes.NOT_FOUND);
     }
 
-    return created;
+    return prisma.enquiry.update({
+      where: { id: enquiry.id },
+      data: { isRead: true },
+    });
   }
 
+  /**
+   * Review submission.
+   */
   async addReview(amId: string, userId: string, data: { rating: number; comment: string }) {
     const am = await prisma.accountManager.findUnique({ where: { id: amId } });
     if (!am) {
@@ -258,13 +817,16 @@ export class AccountManagerService {
         type: NotificationType.REVIEW,
         title: 'New Client Review Received',
         message: `A client left a ${data.rating}-star review on your profile.`,
-        link: `/dashboard/reviews`,
+        link: `/dashboard/account-manager/profile`,
       },
     });
 
     return review;
   }
 
+  /**
+   * Reviews listing.
+   */
   async getReviews(amId: string, query: any) {
     const { skip, take, page, limit } = parsePagination(query);
 
@@ -285,7 +847,14 @@ export class AccountManagerService {
     return { reviews, total, page, limit, totalPages };
   }
 
-  async sendEnquiry(amId: string, data: { name: string; email: string; phone?: string; message: string }, currentUserId?: string) {
+  /**
+   * Inquiries submission.
+   */
+  async sendEnquiry(
+    amId: string,
+    data: { name: string; email: string; phone?: string; message: string },
+    currentUserId?: string
+  ) {
     const am = await prisma.accountManager.findUnique({
       where: { id: amId },
       include: { user: true },
@@ -313,7 +882,7 @@ export class AccountManagerService {
         type: NotificationType.ENQUIRY,
         title: 'New Client Inquiry',
         message: `You received an inquiry from ${data.name} (${data.email}).`,
-        link: `/dashboard/enquiries`,
+        link: `/dashboard/account-manager/enquiries`,
       },
     });
 
@@ -328,42 +897,45 @@ export class AccountManagerService {
     return enquiry;
   }
 
-  async getMyAMProfile(userId: string) {
-    const am = await prisma.accountManager.findUnique({
-      where: { userId },
-      include: {
-        documents: true,
-        enquiries: { orderBy: { createdAt: 'desc' }, take: 5 },
-        reviews: { orderBy: { createdAt: 'desc' }, take: 5 },
+  /**
+   * Deprecated wrappers for backward compatibility.
+   */
+  async registerAccountManager(userId: string, data: any, photoFile?: Express.Multer.File, docFiles?: Express.Multer.File[]) {
+    const existing = await prisma.accountManager.findUnique({ where: { userId } });
+    if (existing) {
+      throw new AppError('An account manager profile is already associated with this account.', StatusCodes.CONFLICT);
+    }
+
+    const slug = await generateUniqueSlug(data.fullName, 'accountManager');
+    const photoUrl = photoFile ? (photoFile as any).path || (photoFile as any).secure_url : undefined;
+
+    const am = await prisma.accountManager.create({
+      data: {
+        userId,
+        fullName: data.fullName,
+        slug,
+        photo: photoUrl,
+        tagline: data.tagline,
+        bio: data.bio,
+        expertise: Array.isArray(data.expertise) ? data.expertise : [data.expertise].filter(Boolean),
+        languages: Array.isArray(data.languages) ? data.languages : [data.languages].filter(Boolean),
+        country: data.country,
+        city: data.city,
+        yearsExperience: data.yearsExperience ? parseInt(data.yearsExperience, 10) : undefined,
+        services: Array.isArray(data.services) ? data.services : [data.services].filter(Boolean),
+        availability: data.availability,
+        seoTitle: data.seoTitle,
+        seoDescription: data.seoDescription,
+        status: ApprovalStatus.PENDING,
+        onboardingStatus: AmOnboardingStatus.DRAFT,
       },
     });
-
-    if (!am) {
-      throw new AppError('Account Manager profile not found.', StatusCodes.NOT_FOUND);
-    }
 
     return am;
   }
 
-  async getMyEnquiries(userId: string, query: any) {
-    const am = await prisma.accountManager.findUnique({ where: { userId } });
-    if (!am) {
-      throw new AppError('Account Manager profile not found.', StatusCodes.NOT_FOUND);
-    }
-
-    const { skip, take, page, limit } = parsePagination(query);
-    const [enquiries, total] = await Promise.all([
-      prisma.enquiry.findMany({
-        where: { accountManagerId: am.id },
-        skip,
-        take,
-        orderBy: { createdAt: 'desc' },
-      }),
-      prisma.enquiry.count({ where: { accountManagerId: am.id } }),
-    ]);
-
-    const totalPages = Math.ceil(total / limit) || 1;
-    return { enquiries, total, page, limit, totalPages };
+  async updateAccountManager(userId: string, data: any, photoFile?: Express.Multer.File) {
+    return this.saveSection(userId, 'about', data);
   }
 }
 

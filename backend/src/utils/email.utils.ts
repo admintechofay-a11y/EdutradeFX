@@ -56,11 +56,21 @@ export const escapeHtml = (text: string | null | undefined): string => {
 };
 
 export const sendMailSafely = async (to: string, subject: string, html: string, text: string) => {
+  const isPlaceholder =
+    !process.env.SMTP_PASS ||
+    process.env.SMTP_PASS === 'app_password_placeholder' ||
+    process.env.SMTP_USER === 'test@edutradefx.com';
+
+  if (process.env.NODE_ENV === 'test' || (process.env.NODE_ENV === 'development' && isPlaceholder)) {
+    logger.info(`================================================================================`);
+    logger.info(`[DEV / TEST EMAIL DISPATCHER] Simulated delivery to ${to}`);
+    logger.info(`Subject: "${subject}"`);
+    logger.info(`Body:\n${text}`);
+    logger.info(`================================================================================`);
+    return { messageId: 'mock-dev-id' };
+  }
+
   try {
-    if (process.env.NODE_ENV === 'test' && !process.env.SMTP_USER) {
-      logger.info(`[TEST MODE] Mock email sent to ${to}: "${subject}"`);
-      return { messageId: 'mock-test-id' };
-    }
     const info = await transporter.sendMail({
       from: `"${FROM_NAME}" <${FROM_EMAIL}>`,
       to,
@@ -72,6 +82,14 @@ export const sendMailSafely = async (to: string, subject: string, html: string, 
     return info;
   } catch (error) {
     logger.error(`Failed to dispatch email to ${to}:`, error);
+    if (process.env.NODE_ENV === 'development') {
+      logger.warn(`================================================================================`);
+      logger.warn(`[DEV MODE FALLBACK] SMTP failed. Intercepted email to: ${to}`);
+      logger.warn(`Subject: "${subject}"`);
+      logger.warn(`Body:\n${text}`);
+      logger.warn(`================================================================================`);
+      return { messageId: 'dev-fallback-id' };
+    }
     throw error;
   }
 };

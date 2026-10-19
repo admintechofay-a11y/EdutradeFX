@@ -21,6 +21,8 @@ import { Role, ApprovalStatus, BrokerOnboardingStatus, OnboardingStatus } from '
 import { logger } from '../../utils/logger';
 import { normalizeToE164 } from '../../utils/phone.utils';
 
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+
 export class AuthService {
   /**
    * Helper to exclude sensitive password and token fields from user response
@@ -120,16 +122,21 @@ export class AuthService {
       await sendVerificationEmail(email, data.name.trim(), verificationRawToken);
     } catch (err: any) {
       logger.error('Failed to send registration verification email:', err);
-      await prisma.pendingRegistration.delete({ where: { email } }).catch(() => {});
-      throw new AppError(
-        'Failed to dispatch verification email. Please check SMTP configuration or try again later.',
-        StatusCodes.SERVICE_UNAVAILABLE
-      );
+      if (process.env.NODE_ENV !== 'development') {
+        await prisma.pendingRegistration.delete({ where: { email } }).catch(() => {});
+        throw new AppError(
+          'Failed to dispatch verification email. Please check SMTP configuration or try again later.',
+          StatusCodes.SERVICE_UNAVAILABLE
+        );
+      }
     }
 
     return {
       message: 'Check your email to complete registration. We have sent a verification link to your inbox.',
       email,
+      ...(process.env.NODE_ENV === 'development' && {
+        devVerificationUrl: `${FRONTEND_URL}/verify-email/${encodeURIComponent(verificationRawToken)}`,
+      }),
     };
   }
 
@@ -204,16 +211,21 @@ export class AuthService {
       await sendVerificationEmail(email, data.name.trim(), verificationRawToken);
     } catch (err: any) {
       logger.error('Failed to send partner registration verification email:', err);
-      await prisma.pendingRegistration.delete({ where: { email } }).catch(() => {});
-      throw new AppError(
-        'Failed to dispatch verification email. Please check SMTP configuration or try again later.',
-        StatusCodes.SERVICE_UNAVAILABLE
-      );
+      if (process.env.NODE_ENV !== 'development') {
+        await prisma.pendingRegistration.delete({ where: { email } }).catch(() => {});
+        throw new AppError(
+          'Failed to dispatch verification email. Please check SMTP configuration or try again later.',
+          StatusCodes.SERVICE_UNAVAILABLE
+        );
+      }
     }
 
     return {
       message: 'Check your email to complete registration. We have sent a verification link to your inbox.',
       email,
+      ...(process.env.NODE_ENV === 'development' && {
+        devVerificationUrl: `${FRONTEND_URL}/verify-email/${encodeURIComponent(verificationRawToken)}`,
+      }),
     };
   }
 

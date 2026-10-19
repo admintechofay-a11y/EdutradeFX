@@ -63,6 +63,7 @@ export default function RegisterPage() {
   const [resendCooldown, setResendCooldown] = useState(0);
   const [resendLoading, setResendLoading] = useState(false);
   const [resendMessage, setResendMessage] = useState<string | null>(null);
+  const [devVerificationUrl, setDevVerificationUrl] = useState<string | null>(null);
 
   // Debounced email check
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
@@ -192,7 +193,11 @@ export default function RegisterPage() {
         payload.role = partnerRole;
       }
 
-      await api.post(endpoint, payload);
+      const res = await api.post(endpoint, payload);
+      const devUrl = res.data?.data?.devVerificationUrl || res.data?.devVerificationUrl;
+      if (devUrl) {
+        setDevVerificationUrl(devUrl);
+      }
 
       // Verify before create (A5) - account is pending email confirmation
       setPendingVerification(true);
@@ -225,6 +230,25 @@ export default function RegisterPage() {
               We sent an activation link to <strong className="text-navy">{email}</strong>. Please check your inbox and click the link to activate your account.
             </p>
           </div>
+
+          {devVerificationUrl && (
+            <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200 text-xs text-blue-900 text-left space-y-2">
+              <div className="font-bold flex items-center gap-1.5 text-blue-800">
+                <ExternalLink className="w-4 h-4 shrink-0" />
+                <span>Development Quick Activation:</span>
+              </div>
+              <p>
+                In local development mode without live SMTP credentials, you can activate your account immediately:
+              </p>
+              <a
+                href={devVerificationUrl}
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-sm"
+              >
+                <span>Activate Account Now</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </a>
+            </div>
+          )}
 
           <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 text-left space-y-1.5">
             <div className="font-bold flex items-center gap-1.5 text-amber-800">

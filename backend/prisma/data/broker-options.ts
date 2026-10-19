@@ -1,6 +1,6 @@
-// AUTO-GENERATED from Dropbox_of__broker_.pdf. Do not hand-edit counts.
-// Counts: REGULATOR 58 (+OTHER), LANGUAGE 133, CURRENCY 9 (+OTHER), LICENSE_STATUS 8, DEPOSIT_BONUS 21, LEVERAGE 23, TIMEFRAME 9, REGIONAL_FOOTPRINT 20
-export type BrokerOptionSeed = { group: 'REGULATOR'|'LANGUAGE'|'CURRENCY'|'LICENSE_STATUS'|'DEPOSIT_BONUS'|'LEVERAGE'|'TIMEFRAME'|'REGIONAL_FOOTPRINT'; code: string; label: string; sortOrder: number; meta: Record<string, unknown> };
+// AUTO-GENERATED from Dropbox_of__broker_.pdf and Account_Mannager.docx. Do not hand-edit counts.
+// Counts: REGULATOR 58 (+OTHER), LANGUAGE 133, CURRENCY 9 (+OTHER), LICENSE_STATUS 8, DEPOSIT_BONUS 21, LEVERAGE 23, TIMEFRAME 9, REGIONAL_FOOTPRINT 20, INSTRUMENT 20, AM_TRADING_STYLE 6, AM_PLATFORM 4, AM_BROKER_TYPE 3, AM_RISK_TOLERANCE 3, AM_SETTLEMENT_CYCLE 3
+export type BrokerOptionSeed = { group: 'REGULATOR'|'LANGUAGE'|'CURRENCY'|'LICENSE_STATUS'|'DEPOSIT_BONUS'|'LEVERAGE'|'TIMEFRAME'|'REGIONAL_FOOTPRINT'|'INSTRUMENT'|'AM_TRADING_STYLE'|'AM_PLATFORM'|'AM_BROKER_TYPE'|'AM_RISK_TOLERANCE'|'AM_SETTLEMENT_CYCLE'; code: string; label: string; sortOrder: number; meta: Record<string, unknown> };
 export const BROKER_OPTIONS: BrokerOptionSeed[] = [
   { group: "REGULATOR", code: "ASIC", label: "(ASIC) Australia Securities & Investment Commission", sortOrder: 1, meta: {"acronym": "ASIC", "kind": "REGULATOR", "pdfPosition": 1} },
   { group: "REGULATOR", code: "NFA", label: "(NFA) National Futures Association", sortOrder: 2, meta: {"acronym": "NFA", "kind": "REGULATOR", "pdfPosition": 2} },
@@ -285,4 +285,49 @@ export const BROKER_OPTIONS: BrokerOptionSeed[] = [
   { group: "REGIONAL_FOOTPRINT", code: "PACIFIC_ISLANDS", label: "Pacific Islands", sortOrder: 18, meta: { coverage: "Pacific island countries and territories" } },
   { group: "REGIONAL_FOOTPRINT", code: "GLOBAL", label: "Global / Worldwide", sortOrder: 19, meta: { coverage: "All regions" } },
   { group: "REGIONAL_FOOTPRINT", code: "OTHER_EMERGING", label: "Other / Emerging Markets", sortOrder: 20, meta: { coverage: "Markets not otherwise classified" } },
+  // INSTRUMENT (20)
+  { group: "INSTRUMENT", code: "XAUUSD", label: "Gold / USD (XAUUSD)", sortOrder: 1, meta: {} },
+  { group: "INSTRUMENT", code: "XAGUSD", label: "Silver / USD (XAGUSD)", sortOrder: 2, meta: {} },
+  { group: "INSTRUMENT", code: "EURUSD", label: "EUR / USD", sortOrder: 3, meta: {} },
+  { group: "INSTRUMENT", code: "GBPUSD", label: "GBP / USD", sortOrder: 4, meta: {} },
+  { group: "INSTRUMENT", code: "USDJPY", label: "USD / JPY", sortOrder: 5, meta: {} },
+  { group: "INSTRUMENT", code: "USDCHF", label: "USD / CHF", sortOrder: 6, meta: {} },
+  { group: "INSTRUMENT", code: "AUDUSD", label: "AUD / USD", sortOrder: 7, meta: {} },
+  { group: "INSTRUMENT", code: "USDCAD", label: "USD / CAD", sortOrder: 8, meta: {} },
+  { group: "INSTRUMENT", code: "NZDUSD", label: "NZD / USD", sortOrder: 9, meta: {} },
+  { group: "INSTRUMENT", code: "EURJPY", label: "EUR / JPY", sortOrder: 10, meta: {} },
+  { group: "INSTRUMENT", code: "GBPJPY", label: "GBP / JPY", sortOrder: 11, meta: {} },
+  { group: "INSTRUMENT", code: "BTCUSD", label: "Bitcoin / USD (BTCUSD)", sortOrder: 12, meta: {} },
+  { group: "INSTRUMENT", code: "ETHUSD", label: "Ethereum / USD (ETHUSD)", sortOrder: 13, meta: {} },
+  { group: "INSTRUMENT", code: "US30", label: "Dow Jones 30 (US30)", sortOrder: 14, meta: {} },
+  { group: "INSTRUMENT", code: "NAS100", label: "Nasdaq 100 (NAS100)", sortOrder: 15, meta: {} },
+  { group: "INSTRUMENT", code: "SPX500", label: "S&P 500 (SPX500)", sortOrder: 16, meta: {} },
+  { group: "INSTRUMENT", code: "GER40", label: "DAX 40 (GER40)", sortOrder: 17, meta: {} },
+  { group: "INSTRUMENT", code: "UKOIL", label: "Brent Crude Oil (UKOIL)", sortOrder: 18, meta: {} },
+  { group: "INSTRUMENT", code: "USOIL", label: "WTI Crude Oil (USOIL)", sortOrder: 19, meta: {} },
+  { group: "INSTRUMENT", code: "OTHER", label: "Other Instrument", sortOrder: 20, meta: {} },
+  // AM_TRADING_STYLE (6)
+  { group: "AM_TRADING_STYLE", code: "DAY_TRADER", label: "Day Trader", sortOrder: 1, meta: {} },
+  { group: "AM_TRADING_STYLE", code: "SWING_TRADER", label: "Swing Trader", sortOrder: 2, meta: {} },
+  { group: "AM_TRADING_STYLE", code: "SCALPER", label: "Scalper", sortOrder: 3, meta: {} },
+  { group: "AM_TRADING_STYLE", code: "POSITION_TRADER", label: "Position Trader", sortOrder: 4, meta: {} },
+  { group: "AM_TRADING_STYLE", code: "NEWS_TRADER", label: "News-based Trader", sortOrder: 5, meta: {} },
+  { group: "AM_TRADING_STYLE", code: "ALGORITHMIC_TRADER", label: "Algorithmic Trader", sortOrder: 6, meta: {} },
+  // AM_PLATFORM (4)
+  { group: "AM_PLATFORM", code: "MT4", label: "MetaTrader 4 (MT4)", sortOrder: 1, meta: {} },
+  { group: "AM_PLATFORM", code: "MT5", label: "MetaTrader 5 (MT5)", sortOrder: 2, meta: {} },
+  { group: "AM_PLATFORM", code: "CTRADER", label: "cTrader", sortOrder: 3, meta: {} },
+  { group: "AM_PLATFORM", code: "OTHER", label: "Other", sortOrder: 4, meta: {} },
+  // AM_BROKER_TYPE (3)
+  { group: "AM_BROKER_TYPE", code: "ECN", label: "ECN (Electronic Communication Network)", sortOrder: 1, meta: {} },
+  { group: "AM_BROKER_TYPE", code: "STP", label: "STP (Straight Through Processing)", sortOrder: 2, meta: {} },
+  { group: "AM_BROKER_TYPE", code: "MARKET_MAKER", label: "Market Maker (Dealing Desk)", sortOrder: 3, meta: {} },
+  // AM_RISK_TOLERANCE (3)
+  { group: "AM_RISK_TOLERANCE", code: "LOW", label: "Low", sortOrder: 1, meta: {} },
+  { group: "AM_RISK_TOLERANCE", code: "MODERATE", label: "Moderate", sortOrder: 2, meta: {} },
+  { group: "AM_RISK_TOLERANCE", code: "HIGH", label: "High", sortOrder: 3, meta: {} },
+  // AM_SETTLEMENT_CYCLE (3)
+  { group: "AM_SETTLEMENT_CYCLE", code: "DAILY", label: "Day", sortOrder: 1, meta: {} },
+  { group: "AM_SETTLEMENT_CYCLE", code: "WEEKLY", label: "Week", sortOrder: 2, meta: {} },
+  { group: "AM_SETTLEMENT_CYCLE", code: "MONTHLY", label: "Month", sortOrder: 3, meta: {} },
 ];

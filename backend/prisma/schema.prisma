@@ -88,6 +88,29 @@ enum IbSettlement {
   MONTHLY
 }
 
+enum AmEntityType {
+  INDIVIDUAL
+  CORPORATE
+}
+
+enum AmOnboardingStatus {
+  DRAFT
+  SUBMITTED
+  CHANGES_REQUESTED
+}
+
+enum SettlementCycle {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+enum RiskTolerance {
+  LOW
+  MODERATE
+  HIGH
+}
+
 enum BrokerOptionGroup {
   REGULATOR
   LANGUAGE
@@ -103,6 +126,12 @@ enum BrokerOptionGroup {
   SPREAD_FROM
   PLATFORM
   DEVICE
+  INSTRUMENT
+  AM_TRADING_STYLE
+  AM_PLATFORM
+  AM_BROKER_TYPE
+  AM_RISK_TOLERANCE
+  AM_SETTLEMENT_CYCLE
 }
 
 model BrokerOption {
@@ -416,6 +445,7 @@ model Broker {
   clientActivity             BrokerClientActivity?  // @deprecated (B26)
   businessAreas              BrokerBusinessArea[]   // Regional footprint (reused per Addendum Prompt)
   awards                     BrokerAward[]
+  recommendedByAccountManagers AccountManager[]     @relation("AmRecommendedBroker")
 
   @@index([status])
   @@index([isFeatured])
@@ -763,54 +793,183 @@ model BrokerComparisonItem {
 // ─── ACCOUNT MANAGER DIRECTORY ───────────────────────
 
 model AccountManager {
-  id               String         @id @default(uuid())
-  userId           String         @unique
-  fullName         String
-  slug             String         @unique
-  photo            String?
-  tagline          String?
-  bio              String?        @db.Text
-  expertise        String[]
-  languages        String[]
-  country          String?
-  city             String?
-  yearsExperience  Int?
-  services         String[]
-  availability     String?
-  strategy         String?
-  minInvestment    Float?
-  historicalPerformance String? @db.Text
-  riskInfo         String?
-  tradingStyle     String?
-  website          String?
-  disclaimer       String?        @db.Text
-  avgRating        Float          @default(0)
-  totalReviews     Int            @default(0)
-  status           ApprovalStatus @default(PENDING)
-  isFeatured       Boolean        @default(false)
-  seoTitle         String?
-  seoDescription   String?
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  id                          String                              @id @default(uuid())
+  userId                      String                              @unique
+  fullName                    String
+  slug                        String                              @unique
+  photo                       String?
+  tagline                     String?
+  bio                         String?                             @db.Text
+  expertise                   String[]
+  languages                   String[]
+  country                     String?                             // Kept for backward compatibility / display label
+  city                        String?
+  yearsExperience             Int?
+  services                    String[]
+  availability                String?
+  strategy                    String?                             // @deprecated - superseded by indicators/technical/etc
+  minInvestment               Float?
+  historicalPerformance       String?                             @db.Text
+  riskInfo                    String?                             // @deprecated - superseded by risk profile
+  tradingStyle                String?                             // @deprecated - superseded by tradingStyles String[]
+  website                     String?
+  disclaimer                  String?                             @db.Text
+  avgRating                   Float                               @default(0)
+  totalReviews                Int                                 @default(0)
+  status                      ApprovalStatus                      @default(PENDING)
+  isFeatured                  Boolean                             @default(false)
+  seoTitle                    String?
+  seoDescription              String?
 
-  user             User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  documents        AccountManagerDocument[]
-  reviews          AccountManagerReview[]
-  enquiries        Enquiry[]
+  // Section 1: Identity / Corporate / Contact
+  entityType                  AmEntityType                        @default(INDIVIDUAL)
+  companyLegalName            String?
+  companyRegistrationNumber   String?
+  incorporationCountry        String?
+  companyWebsite              String?
+  address                     String?
+  stateRegion                 String?
+  stateCode                   String?
+  countryCode                 String?
+  zipCode                     String?
+  contactEmail                String?                             // Private (admin-only)
+  contactPhone                String?                             // Private (admin-only, E.164)
+  socialLinks                 Json?
+  socialLinksPublic           Boolean                             @default(false)
+
+  // Section 2: Regulatory
+  isRegulated                 Boolean?
+  regulatorName               String?
+  regulatorRegistrationNumber String?
+  regulatorCountry            String?
+  regulatoryVerified          Boolean                             @default(false)
+
+  // Section 3: About
+  speciality                  String?                             @db.Text
+
+  // Section 4: Market Experience
+  marketEventExperience       String?                             @db.Text
+
+  // Section 5: Trading Style & Platforms
+  preferredInstruments        String[]                            @default([])
+  tradingStyles               String[]                            @default([])
+  accuracyLevel               Decimal?                            @db.Decimal(5, 2)
+  accuracyPeriodNote          String?
+  preferredPlatforms          String[]                            @default([])
+  otherPlatformName           String?
+  preferredBrokerTypes        String[]                            @default([])
+
+  // Section 6: Strategy
+  indicators                  String?                             @db.Text
+  signals                     String?
+  fundamentals                String?                             @db.Text
+  technical                   String?                             @db.Text
+  newsTrade                   String?                             @db.Text
+
+  // Section 7: Risk Appetite
+  riskRewardRatio             String?
+  riskRewardValue             Float?
+  riskTolerance               RiskTolerance?
+  lossPerTradePercent         Decimal?                            @db.Decimal(5, 2)
+  dailyTrades                 Int?
+  dailyLots                   Decimal?                            @db.Decimal(8, 2)
+  dailyStopLossPoints         Int?
+  dailyTakeProfitPoints       Int?
+  favouriteTimeframe          String?
+  tradingTimeFrom             String?                             // HH:mm IST
+  tradingTimeTo               String?                             // HH:mm IST
+  lossRecoveryStrategy        String?                             @db.Text // Private (admin-only)
+
+  // Section 8: Settlements
+  settlementCycle             SettlementCycle?
+
+  // Section 9: Sharing & Broker Suggestion
+  clientFundSecurity          String?                             @db.Text
+  recommendsBroker            Boolean?
+  recommendedBrokerId         String?
+  recommendedBroker           Broker?                             @relation("AmRecommendedBroker", fields: [recommendedBrokerId], references: [id], onDelete: SetNull)
+  recommendedBrokerName       String?
+  recommendedBrokerPlatform   String?
+  profitSharingPercent        Decimal?                            @db.Decimal(5, 2)
+  lossSharingPercent          Decimal?                            @db.Decimal(5, 2)
+
+  // Workflow / Review / Completeness
+  onboardingStatus            AmOnboardingStatus                  @default(DRAFT)
+  submittedAt                 DateTime?
+  reviewedAt                  DateTime?
+  reviewedById                String?
+  rejectionReason             String?                             @db.Text
+  changesRequestedNote        String?                             @db.Text
+  completionPercent           Int                                 @default(0)
+  profileUpdateRequiredBy     DateTime?
+  publicSnapshot              Json?
+
+  createdAt                   DateTime                            @default(now())
+  updatedAt                   DateTime                            @updatedAt
+
+  user                        User                                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documents                   AccountManagerDocument[]
+  reviews                     AccountManagerReview[]
+  enquiries                   Enquiry[]
+  agreementAcceptances        AccountManagerAgreementAcceptance[]
 
   @@index([status])
   @@index([isFeatured])
   @@index([avgRating])
+  @@index([onboardingStatus])
+  @@index([countryCode])
+  @@index([riskTolerance])
+  @@index([settlementCycle])
+  @@index([recommendedBrokerId])
 }
 
 model AccountManagerDocument {
-  id               String         @id @default(uuid())
+  id               String          @id @default(uuid())
   accountManagerId String
   fileUrl          String
   fileName         String
-  docType          String
-  createdAt        DateTime       @default(now())
-  accountManager   AccountManager @relation(fields: [accountManagerId], references: [id], onDelete: Cascade)
+  docType          String          // CV_RESUME, PERFORMANCE_RECORD, STRATEGY_DOCUMENT, CERTIFICATE, PAST_RESULT_SCREENSHOT, REGULATORY_PROOF
+  publicId         String?
+  caption          String?
+  periodNote       String?
+  isPublic         Boolean         @default(false)
+  reviewStatus     ApprovalStatus  @default(PENDING)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  accountManager   AccountManager  @relation(fields: [accountManagerId], references: [id], onDelete: Cascade)
+
+  @@index([accountManagerId])
+  @@index([docType])
+  @@index([reviewStatus])
+}
+
+model AccountManagerAgreement {
+  id          String                               @id @default(uuid())
+  key         String                               @unique
+  title       String
+  body        String                               @db.Text
+  version     Int                                  @default(1)
+  isActive    Boolean                              @default(true)
+  updatedById String?
+  createdAt   DateTime                             @default(now())
+  updatedAt   DateTime                             @updatedAt
+  acceptances AccountManagerAgreementAcceptance[]
+}
+
+model AccountManagerAgreementAcceptance {
+  id               String                  @id @default(uuid())
+  accountManagerId String
+  agreementKey     String
+  version          Int
+  acceptedAt       DateTime                @default(now())
+  ipAddress        String?
+  userAgent        String?
+  accountManager   AccountManager          @relation(fields: [accountManagerId], references: [id], onDelete: Cascade)
+  agreement        AccountManagerAgreement @relation(fields: [agreementKey], references: [key], onDelete: Cascade)
+
+  @@unique([accountManagerId, agreementKey, version])
+  @@index([accountManagerId])
+  @@index([agreementKey])
 }
 
 model AccountManagerReview {

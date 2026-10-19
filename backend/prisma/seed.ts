@@ -14,6 +14,10 @@ import {
   OrderExecution,
   GtcMode,
   Prisma,
+  AmEntityType,
+  AmOnboardingStatus,
+  RiskTolerance,
+  SettlementCycle,
 } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
@@ -1723,6 +1727,206 @@ async function main() {
     },
   });
   console.log('✅ Demo Blog article seeded.');
+
+  // 9. Seed Account Manager Agreements
+  const amAgreements = [
+    {
+      key: 'CLIENT_FUND_PROTECTION',
+      title: 'Client Fund Protection Agreement',
+      body: `[DRAFT — replace with legal-approved text before launch]\nThis agreement establishes that client funds must remain strictly under the client's direct custody in segregated accounts with regulated brokerages. The Account Manager holds limited power of attorney strictly for executing trading orders and possesses no authority or technical capability to withdraw, transfer, or encumber client funds.`,
+    },
+    {
+      key: 'TRADER_PROFIT_PROTECTION',
+      title: 'Trader Profit Fund Protection Agreement',
+      body: `[DRAFT — replace with legal-approved text before launch]\nThis agreement stipulates the rights and mechanisms protecting the Account Manager's contractual profit share remuneration. It sets forth invoiced payment timelines, settlement cycles, escrow provisions where applicable, and platform mediation protocols in the event of client non-payment of agreed management or performance fees.`,
+    },
+    {
+      key: 'NO_PERSONAL_CONTACT_SHARING',
+      title: 'No Personal Contact Sharing Agreement',
+      body: `[DRAFT — replace with legal-approved text before launch]\nAccount Managers and clients agree to conduct all preliminary consultations, performance disclosures, and initial onboarding exclusively through EdutradeFX verified platform messaging. Direct exchange or solicitation of personal emails, private phone numbers, or off-platform payment methods is strictly prohibited and constitutes grounds for immediate delisting.`,
+    },
+    {
+      key: 'CLIENT_FUND_INSURANCE_PROTECTION',
+      title: 'Client Fund Insurance Protection Agreement',
+      body: `[DRAFT — replace with legal-approved text before launch]\nThis document clarifies the nature, limits, and statutory backing of any regulatory compensation schemes or brokerage indemnity insurance applicable to client accounts. EdutradeFX does not underwrite trading losses, and Account Managers shall not misrepresent discretionary trading as principal-protected or zero-risk.`,
+    },
+    {
+      key: 'LOSS_RECOVERING',
+      title: 'Loss Recovering Agreement',
+      body: `[DRAFT — replace with legal-approved text before launch]\nThis agreement defines the maximum drawdown limits, circuit-breaker rules, and high-water mark recovery mechanisms governing trading operations. In periods of drawdown, performance fees are suspended until the account balance exceeds the high-water mark, adhering to professional fiduciary risk standards.`,
+    },
+    {
+      key: 'PROFIT_SHARING',
+      title: 'Profit Sharing Agreement',
+      body: `[DRAFT — replace with legal-approved text before launch]\nThis agreement details the agreed percentage split between client and Account Manager on net realized trading profits during each agreed settlement cycle (Daily, Weekly, or Monthly). Calculation methodology, hurdle rates, and high-water mark computations are specified herein.`,
+    },
+    {
+      key: 'NDA',
+      title: 'Non-Disclosure Agreement (NDA) between Client, Trader and EdutradeFX',
+      body: `[DRAFT — replace with legal-approved text before launch]\nA mutual non-disclosure covenant obligating EdutradeFX, the client, and the Account Manager to preserve the strict confidentiality of trading algorithms, proprietary strategy parameters, account statements, financial balances, and identity data.`,
+    },
+    {
+      key: 'PLATFORM_TERMS',
+      title: 'EdutradeFX Platform Terms and Conditions',
+      body: `[DRAFT — replace with legal-approved text before launch]\nMaster Terms and Conditions governing all activities, representations, profile listings, and professional conduct of Account Managers operating on the EdutradeFX directory and marketplace platform.`,
+    },
+  ];
+
+  for (const ag of amAgreements) {
+    await prisma.accountManagerAgreement.upsert({
+      where: { key: ag.key },
+      update: {},
+      create: {
+        key: ag.key,
+        title: ag.title,
+        body: ag.body,
+        version: 1,
+        isActive: true,
+      },
+    });
+  }
+  console.log('✅ Account Manager agreements seeded.');
+
+  // 10. Seed Demo Account Manager: Marcus Vance (Apex Alpha Capital)
+  const amUserEmail = 'accountmanager@demo.com';
+  const amUser = await prisma.user.upsert({
+    where: { email: amUserEmail },
+    update: {},
+    create: {
+      name: 'Marcus Vance',
+      email: amUserEmail,
+      password: await bcrypt.hash('AM@1234!', 12),
+      role: Role.ACCOUNT_MANAGER,
+      isActive: true,
+      isEmailVerified: true,
+    },
+  });
+
+  const demoAM = await prisma.accountManager.upsert({
+    where: { slug: 'marcus-vance' },
+    update: {},
+    create: {
+      userId: amUser.id,
+      entityType: AmEntityType.INDIVIDUAL,
+      fullName: 'Marcus Vance',
+      slug: 'marcus-vance',
+      photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400',
+      tagline: 'Multi-Asset Discretionary & Quantitative Portfolio Manager',
+      bio: 'Professional portfolio and account manager with over 8 years of institutional trading background. Specializing in high-liquidity FX majors and precious metals using rigorous risk-weighted position sizing, disciplined stop-loss rules, and systematic profit-taking across diverse market regimes.',
+      speciality: 'Algorithmic liquidity sweeps and swing positioning across EURUSD, GBPUSD, and XAUUSD with strict 1% per-trade risk capping.',
+      address: '450 Lexington Avenue, Suite 1800',
+      country: 'United States',
+      countryCode: 'US',
+      stateRegion: 'New York',
+      stateCode: 'NY',
+      city: 'New York',
+      zipCode: '10017',
+      contactEmail: 'private-contact@marcusvance.com',
+      contactPhone: '+12125550198',
+      socialLinks: {
+        linkedin: 'https://linkedin.com/in/marcus-vance-fx',
+        twitter: 'marcus_fx_quant',
+        youtube: 'https://youtube.com/@marcusvancefx',
+      },
+      socialLinksPublic: true,
+      isRegulated: true,
+      regulatorName: 'National Futures Association (NFA)',
+      regulatorRegistrationNumber: 'NFA-0498214',
+      regulatorCountry: 'United States',
+      regulatoryVerified: true,
+      yearsExperience: 8,
+      marketEventExperience: 'Successfully steered multi-million dollar portfolios through major central bank rate shocks, Brexit volatility, and post-pandemic geopolitical liquidity squeezes without capital depletion.',
+      preferredInstruments: ['EURUSD', 'GBPUSD', 'XAUUSD', 'US30', 'USDJPY'],
+      tradingStyles: ['DAY_TRADER', 'SWING_TRADER', 'ALGORITHMIC_TRADER'],
+      accuracyLevel: 76.5,
+      accuracyPeriodNote: 'Audited across 540 trades over the last 18 months',
+      preferredPlatforms: ['MT5', 'CTRADER'],
+      preferredBrokerTypes: ['ECN', 'STP'],
+      indicators: 'Custom institutional volume-profile clusters, VWAP standard deviation bands, and liquidity pool sweeps.',
+      signals: 'Real-time Telegram and dashboard execution notifications with target entry, SL, and partial TP alerts.',
+      fundamentals: 'Macro interest rate differentials, CPI / NFP headline deviation, and institutional orderflow analysis.',
+      technical: 'Multi-timeframe market structure shifts, fair value gaps, and equilibrium liquidity resting points.',
+      newsTrade: 'Strict position reduction 15 minutes prior to Tier-1 high impact economic releases.',
+      riskRewardRatio: '1:2.5',
+      riskRewardValue: 2.5,
+      riskTolerance: RiskTolerance.MODERATE,
+      lossPerTradePercent: 1.0,
+      dailyTrades: 4,
+      dailyLots: 0.8,
+      dailyStopLossPoints: 35,
+      dailyTakeProfitPoints: 85,
+      favouriteTimeframe: 'H4',
+      tradingTimeFrom: '13:30',
+      tradingTimeTo: '21:30',
+      lossRecoveryStrategy: 'Mandatory trading halt upon reaching 3% weekly drawdown threshold. Systematic position-size halving until equity recovery reaches new equilibrium.',
+      settlementCycle: SettlementCycle.MONTHLY,
+      clientFundSecurity: 'All managed client capital remains strictly within client-owned, regulated broker segregated custody accounts. The manager holds trade-only API / LPOA execution credentials with zero withdrawal permissions.',
+      recommendsBroker: true,
+      recommendedBrokerName: 'Pepperstone Global Markets',
+      recommendedBrokerPlatform: 'MetaTrader 5 (MT5)',
+      profitSharingPercent: 25.0,
+      lossSharingPercent: 0.0,
+      status: ApprovalStatus.APPROVED,
+      onboardingStatus: AmOnboardingStatus.SUBMITTED,
+      completionPercent: 100,
+      isFeatured: true,
+      avgRating: 4.9,
+      totalReviews: 14,
+    },
+  });
+
+  // Seed sample public result screenshots
+  const sampleDocs = [
+    {
+      accountManagerId: demoAM.id,
+      fileName: 'verified_audited_statement_2025.pdf',
+      fileUrl: 'https://res.cloudinary.com/demo/image/upload/sample.pdf',
+      docType: 'CV_RESUME',
+      isPublic: false,
+      reviewStatus: ApprovalStatus.APPROVED,
+    },
+    {
+      accountManagerId: demoAM.id,
+      fileName: 'h1_2025_performance_record.png',
+      fileUrl: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&q=80&w=800',
+      docType: 'PAST_RESULT_SCREENSHOT',
+      caption: 'H1 2025 Net PnL Curve (+34.2%)',
+      periodNote: 'Jan 2025 - Jun 2025',
+      isPublic: true,
+      reviewStatus: ApprovalStatus.APPROVED,
+    },
+  ];
+
+  for (const doc of sampleDocs) {
+    const existingDoc = await prisma.accountManagerDocument.findFirst({
+      where: { accountManagerId: demoAM.id, fileName: doc.fileName },
+    });
+    if (!existingDoc) {
+      await prisma.accountManagerDocument.create({ data: doc });
+    }
+  }
+
+  // Seed acceptances for demo AM
+  for (const ag of amAgreements) {
+    await prisma.accountManagerAgreementAcceptance.upsert({
+      where: {
+        accountManagerId_agreementKey_version: {
+          accountManagerId: demoAM.id,
+          agreementKey: ag.key,
+          version: 1,
+        },
+      },
+      update: {},
+      create: {
+        accountManagerId: demoAM.id,
+        agreementKey: ag.key,
+        version: 1,
+        ipAddress: '127.0.0.1',
+        userAgent: 'Seed-Script/1.0',
+      },
+    });
+  }
+  console.log('✅ Demo Account Manager (Marcus Vance) seeded.');
 
   console.log('🎉 Seeding successfully finished!');
 }

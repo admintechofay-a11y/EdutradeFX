@@ -25,6 +25,9 @@ export async function seedBrokerOptions(prisma: PrismaClient) {
     AM_BROKER_TYPE: 3,
     AM_RISK_TOLERANCE: 3,
     AM_SETTLEMENT_CYCLE: 3,
+    SP_TRADING_STYLE: 6,
+    SP_UPDATE_FREQUENCY: 5,
+    SP_PLAN_PERIOD: 5,
   };
 
   for (const [group, expected] of Object.entries(EXPECTED_COUNTS)) {

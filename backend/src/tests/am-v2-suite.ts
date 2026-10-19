@@ -3,7 +3,7 @@ import http from 'http';
 import app from '../app';
 import { prisma } from '../config/database';
 import { generateAccessToken } from '../utils/jwt.utils';
-import { Role, ApprovalStatus, AmOnboardingStatus, AmEntityType, RiskTolerance, SettlementCycle } from '@prisma/client';
+import { Role, ApprovalStatus, OnboardingStatus, AmEntityType, RiskTolerance, SettlementCycle } from '@prisma/client';
 import { serializePublicAM, FORBIDDEN_PRIVATE_KEYS } from '../modules/account-managers/am.serializer';
 import { calculateAMCompletion, ALL_AGREEMENT_KEYS, MASTER_TERMS_KEY } from '../modules/account-managers/am.utils';
 import { verifyDocumentMagicBytes } from '../middleware/upload.middleware';
@@ -159,7 +159,7 @@ async function runAMSuite() {
         fullName: incUser.name,
         slug: `incomplete-am-${Date.now()}`,
         status: ApprovalStatus.PENDING,
-        onboardingStatus: AmOnboardingStatus.DRAFT,
+        onboardingStatus: OnboardingStatus.DRAFT,
       },
     });
     const incToken = generateAccessToken({ userId: incUser.id, role: Role.ACCOUNT_MANAGER });
@@ -258,7 +258,7 @@ async function runAMSuite() {
     assert(userEnquiriesRes.status === 403, 'Regular USER is denied (403 Forbidden) from AM enquiries');
 
     // Clean up temporary incomplete user
-    await prisma.accountManagerAgreementAcceptance.deleteMany({ where: { accountManagerId: incAm.id } });
+    await prisma.partnerAgreementAcceptance.deleteMany({ where: { partnerId: incAm.id } });
     await prisma.accountManager.delete({ where: { id: incAm.id } });
     await prisma.user.delete({ where: { id: incUser.id } });
 

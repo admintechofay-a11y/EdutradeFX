@@ -13,7 +13,9 @@ import {
 import {
   ApprovalStatus,
   BrokerOnboardingStatus,
-  AmOnboardingStatus,
+  OnboardingStatus,
+  AgreementAudience,
+  AgreementKind,
   AmEntityType,
   CourseStatus,
   NotificationType,
@@ -889,7 +891,7 @@ export class AdminService {
     const where: Prisma.AccountManagerWhereInput = {};
 
     if (query.status) where.status = query.status as ApprovalStatus;
-    if (query.onboardingStatus) where.onboardingStatus = query.onboardingStatus as AmOnboardingStatus;
+    if (query.onboardingStatus) where.onboardingStatus = query.onboardingStatus as OnboardingStatus;
     if (query.regulated === 'true') where.isRegulated = true;
     if (query.regulatoryVerified === 'true') where.regulatoryVerified = true;
 
@@ -1038,7 +1040,7 @@ export class AdminService {
     const updated = await prisma.accountManager.update({
       where: { id: amId },
       data: {
-        onboardingStatus: AmOnboardingStatus.CHANGES_REQUESTED,
+        onboardingStatus: OnboardingStatus.CHANGES_REQUESTED,
         changesRequestedNote: note.trim(),
         reviewedById: adminUserId || null,
         reviewedAt: new Date(),
@@ -1094,7 +1096,8 @@ export class AdminService {
   }
 
   async getAllAMAgreementsAdmin() {
-    return prisma.accountManagerAgreement.findMany({
+    return prisma.partnerAgreement.findMany({
+      where: { audience: AgreementAudience.ACCOUNT_MANAGER },
       orderBy: { id: 'asc' },
     });
   }
@@ -1104,14 +1107,26 @@ export class AdminService {
     data: { title?: string; body: string; isActive?: boolean },
     adminUserId?: string
   ) {
-    const agreement = await prisma.accountManagerAgreement.findUnique({ where: { key } });
+    const agreement = await prisma.partnerAgreement.findUnique({
+      where: {
+        audience_key: {
+          audience: AgreementAudience.ACCOUNT_MANAGER,
+          key,
+        },
+      },
+    });
     if (!agreement) throw new AppError('Agreement not found.', StatusCodes.NOT_FOUND);
 
     const isBodyChanged = data.body && data.body.trim() !== agreement.body.trim();
     const newVersion = isBodyChanged ? agreement.version + 1 : agreement.version;
 
-    return prisma.accountManagerAgreement.update({
-      where: { key },
+    return prisma.partnerAgreement.update({
+      where: {
+        audience_key: {
+          audience: AgreementAudience.ACCOUNT_MANAGER,
+          key,
+        },
+      },
       data: {
         ...(data.title ? { title: data.title.trim() } : {}),
         body: data.body.trim(),
@@ -1172,7 +1187,7 @@ export class AdminService {
         isRegulated: Boolean(data.isRegulated),
         regulatoryVerified: Boolean(data.regulatoryVerified),
         status: data.status || ApprovalStatus.APPROVED,
-        onboardingStatus: data.onboardingStatus || AmOnboardingStatus.SUBMITTED,
+        onboardingStatus: data.onboardingStatus || OnboardingStatus.SUBMITTED,
         isFeatured: data.isFeatured === true || data.isFeatured === 'true',
       },
     });

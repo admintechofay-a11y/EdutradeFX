@@ -93,10 +93,49 @@ enum AmEntityType {
   CORPORATE
 }
 
-enum AmOnboardingStatus {
+enum OnboardingStatus {
   DRAFT
   SUBMITTED
   CHANGES_REQUESTED
+}
+
+enum SpUpdateFrequency {
+  PER_SIGNAL
+  DAILY
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+}
+
+enum SpSubscriptionModel {
+  FREE
+  PAID
+}
+
+enum SpPlanPeriod {
+  MONTHLY
+  QUARTERLY
+  HALF_YEARLY
+  YEARLY
+  ONE_TIME
+}
+
+enum StatementAccountType {
+  LIVE
+  DEMO
+}
+
+enum AgreementAudience {
+  ACCOUNT_MANAGER
+  SIGNAL_PROVIDER
+  BROKER
+  ALL
+}
+
+enum AgreementKind {
+  AGREEMENT
+  COMMITMENT
+  DECLARATION
 }
 
 enum SettlementCycle {
@@ -132,6 +171,9 @@ enum BrokerOptionGroup {
   AM_BROKER_TYPE
   AM_RISK_TOLERANCE
   AM_SETTLEMENT_CYCLE
+  SP_TRADING_STYLE
+  SP_UPDATE_FREQUENCY
+  SP_PLAN_PERIOD
 }
 
 model BrokerOption {
@@ -894,7 +936,7 @@ model AccountManager {
   lossSharingPercent          Decimal?                            @db.Decimal(5, 2)
 
   // Workflow / Review / Completeness
-  onboardingStatus            AmOnboardingStatus                  @default(DRAFT)
+  onboardingStatus            OnboardingStatus                    @default(DRAFT)
   submittedAt                 DateTime?
   reviewedAt                  DateTime?
   reviewedById                String?
@@ -911,7 +953,7 @@ model AccountManager {
   documents                   AccountManagerDocument[]
   reviews                     AccountManagerReview[]
   enquiries                   Enquiry[]
-  agreementAcceptances        AccountManagerAgreementAcceptance[]
+  agreementAcceptances        PartnerAgreementAcceptance[]
 
   @@index([status])
   @@index([isFeatured])
@@ -943,33 +985,48 @@ model AccountManagerDocument {
   @@index([reviewStatus])
 }
 
-model AccountManagerAgreement {
-  id          String                               @id @default(uuid())
-  key         String                               @unique
+model PartnerAgreement {
+  id          String                      @id @default(uuid())
+  key         String
+  audience    AgreementAudience
+  kind        AgreementKind               @default(AGREEMENT)
   title       String
-  body        String                               @db.Text
-  version     Int                                  @default(1)
-  isActive    Boolean                              @default(true)
+  body        String                      @db.Text
+  version     Int                         @default(1)
+  isActive    Boolean                     @default(true)
   updatedById String?
-  createdAt   DateTime                             @default(now())
-  updatedAt   DateTime                             @updatedAt
-  acceptances AccountManagerAgreementAcceptance[]
+  createdAt   DateTime                    @default(now())
+  updatedAt   DateTime                    @updatedAt
+  acceptances PartnerAgreementAcceptance[]
+
+  @@unique([audience, key])
+  @@index([audience, isActive])
 }
 
-model AccountManagerAgreementAcceptance {
-  id               String                  @id @default(uuid())
-  accountManagerId String
+model PartnerAgreementAcceptance {
+  id               String            @id @default(uuid())
+  userId           String?
+  partnerType      AgreementAudience @default(ACCOUNT_MANAGER)
+  partnerId        String
   agreementKey     String
   version          Int
-  acceptedAt       DateTime                @default(now())
+  acceptedAt       DateTime          @default(now())
   ipAddress        String?
   userAgent        String?
-  accountManager   AccountManager          @relation(fields: [accountManagerId], references: [id], onDelete: Cascade)
-  agreement        AccountManagerAgreement @relation(fields: [agreementKey], references: [key], onDelete: Cascade)
 
-  @@unique([accountManagerId, agreementKey, version])
-  @@index([accountManagerId])
+  agreementId      String?
+  agreement        PartnerAgreement? @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+
+  accountManagerId String?
+  accountManager   AccountManager?   @relation(fields: [accountManagerId], references: [id], onDelete: Cascade)
+
+  signalProviderId String?
+  signalProvider   SignalProvider?   @relation(fields: [signalProviderId], references: [id], onDelete: Cascade)
+
+  @@unique([partnerId, agreementKey, version])
+  @@index([partnerId])
   @@index([agreementKey])
+  @@index([partnerType])
 }
 
 model AccountManagerReview {
@@ -991,38 +1048,116 @@ model AccountManagerReview {
 // ─── SIGNAL PROVIDER DIRECTORY ───────────────────────
 
 model SignalProvider {
-  id               String         @id @default(uuid())
-  userId           String         @unique
-  displayName      String
-  slug             String         @unique
-  photo            String?
-  bio              String?        @db.Text
-  instruments      String[]
-  strategy         String?
-  riskCategory     String?
-  winRate          Float?
-  totalSignals     Int            @default(0)
-  subscriptionPrice Float?
-  historicalPerformance String?   @db.Text
-  website          String?
-  disclaimer       String?        @db.Text
-  avgRating        Float          @default(0)
-  totalReviews     Int            @default(0)
-  verificationStatus Boolean      @default(false)
-  status           ApprovalStatus @default(PENDING)
-  isFeatured       Boolean        @default(false)
-  seoTitle         String?
-  seoDescription   String?
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  id                      String                  @id @default(uuid())
+  userId                  String                  @unique
+  displayName             String
+  slug                    String                  @unique
+  photo                   String?
+  bio                     String?                 @db.Text
+  instruments             String[]
+  strategy                String?                 // 100-char headline / name
+  riskCategory            String?                 // LOW, MEDIUM, HIGH, VERY_HIGH
+  winRate                 Float?                  // Computed from signals posted on EdutradeFX
+  totalSignals            Int                     @default(0)
+  subscriptionPrice       Float?                  // Deprecated: use plans table
+  historicalPerformance  String?                 @db.Text // Deprecated
+  website                 String?
+  disclaimer              String?                 @db.Text // Deprecated
+  avgRating               Float                   @default(0)
+  totalReviews            Int                     @default(0)
+  verificationStatus      Boolean                 @default(false) // Admin-granted verified badge (idVerified && statementVerified && LIVE)
+  status                  ApprovalStatus          @default(PENDING)
+  isFeatured              Boolean                 @default(false)
+  seoTitle                String?
+  seoDescription          String?
 
-  user             User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  documents        SignalProviderDocument[]
-  signals          Signal[]
-  reviews          SignalProviderReview[]
-  enquiries        Enquiry[]
+  // Section 1: Identity & Contact (Private / Admin-only)
+  legalFullName           String?
+  contactPhone            String?
+  residenceCountryCode    String?
+  residenceCountry        String?
+
+  // Section 2: Trading Experience
+  yearsTrading            Int?
+  tradingStyles           String[]
+  tradingStyleDescription String?                 @db.Text
+  previouslySignalProvider Boolean?
+  previousProviderDetails String?                 @db.Text
+
+  // Section 3: Performance Metrics (Self-declared)
+  declaredAvgMonthlyReturn Decimal?               @db.Decimal(6, 2)
+  declaredMaxDrawdown     Decimal?                @db.Decimal(5, 2)
+  declaredWinRate         Decimal?                @db.Decimal(5, 2)
+  preferredTimeframes     String[]
+  maxConsecutiveLosses    Int?
+  performancePeriodNote   String?
+
+  // Section 4: Risk Management
+  maxLeverageUsed         Int?
+  riskRewardPreference    String?
+  riskRewardValue         Float?
+  riskPhilosophy          String?                 @db.Text
+  usesHedgingOrMartingale Boolean?
+  usesHedging             Boolean                 @default(false)
+  usesMartingale          Boolean                 @default(false)
+  hedgingMartingaleNotes  String?                 @db.Text
+
+  // Section 5: Verification
+  performanceLink         String?
+  performanceLinkPlatform String?
+  performanceLinkVerified Boolean                 @default(false)
+  statementPeriodFrom     DateTime?
+  statementPeriodTo       DateTime?
+  statementAccountType    StatementAccountType?
+  idVerified              Boolean                 @default(false)
+  statementVerified       Boolean                 @default(false)
+
+  // Section 7: Additional Information
+  strategyDetail          String?                 @db.Text
+  specializedExpertise    String?                 @db.Text
+  marketAdaptation        String?                 @db.Text
+  uniqueValue             String?                 @db.Text
+
+  // Section 8: Investor Communication
+  updateFrequency         SpUpdateFrequency?
+  inquiryHandlingApproach String?                 @db.Text
+  offersLiveQA            Boolean?
+  liveQAFrequency         String?
+  telegramChannelUrl      String?
+
+  // Pricing / Plans
+  subscriptionModel       SpSubscriptionModel?
+
+  // Section 9: Declaration
+  declarationAcceptedAt   DateTime?
+
+  // Workflow / Review Lifecycle
+  onboardingStatus        OnboardingStatus        @default(DRAFT)
+  submittedAt             DateTime?
+  reviewedAt              DateTime?
+  reviewedById            String?
+  rejectionReason         String?                 @db.Text
+  changesRequestedNote    String?                 @db.Text
+  completionPercent       Int                     @default(0)
+  reviewFlags             Json?
+  publicSnapshot          Json?
+  profileUpdateRequiredBy DateTime?
+
+  createdAt               DateTime                @default(now())
+  updatedAt               DateTime                @updatedAt
+
+  user                    User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documents               SignalProviderDocument[]
+  signals                 Signal[]
+  reviews                 SignalProviderReview[]
+  enquiries               Enquiry[]
+  plans                   SignalProviderPlan[]
+  agreementAcceptances    PartnerAgreementAcceptance[]
 
   @@index([status])
+  @@index([onboardingStatus])
+  @@index([verificationStatus])
+  @@index([residenceCountryCode])
   @@index([isFeatured])
   @@index([avgRating])
 }
@@ -1032,9 +1167,39 @@ model SignalProviderDocument {
   signalProviderId String
   fileUrl          String
   fileName         String
-  docType          String
+  docType          String         // IDENTITY_DOCUMENT, ACCOUNT_STATEMENT, TRACK_RECORD_PROOF, OTHER
+  publicId         String?
+  isSensitive      Boolean        @default(true)
+  reviewStatus     ApprovalStatus @default(PENDING)
+  reviewNote       String?
+  periodFrom       DateTime?
+  periodTo         DateTime?
   createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
   signalProvider   SignalProvider @relation(fields: [signalProviderId], references: [id], onDelete: Cascade)
+
+  @@index([signalProviderId])
+  @@index([docType])
+  @@index([reviewStatus])
+}
+
+model SignalProviderPlan {
+  id               String             @id @default(uuid())
+  signalProviderId String
+  name             String
+  period           SpPlanPeriod
+  price            Decimal            @db.Decimal(10, 2)
+  currency         String             @default("USD")
+  description      String?            @db.Text
+  sortOrder        Int                @default(0)
+  isActive         Boolean            @default(true)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  signalProvider   SignalProvider     @relation(fields: [signalProviderId], references: [id], onDelete: Cascade)
+
+  @@index([signalProviderId])
 }
 
 model Signal {

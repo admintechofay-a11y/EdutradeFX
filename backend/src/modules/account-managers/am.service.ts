@@ -7,7 +7,9 @@ import { parsePagination } from '../../utils/pagination.utils';
 import {
   ApprovalStatus,
   AmEntityType,
-  AmOnboardingStatus,
+  OnboardingStatus,
+  AgreementAudience,
+  AgreementKind,
   EnquiryTargetType,
   NotificationType,
   Prisma,
@@ -349,7 +351,9 @@ export class AccountManagerService {
 
     // Recompute completion
     const refreshedDocs = await prisma.accountManagerDocument.findMany({ where: { accountManagerId: am.id } });
-    const acceptances = await prisma.accountManagerAgreementAcceptance.findMany({ where: { accountManagerId: am.id } });
+    const acceptances = await prisma.partnerAgreementAcceptance.findMany({
+      where: { partnerId: am.id, partnerType: AgreementAudience.ACCOUNT_MANAGER },
+    });
     const completion = calculateAMCompletion(am, refreshedDocs, acceptances);
     await prisma.accountManager.update({
       where: { id: am.id },
@@ -396,7 +400,9 @@ export class AccountManagerService {
 
     // Recompute completion
     const refreshedDocs = await prisma.accountManagerDocument.findMany({ where: { accountManagerId: am.id } });
-    const acceptances = await prisma.accountManagerAgreementAcceptance.findMany({ where: { accountManagerId: am.id } });
+    const acceptances = await prisma.partnerAgreementAcceptance.findMany({
+      where: { partnerId: am.id, partnerType: AgreementAudience.ACCOUNT_MANAGER },
+    });
     const completion = calculateAMCompletion(am, refreshedDocs, acceptances);
     await prisma.accountManager.update({
       where: { id: am.id },
@@ -410,8 +416,8 @@ export class AccountManagerService {
    * Retrieves active agreements for onboarding acceptance.
    */
   async getAgreements() {
-    return prisma.accountManagerAgreement.findMany({
-      where: { isActive: true },
+    return prisma.partnerAgreement.findMany({
+      where: { audience: AgreementAudience.ACCOUNT_MANAGER, isActive: true },
       select: {
         id: true,
         key: true,
@@ -441,10 +447,10 @@ export class AccountManagerService {
     const validated = acceptAgreementsSchema.parse(payload);
 
     for (const item of validated.acceptances) {
-      await prisma.accountManagerAgreementAcceptance.upsert({
+      await prisma.partnerAgreementAcceptance.upsert({
         where: {
-          accountManagerId_agreementKey_version: {
-            accountManagerId: am.id,
+          partnerId_agreementKey_version: {
+            partnerId: am.id,
             agreementKey: item.key,
             version: item.version,
           },
@@ -455,6 +461,8 @@ export class AccountManagerService {
           userAgent,
         },
         create: {
+          partnerType: AgreementAudience.ACCOUNT_MANAGER,
+          partnerId: am.id,
           accountManagerId: am.id,
           agreementKey: item.key,
           version: item.version,
@@ -466,14 +474,19 @@ export class AccountManagerService {
 
     // Master terms acceptance
     if (validated.master) {
-      const masterAg = await prisma.accountManagerAgreement.findUnique({
-        where: { key: MASTER_TERMS_KEY },
+      const masterAg = await prisma.partnerAgreement.findUnique({
+        where: {
+          audience_key: {
+            audience: AgreementAudience.ACCOUNT_MANAGER,
+            key: MASTER_TERMS_KEY,
+          },
+        },
       });
       const masterVersion = masterAg ? masterAg.version : 1;
-      await prisma.accountManagerAgreementAcceptance.upsert({
+      await prisma.partnerAgreementAcceptance.upsert({
         where: {
-          accountManagerId_agreementKey_version: {
-            accountManagerId: am.id,
+          partnerId_agreementKey_version: {
+            partnerId: am.id,
             agreementKey: MASTER_TERMS_KEY,
             version: masterVersion,
           },
@@ -484,6 +497,8 @@ export class AccountManagerService {
           userAgent,
         },
         create: {
+          partnerType: AgreementAudience.ACCOUNT_MANAGER,
+          partnerId: am.id,
           accountManagerId: am.id,
           agreementKey: MASTER_TERMS_KEY,
           version: masterVersion,
@@ -495,8 +510,8 @@ export class AccountManagerService {
 
     // Recompute completion
     const docs = await prisma.accountManagerDocument.findMany({ where: { accountManagerId: am.id } });
-    const acceptances = await prisma.accountManagerAgreementAcceptance.findMany({
-      where: { accountManagerId: am.id },
+    const acceptances = await prisma.partnerAgreementAcceptance.findMany({
+      where: { partnerId: am.id, partnerType: AgreementAudience.ACCOUNT_MANAGER },
     });
     const completion = calculateAMCompletion(am, docs, acceptances);
     await prisma.accountManager.update({
@@ -548,7 +563,9 @@ export class AccountManagerService {
     }
 
     // 3. Validate agreements acceptance (all 7 + master)
-    const activeAgreements = await prisma.accountManagerAgreement.findMany({ where: { isActive: true } });
+    const activeAgreements = await prisma.partnerAgreement.findMany({
+      where: { audience: AgreementAudience.ACCOUNT_MANAGER, isActive: true },
+    });
     for (const ag of activeAgreements) {
       const hasAccepted = am.agreementAcceptances.some(
         (acc) => acc.agreementKey === ag.key && acc.version >= ag.version
@@ -565,7 +582,7 @@ export class AccountManagerService {
     const updated = await prisma.accountManager.update({
       where: { id: am.id },
       data: {
-        onboardingStatus: AmOnboardingStatus.SUBMITTED,
+        onboardingStatus: OnboardingStatus.SUBMITTED,
         status: ApprovalStatus.PENDING,
         submittedAt: new Date(),
         rejectionReason: null,
@@ -927,7 +944,7 @@ export class AccountManagerService {
         seoTitle: data.seoTitle,
         seoDescription: data.seoDescription,
         status: ApprovalStatus.PENDING,
-        onboardingStatus: AmOnboardingStatus.DRAFT,
+        onboardingStatus: OnboardingStatus.DRAFT,
       },
     });
 

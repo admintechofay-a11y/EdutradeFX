@@ -15,9 +15,15 @@ import {
   GtcMode,
   Prisma,
   AmEntityType,
-  AmOnboardingStatus,
+  OnboardingStatus,
   RiskTolerance,
   SettlementCycle,
+  SpUpdateFrequency,
+  SpSubscriptionModel,
+  SpPlanPeriod,
+  StatementAccountType,
+  AgreementAudience,
+  AgreementKind,
 } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
@@ -1773,10 +1779,17 @@ async function main() {
   ];
 
   for (const ag of amAgreements) {
-    await prisma.accountManagerAgreement.upsert({
-      where: { key: ag.key },
-      update: {},
+    await prisma.partnerAgreement.upsert({
+      where: {
+        audience_key: {
+          audience: AgreementAudience.ACCOUNT_MANAGER,
+          key: ag.key,
+        },
+      },
+      update: { title: ag.title, body: ag.body },
       create: {
+        audience: AgreementAudience.ACCOUNT_MANAGER,
+        kind: AgreementKind.AGREEMENT,
         key: ag.key,
         title: ag.title,
         body: ag.body,
@@ -1786,6 +1799,92 @@ async function main() {
     });
   }
   console.log('✅ Account Manager agreements seeded.');
+
+  // Seed Signal Provider Agreements, Commitments & Declaration
+  const spAgreements = [
+    {
+      key: 'CLIENT_FUND_PROTECTION',
+      kind: AgreementKind.AGREEMENT,
+      title: 'Client Fund Protection Agreement',
+      body: `[DRAFT — replace with legal-approved text before launch]\nAll subscriber funds remain strictly within the subscriber's personal broker account. Signal providers do not solicit, accept, hold, or manage client capital directly.`,
+    },
+    {
+      key: 'SUBSCRIPTION_FEE_STRUCTURE',
+      kind: AgreementKind.AGREEMENT,
+      title: 'Subscription & Fees Structure Agreement',
+      body: `[DRAFT — replace with legal-approved text before launch]\nSignal providers agree to clearly disclose subscription fees, billing frequencies, and refund terms without concealed charges or deceptive pricing.`,
+    },
+    {
+      key: 'LOSS_RECOVERING',
+      kind: AgreementKind.AGREEMENT,
+      title: 'Loss Recovery Disclosure Agreement',
+      body: `[DRAFT — replace with legal-approved text before launch]\nSignal providers must transparently state risk limits and recovery procedures following drawdown periods, without guaranteeing recovery or employing undisclosed high-risk martingale recovery.`,
+    },
+    {
+      key: 'NO_PROFIT_SHARING',
+      kind: AgreementKind.AGREEMENT,
+      title: 'No Profit Sharing Policy',
+      body: `[DRAFT — replace with legal-approved text before launch]\nSignal providers are strictly prohibited from charging performance fees or claiming profit-sharing percentages on follower trading results.`,
+    },
+    {
+      key: 'DISPUTE_RESOLUTION',
+      kind: AgreementKind.AGREEMENT,
+      title: 'Dispute Resolution Protocol',
+      body: `[DRAFT — replace with legal-approved text before launch]\nGuidelines and mediation protocols for handling subscriber disputes, billing conflicts, and trade execution discrepancies transparently.`,
+    },
+    {
+      key: 'EDUCATIONAL_NON_LIABILITY',
+      kind: AgreementKind.AGREEMENT,
+      title: 'Educational Purpose & Non-Liability Agreement',
+      body: `[DRAFT — replace with legal-approved text before launch]\nSignals are for educational purposes only. EdutradeFX is not responsible for signals or trading results. Followers assume complete market risk.`,
+    },
+    {
+      key: 'COMMIT_TRANSPARENCY',
+      kind: AgreementKind.COMMITMENT,
+      title: 'Agreement to Operate Transparently',
+      body: `I commit to providing accurate and transparent information about my trading activities.`,
+    },
+    {
+      key: 'COMMIT_CLIENT_EDUCATION',
+      kind: AgreementKind.COMMITMENT,
+      title: 'Commitment to Client Education',
+      body: `I agree to educate clients about market risks, helping them make informed decisions.`,
+    },
+    {
+      key: 'COMMIT_ETHICAL_PRACTICES',
+      kind: AgreementKind.COMMITMENT,
+      title: 'Adherence to Ethical Practices',
+      body: `I pledge to uphold ethical standards in my trading and client interactions.`,
+    },
+    {
+      key: 'DECLARATION',
+      kind: AgreementKind.DECLARATION,
+      title: 'Signal Provider Declaration & Terms Confirmation',
+      body: `I confirm that all information provided is accurate, and I agree to comply with EdutradeFX's guidelines and principles. I understand that any misrepresentation may result in the termination of my Signal Provider account.`,
+    },
+  ];
+
+  for (const ag of spAgreements) {
+    await prisma.partnerAgreement.upsert({
+      where: {
+        audience_key: {
+          audience: AgreementAudience.SIGNAL_PROVIDER,
+          key: ag.key,
+        },
+      },
+      update: { title: ag.title, body: ag.body },
+      create: {
+        audience: AgreementAudience.SIGNAL_PROVIDER,
+        kind: ag.kind,
+        key: ag.key,
+        title: ag.title,
+        body: ag.body,
+        version: 1,
+        isActive: true,
+      },
+    });
+  }
+  console.log('✅ Signal Provider agreements seeded.');
 
   // 10. Seed Demo Account Manager: Marcus Vance (Apex Alpha Capital)
   const amUserEmail = 'accountmanager@demo.com';
@@ -1867,7 +1966,7 @@ async function main() {
       profitSharingPercent: 25.0,
       lossSharingPercent: 0.0,
       status: ApprovalStatus.APPROVED,
-      onboardingStatus: AmOnboardingStatus.SUBMITTED,
+      onboardingStatus: OnboardingStatus.SUBMITTED,
       completionPercent: 100,
       isFeatured: true,
       avgRating: 4.9,
@@ -1908,16 +2007,18 @@ async function main() {
 
   // Seed acceptances for demo AM
   for (const ag of amAgreements) {
-    await prisma.accountManagerAgreementAcceptance.upsert({
+    await prisma.partnerAgreementAcceptance.upsert({
       where: {
-        accountManagerId_agreementKey_version: {
-          accountManagerId: demoAM.id,
+        partnerId_agreementKey_version: {
+          partnerId: demoAM.id,
           agreementKey: ag.key,
           version: 1,
         },
       },
       update: {},
       create: {
+        partnerType: AgreementAudience.ACCOUNT_MANAGER,
+        partnerId: demoAM.id,
         accountManagerId: demoAM.id,
         agreementKey: ag.key,
         version: 1,
@@ -1927,6 +2028,70 @@ async function main() {
     });
   }
   console.log('✅ Demo Account Manager (Marcus Vance) seeded.');
+
+  // Seed acceptances for demo SP
+  for (const ag of spAgreements) {
+    await prisma.partnerAgreementAcceptance.upsert({
+      where: {
+        partnerId_agreementKey_version: {
+          partnerId: sp.id,
+          agreementKey: ag.key,
+          version: 1,
+        },
+      },
+      update: {},
+      create: {
+        partnerType: AgreementAudience.SIGNAL_PROVIDER,
+        partnerId: sp.id,
+        signalProviderId: sp.id,
+        agreementKey: ag.key,
+        version: 1,
+        ipAddress: '127.0.0.1',
+        userAgent: 'Seed-Script/1.0',
+      },
+    });
+  }
+
+  // Seed plans for demo SP
+  const spPlans = [
+    {
+      name: 'VIP Monthly Access',
+      period: SpPlanPeriod.MONTHLY,
+      price: new Prisma.Decimal('49.00'),
+      currency: 'USD',
+      description: 'Full real-time Telegram trade alerts with entry, stop loss, and 3 take profit tiers.',
+      sortOrder: 1,
+    },
+    {
+      name: 'VIP Quarterly Pass',
+      period: SpPlanPeriod.QUARTERLY,
+      price: new Prisma.Decimal('129.00'),
+      currency: 'USD',
+      description: 'Quarterly membership including private weekly market breakdown webinars.',
+      sortOrder: 2,
+    },
+  ];
+
+  for (const plan of spPlans) {
+    const existingPlan = await prisma.signalProviderPlan.findFirst({
+      where: { signalProviderId: sp.id, name: plan.name },
+    });
+    if (!existingPlan) {
+      await prisma.signalProviderPlan.create({
+        data: {
+          signalProviderId: sp.id,
+          name: plan.name,
+          period: plan.period,
+          price: plan.price,
+          currency: plan.currency,
+          description: plan.description,
+          sortOrder: plan.sortOrder,
+          isActive: true,
+        },
+      });
+    }
+  }
+  console.log('✅ Demo Signal Provider (AlphaWave) acceptances and plans seeded.');
 
   console.log('🎉 Seeding successfully finished!');
 }

@@ -1,6 +1,6 @@
 // AUTO-GENERATED from Dropbox_of__broker_.pdf and Account_Mannager.docx. Do not hand-edit counts.
 // Counts: REGULATOR 58 (+OTHER), LANGUAGE 133, CURRENCY 9 (+OTHER), LICENSE_STATUS 8, DEPOSIT_BONUS 21, LEVERAGE 23, TIMEFRAME 9, REGIONAL_FOOTPRINT 20, INSTRUMENT 20, AM_TRADING_STYLE 6, AM_PLATFORM 4, AM_BROKER_TYPE 3, AM_RISK_TOLERANCE 3, AM_SETTLEMENT_CYCLE 3
-export type BrokerOptionSeed = { group: 'REGULATOR'|'LANGUAGE'|'CURRENCY'|'LICENSE_STATUS'|'DEPOSIT_BONUS'|'LEVERAGE'|'TIMEFRAME'|'REGIONAL_FOOTPRINT'|'INSTRUMENT'|'AM_TRADING_STYLE'|'AM_PLATFORM'|'AM_BROKER_TYPE'|'AM_RISK_TOLERANCE'|'AM_SETTLEMENT_CYCLE'; code: string; label: string; sortOrder: number; meta: Record<string, unknown> };
+export type BrokerOptionSeed = { group: 'REGULATOR'|'LANGUAGE'|'CURRENCY'|'LICENSE_STATUS'|'DEPOSIT_BONUS'|'LEVERAGE'|'TIMEFRAME'|'REGIONAL_FOOTPRINT'|'INSTRUMENT'|'AM_TRADING_STYLE'|'AM_PLATFORM'|'AM_BROKER_TYPE'|'AM_RISK_TOLERANCE'|'AM_SETTLEMENT_CYCLE'|'SP_TRADING_STYLE'|'SP_UPDATE_FREQUENCY'|'SP_PLAN_PERIOD'; code: string; label: string; sortOrder: number; meta: Record<string, unknown> };
 export const BROKER_OPTIONS: BrokerOptionSeed[] = [
   { group: "REGULATOR", code: "ASIC", label: "(ASIC) Australia Securities & Investment Commission", sortOrder: 1, meta: {"acronym": "ASIC", "kind": "REGULATOR", "pdfPosition": 1} },
   { group: "REGULATOR", code: "NFA", label: "(NFA) National Futures Association", sortOrder: 2, meta: {"acronym": "NFA", "kind": "REGULATOR", "pdfPosition": 2} },
@@ -330,4 +330,23 @@ export const BROKER_OPTIONS: BrokerOptionSeed[] = [
   { group: "AM_SETTLEMENT_CYCLE", code: "DAILY", label: "Day", sortOrder: 1, meta: {} },
   { group: "AM_SETTLEMENT_CYCLE", code: "WEEKLY", label: "Week", sortOrder: 2, meta: {} },
   { group: "AM_SETTLEMENT_CYCLE", code: "MONTHLY", label: "Month", sortOrder: 3, meta: {} },
+  // SP_TRADING_STYLE (6)
+  { group: "SP_TRADING_STYLE", code: "DAY_TRADER", label: "Day Trader", sortOrder: 1, meta: {} },
+  { group: "SP_TRADING_STYLE", code: "SWING_TRADER", label: "Swing Trader", sortOrder: 2, meta: {} },
+  { group: "SP_TRADING_STYLE", code: "SCALPER", label: "Scalper", sortOrder: 3, meta: {} },
+  { group: "SP_TRADING_STYLE", code: "POSITION_TRADER", label: "Position Trader", sortOrder: 4, meta: {} },
+  { group: "SP_TRADING_STYLE", code: "NEWS_TRADER", label: "News Trader", sortOrder: 5, meta: {} },
+  { group: "SP_TRADING_STYLE", code: "ALGORITHMIC_TRADER", label: "Algorithmic / Automated Trader", sortOrder: 6, meta: {} },
+  // SP_UPDATE_FREQUENCY (5)
+  { group: "SP_UPDATE_FREQUENCY", code: "PER_SIGNAL", label: "Real-time per signal", sortOrder: 1, meta: {} },
+  { group: "SP_UPDATE_FREQUENCY", code: "DAILY", label: "Daily market updates", sortOrder: 2, meta: {} },
+  { group: "SP_UPDATE_FREQUENCY", code: "WEEKLY", label: "Weekly digest & recap", sortOrder: 3, meta: {} },
+  { group: "SP_UPDATE_FREQUENCY", code: "BIWEEKLY", label: "Bi-weekly updates", sortOrder: 4, meta: {} },
+  { group: "SP_UPDATE_FREQUENCY", code: "MONTHLY", label: "Monthly performance report", sortOrder: 5, meta: {} },
+  // SP_PLAN_PERIOD (5)
+  { group: "SP_PLAN_PERIOD", code: "MONTHLY", label: "Monthly", sortOrder: 1, meta: {} },
+  { group: "SP_PLAN_PERIOD", code: "QUARTERLY", label: "Quarterly (3 Months)", sortOrder: 2, meta: {} },
+  { group: "SP_PLAN_PERIOD", code: "HALF_YEARLY", label: "Semi-Annual (6 Months)", sortOrder: 3, meta: {} },
+  { group: "SP_PLAN_PERIOD", code: "YEARLY", label: "Annual (12 Months)", sortOrder: 4, meta: {} },
+  { group: "SP_PLAN_PERIOD", code: "ONE_TIME", label: "Lifetime / One-time Access", sortOrder: 5, meta: {} },
 ];

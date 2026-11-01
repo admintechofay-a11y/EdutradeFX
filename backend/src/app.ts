@@ -30,6 +30,8 @@ import contactRoutes from './modules/contact/contact.routes';
 import optionsRoutes from './modules/options/options.routes';
 import providerFormRoutes from './modules/provider-forms/form.routes';
 import serviceProviderRoutes from './modules/service-providers/provider.routes';
+import providerPublicRoutes from './modules/service-providers/provider.public.routes';
+import providerAdminRoutes from './modules/service-providers/provider.admin.routes';
 
 const app = express();
 
@@ -132,6 +134,8 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/options', optionsRoutes);
 app.use('/api/provider-forms', providerFormRoutes);
 app.use('/api/service-providers', serviceProviderRoutes);
+app.use('/api/solutions-providers', providerPublicRoutes);
+app.use('/api/admin/service-providers', providerAdminRoutes);
 
 // ── HEALTH CHECK ──────────────────────────────────
 app.get('/api/health', (req, res) => {

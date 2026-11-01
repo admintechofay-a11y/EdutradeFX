@@ -101,7 +101,9 @@ export const Navbar: React.FC = () => {
     if (!user) return '/dashboard';
     if (user.role === 'ADMIN') return '/admin';
     if (user.role === 'TUTOR') return '/dashboard/tutor';
+    if (user.role === 'ACCOUNT_MANAGER') return '/dashboard/account-manager';
     if (user.role === 'SIGNAL_PROVIDER') return '/dashboard/signal-provider';
+    if (user.role === 'SERVICE_PROVIDER') return '/dashboard/service-provider';
     if (user.role === 'BROKER') return '/dashboard/broker';
     return '/dashboard';
   };

@@ -27,3 +27,5 @@ export const StickyActionBar: React.FC<StickyActionBarProps> = ({
     </div>
   );
 };
+
+export default StickyActionBar;

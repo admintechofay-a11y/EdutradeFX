@@ -89,6 +89,13 @@ export function middleware(request: NextRequest) {
     if (pathname.startsWith('/dashboard/tutor') && payload.role !== 'TUTOR' && payload.role !== 'ADMIN') {
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
+    if (
+      pathname.startsWith('/dashboard/service-provider') &&
+      payload.role !== 'SERVICE_PROVIDER' &&
+      payload.role !== 'ADMIN'
+    ) {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
   }
 
   return NextResponse.next();

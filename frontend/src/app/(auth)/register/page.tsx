@@ -147,6 +147,7 @@ export default function RegisterPage() {
     { role: 'BROKER' as Role, label: 'Broker', desc: 'List your regulated broker & acquire verified trader leads', icon: Building2 },
     { role: 'ACCOUNT_MANAGER' as Role, label: 'Account Manager', desc: 'Offer audited PAMM / MAM portfolio management', icon: Users },
     { role: 'SIGNAL_PROVIDER' as Role, label: 'Signal Provider', desc: 'Publish audited trading signals & execution analytics', icon: Radio },
+    { role: 'SERVICE_PROVIDER' as Role, label: 'Solutions Provider', desc: 'List fintech tools, bridge tech, CRM, liquidity, or consulting', icon: Briefcase },
     { role: 'TUTOR' as Role, label: 'Course Instructor', desc: 'Create Academy masterclasses & monetize lessons', icon: GraduationCap },
   ];
 

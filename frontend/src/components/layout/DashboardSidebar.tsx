@@ -70,6 +70,21 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ onNavigate }
           { label: 'Provider Profile', href: '/dashboard/signal-provider/profile', icon: ShieldCheck },
           { label: 'Account Settings', href: '/dashboard/signal-provider/settings', icon: Settings },
         ];
+      case 'SERVICE_PROVIDER':
+        return [
+          { label: 'Overview', href: '/dashboard/service-provider', icon: LayoutDashboard },
+          { label: 'Company Profile', href: '/dashboard/service-provider/profile', icon: Building2 },
+          { label: 'Commercial Terms', href: '/dashboard/service-provider/commercial', icon: DollarSign },
+          { label: 'Categories', href: '/dashboard/service-provider/categories', icon: Bookmark },
+          { label: 'Category Forms', href: '/dashboard/service-provider/category-forms', icon: FileText },
+          { label: 'Products & Services', href: '/dashboard/service-provider/products', icon: PlusCircle },
+          { label: 'Key Team Members', href: '/dashboard/service-provider/team', icon: Users },
+          { label: 'Verification Vault', href: '/dashboard/service-provider/documents', icon: ShieldCheck },
+          { label: 'B2B Client Leads', href: '/dashboard/service-provider/enquiries', icon: MessageSquare },
+          { label: 'Reviews & Ratings', href: '/dashboard/service-provider/reviews', icon: Star },
+          { label: 'Declaration & Submit', href: '/dashboard/service-provider/submit', icon: ShieldAlert },
+          { label: 'Live Profile Preview', href: '/dashboard/service-provider/preview', icon: TrendingUp },
+        ];
       case 'TUTOR':
         return [
           { label: 'Overview', href: '/dashboard/tutor', icon: LayoutDashboard },

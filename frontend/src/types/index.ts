@@ -1,4 +1,4 @@
-export type Role = 'ADMIN' | 'BROKER' | 'ACCOUNT_MANAGER' | 'SIGNAL_PROVIDER' | 'TUTOR' | 'STUDENT';
+export type Role = 'ADMIN' | 'BROKER' | 'ACCOUNT_MANAGER' | 'SIGNAL_PROVIDER' | 'SERVICE_PROVIDER' | 'TUTOR' | 'STUDENT';
 
 export type ApprovalStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'SUSPENDED';
 export type BrokerBusinessType = 'MARKET_MAKER' | 'STP' | 'ECN' | 'DMA' | 'HYBRID' | 'OTHER';
@@ -926,3 +926,93 @@ export interface BrokerOption {
   isActive?: boolean;
 }
 
+// ---------------------------------------------------------------------------
+// SOLUTIONS PROVIDERS TYPES
+// ---------------------------------------------------------------------------
+
+export type ProviderAccountType = 'REGISTERED_COMPANY' | 'INDIVIDUAL_CONSULTANT' | 'OTHER';
+export type ProviderStatus = 'DRAFT' | 'SUBMITTED' | 'UNDER_REVIEW' | 'CHANGES_REQUESTED' | 'APPROVED' | 'REJECTED' | 'SUSPENDED';
+export type ProviderVerificationStatus = 'NOT_SUBMITTED' | 'PENDING' | 'VERIFIED' | 'REJECTED';
+export type ProviderCategoryStatus = 'NOT_STARTED' | 'DRAFT' | 'SUBMITTED' | 'UNDER_REVIEW' | 'APPROVED' | 'CHANGES_REQUESTED' | 'REJECTED';
+export type ProductStatus = 'DRAFT' | 'SUBMITTED' | 'UNDER_REVIEW' | 'CHANGES_REQUESTED' | 'APPROVED' | 'REJECTED' | 'SUSPENDED';
+export type ClaimType = 'DECLARED' | 'VERIFIABLE';
+
+export type FormFieldType =
+  | 'TEXT'
+  | 'TEXTAREA'
+  | 'RICH_TEXT'
+  | 'NUMBER'
+  | 'NUMBER_UNIT'
+  | 'PERCENT'
+  | 'MONEY'
+  | 'SINGLE_SELECT'
+  | 'MULTI_SELECT'
+  | 'YES_NO'
+  | 'YES_NO_DETAILS'
+  | 'TRI_STATE'
+  | 'URL'
+  | 'DATE'
+  | 'DATE_RANGE'
+  | 'COUNTRY_SINGLE'
+  | 'COUNTRY_MULTI'
+  | 'LOCATION'
+  | 'SCHEDULE'
+  | 'FILE'
+  | 'FILE_MULTI'
+  | 'REPEATABLE_GROUP'
+  | 'STATUS_OR_VALUE';
+
+export interface ProviderCategoryItem {
+  id: string;
+  number: number;
+  code: string;
+  name: string;
+  slug: string;
+  shortDescription?: string;
+  fullDescription?: string;
+  iconName?: string;
+  displayOrder: number;
+  isActive: boolean;
+  isPrimaryAllowed: boolean;
+  subcategories?: Array<{
+    id: string;
+    code: string;
+    label: string;
+    description?: string;
+    displayOrder: number;
+    isActive: boolean;
+  }>;
+  sections?: CategoryFormSectionItem[];
+}
+
+export interface CategoryFormSectionItem {
+  id: string;
+  letter: string;
+  name: string;
+  description?: string;
+  displayOrder: number;
+  isActive: boolean;
+  fields?: CategoryFormFieldItem[];
+}
+
+export interface CategoryFormFieldItem {
+  id: string;
+  key: string;
+  label: string;
+  helpText?: string;
+  type: FormFieldType;
+  required: boolean;
+  options?: any;
+  optionSource?: string;
+  allowOther?: boolean;
+  unitOptions?: any;
+  statuses?: any;
+  validation?: any;
+  visibleWhen?: any;
+  disjointWith?: string;
+  repeatable?: any;
+  visibility: 'PUBLIC' | 'ADMIN_ONLY';
+  claim: ClaimType;
+  displayOrder: number;
+  isActive: boolean;
+}

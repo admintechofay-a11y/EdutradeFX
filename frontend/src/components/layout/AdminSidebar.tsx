@@ -37,6 +37,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ onNavigate }) => {
     { label: 'Broker Directory & Audits', href: '/admin/brokers', icon: Building2 },
     { label: 'Account Managers', href: '/admin/account-managers', icon: Briefcase },
     { label: 'Signal Providers', href: '/admin/signal-providers', icon: Radio },
+    { label: 'Solutions Providers', href: '/admin/service-providers', icon: Briefcase },
+    { label: 'Provider Form Builder', href: '/admin/provider-forms', icon: Settings },
     { label: 'Course Quality Control', href: '/admin/courses', icon: BookOpen },
     { label: 'Instructors & Tutors', href: '/admin/tutors', icon: GraduationCap },
     { label: 'Tutor Payout Desk', href: '/admin/payouts', icon: DollarSign },

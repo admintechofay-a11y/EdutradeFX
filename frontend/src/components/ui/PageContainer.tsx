@@ -40,3 +40,5 @@ export const PageContainer: React.FC<PageContainerProps> = ({
     </Component>
   );
 };
+
+export default PageContainer;

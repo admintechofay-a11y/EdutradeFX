@@ -11,6 +11,7 @@ export const NAV_LINKS = [
   { label: 'Compare', href: '/compare' },
   { label: 'Account Managers', href: '/account-managers' },
   { label: 'Signals', href: '/signal-providers' },
+  { label: 'Solutions Providers', href: '/solutions-providers' },
   { label: 'Courses', href: '/courses' },
   { label: 'Complaint Box', href: '/complaint-box' },
   { label: 'About', href: '/about' },
@@ -22,6 +23,7 @@ export const ROLE_LABELS: Record<string, string> = {
   BROKER: 'Broker',
   ACCOUNT_MANAGER: 'Account Manager',
   SIGNAL_PROVIDER: 'Signal Provider',
+  SERVICE_PROVIDER: 'Solutions Provider',
   TUTOR: 'Instructor / Tutor',
   ADMIN: 'Compliance Admin',
 };

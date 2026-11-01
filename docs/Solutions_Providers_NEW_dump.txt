@@ -1,0 +1,1873 @@
+FINAL DONE FORM Solutions Providers
+EduTradeFX — Complete Solutions Providers Registration & Onboarding System
+Consolidated developer specification
+This is the complete, combined structure for your developer. It brings together the company registration form, multiple-category selection, all 10 category-specific forms, product/service registration, dropdown options, pricing, documents, verification, company profile and provider dashboard in one organised specification.
+The system will follow this principle:
+ONE COMPANY → MULTIPLE CATEGORIES → SEPARATE CATEGORY FORMS → MULTIPLE PRODUCTS → ONE COMPANY PROFILE.
+For example, Centroid Solutions can register once, select Categories 01, 03 and 06, complete those three technical forms, add its products, and appear in all three category directories using the same company profile.
+The structure below follows your Solutions Providers document and the category arrangement we developed from it.
+Solutions Providers (2).docx
+1. Final website categories
+Use these 10 main categories throughout the website, registration form, category filters and provider dashboard.
+
+--- TABLE START ---
+No. | Category | Main services
+01 | Trading Technology, Liquidity Bridges & Risk Management | Bridges, aggregation, order routing, dealing desk, risk and execution analytics
+02 | Liquidity Providers & Prime-of-Prime | Institutional liquidity, market access, prime-of-prime
+03 | CRM, Back Office & Client Management | CRM, client portals, IB management, onboarding and back office
+04 | Trading Platforms & Administrator Solutions | MT4/MT5, other platforms, white labels and platform administration
+05 | Payments & Banking Infrastructure | Payment gateways, banking, deposits, withdrawals and settlement
+06 | Hosting, VPS & Trading Infrastructure | VPS, dedicated servers, cloud, colocation and disaster recovery
+07 | Market Data, APIs & Connectivity | Market data, FIX, REST, WebSocket, SDK and connectivity
+08 | Compliance, KYC & Fraud Prevention | KYC, KYB, AML, identity checks and fraud monitoring
+09 | Brokerage Setup, Consulting & Other Services | Brokerage launch, consulting, integrations, migration and training
+10 | Trading Indicators & Trading Tools Providers | Indicators, signals, scanners, dashboards, EAs and trading tools
+--- TABLE END ---
+
+2. Complete registration journey
+Provider registration workflow
+Create Provider Account — register email, password and contact person.
+Company Information — enter company details once.
+Select Categories — select one or multiple categories.
+Category Forms — complete a separate technical form for each selected category.
+Products & Services — add individual products and assign them to categories.
+Pricing & Commercial Details — enter pricing for each product or service.
+Company & Team — add founders, owners and employees.
+Documents & Verification — upload company and product documents.
+Preview & Submit — review the complete company profile.
+Admin Review & Publication — approved information becomes public.
+3. Form 1 — Provider account registration
+Completed once
+
+--- TABLE START ---
+Field | Input type | Dropdown / options
+Provider account type | Single-select | Registered Company / Individual Service Provider / Technology Developer / Consultancy / Financial Institution / Other
+Contact person's full name | Text | —
+Job title | Text | —
+Business email | Email | —
+Country code | Dropdown | International country calling codes
+Business phone | Phone | —
+Password | Password | —
+Confirm password | Password | —
+Terms and conditions | Checkbox | Required
+Privacy policy | Checkbox | Required
+--- TABLE END ---
+
+Button: Create Provider Account
+4. Form 2 — Common company registration
+Completed once for the whole company
+A. Company identity
+
+--- TABLE START ---
+Field | Input type | Required
+Legal registered company name | Text | Yes
+Trading / brand name | Text | Yes
+Company registration number | Text | Where applicable
+Registration authority | Searchable dropdown | Where applicable
+Year established | Year dropdown | Yes
+Company website | URL | Yes
+Company business email | Email | Yes
+Main contact person | Text | Yes
+Contact person's designation | Text | Yes
+Business telephone | Phone with country code | Yes
+Company logo | Image upload | Yes
+Company cover image | Image upload | Optional
+Company tagline | Text, maximum 160 characters | Yes
+Company overview | Rich text | Yes
+Company presentation | PDF upload | Optional
+Company LinkedIn | URL | Optional
+Other social media links | Repeatable URL fields | Optional
+--- TABLE END ---
+
+Registration authority dropdown:
+Companies House — United Kingdom
+Registrar of Companies — India
+ASIC — Australia
+FCA — United Kingdom
+CySEC — Cyprus
+Dubai Department of Economy and Tourism
+Abu Dhabi Department of Economic Development
+DIFC Registrar of Companies
+ADGM Registration Authority
+SEC — United States
+FINRA — United States
+Other
+Not applicable
+The company must select its actual registration authority. Financial regulators and company registries are not interchangeable.
+B. Company address
+
+--- TABLE START ---
+Field | Input type | Options
+Headquarters country | Searchable dropdown | Full country list
+State / province | Dependent dropdown | Based on selected country
+City | Searchable dropdown + manual entry | Based on selected country/state
+Registered address | Address fields | Private verification
+Office locations | Repeatable address fields | Multiple offices
+Operating regions | Multi-select | Options below
+--- TABLE END ---
+
+Operating region dropdown — multi-select:
+United Kingdom & Europe (EEA)
+Rest of Europe
+Middle East
+North Africa
+Sub-Saharan Africa
+South Asia
+Southeast Asia
+East Asia
+Central Asia
+Australia & New Zealand
+North America
+Central America
+South America
+Caribbean
+Global
+Other
+C. Company size
+Single-select dropdown:
+1–10 employees
+11–50 employees
+51–200 employees
+201–500 employees
+501–1,000 employees
+1,001–5,000 employees
+5,000+ employees
+Prefer not to disclose
+D. Primary customer types
+Multi-select dropdown:
+Retail forex brokers
+Institutional brokers
+New brokerages
+Established brokerages
+Prop trading firms
+Hedge funds
+Asset managers
+Banks and financial institutions
+Introducing brokers
+Fintech companies
+Trading educators
+Technology partners
+Individual traders
+Developers
+Other
+E. Languages supported
+Multi-select dropdown:
+English
+Arabic
+Hindi
+Marathi
+French
+German
+Spanish
+Portuguese
+Italian
+Russian
+Turkish
+Chinese (Simplified)
+Chinese (Traditional)
+Japanese
+Korean
+Thai
+Indonesian
+Malay
+Vietnamese
+Bengali
+Urdu
+Other
+F. Customer support information
+Support availability:
+24/7
+24/5
+Business hours only
+Extended business hours
+By appointment
+Custom schedule
+Support channels — multi-select:
+Business email
+Support ticket
+Live chat
+Telephone
+Client portal
+Telegram
+WhatsApp Business
+Microsoft Teams
+Video conference
+Dedicated account manager
+Other
+Public contact preference:
+EduTradeFX enquiry form only
+Public business email
+Public business telephone
+Official website contact page
+Multiple contact methods
+No public direct contact
+Support days — multi-select:
+Monday
+Tuesday
+Wednesday
+Thursday
+Friday
+Saturday
+Sunday
+Public holidays
+Time zone: Searchable IANA time-zone dropdown, such as Asia/Kolkata, Europe/London, America/New_York, Asia/Dubai, Asia/Singapore.
+5. Form 3 — Multiple category selection
+Multi-select required
+Question: Which solutions does your company provide?
+Instruction: Select all categories that apply. Each selection automatically creates a separate category onboarding form.
+Select company categories
+6 selected
+Example selection. Try selecting or deselecting categories.
+01. Trading Technology, Liquidity Bridges & Risk Management
+Bridges, aggregation, execution and risk
+02. Liquidity Providers & Prime-of-Prime
+Institutional liquidity and market access
+03. CRM, Back Office & Client Management
+CRM, client portal, IB and back office
+04. Trading Platforms & Administrator Solutions
+Trading platforms and platform administration
+05. Payments & Banking Infrastructure
+Payments, banking and settlement
+06. Hosting, VPS & Trading Infrastructure
+Hosting, servers and infrastructure
+07. Market Data, APIs & Connectivity
+Data feeds and API connectivity
+08. Compliance, KYC & Fraud Prevention
+Identity, AML and fraud tools
+09. Brokerage Setup, Consulting & Other Services
+Broker launch and consulting
+10. Trading Indicators & Trading Tools Providers
+Indicators, signals and trading tools
+Forms that will be generated
+01 — Trading Technology, Liquidity Bridges & Risk Management
+03 — CRM, Back Office & Client Management
+06 — Hosting, VPS & Trading Infrastructure
+07 — Market Data, APIs & Connectivity
+08 — Compliance, KYC & Fraud Prevention
+09 — Brokerage Setup, Consulting & Other Services
+Preview Selected Category Forms
+Developer rules:
+Allow selection of all 10 categories.
+Do not create a separate company registration for each category.
+Show only selected category forms.
+Allow category additions later from the dashboard.
+Do not delete saved answers immediately when a category is deselected.
+Allow each category to be saved, completed and submitted independently.
+Admin can approve or reject each category separately.
+6. Form 4 — Category-specific technical onboarding forms
+Each selected category opens its own form. Every form has these common controls:
+Save Draft
+Save & Continue
+Back to Previous Section
+Preview Category
+Mark Category Complete
+Category 01 — Trading Technology, Liquidity Bridges & Risk Management
+A. Service types — multi-select
+Liquidity bridge
+Liquidity aggregator
+Bridge engine
+Gateway
+Order routing engine
+Execution management system
+Risk management software
+Dealing desk system
+Exposure monitoring
+Automated hedging
+A/B book management
+Toxic-flow detection
+Execution analytics
+Slippage monitoring
+Trade surveillance
+Reporting and analytics
+Other
+B. Product architecture — multi-select
+Bridge
+Gateway
+Aggregator
+Execution engine
+Risk engine
+Analytics platform
+Dealing desk dashboard
+API service
+Managed service
+Other
+C. Supported trading platforms — multi-select
+MetaTrader 4
+MetaTrader 5
+cTrader
+Match-Trader
+DXtrade
+TradeLocker
+TradingView
+Proprietary platform
+FIX API clients
+Other
+Not applicable
+D. Connectivity protocols — multi-select
+FIX 4.0
+FIX 4.2
+FIX 4.3
+FIX 4.4
+FIX 5.0
+REST API
+WebSocket
+Web API
+SDK
+Custom API
+Plugin
+Other
+E. Liquidity connectivity
+
+--- TABLE START ---
+Field | Input type
+Connected liquidity provider names | Repeatable company-name field
+Number of connected liquidity venues | Numeric
+Direct connectivity available | Yes / No / On request
+Multi-LP aggregation | Yes / No
+Custom LP integration | Yes / No / On request
+Depth of market | Yes / No
+Price aggregation | Yes / No
+Symbol mapping | Yes / No
+Backup liquidity source | Yes / No
+--- TABLE END ---
+
+F. Execution capabilities — multi-select
+Smart order routing
+Manual order routing
+Automatic order routing
+Best execution rules
+Order splitting
+Execution monitoring
+Latency monitoring
+Slippage analysis
+Requotes monitoring
+Execution reporting
+Market impact analysis
+Custom routing rules
+Other
+G. Risk capabilities — multi-select
+Real-time exposure monitoring
+Open position monitoring
+P&L monitoring
+Margin monitoring
+A/B book configuration
+Internalisation
+Automated hedging
+Manual hedging
+Exposure limits
+Account-level risk limits
+Group-level risk limits
+Instrument-level risk limits
+Toxic-flow detection
+Arbitrage detection
+Latency-abuse detection
+Automated alerts
+Risk reporting
+Historical analysis
+Other
+H. Deployment model — single-select
+Provider-hosted SaaS
+Dedicated cloud instance
+Customer-hosted
+On-premises
+Private cloud
+Hybrid deployment
+Managed deployment
+Custom
+I. Infrastructure and performance
+Primary server location — country/city
+Disaster recovery location — country/city
+Redundancy — Yes / No
+Failover — Yes / No
+Uptime SLA — percentage / Not published
+Order throughput — numeric + unit / Not disclosed
+Latency — numeric + unit / Not disclosed
+Measurement methodology — text
+Data retention — 30 days / 90 days / 180 days / 1 year / 3+ years / Custom
+Security controls — Encryption / Access control / IP restriction / MFA / Audit logs / Other
+Category 02 — Liquidity Providers & Prime-of-Prime
+A. Provider type — single-select
+Tier-1 liquidity provider
+Prime-of-Prime
+Prime broker
+Non-bank liquidity provider
+Bank liquidity provider
+Multi-asset liquidity provider
+Regional liquidity provider
+Other
+B. Liquidity model — multi-select
+Single-source liquidity
+Aggregated liquidity
+Disclosed liquidity
+Anonymous liquidity
+Direct market access
+Prime-of-Prime arrangement
+Custom arrangement
+Other
+C. Asset classes — multi-select
+Forex
+Precious metals
+Energy
+Commodities
+Global indices
+Equities
+ETFs
+Bonds
+Futures
+Options
+Digital assets / crypto
+Other
+D. Instruments offered — multi-select
+Major FX pairs
+Minor FX pairs
+Exotic FX pairs
+Gold
+Silver
+Platinum
+Oil
+Natural gas
+Global indices
+US equities
+European equities
+Asian equities
+Crypto pairs
+Other
+E. Execution model — multi-select
+Market execution
+Limit orders
+Stop orders
+IOC
+FOK
+GTC
+DMA
+Other
+F. Connectivity — multi-select
+FIX API
+REST API
+WebSocket
+MT4
+MT5
+cTrader
+Proprietary platform
+Other
+G. Trading conditions
+
+--- TABLE START ---
+Field | Input type / dropdown
+Minimum deposit / collateral | Amount + currency
+Minimum trade size | Numeric
+Maximum trade size | Numeric / Custom
+Commission model | Per million USD / Per lot / Per side / Round-turn / Percentage / Custom
+Spread model | Raw / Markup / Fixed / Variable / Custom
+Financing / swap schedule | File / URL / On request
+Margin terms | Text
+Credit facilities | Yes / No / Subject to approval
+Settlement currencies | Multi-select currency list
+Volume tiers | Repeatable pricing entries
+--- TABLE END ---
+
+H. Market coverage
+Trading sessions — Asian / European / London / New York / 24-hour / Custom
+Weekend trading — Yes / No / Instruments dependent
+Supported countries — country multi-select
+Restricted jurisdictions — country multi-select
+Trading hours — schedule
+Onboarding time — 1–3 days / 4–7 days / 1–2 weeks / 3–4 weeks / Custom
+Category 03 — CRM, Back Office & Client Management
+A. Product type — multi-select
+Forex CRM
+Broker CRM
+Client portal
+Back-office system
+IB management system
+Affiliate management
+PAMM system
+MAM system
+Copy trading management
+Prop-firm CRM
+Multi-entity CRM
+Reporting dashboard
+Other
+B. CRM modules — multi-select
+Lead management
+Sales pipeline
+Client registration
+Client onboarding
+KYC document management
+Account management
+Client segmentation
+Marketing automation
+Email notifications
+SMS notifications
+Push notifications
+Client retention
+Reporting and analytics
+User management
+Multi-language support
+Multi-brand support
+Other
+C. Back-office modules — multi-select
+Deposit management
+Withdrawal management
+Payment reconciliation
+Trading account management
+Account groups
+Account permissions
+Bonus management
+Commission management
+Rebate management
+IB hierarchy
+Multi-level IB
+Affiliate tracking
+Client reporting
+Financial reporting
+Audit logs
+Other
+D. Platform and service integrations — multi-select
+MT4
+MT5
+cTrader
+Match-Trader
+DXtrade
+TradeLocker
+TradingView
+Payment gateways
+KYC providers
+Liquidity bridges
+Email systems
+SMS systems
+Other
+E. Deployment — single-select
+Cloud SaaS
+Dedicated instance
+On-premises
+Private cloud
+Hybrid
+Custom
+F. Technical capabilities
+REST API — Yes / No
+Webhooks — Yes / No
+FIX integration — Yes / No / Not applicable
+Multi-tenant — Yes / No
+Multi-brand — Yes / No
+Multi-language — Yes / No
+Custom workflow — Yes / No
+Role-based permissions — Yes / No
+Audit logs — Yes / No
+Data export — CSV / Excel / PDF / API / Other
+G. Commercial model — multi-select
+Per active account
+Per registered client
+Per user
+Monthly subscription
+Annual subscription
+One-time licence
+Per module
+Custom enterprise pricing
+Category 04 — Trading Platforms & Administrator Solutions
+A. Provider role — single-select
+Platform owner
+Authorised platform distributor
+White-label provider
+Platform administrator
+Server administrator
+Platform technology integrator
+Managed platform service provider
+Other
+B. Platform type — multi-select
+MetaTrader 4
+MetaTrader 5
+cTrader
+Match-Trader
+DXtrade
+TradeLocker
+Proprietary platform
+Other
+C. Service type — multi-select
+Full trading platform
+White-label platform
+Platform licensing
+Platform server administration
+Server setup
+Platform migration
+Platform configuration
+Administrator tools
+Plugin integration
+Mobile application
+Web trading platform
+Desktop trading platform
+Platform maintenance
+Technical support
+Other
+D. Platform features — multi-select
+Desktop application
+Web terminal
+iOS application
+Android application
+Market execution
+Pending orders
+Advanced charting
+Technical indicators
+Expert Advisors
+Copy trading
+Multi-asset trading
+Account management
+Risk management
+Reporting
+API connectivity
+Multi-language support
+Other
+E. Administrator features — multi-select
+Server management
+User management
+Account group management
+Symbol management
+Trading conditions management
+Permissions management
+Plugin management
+Reporting and monitoring
+Backup and recovery
+Other
+F. Licensing and implementation
+Licensing arrangement — Direct / Authorised reseller / White-label agreement / Managed service / Other
+Branding customisation — Full / Partial / Not available
+Third-party dependencies — Yes / No + details
+Setup support — Yes / No
+Data migration — Yes / No
+Server migration — Yes / No
+Implementation time — 1–3 days / 4–7 days / 1–2 weeks / 3–4 weeks / Custom
+Category 05 — Payments & Banking Infrastructure
+A. Provider type — multi-select
+Payment gateway
+Payment service provider
+Payment orchestration platform
+Banking infrastructure provider
+Merchant account provider
+Card processing provider
+Local payment provider
+E-wallet provider
+Crypto payment processor
+Bank transfer provider
+Settlement provider
+Other
+B. Payment methods — multi-select
+Visa
+Mastercard
+Bank transfer
+SEPA
+SWIFT
+Faster Payments
+Local bank transfer
+UPI
+Net banking
+Digital wallets
+E-wallets
+QR payments
+Mobile payments
+Stablecoin payments
+Other
+C. Supported currencies — multi-select
+USD
+EUR
+GBP
+AED
+INR
+SGD
+AUD
+CAD
+CHF
+JPY
+CNY
+HKD
+ZAR
+USDT
+USDC
+Other
+D. Transaction capabilities
+Deposits — Yes / No
+Withdrawals — Yes / No
+Refunds — Yes / No
+Recurring payments — Yes / No
+Batch payments — Yes / No
+Payouts — Yes / No
+FX conversion — Yes / No
+Automated reconciliation — Yes / No
+Payment routing — Yes / No
+Chargeback management — Yes / No
+E. Integration methods — multi-select
+REST API
+Hosted checkout
+Payment plugin
+SDK
+Payment links
+Direct bank integration
+Webhooks
+Custom integration
+Other
+F. Settlement timing — single-select
+Real time
+Same business day
+T+1
+T+2
+T+3
+3–5 business days
+Custom
+G. Merchant eligibility — multi-select
+Registered companies
+Licensed financial businesses
+Forex brokers
+Prop trading firms
+Fintech companies
+Other eligible merchants
+Subject to approval
+H. Geographic availability
+Supported countries — country multi-select
+Restricted countries — country multi-select
+Settlement regions — region multi-select
+Merchant onboarding requirements — text
+Licence / registration details — text and evidence
+Official register URL — URL
+Category 06 — Hosting, VPS & Trading Infrastructure
+A. Hosting type — multi-select
+Forex VPS
+Trading VPS
+Dedicated server
+Cloud hosting
+Private cloud
+Colocation
+Managed server
+Disaster recovery infrastructure
+Backup hosting
+Network connectivity
+Other
+B. Hosting deployment — single-select
+Shared VPS
+Dedicated VPS
+Dedicated physical server
+Public cloud
+Private cloud
+Hybrid infrastructure
+Colocation
+Custom
+C. Data centre locations — multi-select
+London LD4
+New York NY4
+Tokyo TY3
+Singapore SG3
+Amsterdam
+Frankfurt
+Paris
+Zurich
+Dubai
+Mumbai
+Hong Kong
+Sydney
+Other
+The provider must confirm the exact facility and location before publication.
+D. Operating systems — multi-select
+Windows Server
+Windows Desktop
+Ubuntu Linux
+Debian
+CentOS / compatible distributions
+Red Hat Enterprise Linux
+Other
+E. Hardware specifications
+
+--- TABLE START ---
+Field | Dropdown / input
+CPU model | Text
+CPU cores | Numeric
+RAM | 2 / 4 / 8 / 16 / 32 / 64 / 128 GB / Custom
+Storage | 40 / 80 / 100 / 200 / 500 GB / 1 / 2 TB / Custom
+Storage type | SSD / NVMe / HDD / Other
+Bandwidth | 100 Mbps / 1 Gbps / 10 Gbps / Custom
+Dedicated IP | Yes / No
+IP version | IPv4 / IPv6 / Both
+--- TABLE END ---
+
+F. Platform compatibility — multi-select
+MT4
+MT5
+cTrader
+Match-Trader
+DXtrade
+TradeLocker
+TradingView
+Other
+G. Performance and security
+Latency measurement location — dropdown / text
+Measurement methodology — text
+Uptime SLA — 99.0% / 99.5% / 99.9% / 99.95% / 99.99% / Custom / Not published
+DDoS protection — Yes / No
+Firewall — Yes / No
+Backup — Daily / Weekly / Real time / Custom
+Disaster recovery — Yes / No
+Monitoring — 24/7 / Business hours / On request
+Support — 24/7 / 24/5 / Business hours / Custom
+Category 07 — Market Data, APIs & Connectivity
+A. Service type — multi-select
+Forex market data
+Real-time market data
+Historical market data
+Market data feeds
+FIX connectivity
+REST API
+WebSocket API
+Financial data API
+Economic data
+Charting data
+Pricing feeds
+Reference data
+Data aggregation
+Connectivity services
+Other
+B. Asset coverage — multi-select
+Forex
+Metals
+Energy
+Commodities
+Indices
+Equities
+ETFs
+Bonds
+Futures
+Options
+Crypto
+Other
+C. API protocol — multi-select
+REST
+WebSocket
+FIX
+SOAP
+GraphQL
+SDK
+Webhooks
+Custom protocol
+Other
+D. Data frequency — single-select
+Real-time streaming
+Tick-by-tick
+Sub-second
+1-second
+5-second
+1-minute
+5-minute
+15-minute
+End-of-day
+Historical only
+Custom
+E. Historical data coverage — single-select
+Less than 1 year
+1–3 years
+3–5 years
+5–10 years
+10+ years
+Custom
+F. Developer support — multi-select
+Public documentation
+Private documentation
+Sandbox
+Test credentials
+SDK
+Code examples
+Developer support
+Integration assistance
+Webhooks
+Other
+G. Usage limits
+API rate limit — numeric + unit
+Streaming connection limit — numeric
+Concurrent users — numeric
+Data retention — 30 days / 90 days / 180 days / 1 year / 3+ years / Custom
+Redistribution permitted — Yes / No / Licence dependent
+Usage pricing — details
+Category 08 — Compliance, KYC & Fraud Prevention
+A. Solution type — multi-select
+KYC verification
+KYB verification
+AML screening
+Sanctions screening
+PEP screening
+Identity verification
+Document verification
+Face verification
+Liveness detection
+Fraud detection
+Transaction monitoring
+Risk scoring
+Device fingerprinting
+Behavioural analysis
+Adverse media screening
+Ongoing monitoring
+Other
+B. Verification methods — multi-select
+Passport verification
+National ID verification
+Driving licence verification
+Proof of address
+Selfie verification
+Facial matching
+Liveness check
+Business registration verification
+Beneficial ownership verification
+Database screening
+Other
+C. Geographic coverage
+Supported countries — country multi-select
+Supported document countries — country multi-select
+Restricted jurisdictions — country multi-select
+Data residency locations — country/region multi-select
+D. Technical integration — multi-select
+REST API
+Webhooks
+SDK
+Hosted verification page
+Dashboard
+CRM integration
+Client portal integration
+Custom integration
+Other
+E. Monitoring features — multi-select
+Real-time alerts
+Manual review
+Escalation workflow
+Case management
+Audit trail
+Risk scoring
+Automated decision rules
+Ongoing monitoring
+Reporting
+Other
+F. Security and privacy
+Data encryption — Yes / No + details
+Data retention policy — text
+Data residency — country/region dropdown
+ISO certification — Yes / No / Not applicable + evidence
+SOC report — Yes / No / Not applicable + evidence
+Other security attestations — repeatable
+Privacy policy URL
+Security documentation URL
+Category 09 — Brokerage Setup, Consulting & Other Services
+A. Service type — multi-select
+Forex brokerage setup
+Broker business consulting
+Business planning
+Brokerage technology selection
+MT4 / MT5 setup assistance
+White-label setup
+Platform administration
+Liquidity provider selection
+Liquidity bridge integration
+CRM implementation
+Back-office implementation
+Payment gateway integration
+Risk management implementation
+IB network infrastructure
+IB and rebate setup
+PAMM / MAM implementation
+Copy trading implementation
+Prop-firm setup
+Website development
+Branding and marketing
+Staff training
+Operational consulting
+Migration services
+Ongoing technical support
+Other
+B. Customer business stage — multi-select
+Idea / planning stage
+Pre-launch
+New brokerage
+Recently launched
+Established brokerage
+Expansion
+Technology migration
+Operational restructuring
+C. Consulting areas — multi-select
+Business model planning
+Technology architecture
+Platform selection
+Liquidity planning
+Risk management
+Payment infrastructure
+CRM and back office
+Compliance coordination
+Operational workflow
+Marketing and client acquisition
+IB network growth
+Other
+D. Jurisdictions covered
+Countries — country multi-select
+Regions — region multi-select
+Local partner available — Yes / No
+Remote services — Yes / No
+On-site consulting — Yes / No
+E. Project delivery model — multi-select
+Fixed project
+Hourly consulting
+Daily consulting
+Monthly retainer
+Annual contract
+Milestone-based
+Custom proposal
+F. Project timeline — single-select
+Less than 1 week
+1–2 weeks
+3–4 weeks
+1–2 months
+3–6 months
+6–12 months
+Custom
+G. Deliverables and responsibilities
+Project deliverables — rich text
+Exclusions / limitations — rich text
+Client responsibilities — rich text
+Required client documents — multi-select
+Project phases — repeatable entries
+Implementation timeline — text
+Consultant qualifications — text / uploads
+Case studies — URL / PDF
+Ongoing support — Yes / No
+Change-request pricing — details
+Licensing, legal and regulatory services must be described within the provider's actual authority and qualifications. A consultant must not be presented as a regulator or licence issuer.
+Category 10 — Trading Indicators & Trading Tools Providers
+This category needs a separate provider form and an individual product form.
+A. Provider type — single-select
+Registered company
+Individual developer
+Development team
+Trading educator
+Technology vendor
+Other
+B. Developer information
+Provider / developer name — text
+Logo or developer photo — image
+Short introduction — text, max 160 characters
+Full biography — rich text
+Website — URL
+LinkedIn profile — URL
+TradingView profile — URL
+MQL5 profile — URL
+Country — searchable dropdown
+City — text
+Business email — email
+Public contact preference — dropdown
+Development experience — dropdown
+Supported languages — multi-select
+Verification documents — private upload
+Development experience dropdown:
+Less than 1 year
+1–2 years
+3–5 years
+6–10 years
+10+ years
+Prefer not to disclose
+Public contact preference:
+EduTradeFX contact form
+Business email
+Official website
+Public business phone
+No direct contact
+C. Individual indicator / trading tool type — single-select
+Technical indicator
+Buy / sell signal indicator
+Smart Money Concepts indicator
+Price action indicator
+Trend indicator
+Support and resistance tool
+Volume and order-flow tool
+Market scanner
+Trading dashboard
+Risk management tool
+Trade management panel
+Charting / drawing plugin
+Indicator bundle
+Expert Advisor / automated trading tool
+Other
+D. Main purpose — multi-select
+Trend identification
+Entry signals
+Exit signals
+Support and resistance
+Market structure
+Volatility analysis
+Volume analysis
+Risk management
+Trade management
+Alerts
+Market scanning
+Backtesting
+Other
+E. Platform compatibility — multi-select
+MetaTrader 4
+MetaTrader 5
+TradingView
+cTrader
+Match-Trader
+NinjaTrader
+Thinkorswim
+Other
+F. File format — multi-select
+EX4
+EX5
+Pine Script
+Source code
+DLL
+Plugin
+Web application
+Other
+G. Operating system — multi-select
+Windows
+macOS
+Linux
+Web
+Android
+iOS
+Other
+H. Supported timeframes — multi-select
+M1
+M5
+M15
+M30
+H1
+H4
+D1
+W1
+MN
+Custom
+I. Supported instruments — multi-select
+Forex
+Gold
+Silver
+Commodities
+Indices
+Equities
+Crypto
+Other
+J. Indicator methodology — single-select
+Trend following
+Scalping
+Momentum
+Breakout
+Reversal
+Price action
+Smart Money Concepts
+Support and resistance
+Volume / order flow
+Volatility
+Multi-timeframe
+Statistical / quantitative
+Other
+K. Features — multi-select
+Buy / sell signals
+Trend identification
+Support / resistance detection
+Market structure analysis
+Entry and exit levels
+Stop-loss levels
+Take-profit levels
+Risk-reward display
+Multi-timeframe analysis
+Custom alerts
+Historical signals
+Dashboard
+Other
+L. Technical disclosures
+Product version — text
+Release date — date
+Last update — date
+Source code included — Yes / No / Separate licence
+EA integration — Supported / Not supported / Requires configuration
+Multi-timeframe support — Yes / No
+Customisable parameters — Yes / No
+Alert types — Popup / Sound / Email / Push / Webhook / None
+Trial duration — number of days
+Calculation methodology — text
+Repainting behaviour — Does not repaint, supported by disclosed testing / May repaint under specified conditions / Not established / Other
+Backtest evidence — optional upload / URL
+Testing methodology — text
+Testing period — date range
+Transaction costs included — Yes / No / Not applicable
+Known limitations — text
+M. Product screenshots and gallery
+For each image:
+Image upload
+Image title
+Description
+Platform
+Timeframe
+Instrument / symbol
+Screenshot type — Main chart / Buy signal / Sell signal / Settings / Dashboard / Backtest / Multi-timeframe / Other
+Cover image — Yes / No
+Display order
+Rights confirmation
+N. Trading tool licence and pricing
+Access type — Free / Paid / Freemium / Subscription / Custom licence
+Currency — USD / EUR / GBP / INR / AED / SGD / Other
+Payment frequency — One-time / Monthly / Quarterly / Annual / Lifetime / Custom
+Licence type — Personal / Commercial / Multi-user / Broker / Prop-firm / Developer / Other
+Price — amount
+Free trial — Yes / No
+Trial duration — number of days
+Demo available — Yes / No
+Permitted devices — numeric / Unlimited
+Updates included — Yes / No
+Support included — Yes / No
+Refund policy — text / URL
+Purchase link — URL
+Terms and conditions — URL
+7. Form 5 — Product / Service registration
+Completed separately for every product
+This is a separate form from company registration and category onboarding. Every provider can add as many products and services as required.
+A. Basic product information
+
+--- TABLE START ---
+Field | Input type
+Product / service name | Text
+Product logo | Image upload
+Product thumbnail | Image upload
+Short description | Text, max 160 characters
+Full description | Rich text editor
+Product type | Single-select dropdown
+Product version | Text
+Initial release date | Date picker
+Latest update date | Date picker
+Product status | Dropdown
+Official product URL | URL
+Product brochure | PDF upload
+User guide | PDF / URL
+Demo URL | URL
+--- TABLE END ---
+
+Product type dropdown:
+Software
+Web application
+Desktop application
+Mobile application
+Trading platform
+Trading plugin
+API / SDK
+Bridge / Gateway
+Liquidity service
+Hosting service
+Managed infrastructure
+Payment solution
+Financial data service
+Compliance solution
+Consulting service
+Brokerage setup service
+Trading indicator
+Trading signal
+Expert Advisor
+Other
+Product status dropdown:
+Available
+Limited availability
+Beta
+Under development
+Discontinued
+B. Product category assignment
+Select category — multi-select from the company's selected categories.
+Select subcategory — dependent dropdown.
+Select primary category — single-select from assigned categories.
+Additional category assignment — multi-select.
+Subcategory options:
+
+--- TABLE START ---
+Category | Options
+01 | Bridge Engine / Liquidity Aggregator / Order Routing / Risk Engine / Dealing Desk / Execution Analytics
+02 | Forex Liquidity / Multi-Asset Liquidity / Prime-of-Prime / Institutional Liquidity / Market Access
+03 | Forex CRM / Client Portal / Back Office / IB Management / PAMM / MAM / Copy Trading / Reporting
+04 | MT4 / MT5 / cTrader / White Label / Platform Administration / Server Management
+05 | Payment Gateway / Card Processing / Bank Transfer / Payment Orchestration / Banking API / Crypto Payments
+06 | VPS / Dedicated Server / Cloud Hosting / Colocation / Managed Hosting / Disaster Recovery
+07 | Real-Time Market Data / Historical Data / FIX API / REST API / WebSocket / Data Feeds
+08 | KYC / KYB / AML / Identity Verification / Fraud Detection / Transaction Monitoring
+09 | Brokerage Setup / Licensing Guidance / Technology Consulting / Integration / Migration / Training
+10 | Technical Indicator / Buy-Sell Signal / EA / Market Scanner / Trading Dashboard / Trade Management Tool
+--- TABLE END ---
+
+C. Product features and capabilities
+Main product purpose — multi-select:
+Brokerage operations
+Trading execution
+Liquidity management
+Risk management
+Client onboarding
+Client management
+Payment processing
+Market data delivery
+Platform administration
+Infrastructure management
+Compliance and verification
+Trading analysis
+Trading signals
+Automated trading
+Reporting and analytics
+Other
+Key features — repeatable checklist.
+Additional features — repeatable text.
+Product benefits — rich text.
+Target customers — multi-select:
+Retail brokers
+Institutional brokers
+New brokerages
+Established brokers
+Prop firms
+Hedge funds
+Asset managers
+Banks
+Introducing brokers
+Fintech companies
+Individual traders
+Developers
+Other
+Product limitations — rich text.
+Product use cases — rich text.
+D. Technical specifications
+
+--- TABLE START ---
+Field | Input type / options
+Product architecture | Dropdown / text
+Deployment model | Provider-hosted SaaS / Dedicated cloud / Customer-hosted / Public cloud / Private cloud / On-premises / Hybrid / Managed service / Custom
+Hosting requirement | No hosting required / Provider-hosted / Customer server / VPS / Dedicated server / Cloud / Custom
+Operating system | Windows / Windows Server / macOS / Linux / Ubuntu / Android / iOS / Web / Other / Not applicable
+Hardware requirements | Text
+Supported versions | Text
+Technical documentation | URL / PDF
+Security features | Encryption / Access control / IP restriction / MFA / Audit logs / Other
+Data retention | 30 days / 90 days / 180 days / 1 year / 3+ years / Custom
+Implementation time | Instant / 1–3 days / 4–7 days / 1–2 weeks / 3–4 weeks / 1–2 months / 3–6 months / Custom
+Technical prerequisites | Rich text
+--- TABLE END ---
+
+E. Platform compatibility and integrations
+Supported platforms — multi-select:
+MetaTrader 4
+MetaTrader 5
+cTrader
+Match-Trader
+DXtrade
+TradeLocker
+TradingView
+NinjaTrader
+Proprietary platform
+Other
+Not applicable
+Integration methods — multi-select:
+FIX
+REST API
+WebSocket
+SDK
+Plugin
+Webhook
+Direct server integration
+Database integration
+Custom integration
+Not applicable
+Integration capabilities — multi-select:
+CRM integration
+Liquidity provider integration
+Payment gateway integration
+Trading platform integration
+KYC provider integration
+Risk management integration
+Reporting integration
+Client portal integration
+Third-party software integration
+Other
+Integration availability — single-select:
+Ready to use
+Requires configuration
+Custom development
+Not available
+On request
+Additional fields:
+Integration partner name
+Integration documentation URL
+Integration fee — Included / Paid / Custom quote
+F. Product images, videos and documents
+Allow multiple uploads.
+For each image:
+Image file
+Image title
+Image description
+Image type
+Platform
+Display order
+Cover image — Yes / No
+Publishing rights confirmation
+Image type dropdown:
+Main product image
+Dashboard screenshot
+Software interface
+Technical architecture
+Product features
+Integration diagram
+Trading screenshot
+Settings / configuration
+Other
+Video type dropdown:
+Product demonstration
+Platform walkthrough
+Installation tutorial
+Feature explanation
+Webinar
+Other
+Document type dropdown:
+Product brochure
+Technical specification
+API documentation
+Installation guide
+User manual
+Integration guide
+Terms and conditions
+Licence agreement
+Security documentation
+Other
+G. Product-level pricing
+Pricing visibility — single-select:
+Public pricing
+Starting price
+Indicative pricing
+Custom quotation only
+Confidential
+Free
+Pricing model — multi-select:
+Free
+One-time licence
+Monthly subscription
+Quarterly subscription
+Annual subscription
+Per account
+Per active client
+Per user
+Per lot
+Per million trading volume
+Per transaction
+Percentage based
+Usage based
+Project based
+Hourly consulting
+Daily consulting
+Monthly retainer
+Enterprise contract
+Custom
+Currency — single-select:
+USD
+EUR
+GBP
+AED
+INR
+SGD
+AUD
+CAD
+CHF
+JPY
+ZAR
+Other
+
+--- TABLE START ---
+Field | Input
+Product price | Amount
+Setup fee | Amount / Custom / Not applicable
+Monthly fee | Amount / Custom / Not applicable
+Annual fee | Amount / Custom / Not applicable
+Per-account fee | Amount + unit
+Per-user fee | Amount + unit
+Per-transaction fee | Amount / percentage
+Minimum commitment | Amount / None / Custom
+Contract duration | No minimum / 1 / 3 / 6 / 12 / 24 / 36 months / Custom
+Implementation fee | Amount / Custom / Included
+Support fee | Included / Separate fee / Custom
+Additional modules | Repeatable price records
+Free trial | Yes / No
+Trial duration | Number of days
+Enterprise discount | Yes / No / On request
+Tax treatment | Inclusive / Exclusive / Depends on jurisdiction
+Pricing validity | Date
+Pricing URL | URL
+--- TABLE END ---
+
+If the provider selects Custom Quote or Confidential, hide public price fields unless needed for admin review.
+H. Product support and maintenance
+Support hours:
+24/7
+24/5
+Business hours
+Custom
+Support channels — multi-select:
+Email
+Live chat
+Telephone
+Support ticket
+Client portal
+Dedicated account manager
+Other
+Maintenance — single-select:
+Included
+Separate fee
+On request
+Not available
+Additional fields:
+Technical support included — Yes / No / Paid
+Software updates — Included / Paid / Custom
+Product warranty — Details / Not applicable
+Response time — Numeric hours / Business-day commitment / Custom / Not published
+I. Product submission
+Save as Draft
+Preview Product
+Submit for Review
+Product status:
+Draft
+Submitted
+Under Review
+Changes Requested
+Approved
+Rejected
+Archived
+8. Form 6 — Pricing and commercial information for the company
+This section stores the company's overall commercial information. Actual product prices remain in the individual product forms.
+
+--- TABLE START ---
+Field | Input type / dropdown
+Overall pricing approach | Public / Starting price / Indicative / Custom quote / Confidential
+Preferred contract type | One-time / Monthly / Quarterly / Annual / Project-based / Custom
+Accepted currencies | USD / EUR / GBP / AED / INR / SGD / AUD / CAD / CHF / JPY / Other
+Minimum engagement | No minimum / 1 month / 3 months / 6 months / 12 months / Custom
+Enterprise proposals | Yes / No
+Negotiable pricing | Yes / No / Case by case
+Implementation charges | Included / Separate / Custom
+Support charges | Included / Separate / Custom
+Renewal terms | Text
+Cancellation terms | Text
+Tax treatment | Inclusive / Exclusive / Jurisdiction dependent
+Commercial contact | Company contact / Account manager / Enquiry form
+Pricing brochure | PDF upload
+Terms and conditions | URL / PDF
+--- TABLE END ---
+
+9. Form 7 — Company, founders, owners and team
+Allow unlimited team member entries through + Add Team Member.
+A. Team member form
+
+--- TABLE START ---
+Field | Input type
+Full name | Text
+Profile photograph | Image upload
+Job title | Text
+Department | Dropdown
+Biography | Rich text
+LinkedIn profile | URL
+Employment status | Dropdown
+Start year | Year
+Previous experience | Text
+Certifications | Repeatable entries
+Expertise | Multi-select
+Associated products | Multi-select from company catalogue
+Public contact preference | Dropdown
+Profile visibility | Dropdown
+--- TABLE END ---
+
+Department dropdown:
+Founder / Leadership
+Executive Management
+Technology
+Product
+Engineering
+Sales
+Business Development
+Marketing
+Operations
+Risk Management
+Compliance
+Finance
+Customer Support
+Other
+Employment status:
+Current employee
+Former employee
+Consultant
+Contractor
+Board member
+Other
+Public contact preference:
+Contact through company enquiry form
+Public business email
+Public business phone
+No direct contact
+Profile visibility:
+Public searchable profile
+Visible only on company profile
+Private — admin only
+B. Founder / ownership information
+Person's name
+Founder / Co-founder / Current owner / Director / Other
+Current designation
+LinkedIn profile
+Biography
+Ownership disclosure — Public / Private / Not disclosed
+Ownership percentage — optional, private by default
+Supporting evidence — private upload
+Do not assume that a founder is necessarily a current owner. Private ownership details must not be publicly displayed without explicit authorisation.
+10. Form 8 — Company documents and verification
+A. Document type — multi-select
+Company registration certificate
+Business licence
+Financial services licence
+Regulatory registration
+Registered address proof
+Tax registration
+Ownership / director document
+Security certificate
+ISO certificate
+SOC report
+Industry membership
+Product authorisation
+Other
+For each document:
+Document name
+Issuing authority
+Registration / certificate number
+Issue date
+Expiry date
+Official verification URL
+File upload
+Public or private visibility
+B. Company evidence
+Official company website
+Official regulator / registration link
+Company social profile
+Product documentation
+Integration partner evidence
+Client references (with permission)
+Case studies
+Support documentation
+Terms of service
+Privacy policy
+Verification consent
+Declaration of information accuracy
+Admin-only verification status:
+Not submitted
+Pending review
+Under verification
+Verified
+Partially verified
+Rejected
+Expired
+Suspended
+A company must not automatically receive a Verified Provider badge just because it uploads documents. Admin verification is required.
+11. Form 9 — Final company profile preview and submission
+Before submission, display the full public profile preview.
+Preview sections:
+Company name, logo and cover image
+Company overview
+Selected categories
+Category-specific descriptions
+Products and services grouped by category
+Product images and videos
+Technical specifications
+Supported integrations
+Pricing information
+Company team
+Public documents
+Enquiry and contact options
+Final declaration checkboxes:
+I confirm that the information submitted is accurate.
+I am authorised to submit information for this company.
+I have permission to publish uploaded logos, images and documents.
+I agree to the EduTradeFX provider listing terms.
+I understand that submission does not guarantee approval or verification.
+Submission buttons:
+Save as Draft
+Preview Profile
+Submit for Review
+After submission:
+Generate unique Provider ID.
+Generate application reference number.
+Send confirmation email.
+Show application status in the provider dashboard.
+Allow admin to request corrections.
+Allow provider to edit and resubmit.
+Publish approved company and category information.
+12. Provider dashboard — after registration
+The company should have one dashboard for all its categories and products.
+Dashboard navigation:
+Company Overview
+Company Profile
+My Categories
+Products & Services
+Pricing
+Integrations
+Company & Team
+Documents & Verification
+Enquiries / Leads
+Reviews
+Analytics
+Account Settings
+Category management
+Every selected category should appear as a separate dashboard card with:
+Category name
+Completion percentage
+Review status
+Products assigned
+Last updated date
+Edit button
+Preview button
+Submit for review button
+Actions:
+Add New Category
+Edit Category Information
+Save Draft
+Submit Category for Review
+Remove Category (with confirmation)
+Product management
+Show one central product catalogue with category filters.
+Each product row/card should show:
+Product name
+Product logo
+Assigned categories
+Product status
+Pricing visibility
+Last updated date
+Edit
+Preview
+Archive
+Buttons:
+Add Product
+Edit Product
+Duplicate Product Details (creates a new product record)
+Archive Product
+Preview Product
+13. Admin dashboard — provider approval
+Admin should be able to review companies, categories and products separately.
+Company approval status
+Draft
+Submitted
+Under Review
+Changes Requested
+Approved
+Rejected
+Suspended
+Category approval status
+Not Started
+Draft
+Submitted
+Under Review
+Changes Requested
+Approved
+Rejected
+Product approval status
+Draft
+Submitted
+Under Review
+Changes Requested
+Approved
+Rejected
+Archived
+Admin modules
+Provider management
+Company identity verification
+Category management
+Category form builder
+Product catalogue management
+Technical specification review
+Pricing review
+Document verification
+Team profile moderation
+Enquiry management
+Provider comparison
+Reviews moderation
+Featured placements
+Analytics
+Change history and audit logs
+A company may have an approved master profile while one category or product remains under review. Only approved information should be publicly listed.
+14. Database structure for the developer
+
+--- TABLE START ---
+Table | Purpose
+providers | One master company record
+provider_contacts | Contact information
+provider_addresses | Headquarters and offices
+provider_social_links | Social links
+category_definitions | 10 main categories
+provider_categories | Connect companies to multiple categories
+category_form_fields | Configurable category questions
+provider_category_details | Category-specific company answers
+provider_category_submissions | Category approval status
+products | Individual product records
+product_categories | Product-to-category relationships
+product_technical_specs | Product technical data
+product_integrations | Product integrations
+product_media | Images and videos
+product_documents | Product documentation
+product_pricing | Product commercial information
+provider_team | Founders, owners and employees
+provider_documents | Company verification files
+provider_verifications | Verification history
+provider_enquiries | Quote and demo enquiries
+provider_reviews | User reviews
+admin_audit_logs | Admin actions and changes
+--- TABLE END ---
+
+Relationship rules
+One provider can select multiple categories.
+One provider has one master company profile.
+One provider can have unlimited products.
+Each product belongs to one provider.
+One product can be linked to multiple categories.
+Category answers belong to the provider-category relationship.
+Product specifications belong to the product record.
+Product pricing belongs to the relevant product or service.
+Company details must not be duplicated across categories.
+Every company card must link to the same Provider ID.
+15. Final developer rules — must follow
+One company registers only once.
+The company can select one or all 10 categories.
+Every selected category gets a separate technical onboarding form.
+Unselected category forms remain hidden.
+Each company can add unlimited products and services.
+Every product gets its own product registration form.
+Products can be linked to multiple categories without duplication.
+Pricing must be stored separately for each product.
+Common company information must be entered only once.
+Allow draft saving and later editing.
+Allow category and product approval independently.
+Private verification documents must never be displayed publicly.
+Do not publish unverified claims, certifications, integrations, ratings or performance figures.
+Use searchable dropdowns for long lists such as countries, cities, currencies and time zones.
+Use dependent dropdowns where the second field depends on the first.
+Use multi-select controls for platforms, asset classes, languages, regions and service capabilities.
+Every public profile must use approved company information.
+Keep the website responsive and consistent with the EduTradeFX blue-and-white design.
+The final structure
+ONE COMPANY = ONE MASTER PROFILE
+ONE COMPANY = MULTIPLE CATEGORIES
+ONE SELECTED CATEGORY = ONE CATEGORY-SPECIFIC FORM
+ONE COMPANY = MULTIPLE PRODUCTS AND SERVICES
+ONE PRODUCT = ONE PRODUCT RECORD, WITH MULTIPLE CATEGORY LINKS IF REQUIRED
+ONE COMPANY = ONE PROVIDER DASHBOARD
+ALL PUBLIC LISTINGS = ADMIN APPROVAL BEFORE PUBLICATION
+4. Recommended form behaviour
+The most important dropdown rules for implementation are:
+
+--- TABLE START ---
+Field type | How it should work
+Single-select | User selects one option
+Multi-select | User selects several options, with search
+Country | Searchable worldwide country list
+State | Loads according to selected country
+City | Loads according to country/state, with manual entry
+Category | Multi-select
+Subcategory | Loads according to selected category
+Product category | Only the company's selected categories
+Product features | Searchable multi-select
+Pricing | Conditional fields based on pricing model
+Date | Date picker
+Documents | Multiple file uploads
+Other | Opens an additional text field
+--- TABLE END ---
+
+One final implementation recommendation: Do not hardcode all category questions directly into the website code. Create an admin-managed form builder so your team can add new dropdown choices, subcategories, questions and required fields without asking the developer to rebuild the entire registration system.
+This gives you one complete, scalable onboarding system for all solution-provider companies on EduTradeFX.

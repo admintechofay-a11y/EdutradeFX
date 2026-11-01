@@ -17,6 +17,7 @@ enum Role {
   SIGNAL_PROVIDER
   TUTOR
   STUDENT
+  SERVICE_PROVIDER
 }
 
 enum ApprovalStatus {
@@ -130,6 +131,7 @@ enum AgreementAudience {
   SIGNAL_PROVIDER
   BROKER
   ALL
+  SERVICE_PROVIDER
 }
 
 enum AgreementKind {
@@ -230,6 +232,7 @@ enum ComplaintTargetType {
   SIGNAL_PROVIDER
   TUTOR
   PLATFORM
+  SERVICE_PROVIDER
 }
 
 enum PayoutStatus {
@@ -328,6 +331,9 @@ model User {
   comparisons       BrokerComparison[]
   orders            Order[]
   auditLogs         AuditLog[]
+  serviceProvider   ServiceProvider?
+  providerReviews   ProviderReview[]
+  providerEnquiries ProviderEnquiry[]
 
   @@index([email])
   @@index([phone])
@@ -1620,4 +1626,963 @@ model SiteSettings {
   key       String   @unique
   value     String
   updatedAt DateTime @updatedAt
+}
+
+
+// ─────────────────────────────────────────────────────────────
+// ─── SOLUTIONS PROVIDERS (SERVICE_PROVIDER) DOMAIN ───────────
+// ─────────────────────────────────────────────────────────────
+
+enum ProviderStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  CHANGES_REQUESTED
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum ProviderCategoryStatus {
+  NOT_STARTED
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  CHANGES_REQUESTED
+  APPROVED
+  REJECTED
+}
+
+enum ProductStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  CHANGES_REQUESTED
+  APPROVED
+  REJECTED
+  ARCHIVED
+}
+
+enum ProviderVerificationStatus {
+  NOT_SUBMITTED
+  PENDING_REVIEW
+  UNDER_VERIFICATION
+  VERIFIED
+  PARTIALLY_VERIFIED
+  REJECTED
+  EXPIRED
+  SUSPENDED
+}
+
+enum ProductAvailability {
+  AVAILABLE
+  LIMITED_AVAILABILITY
+  BETA
+  UNDER_DEVELOPMENT
+  DISCONTINUED
+}
+
+enum ProviderAccountType {
+  REGISTERED_COMPANY
+  INDIVIDUAL_PROVIDER
+  TECHNOLOGY_DEVELOPER
+  CONSULTANCY
+  FINANCIAL_INSTITUTION
+  OTHER
+}
+
+enum FormFieldType {
+  TEXT
+  TEXTAREA
+  RICH_TEXT
+  NUMBER
+  NUMBER_UNIT
+  PERCENT
+  MONEY
+  SINGLE_SELECT
+  MULTI_SELECT
+  YES_NO
+  YES_NO_DETAILS
+  TRI_STATE
+  URL
+  DATE
+  DATE_RANGE
+  COUNTRY_SINGLE
+  COUNTRY_MULTI
+  LOCATION
+  SCHEDULE
+  FILE
+  FILE_MULTI
+  REPEATABLE_GROUP
+  STATUS_OR_VALUE
+}
+
+enum FieldVisibility {
+  PUBLIC
+  ADMIN_ONLY
+}
+
+enum ClaimLevel {
+  DECLARED
+  VERIFIABLE
+}
+
+enum FormScope {
+  PROVIDER
+  PRODUCT
+}
+
+enum PricingVisibility {
+  PUBLIC
+  STARTING_PRICE
+  INDICATIVE
+  CUSTOM_QUOTE
+  CONFIDENTIAL
+  FREE
+}
+
+enum ProviderEnquiryType {
+  QUOTE
+  DEMO
+  GENERAL
+}
+
+enum ProviderEnquiryStatus {
+  NEW
+  CONTACTED
+  CLOSED
+}
+
+enum ModerationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum AddressType {
+  HEADQUARTERS
+  REGISTERED
+  OFFICE
+}
+
+enum SocialPlatform {
+  LINKEDIN
+  X
+  FACEBOOK
+  INSTAGRAM
+  YOUTUBE
+  TELEGRAM
+  DISCORD
+  GITHUB
+  TRADINGVIEW
+  MQL5
+  OTHER
+}
+
+enum ProductMediaKind {
+  IMAGE
+  VIDEO
+}
+
+enum DocumentVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum ProviderDocGroup {
+  DOCUMENT
+  EVIDENCE
+}
+
+enum ProviderDocKind {
+  FILE
+  LINK
+}
+
+enum TeamFounderRole {
+  FOUNDER
+  CO_FOUNDER
+  CURRENT_OWNER
+  DIRECTOR
+  OTHER
+}
+
+enum TeamOwnershipDisclosure {
+  PUBLIC
+  PRIVATE
+  NOT_DISCLOSED
+}
+
+enum TeamProfileVisibility {
+  PUBLIC_SEARCHABLE
+  COMPANY_PROFILE_ONLY
+  PRIVATE_ADMIN
+}
+
+enum FeaturedPlacementType {
+  HOME
+  CATEGORY
+}
+
+enum ProviderReviewEntityType {
+  COMPANY
+  CATEGORY
+  PRODUCT
+  DOCUMENT
+  TEAM
+  MEDIA
+}
+
+model ServiceProvider {
+  id                         String                     @id @default(uuid())
+  userId                     String                     @unique
+  user                       User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  providerCode               String?                    @unique
+  applicationRef             String?                    @unique
+  slug                       String                     @unique
+  accountType                ProviderAccountType        @default(REGISTERED_COMPANY)
+  accountTypeOther           String?
+  status                     ProviderStatus             @default(DRAFT)
+  verificationStatus         ProviderVerificationStatus @default(NOT_SUBMITTED)
+  verifiedAt                 DateTime?
+  verifiedById               String?
+  isFeatured                 Boolean                    @default(false)
+
+  // Identity (Form 2 A)
+  legalName                  String?
+  brandName                  String?
+  registrationNumber         String?
+  registrationAuthority      String?
+  registrationAuthorityOther String?
+  yearEstablished            Int?
+  website                    String?
+  companyEmail               String?
+  logo                       String?
+  coverImage                 String?
+  tagline                    String?
+  overview                   String?                    @db.Text
+  presentationUrl            String?
+  presentationPublicId       String?
+
+  // Operations (Form 2 B, C, D, E)
+  headquartersCountryCode    String?
+  operatingRegions           String[]                   @default([])
+  companySize                String?
+  customerTypes              String[]                   @default([])
+  languages                  String[]                   @default([])
+
+  // Support (Form 2 F)
+  supportAvailability        String?
+  supportChannels            String[]                   @default([])
+  publicContactPreference    String?
+  supportDays                String[]                   @default([])
+  timezone                   String?
+
+  // Commercial (Form 6)
+  pricingApproach            String?
+  preferredContractType      String?
+  acceptedCurrencies         String[]                   @default([])
+  minimumEngagement          String?
+  enterpriseProposals        String?
+  negotiablePricing          String?
+  implementationCharges      String?
+  supportCharges             String?
+  renewalTerms               String?                    @db.Text
+  cancellationTerms          String?                    @db.Text
+  taxTreatment               String?
+  commercialContact          String?
+  pricingBrochureUrl         String?
+  commercialTermsUrl         String?
+
+  // Workflow & Moderation
+  submittedAt                DateTime?
+  reviewedAt                 DateTime?
+  reviewedById               String?
+  rejectionReason            String?                    @db.Text
+  changesRequestedNote       String?                    @db.Text
+  completionPercent          Int                        @default(0)
+  reviewFlags                Json?
+  suspendedAt                DateTime?
+  suspensionReason           String?                    @db.Text
+  lastActivityAt             DateTime                   @default(now())
+
+  // Cached Aggregates
+  avgRating                  Decimal                    @default(0) @db.Decimal(3, 2)
+  totalReviews               Int                        @default(0)
+
+  createdAt                  DateTime                   @default(now())
+  updatedAt                  DateTime                   @updatedAt
+
+  // Relationships
+  contacts                   ProviderContact[]
+  addresses                  ProviderAddress[]
+  socialLinks                ProviderSocialLink[]
+  categorySelections         ProviderCategorySelection[]
+  products                   ServiceProviderProduct[]
+  teamMembers                ProviderTeamMember[]
+  documents                  ProviderDocument[]
+  verifications              ProviderVerification[]
+  enquiries                  ProviderEnquiry[]
+  reviews                    ProviderReview[]
+  reviewEvents               ProviderReviewEvent[]
+  published                  PublishedProvider?
+  featuredPlacements         ProviderFeaturedPlacement[]
+  dailyStats                 ProviderDailyStat[]
+
+  @@index([status])
+  @@index([verificationStatus])
+  @@index([slug])
+  @@index([providerCode])
+  @@index([applicationRef])
+  @@index([isFeatured])
+  @@index([createdAt])
+  @@map("providers")
+}
+
+model ProviderContact {
+  id         String          @id @default(uuid())
+  providerId String
+  provider   ServiceProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  fullName   String
+  jobTitle   String?
+  email      String
+  phone      String?
+  isPrimary  Boolean         @default(false)
+  isPublic   Boolean         @default(false)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  @@index([providerId])
+  @@map("provider_contacts")
+}
+
+model ProviderAddress {
+  id          String          @id @default(uuid())
+  providerId  String
+  provider    ServiceProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  type        AddressType     @default(OFFICE)
+  label       String?
+  line1       String
+  line2       String?
+  countryCode String
+  stateCode   String?
+  stateName   String?
+  city        String
+  postalCode  String?
+  isPrivate   Boolean         @default(false)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([providerId])
+  @@map("provider_addresses")
+}
+
+model ProviderSocialLink {
+  id         String          @id @default(uuid())
+  providerId String
+  provider   ServiceProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  platform   SocialPlatform
+  url        String
+  isPublic   Boolean         @default(true)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  @@index([providerId])
+  @@map("provider_social_links")
+}
+
+model ProviderCategory {
+  id                 String                      @id @default(uuid())
+  number             Int                         @unique
+  slug               String                      @unique
+  name               String
+  shortDescription   String
+  mainServices       String                      @db.Text
+  icon               String?
+  sortOrder          Int                         @default(0)
+  isActive           Boolean                     @default(true)
+  hasProductForm     Boolean                     @default(false)
+  createdAt          DateTime                    @default(now())
+  updatedAt          DateTime                    @updatedAt
+
+  subcategories      ProviderSubcategory[]
+  formSections       CategoryFormSection[]
+  selections         ProviderCategorySelection[]
+  productLinks       ProductCategoryLink[]
+  productDetails     ProductCategoryDetail[]
+  enquiries          ProviderEnquiry[]
+  featuredPlacements ProviderFeaturedPlacement[]
+
+  @@index([number])
+  @@index([slug])
+  @@index([isActive])
+  @@map("category_definitions")
+}
+
+model ProviderSubcategory {
+  id         String           @id @default(uuid())
+  categoryId String
+  category   ProviderCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  key        String
+  label      String
+  sortOrder  Int              @default(0)
+  isActive   Boolean          @default(true)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@unique([categoryId, key])
+  @@index([categoryId, isActive])
+  @@map("provider_subcategories")
+}
+
+model CategoryFormSection {
+  id          String              @id @default(uuid())
+  categoryId  String
+  category    ProviderCategory    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  key         String
+  title       String
+  description String?
+  scope       FormScope           @default(PROVIDER)
+  sortOrder   Int                 @default(0)
+  isActive    Boolean             @default(true)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  fields      CategoryFormField[]
+
+  @@unique([categoryId, key, scope])
+  @@index([categoryId, scope, isActive])
+  @@map("category_form_sections")
+}
+
+model CategoryFormField {
+  id               String              @id @default(uuid())
+  sectionId        String
+  section          CategoryFormSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  key              String
+  label            String
+  helpText         String?
+  type             FormFieldType
+  required         Boolean             @default(false)
+  scope            FormScope           @default(PROVIDER)
+  options          Json?
+  optionSource     String?
+  allowOther       Boolean             @default(false)
+  unitOptions      String[]            @default([])
+  statuses         String[]            @default([])
+  validation       Json?
+  visibleWhen      Json?
+  disjointWith     String?
+  repeatableFields Json?
+  visibility       FieldVisibility     @default(PUBLIC)
+  claim            ClaimLevel          @default(DECLARED)
+  sortOrder        Int                 @default(0)
+  isActive         Boolean             @default(true)
+  schemaVersion    Int                 @default(1)
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  @@unique([sectionId, key])
+  @@index([sectionId, isActive])
+  @@map("category_form_fields")
+}
+
+model ProviderOptionList {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  label     String
+  items     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([key])
+  @@map("provider_option_lists")
+}
+
+model ProviderCategorySelection {
+  id                   String                 @id @default(uuid())
+  providerId           String
+  provider             ServiceProvider        @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  categoryId           String
+  category             ProviderCategory       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  isSelected           Boolean                @default(true)
+  deselectedAt         DateTime?
+  status               ProviderCategoryStatus @default(NOT_STARTED)
+  answers              Json                   @default("{}")
+  schemaVersion        Int                    @default(1)
+  verifiedClaims       String[]               @default([])
+  completionPercent    Int                    @default(0)
+  markedCompleteAt     DateTime?
+  submittedAt          DateTime?
+  reviewedAt           DateTime?
+  reviewedById         String?
+  rejectionReason      String?                @db.Text
+  changesRequestedNote String?                @db.Text
+  approvedSnapshot     Json?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+
+  @@unique([providerId, categoryId])
+  @@index([providerId, isSelected])
+  @@index([status])
+  @@map("provider_category_selections")
+}
+
+model ServiceProviderProduct {
+  id                       String                  @id @default(uuid())
+  providerId               String
+  provider                 ServiceProvider         @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  slug                     String
+  name                     String
+  logo                     String?
+  thumbnail                String?
+  shortDescription         String
+  fullDescription          String?                 @db.Text
+  productType              String
+  version                  String?
+  initialReleaseDate       DateTime?
+  latestUpdateDate         DateTime?
+  availability             ProductAvailability     @default(AVAILABLE)
+  officialUrl              String?
+  brochureUrl              String?
+  brochurePublicId         String?
+  userGuideUrl             String?
+  demoUrl                  String?
+  mainPurposes             String[]                @default([])
+  keyFeatures              String[]                @default([])
+  additionalFeatures       String[]                @default([])
+  benefits                 String?                 @db.Text
+  targetCustomers          String[]                @default([])
+  limitations              String?                 @db.Text
+  useCases                 String?                 @db.Text
+  supportHours             String?
+  supportChannels          String[]                @default([])
+  maintenance              String?
+  technicalSupportIncluded Boolean?
+  softwareUpdates          Boolean?
+  warranty                 String?
+  responseTime             Json?
+  status                   ProductStatus           @default(DRAFT)
+  submittedAt              DateTime?
+  reviewedAt               DateTime?
+  reviewedById             String?
+  rejectionReason          String?                 @db.Text
+  changesRequestedNote     String?                 @db.Text
+  verifiedClaims           String[]                @default([])
+  archivedAt               DateTime?
+  completionPercent        Int                     @default(0)
+  createdAt                DateTime                @default(now())
+  updatedAt                DateTime                @updatedAt
+
+  categoryLinks            ProductCategoryLink[]
+  categoryDetails          ProductCategoryDetail[]
+  technicalSpec            ProductTechnicalSpec?
+  integration              ProductIntegration?
+  media                    ProductMedia[]
+  documents                ProductDocument[]
+  pricing                  ProductPricing?
+  teamMembers              TeamMemberProduct[]
+  enquiries                ProviderEnquiry[]
+  reviews                  ProviderReview[]
+  published                PublishedProduct?
+  dailyStats               ProviderDailyStat[]
+
+  @@unique([providerId, slug])
+  @@index([providerId, status])
+  @@index([status])
+  @@map("products")
+}
+
+model ProductCategoryLink {
+  id             String                 @id @default(uuid())
+  productId      String
+  product        ServiceProviderProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  categoryId     String
+  category       ProviderCategory       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  subcategoryKey String?
+  isPrimary      Boolean                @default(false)
+  createdAt      DateTime               @default(now())
+
+  @@unique([productId, categoryId, subcategoryKey])
+  @@index([productId, isPrimary])
+  @@index([categoryId])
+  @@map("product_categories")
+}
+
+model ProductCategoryDetail {
+  id            String                 @id @default(uuid())
+  productId     String
+  product       ServiceProviderProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  categoryId    String
+  category      ProviderCategory       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  answers       Json                   @default("{}")
+  schemaVersion Int                    @default(1)
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+
+  @@unique([productId, categoryId])
+  @@index([productId])
+  @@map("product_category_details")
+}
+
+model ProductTechnicalSpec {
+  id                   String                 @id @default(uuid())
+  productId            String                 @unique
+  product              ServiceProviderProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  architecture         String?
+  deploymentModel      String?
+  hostingRequirement   String?
+  operatingSystems     String[]               @default([])
+  hardwareRequirements String?
+  supportedVersions    String?
+  technicalDocUrl      String?
+  securityFeatures     String[]               @default([])
+  dataRetention        String?
+  implementationTime   String?
+  prerequisites        String?                @db.Text
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+
+  @@map("product_technical_specs")
+}
+
+model ProductIntegration {
+  id                 String                 @id @default(uuid())
+  productId          String                 @unique
+  product            ServiceProviderProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  supportedPlatforms String[]               @default([])
+  methods            String[]               @default([])
+  capabilities       String[]               @default([])
+  availability       String?
+  partnerName        String?
+  documentationUrl   String?
+  integrationFee     String?
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+
+  @@map("product_integrations")
+}
+
+model ProductMedia {
+  id              String                 @id @default(uuid())
+  productId       String
+  product         ServiceProviderProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  kind            ProductMediaKind       @default(IMAGE)
+  mediaType       String
+  url             String
+  publicId        String?
+  videoUrl        String?
+  title           String
+  description     String?
+  platform        String?
+  timeframe       String?
+  symbol          String?
+  screenshotType  String?
+  isCover         Boolean                @default(false)
+  displayOrder    Int                    @default(0)
+  rightsConfirmed Boolean                @default(false)
+  reviewStatus    ModerationStatus       @default(PENDING)
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+
+  @@index([productId, reviewStatus])
+  @@map("product_media")
+}
+
+model ProductDocument {
+  id           String                 @id @default(uuid())
+  productId    String
+  product      ServiceProviderProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  docType      String
+  name         String
+  fileUrl      String
+  publicId     String
+  visibility   DocumentVisibility     @default(PUBLIC)
+  reviewStatus ModerationStatus       @default(PENDING)
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+
+  @@index([productId, reviewStatus])
+  @@map("product_documents")
+}
+
+model ProductPricing {
+  id                 String                 @id @default(uuid())
+  productId          String                 @unique
+  product            ServiceProviderProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  visibility         PricingVisibility      @default(CUSTOM_QUOTE)
+  models             String[]               @default([])
+  currency           String                 @default("USD")
+  price              Decimal?               @db.Decimal(14, 2)
+  setupFee           Json?
+  monthlyFee         Json?
+  annualFee          Json?
+  perAccountFee      Json?
+  perUserFee         Json?
+  perTransactionFee  Json?
+  minimumCommitment  Json?
+  contractDuration   String?
+  implementationFee  Json?
+  supportFee         Json?
+  additionalModules  Json[]                 @default([])
+  freeTrial          Boolean?               @default(false)
+  trialDays          Int?
+  enterpriseDiscount String?
+  taxTreatment       String?
+  pricingValidUntil  DateTime?
+  pricingUrl         String?
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+
+  @@map("product_pricing")
+}
+
+model ProviderTeamMember {
+  id                       String                  @id @default(uuid())
+  providerId               String
+  provider                 ServiceProvider         @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  fullName                 String
+  jobTitle                 String
+  department               String?
+  bio                      String?                 @db.Text
+  photoUrl                 String?
+  photoPublicId            String?
+  linkedinUrl              String?
+  email                    String?
+  phone                    String?
+  founderRole              TeamFounderRole?
+  currentDesignation       String?
+  ownershipDisclosure      TeamOwnershipDisclosure @default(NOT_DISCLOSED)
+  ownershipPercentage      Decimal?                @db.Decimal(5, 2)
+  ownershipPublicConsentAt DateTime?
+  evidenceDocId            String?
+  profileVisibility        TeamProfileVisibility   @default(COMPANY_PROFILE_ONLY)
+  reviewStatus             ModerationStatus        @default(PENDING)
+  displayOrder             Int                     @default(0)
+  createdAt                DateTime                @default(now())
+  updatedAt                DateTime                @updatedAt
+
+  associatedProducts       TeamMemberProduct[]
+
+  @@index([providerId, reviewStatus])
+  @@map("provider_team")
+}
+
+model TeamMemberProduct {
+  id           String                 @id @default(uuid())
+  teamMemberId String
+  teamMember   ProviderTeamMember     @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+  productId    String
+  product      ServiceProviderProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([teamMemberId, productId])
+  @@index([productId])
+  @@map("team_member_products")
+}
+
+model ProviderDocument {
+  id                       String             @id @default(uuid())
+  providerId               String
+  provider                 ServiceProvider    @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  kind                     ProviderDocKind    @default(FILE)
+  group                    ProviderDocGroup   @default(DOCUMENT)
+  docType                  String
+  name                     String
+  issuingAuthority         String?
+  registrationNumber       String?
+  issueDate                DateTime?
+  expiryDate               DateTime?
+  verificationUrl          String?
+  fileUrl                  String?
+  linkUrl                  String?
+  publicId                 String?
+  visibility               DocumentVisibility @default(PRIVATE)
+  requiredForVerification  Boolean            @default(false)
+  reviewStatus             ModerationStatus   @default(PENDING)
+  reviewNote               String?            @db.Text
+  expiryNotifiedAt         DateTime?
+  createdAt                DateTime           @default(now())
+  updatedAt                DateTime           @updatedAt
+
+  @@index([providerId, reviewStatus])
+  @@index([expiryDate])
+  @@map("provider_documents")
+}
+
+model ProviderVerification {
+  id         String                     @id @default(uuid())
+  providerId String
+  provider   ServiceProvider            @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  status     ProviderVerificationStatus
+  note       String?                    @db.Text
+  actorId    String
+  expiresAt  DateTime?
+  createdAt  DateTime                   @default(now())
+
+  @@index([providerId, createdAt])
+  @@map("provider_verifications")
+}
+
+model ProviderEnquiry {
+  id             String                 @id @default(uuid())
+  providerId     String
+  provider       ServiceProvider        @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  productId      String?
+  product        ServiceProviderProduct? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  categoryId     String?
+  category       ProviderCategory?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  type           ProviderEnquiryType    @default(GENERAL)
+  userId         String?
+  user           User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  name           String
+  email          String
+  phone          String?
+  companyName    String?
+  roleTitle      String?
+  country        String?
+  message        String                 @db.Text
+  budgetRange    String?
+  timeline       String?
+  consentToShare Boolean                @default(true)
+  isRead         Boolean                @default(false)
+  status         ProviderEnquiryStatus  @default(NEW)
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+
+  @@index([providerId, status, createdAt])
+  @@index([userId])
+  @@map("provider_enquiries")
+}
+
+model ProviderReview {
+  id             String                 @id @default(uuid())
+  providerId     String
+  provider       ServiceProvider        @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  productId      String?
+  product        ServiceProviderProduct? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating         Int
+  title          String?
+  comment        String                 @db.Text
+  status         ModerationStatus       @default(PENDING)
+  moderatedById  String?
+  moderationNote String?                @db.Text
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+
+  @@unique([providerId, userId, productId])
+  @@index([providerId, status])
+  @@map("provider_reviews")
+}
+
+model ProviderReviewEvent {
+  id         String                   @id @default(uuid())
+  entityType ProviderReviewEntityType
+  entityId   String
+  providerId String
+  provider   ServiceProvider          @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  action     String
+  fromStatus String?
+  toStatus   String?
+  note       String?                  @db.Text
+  actorId    String?
+  diff       Json?
+  createdAt  DateTime                 @default(now())
+
+  @@index([providerId, createdAt])
+  @@index([entityType, entityId])
+  @@map("provider_review_events")
+}
+
+model PublishedProvider {
+  id                      String          @id @default(uuid())
+  providerId              String          @unique
+  provider                ServiceProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  slug                    String          @unique
+  name                    String
+  headquartersCountryCode String?
+  operatingRegions        String[]        @default([])
+  categoryNumbers         Int[]           @default([])
+  languages               String[]        @default([])
+  customerTypes           String[]        @default([])
+  companySize             String?
+  platforms               String[]        @default([])
+  verified                Boolean         @default(false)
+  ratingAvg               Decimal         @default(0) @db.Decimal(3, 2)
+  ratingCount             Int             @default(0)
+  featuredRank            Int?
+  snapshot                Json
+  publishedAt             DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+
+  @@index([verified])
+  @@index([ratingAvg])
+  @@index([publishedAt])
+  @@map("published_providers")
+}
+
+model PublishedProduct {
+  id                String                 @id @default(uuid())
+  productId         String                 @unique
+  product           ServiceProviderProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  providerId        String
+  slug              String
+  productType       String
+  categoryNumbers   Int[]                  @default([])
+  subcategoryKeys   String[]               @default([])
+  pricingVisibility PricingVisibility
+  priceFrom         Decimal?               @db.Decimal(14, 2)
+  currency          String?
+  availability      ProductAvailability
+  snapshot          Json
+  publishedAt       DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+
+  @@index([providerId])
+  @@index([pricingVisibility])
+  @@index([publishedAt])
+  @@map("published_products")
+}
+
+model ProviderFeaturedPlacement {
+  id          String                @id @default(uuid())
+  providerId  String
+  provider    ServiceProvider       @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  placement   FeaturedPlacementType @default(HOME)
+  categoryId  String?
+  category    ProviderCategory?     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  startsAt    DateTime              @default(now())
+  endsAt      DateTime
+  rank        Int                   @default(0)
+  createdById String
+  createdAt   DateTime              @default(now())
+
+  @@index([placement, endsAt])
+  @@map("provider_featured_placements")
+}
+
+model ProviderDailyStat {
+  id                String                  @id @default(uuid())
+  providerId        String
+  provider          ServiceProvider         @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  productId         String?
+  product           ServiceProviderProduct? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  date              DateTime                @db.Date
+  profileViews      Int                     @default(0)
+  productViews      Int                     @default(0)
+  enquiries         Int                     @default(0)
+  websiteClicks     Int                     @default(0)
+  brochureDownloads Int                     @default(0)
+
+  @@unique([providerId, productId, date])
+  @@index([providerId, date])
+  @@map("provider_daily_stats")
+}
+
+model Counter {
+  key   String @id
+  value Int    @default(0)
+
+  @@map("counters")
 }

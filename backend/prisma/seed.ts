@@ -29,6 +29,7 @@ import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import { encryptBrokerCredential } from '../src/utils/crypto.utils';
 import { seedBrokerOptions } from './seed-options';
+import { seedProviderForms } from './seed-provider-forms';
 
 dotenv.config();
 
@@ -2092,6 +2093,9 @@ async function main() {
     }
   }
   console.log('✅ Demo Signal Provider (AlphaWave) acceptances and plans seeded.');
+
+    // ── Seed Solutions Providers forms, options, categories, agreements, and demo ──
+  await seedProviderForms(prisma);
 
   console.log('🎉 Seeding successfully finished!');
 }

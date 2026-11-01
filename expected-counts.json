@@ -1,0 +1,471 @@
+{
+  "totalCategories": 10,
+  "totalSections": 79,
+  "categories": {
+    "1": {
+      "number": 1,
+      "name": "Trading Technology, Liquidity Bridges & Risk Management",
+      "totalSections": 9,
+      "sections": {
+        "A": {
+          "title": "Service types",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "B": {
+          "title": "Product architecture",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "C": {
+          "title": "Supported trading platforms",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "D": {
+          "title": "Connectivity protocols",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "E": {
+          "title": "Liquidity connectivity",
+          "fieldsCount": 9,
+          "scope": "PROVIDER"
+        },
+        "F": {
+          "title": "Execution capabilities",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "G": {
+          "title": "Risk capabilities",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "H": {
+          "title": "Deployment model",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "I": {
+          "title": "Infrastructure and performance",
+          "fieldsCount": 10,
+          "scope": "PROVIDER"
+        }
+      }
+    },
+    "2": {
+      "number": 2,
+      "name": "Liquidity Providers & Prime-of-Prime",
+      "totalSections": 8,
+      "sections": {
+        "A": {
+          "title": "Provider type",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "B": {
+          "title": "Liquidity model",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "C": {
+          "title": "Asset classes",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "D": {
+          "title": "Instruments offered",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "E": {
+          "title": "Execution model",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "F": {
+          "title": "Connectivity",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "G": {
+          "title": "Trading conditions",
+          "fieldsCount": 10,
+          "scope": "PROVIDER"
+        },
+        "H": {
+          "title": "Market coverage",
+          "fieldsCount": 6,
+          "scope": "PROVIDER"
+        }
+      }
+    },
+    "3": {
+      "number": 3,
+      "name": "CRM, Back Office & Client Management",
+      "totalSections": 7,
+      "sections": {
+        "A": {
+          "title": "Product type",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "B": {
+          "title": "CRM modules",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "C": {
+          "title": "Back",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "D": {
+          "title": "Platform and service integrations",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "E": {
+          "title": "Deployment",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "F": {
+          "title": "Technical capabilities",
+          "fieldsCount": 10,
+          "scope": "PROVIDER"
+        },
+        "G": {
+          "title": "Commercial model",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        }
+      }
+    },
+    "4": {
+      "number": 4,
+      "name": "Trading Platforms & Administrator Solutions",
+      "totalSections": 6,
+      "sections": {
+        "A": {
+          "title": "Provider role",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "B": {
+          "title": "Platform type",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "C": {
+          "title": "Service type",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "D": {
+          "title": "Platform features",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "E": {
+          "title": "Administrator features",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "F": {
+          "title": "Licensing and implementation",
+          "fieldsCount": 7,
+          "scope": "PROVIDER"
+        }
+      }
+    },
+    "5": {
+      "number": 5,
+      "name": "Payments & Banking Infrastructure",
+      "totalSections": 8,
+      "sections": {
+        "A": {
+          "title": "Provider type",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "B": {
+          "title": "Payment methods",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "C": {
+          "title": "Supported currencies",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "D": {
+          "title": "Transaction capabilities",
+          "fieldsCount": 10,
+          "scope": "PROVIDER"
+        },
+        "E": {
+          "title": "Integration methods",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "F": {
+          "title": "Settlement timing",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "G": {
+          "title": "Merchant eligibility",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "H": {
+          "title": "Geographic availability",
+          "fieldsCount": 6,
+          "scope": "PROVIDER"
+        }
+      }
+    },
+    "6": {
+      "number": 6,
+      "name": "Hosting, VPS & Trading Infrastructure",
+      "totalSections": 7,
+      "sections": {
+        "A": {
+          "title": "Hosting type",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "B": {
+          "title": "Hosting deployment",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "C": {
+          "title": "Data centre locations",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "D": {
+          "title": "Operating systems",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "E": {
+          "title": "Hardware specifications",
+          "fieldsCount": 8,
+          "scope": "PROVIDER"
+        },
+        "F": {
+          "title": "Platform compatibility",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "G": {
+          "title": "Performance and security",
+          "fieldsCount": 9,
+          "scope": "PROVIDER"
+        }
+      }
+    },
+    "7": {
+      "number": 7,
+      "name": "Market Data, APIs & Connectivity",
+      "totalSections": 7,
+      "sections": {
+        "A": {
+          "title": "Service type",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "B": {
+          "title": "Asset coverage",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "C": {
+          "title": "API protocol",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "D": {
+          "title": "Data frequency",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "E": {
+          "title": "Historical data coverage",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "F": {
+          "title": "Developer support",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "G": {
+          "title": "Usage limits",
+          "fieldsCount": 6,
+          "scope": "PROVIDER"
+        }
+      }
+    },
+    "8": {
+      "number": 8,
+      "name": "Compliance, KYC & Fraud Prevention",
+      "totalSections": 6,
+      "sections": {
+        "A": {
+          "title": "Solution type",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "B": {
+          "title": "Verification methods",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "C": {
+          "title": "Geographic coverage",
+          "fieldsCount": 4,
+          "scope": "PROVIDER"
+        },
+        "D": {
+          "title": "Technical integration",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "E": {
+          "title": "Monitoring features",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "F": {
+          "title": "Security and privacy",
+          "fieldsCount": 8,
+          "scope": "PROVIDER"
+        }
+      }
+    },
+    "9": {
+      "number": 9,
+      "name": "Brokerage Setup, Consulting & Other Services",
+      "totalSections": 7,
+      "sections": {
+        "A": {
+          "title": "Service type",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "B": {
+          "title": "Customer business stage",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "C": {
+          "title": "Consulting areas",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "D": {
+          "title": "Jurisdictions covered",
+          "fieldsCount": 5,
+          "scope": "PROVIDER"
+        },
+        "E": {
+          "title": "Project delivery model",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "F": {
+          "title": "Project timeline",
+          "fieldsCount": 1,
+          "scope": "PROVIDER"
+        },
+        "G": {
+          "title": "Deliverables and responsibilities",
+          "fieldsCount": 10,
+          "scope": "PROVIDER"
+        }
+      }
+    },
+    "10": {
+      "number": 10,
+      "name": "Trading Indicators & Trading Tools Providers",
+      "totalSections": 15,
+      "sections": {
+        "A": {
+          "title": "Basic product information",
+          "fieldsCount": 9,
+          "scope": "PROVIDER"
+        },
+        "B": {
+          "title": "Developer information",
+          "fieldsCount": 22,
+          "scope": "PROVIDER"
+        },
+        "C": {
+          "title": "Individual indicator / trading tool type",
+          "fieldsCount": 1,
+          "scope": "PRODUCT"
+        },
+        "D": {
+          "title": "Main purpose",
+          "fieldsCount": 1,
+          "scope": "PRODUCT"
+        },
+        "E": {
+          "title": "Platform compatibility",
+          "fieldsCount": 1,
+          "scope": "PRODUCT"
+        },
+        "F": {
+          "title": "File format",
+          "fieldsCount": 1,
+          "scope": "PRODUCT"
+        },
+        "G": {
+          "title": "Operating system",
+          "fieldsCount": 1,
+          "scope": "PRODUCT"
+        },
+        "H": {
+          "title": "Supported timeframes",
+          "fieldsCount": 1,
+          "scope": "PRODUCT"
+        },
+        "I": {
+          "title": "Supported instruments",
+          "fieldsCount": 1,
+          "scope": "PRODUCT"
+        },
+        "J": {
+          "title": "Indicator methodology",
+          "fieldsCount": 1,
+          "scope": "PRODUCT"
+        },
+        "K": {
+          "title": "Features",
+          "fieldsCount": 1,
+          "scope": "PRODUCT"
+        },
+        "L": {
+          "title": "Technical disclosures",
+          "fieldsCount": 16,
+          "scope": "PRODUCT"
+        },
+        "M": {
+          "title": "Product screenshots and gallery",
+          "fieldsCount": 11,
+          "scope": "PRODUCT"
+        },
+        "N": {
+          "title": "Trading tool licence and pricing",
+          "fieldsCount": 17,
+          "scope": "PRODUCT"
+        }
+      }
+    }
+  }
+}

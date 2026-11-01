@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Role } from '@prisma/client';
+import { Role, ProviderAccountType } from '@prisma/client';
 import { isCommonPassword } from '../../utils/password.utils';
 import { validatePhoneE164, normalizeToE164 } from '../../utils/phone.utils';
 
@@ -51,11 +51,11 @@ export const registerSchema = z.object({
 });
 
 export const partnerRegisterSchema = z.object({
-  name: z.string().trim().min(2, 'Name must be at least 2 characters').max(50, 'Name cannot exceed 50 characters'),
+  name: z.string().trim().min(2, 'Name must be at least 2 characters').max(100, 'Name cannot exceed 100 characters'),
   email: emailValidation,
   password: passwordValidation,
-  role: z.enum([Role.BROKER, Role.SIGNAL_PROVIDER, Role.TUTOR, Role.ACCOUNT_MANAGER], {
-    errorMap: () => ({ message: 'Invalid partner role. Allowed: BROKER, SIGNAL_PROVIDER, TUTOR, ACCOUNT_MANAGER' }),
+  role: z.enum([Role.BROKER, Role.SIGNAL_PROVIDER, Role.TUTOR, Role.ACCOUNT_MANAGER, Role.SERVICE_PROVIDER], {
+    errorMap: () => ({ message: 'Invalid partner role. Allowed: BROKER, SIGNAL_PROVIDER, TUTOR, ACCOUNT_MANAGER, SERVICE_PROVIDER' }),
   }),
   phone: phoneValidation,
   companyName: z.string().trim().optional(),
@@ -66,6 +66,16 @@ export const partnerRegisterSchema = z.object({
   }),
   consentVersion: z.string().optional().default('1.0'),
   consentAt: z.string().optional(),
+  // Solutions Provider specific registration fields (Form 1)
+  accountType: z.nativeEnum(ProviderAccountType).optional(),
+  legalEntityName: z.string().trim().optional(),
+  contactFirstName: z.string().trim().optional(),
+  contactLastName: z.string().trim().optional(),
+  contactTitle: z.string().trim().optional(),
+  primaryEmail: emailValidation.optional(),
+  country: z.string().trim().optional(),
+  consentTerms: z.boolean().optional(),
+  consentPrivacy: z.boolean().optional(),
 });
 
 export const adminCreateUserSchema = z.object({

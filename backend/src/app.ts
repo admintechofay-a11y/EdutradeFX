@@ -28,6 +28,8 @@ import notificationRoutes from './modules/notifications/notification.routes';
 import adminRoutes from './modules/admin/admin.routes';
 import contactRoutes from './modules/contact/contact.routes';
 import optionsRoutes from './modules/options/options.routes';
+import providerFormRoutes from './modules/provider-forms/form.routes';
+import serviceProviderRoutes from './modules/service-providers/provider.routes';
 
 const app = express();
 
@@ -128,6 +130,8 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/options', optionsRoutes);
+app.use('/api/provider-forms', providerFormRoutes);
+app.use('/api/service-providers', serviceProviderRoutes);
 
 // ── HEALTH CHECK ──────────────────────────────────
 app.get('/api/health', (req, res) => {

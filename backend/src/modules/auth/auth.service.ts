@@ -17,7 +17,15 @@ import {
   sendWelcomeEmail,
 } from '../../utils/email.utils';
 import { AppError } from '../../middleware/error.middleware';
-import { Role, ApprovalStatus, BrokerOnboardingStatus, OnboardingStatus } from '@prisma/client';
+import {
+  Role,
+  ApprovalStatus,
+  BrokerOnboardingStatus,
+  OnboardingStatus,
+  ProviderAccountType,
+  ProviderStatus,
+  ProviderVerificationStatus,
+} from '@prisma/client';
 import { logger } from '../../utils/logger';
 import { normalizeToE164 } from '../../utils/phone.utils';
 
@@ -156,6 +164,15 @@ export class AuthService {
     consent?: boolean;
     consentAt?: string;
     consentVersion?: string;
+    accountType?: ProviderAccountType;
+    legalEntityName?: string;
+    contactFirstName?: string;
+    contactLastName?: string;
+    contactTitle?: string;
+    primaryEmail?: string;
+    country?: string;
+    consentTerms?: boolean;
+    consentPrivacy?: boolean;
   }) {
     if (data.role === Role.ADMIN || data.role === Role.STUDENT) {
       throw new AppError('Unauthorized role specified for partner registration.', StatusCodes.FORBIDDEN);
@@ -196,11 +213,20 @@ export class AuthService {
         phone,
         role: data.role,
         payload: {
-          companyName: data.companyName?.trim() || data.name.trim(),
+          companyName: data.companyName?.trim() || data.legalEntityName?.trim() || data.name.trim(),
           bio: data.bio?.trim() || null,
           website: data.website?.trim() || null,
           consentAt: data.consentAt || new Date().toISOString(),
           consentVersion: data.consentVersion || '1.0',
+          accountType: data.accountType,
+          legalEntityName: data.legalEntityName?.trim(),
+          contactFirstName: data.contactFirstName?.trim(),
+          contactLastName: data.contactLastName?.trim(),
+          contactTitle: data.contactTitle?.trim(),
+          primaryEmail: data.primaryEmail?.trim().toLowerCase(),
+          country: data.country?.trim(),
+          consentTerms: data.consentTerms ?? true,
+          consentPrivacy: data.consentPrivacy ?? true,
         },
         tokenHash: hashedVerificationToken,
         expiresAt: verificationExpiry,
@@ -660,6 +686,49 @@ export class AuthService {
               onboardingStatus: OnboardingStatus.DRAFT,
             },
           });
+        } else if (pending.role === Role.SERVICE_PROVIDER) {
+          const companyName = payload.legalEntityName || payload.companyName || user.name;
+          const rawSlug = `${companyName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now().toString().slice(-4)}`;
+          const slug = rawSlug.replace(/^-+|-+$/g, '') || `provider-${Date.now().toString().slice(-6)}`;
+
+          const contactEmail = (payload.primaryEmail || user.email).toLowerCase();
+          const emailDomain = contactEmail.split('@')[1] || '';
+          const freeMailDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com', 'zoho.com', 'protonmail.com', 'mail.com', 'yandex.com', 'gmx.com'];
+          const hasFreeMailWarning = freeMailDomains.includes(emailDomain);
+          const reviewFlags: any = hasFreeMailWarning ? { freeMailWarning: true, freeMailDomain: emailDomain } : {};
+
+          const provider = await tx.serviceProvider.create({
+            data: {
+              userId: user.id,
+              legalName: payload.legalEntityName || (payload.accountType === ProviderAccountType.INDIVIDUAL_PROVIDER ? user.name : companyName),
+              brandName: payload.companyName || companyName,
+              slug,
+              accountType: (payload.accountType as ProviderAccountType) || ProviderAccountType.REGISTERED_COMPANY,
+              website: payload.website || null,
+              companyEmail: contactEmail,
+              headquartersCountryCode: payload.country || user.country || null,
+              status: ProviderStatus.DRAFT,
+              verificationStatus: ProviderVerificationStatus.NOT_SUBMITTED,
+              reviewFlags,
+              completionPercent: 0,
+            },
+          });
+
+          const contactName = (payload.contactFirstName && payload.contactLastName)
+            ? `${payload.contactFirstName} ${payload.contactLastName}`.trim()
+            : (payload.contactFirstName || user.name);
+
+          await tx.providerContact.create({
+            data: {
+              providerId: provider.id,
+              fullName: contactName,
+              jobTitle: payload.contactTitle || (payload.accountType === ProviderAccountType.INDIVIDUAL_PROVIDER ? 'Freelancer / Owner' : 'Primary Contact'),
+              email: contactEmail,
+              phone: payload.phone || user.phone || null,
+              isPrimary: true,
+              isPublic: true,
+            },
+          });
         }
 
         // Delete pending record
@@ -747,6 +816,18 @@ export class AuthService {
         accountManager: { select: { id: true, fullName: true, status: true, slug: true } },
         signalProvider: { select: { id: true, displayName: true, status: true, slug: true } },
         tutor: { select: { id: true, status: true, slug: true } },
+        serviceProvider: {
+          select: {
+            id: true,
+            legalName: true,
+            brandName: true,
+            status: true,
+            slug: true,
+            logo: true,
+            providerCode: true,
+            completionPercent: true,
+          },
+        },
       },
     });
 

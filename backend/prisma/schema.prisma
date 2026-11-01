@@ -2002,6 +2002,8 @@ model ProviderCategory {
   sortOrder          Int                         @default(0)
   isActive           Boolean                     @default(true)
   hasProductForm     Boolean                     @default(false)
+  isPrimaryAllowed   Boolean                     @default(true)
+  fullDescription    String?                     @db.Text
   createdAt          DateTime                    @default(now())
   updatedAt          DateTime                    @updatedAt
 
@@ -2029,6 +2031,8 @@ model ProviderSubcategory {
   isActive   Boolean          @default(true)
   createdAt  DateTime         @default(now())
   updatedAt  DateTime         @updatedAt
+
+  selections ProviderCategorySelection[]
 
   @@unique([categoryId, key])
   @@index([categoryId, isActive])
@@ -2088,11 +2092,13 @@ model CategoryFormField {
 }
 
 model ProviderOptionList {
-  id        String   @id @default(uuid())
-  key       String   @unique
-  label     String
-  items     Json
-  createdAt DateTime @default(now())
+  id          String   @id @default(uuid())
+  key         String   @unique
+  label       String
+  description String?
+  isSystem    Boolean  @default(false)
+  items       Json
+  createdAt   DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([key])
@@ -2105,6 +2111,9 @@ model ProviderCategorySelection {
   provider             ServiceProvider        @relation(fields: [providerId], references: [id], onDelete: Cascade)
   categoryId           String
   category             ProviderCategory       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  subcategoryId        String?
+  subcategory          ProviderSubcategory?   @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
+  isPrimary            Boolean                @default(false)
   isSelected           Boolean                @default(true)
   deselectedAt         DateTime?
   status               ProviderCategoryStatus @default(NOT_STARTED)

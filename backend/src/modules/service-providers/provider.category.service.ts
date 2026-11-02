@@ -134,7 +134,7 @@ export class ProviderCategoryService {
               isSelected: true,
               isPrimary,
               deselectedAt: null,
-              ...(subId && { subcategoryId: subId }),
+              subcategoryId: subId || null,
             },
           });
         } else {
@@ -257,7 +257,7 @@ export class ProviderCategoryService {
         answers: parsedAnswers as Prisma.InputJsonObject,
         completionPercent: completion.percentage,
         isSelected: true,
-        ...(subcategoryId && { subcategoryId }),
+        subcategoryId: subcategoryId !== undefined ? (subcategoryId || null) : undefined,
         updatedAt: new Date(),
       },
       create: {
@@ -348,7 +348,7 @@ export class ProviderCategoryService {
         status: ProviderCategoryStatus.SUBMITTED,
         submittedAt: new Date(),
         isSelected: true,
-        ...(subcategoryId && { subcategoryId }),
+        subcategoryId: subcategoryId !== undefined ? (subcategoryId || null) : undefined,
       },
       create: {
         providerId: provider.id,

@@ -17,10 +17,7 @@ import {
   AlertCircle,
   CheckCircle,
   Briefcase,
-  MailCheck,
-  RefreshCw,
   ExternalLink,
-  ShieldAlert,
 } from 'lucide-react';
 import { api } from '../../../lib/api';
 import { Role } from '../../../types';
@@ -74,11 +71,7 @@ export default function RegisterPage() {
   // Submission & Pending Verification (A5)
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [pendingVerification, setPendingVerification] = useState(false);
-  const [resendCooldown, setResendCooldown] = useState(0);
-  const [resendLoading, setResendLoading] = useState(false);
-  const [resendMessage, setResendMessage] = useState<string | null>(null);
-  const [devVerificationUrl, setDevVerificationUrl] = useState<string | null>(null);
+
 
   // Debounced email check
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
@@ -127,35 +120,7 @@ export default function RegisterPage() {
     }, 500);
   };
 
-  // Cooldown timer for resend verification
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (resendCooldown > 0) {
-      interval = setInterval(() => {
-        setResendCooldown((prev) => prev - 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [resendCooldown]);
 
-  const handleResendVerification = async () => {
-    if (resendCooldown > 0 || !email) return;
-    setResendLoading(true);
-    setResendMessage(null);
-    try {
-      const res = await api.post('/auth/resend-verification', { email: email.trim().toLowerCase() });
-      const devUrl = res.data?.data?.devVerificationUrl || res.data?.devVerificationUrl;
-      if (devUrl) {
-        setDevVerificationUrl(devUrl);
-      }
-      setResendMessage('A new verification email has been sent. Please check your inbox.');
-      setResendCooldown(60);
-    } catch (err: any) {
-      setResendMessage(err.response?.data?.message || 'Failed to resend. Please try again shortly.');
-    } finally {
-      setResendLoading(false);
-    }
-  };
 
   // B1: Partner Role card label changed from "Brokerage Firm" to "Broker"
   const partnerOptions = [
@@ -252,101 +217,6 @@ export default function RegisterPage() {
       setLoading(false);
     }
   };
-
-  // ── Render Pending Verification Screen (A5) ──────────────
-  if (pendingVerification) {
-    return (
-      <div className="min-h-screen min-h-dvh flex items-center justify-center py-8 sm:py-16 px-4 sm:px-6 lg:px-8 bg-surface-tint">
-        <div className="w-full max-w-lg space-y-6 bg-white border border-border p-6 sm:p-10 rounded-2xl sm:rounded-3xl shadow-lift text-center">
-          <Link href="/" className="inline-flex items-center gap-2 mb-2">
-            <img src="/logos/logo-color.svg" alt="EduTradeFX" className="h-8 sm:h-9 w-auto mx-auto" />
-          </Link>
-
-          <div className="w-16 h-16 rounded-full bg-blue-50 text-blue flex items-center justify-center mx-auto shadow-inner">
-            <MailCheck className="w-8 h-8 text-blue" />
-          </div>
-
-          <div className="space-y-2">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-text-heading">
-              Verify Your Email
-            </h2>
-            <p className="text-xs sm:text-sm text-text-muted max-w-md mx-auto">
-              We sent an activation link to <strong className="text-navy">{email}</strong>. Please check your inbox and click the link to activate your account.
-            </p>
-          </div>
-
-          {devVerificationUrl && (
-            <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200 text-xs text-blue-900 text-left space-y-2">
-              <div className="font-bold flex items-center gap-1.5 text-blue-800">
-                <ExternalLink className="w-4 h-4 shrink-0" />
-                <span>Development Quick Activation:</span>
-              </div>
-              <p>
-                In local development mode without live SMTP credentials, you can activate your account immediately:
-              </p>
-              <a
-                href={devVerificationUrl}
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-sm"
-              >
-                <span>Activate Account Now</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </a>
-            </div>
-          )}
-
-          <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 text-left space-y-1.5">
-            <div className="font-bold flex items-center gap-1.5 text-amber-800">
-              <ShieldAlert className="w-4 h-4 shrink-0" />
-              <span>Activation Required:</span>
-            </div>
-            <p>
-              Your account is not created until you verify your email address. The link expires in 24 hours. Be sure to check your spam/junk folder if not received within 2 minutes.
-            </p>
-          </div>
-
-          {resendMessage && (
-            <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue font-medium">
-              {resendMessage}
-            </div>
-          )}
-
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={handleResendVerification}
-              disabled={resendLoading || resendCooldown > 0}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-surface-tint hover:bg-border/60 disabled:opacity-50 text-navy font-bold text-xs rounded-full border border-border transition min-h-[44px]"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${resendLoading ? 'animate-spin' : ''}`} />
-              <span>
-                {resendCooldown > 0
-                  ? `Resend in ${resendCooldown}s`
-                  : 'Resend Verification Email'}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setPendingVerification(false);
-                setError(null);
-              }}
-              className="w-full sm:w-auto px-5 py-3 text-xs font-semibold text-text-muted hover:text-text-heading transition"
-            >
-              Wrong email? Go back
-            </button>
-          </div>
-
-          <div className="pt-4 border-t border-border text-xs text-text-muted">
-            Already verified?{' '}
-            <Link href="/login" className="font-bold text-blue hover:underline">
-              Log in here
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // ── Render Registration Form ──────────────────────────────
   return (

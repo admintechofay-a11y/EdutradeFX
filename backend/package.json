@@ -7,12 +7,14 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
+    "start:prod": "prisma migrate deploy && node dist/server.js",
+    "postinstall": "prisma generate",
     "test:security": "ts-node src/tests/security-suite.ts",
     "test:golden": "ts-node src/tests/verify-golden.ts",
     "test:broker-v2": "ts-node src/tests/broker-v2-suite.ts",
     "test:am-v2": "ts-node src/tests/am-v2-suite.ts",
     "test:sp-v2": "ts-node src/tests/sp-v2-suite.ts",
-    "test": "npm run test:security && npm run test:am-v2 && npm run test:sp-v2 && npm run test:provider-v1",
+    "test": "npm run test:security && npm run test:am-v2 && npm run test:sp-v2 && npm run test:provider-v1 && npm run test:auth-partner",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate deploy",
@@ -22,7 +24,8 @@
     "prisma:push": "prisma db push",
     "prisma:seed": "ts-node prisma/seed.ts",
     "prisma:generate": "prisma generate",
-    "test:provider-v1": "ts-node src/tests/provider-v1-suite.ts"
+    "test:provider-v1": "ts-node src/tests/provider-v1-suite.ts",
+    "test:auth-partner": "ts-node src/tests/auth-partner-suite.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",

@@ -6,6 +6,11 @@ import { sendSuccess, sendPaginated } from '../../utils/response.utils';
 import { AuthenticatedRequest } from '../../types';
 
 export class AdminController {
+  getSystemStatus = async (_req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const status = await adminService.getSystemStatus();
+    sendSuccess(res, status, 'System schema status retrieved', StatusCodes.OK);
+  };
+
   createUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     const result = await authService.adminCreateUser(req.body);
     await adminService.createAuditLog({

@@ -26,12 +26,16 @@ import {
   ProviderStatus,
   ProviderVerificationStatus,
 } from '@prisma/client';
+import { PARTNER_ROLES } from '../../config/constants';
 import { logger } from '../../utils/logger';
 import { normalizeToE164 } from '../../utils/phone.utils';
 
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
 export class AuthService {
+  getPartnerRoles(): string[] {
+    return [...PARTNER_ROLES];
+  }
   /**
    * Helper to exclude sensitive password and token fields from user response
    */
@@ -149,33 +153,38 @@ export class AuthService {
   }
 
   /**
-   * Register a partner account (BROKER, SIGNAL_PROVIDER, TUTOR, ACCOUNT_MANAGER).
+   * Register a partner account (BROKER, SIGNAL_PROVIDER, TUTOR, ACCOUNT_MANAGER, SERVICE_PROVIDER).
    * Also uses PendingRegistration flow (A5).
    */
-  async registerPartner(data: {
-    name: string;
-    email: string;
-    password: string;
-    role: Role;
-    phone?: string;
-    companyName?: string;
-    bio?: string;
-    website?: string;
-    consent?: boolean;
-    consentAt?: string;
-    consentVersion?: string;
-    accountType?: ProviderAccountType;
-    legalEntityName?: string;
-    contactFirstName?: string;
-    contactLastName?: string;
-    contactTitle?: string;
-    primaryEmail?: string;
-    country?: string;
-    consentTerms?: boolean;
-    consentPrivacy?: boolean;
-  }) {
-    if (data.role === Role.ADMIN || data.role === Role.STUDENT) {
-      throw new AppError('Unauthorized role specified for partner registration.', StatusCodes.FORBIDDEN);
+  async registerPartner(
+    data: {
+      name: string;
+      email: string;
+      password: string;
+      role: Role;
+      phone?: string;
+      companyName?: string;
+      bio?: string;
+      website?: string;
+      consent?: boolean;
+      consentAt?: string;
+      consentVersion?: string;
+      accountType?: ProviderAccountType;
+      accountTypeOther?: string;
+      legalEntityName?: string;
+      contactFullName?: string;
+      contactFirstName?: string;
+      contactLastName?: string;
+      contactTitle?: string;
+      primaryEmail?: string;
+      country?: string;
+      consentTerms?: boolean;
+      consentPrivacy?: boolean;
+    },
+    meta?: { ipAddress?: string; userAgent?: string }
+  ) {
+    if (!PARTNER_ROLES.includes(data.role as any)) {
+      throw new AppError(`Invalid partner role. Allowed: ${PARTNER_ROLES.join(", ")}`, StatusCodes.BAD_REQUEST);
     }
 
     const email = data.email.trim().toLowerCase();
@@ -225,8 +234,12 @@ export class AuthService {
           contactTitle: data.contactTitle?.trim(),
           primaryEmail: data.primaryEmail?.trim().toLowerCase(),
           country: data.country?.trim(),
-          consentTerms: data.consentTerms ?? true,
-          consentPrivacy: data.consentPrivacy ?? true,
+          consentTerms: data.consentTerms === true,
+          consentPrivacy: data.consentPrivacy === true,
+          accountTypeOther: data.accountTypeOther?.trim() || null,
+          contactFullName: data.contactFullName?.trim() || null,
+          ipAddress: meta?.ipAddress || null,
+          userAgent: meta?.userAgent || null,
         },
         tokenHash: hashedVerificationToken,
         expiresAt: verificationExpiry,
@@ -714,9 +727,10 @@ export class AuthService {
             },
           });
 
-          const contactName = (payload.contactFirstName && payload.contactLastName)
+          const contactName = payload.contactFullName ||
+            ((payload.contactFirstName && payload.contactLastName)
             ? `${payload.contactFirstName} ${payload.contactLastName}`.trim()
-            : (payload.contactFirstName || user.name);
+            : (payload.contactFirstName || user.name));
 
           await tx.providerContact.create({
             data: {
@@ -726,7 +740,7 @@ export class AuthService {
               email: contactEmail,
               phone: payload.phone || user.phone || null,
               isPrimary: true,
-              isPublic: true,
+              isPublic: false,
             },
           });
         }

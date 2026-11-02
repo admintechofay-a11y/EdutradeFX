@@ -1,6 +1,7 @@
 import './config/env'; // Validate environment variables on startup
 import app from './app';
 import { connectDB } from './config/database';
+import { checkSchemaSync } from './utils/schemaGuard';
 import { verifyEmailConnection } from './config/email';
 import { logger } from './utils/logger';
 
@@ -10,6 +11,9 @@ const startServer = async () => {
   try {
     // 1. Initialize Database connection
     await connectDB();
+
+    // 1.1 Verify Schema and Enum Sync (fail fast on missing enum values)
+    await checkSchemaSync();
 
     // 2. Verify Email SMTP connection (non-blocking in development)
     verifyEmailConnection().catch(() => {});

@@ -1,6 +1,6 @@
-x# EdutradeFX - Vercel Deployment & Environment Configuration Guide
+# EdutradeFX - Vercel Deployment & Environment Configuration Guide
 
-This guide explains how to properly deploy and configure the **EdutradeFX Frontend on Vercel** and eliminate "Network Error" issues.
+This guide explains how to properly deploy and configure the **EdutradeFX Frontend on Vercel** and eliminate "Network Error" and schema-drift issues.
 
 ---
 
@@ -33,7 +33,7 @@ To connect your Vercel frontend to your live backend:
 1. Go to your [Vercel Dashboard](https://vercel.com/dashboard).
 2. Select your **EdutradeFX Frontend** project.
 3. Navigate to **Settings** > **Environment Variables**.
-4. Add the following environment variable:
+4. Add the following environment variables:
 
 | Variable Name | Value Example | Description |
 |---|---|---|
@@ -51,7 +51,38 @@ To connect your Vercel frontend to your live backend:
 Your backend can be hosted on any cloud provider that supports Node.js (e.g., Render, Railway, Fly.io, DigitalOcean, or AWS EC2).
 
 Make sure the backend environment has:
-- `DATABASE_URL`: `postgresql://neondb_owner:npg_bznjGvary8A7@ep-round-water-b4clbg9k.c-6.us-east-2.aws.neon.tech/neondb?sslmode=require`
+- `DATABASE_URL`: Your PostgreSQL connection string with SSL mode enabled.
 - `FRONTEND_URL`: `https://your-edutrade-frontend.vercel.app` (for CORS allowlist)
 - `PORT`: `5000` (or assigned by host)
 - `JWT_ACCESS_SECRET` & `JWT_REFRESH_SECRET`
+- `GIT_COMMIT`: Commit hash (optional, populated by build)
+- `BUILD_TIME`: ISO timestamp (optional, populated by build)
+
+---
+
+## 5. After Every Pull (Local & Deployment Routine)
+
+Run this sequence after pulling new changes to ensure database migrations, Prisma clients, and compiled artifacts stay synchronized:
+
+```bash
+# 1. Backend: Install, generate Prisma client, run migrations, compile and test
+cd backend
+npm install
+npm run db:generate    # npx prisma generate
+npm run db:migrate     # npx prisma migrate deploy
+npm run build          # npx tsc
+npm test               # verify security and partner test suites
+
+# 2. Frontend: Install and build Next.js application
+cd ../frontend
+npm install
+npm run build
+
+# 3. Restart Services
+# Production Docker:
+docker compose build --no-cache backend && docker compose up -d
+# Production Host / PM2:
+pm2 restart all
+```
+
+> **CRITICAL DEPLOYMENT NOTE:** Ensure the frontend's `NEXT_PUBLIC_API_URL` always targets the deployed backend version that has run `npm run db:migrate`. If the frontend points to an un-migrated or cached backend instance, registration requests for newer partner categories like `SERVICE_PROVIDER` will fail with `Invalid partner role`.

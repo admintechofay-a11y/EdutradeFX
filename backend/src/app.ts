@@ -142,6 +142,10 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     service: 'EdutradeFX Backend API',
+    version: process.env.npm_package_version || '1.0.0',
+    commit: process.env.GIT_COMMIT || 'unknown',
+    builtAt: process.env.BUILD_TIME || 'unknown',
+    nodeEnv: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString(),
   });
 });

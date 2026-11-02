@@ -22,6 +22,7 @@ import {
 
 const router = Router();
 
+router.get('/partner-roles', authController.getPartnerRoles);
 router.get('/check-email', checkEmailLimiter, authController.checkEmail);
 router.post('/register', authLimiter, validate(registerSchema), authController.register);
 router.post('/register-partner', authLimiter, validate(partnerRegisterSchema), authController.registerPartner);

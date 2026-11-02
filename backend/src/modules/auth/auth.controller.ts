@@ -18,8 +18,16 @@ export class AuthController {
   };
 
   registerPartner = async (req: Request, res: Response): Promise<void> => {
-    const result = await authService.registerPartner(req.body);
+    const result = await authService.registerPartner(req.body, {
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+    });
     sendSuccess(res, { email: result.email }, result.message, StatusCodes.ACCEPTED);
+  };
+
+  getPartnerRoles = async (_req: Request, res: Response): Promise<void> => {
+    const roles = authService.getPartnerRoles();
+    sendSuccess(res, { roles }, 'Allowed partner roles retrieved successfully');
   };
 
   resendVerification = async (req: Request, res: Response): Promise<void> => {

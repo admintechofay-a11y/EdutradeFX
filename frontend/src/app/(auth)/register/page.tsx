@@ -27,6 +27,7 @@ import { Role } from '../../../types';
 import PhoneInput from '../../../components/common/PhoneInput';
 import PasswordStrengthMeter, { evaluatePasswordStrength } from '../../../components/common/PasswordStrengthMeter';
 import TermsAndConditionsModal from '../../../components/common/TermsAndConditionsModal';
+import ProviderRegisterFields from '../../../components/auth/ProviderRegisterFields';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -44,6 +45,18 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [consent, setConsent] = useState(false);
+  const [allowedRoles, setAllowedRoles] = useState<string[]>([]);
+
+  useEffect(() => {
+    api.get('/auth/partner-roles')
+      .then((res) => {
+        const roles = res.data?.data?.roles || [];
+        if (Array.isArray(roles) && roles.length > 0) {
+          setAllowedRoles(roles);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Email validation & duplicate check (A2)
   const [emailChecking, setEmailChecking] = useState(false);
@@ -150,6 +163,25 @@ export default function RegisterPage() {
     { role: 'SERVICE_PROVIDER' as Role, label: 'Solutions Provider', desc: 'List fintech tools, bridge tech, CRM, liquidity, or consulting', icon: Briefcase },
     { role: 'TUTOR' as Role, label: 'Course Instructor', desc: 'Create Academy masterclasses & monetize lessons', icon: GraduationCap },
   ];
+
+  const handleProviderRegister = async (payload: any) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await api.post('/auth/register-partner', payload);
+      const devUrl = res.data?.data?.devVerificationUrl || res.data?.devVerificationUrl;
+      if (devUrl) {
+        setDevVerificationUrl(devUrl);
+      }
+      setEmail(payload.email);
+      setPendingVerification(true);
+      setResendCooldown(60);
+    } catch (err: any) {
+      setError(err.response?.data?.message || err.message || 'Registration failed. Please check your information.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -371,20 +403,31 @@ export default function RegisterPage() {
               {partnerOptions.map((opt) => {
                 const Icon = opt.icon;
                 const isSelected = partnerRole === opt.role;
+                const isAvailable = allowedRoles.length === 0 || allowedRoles.includes(opt.role);
                 return (
                   <button
                     key={opt.role}
                     type="button"
-                    onClick={() => setPartnerRole(opt.role)}
+                    disabled={!isAvailable}
+                    onClick={() => isAvailable && setPartnerRole(opt.role)}
                     className={`p-3 rounded-xl border text-left transition flex items-start gap-2.5 ${
-                      isSelected
+                      !isAvailable
+                        ? 'opacity-60 cursor-not-allowed bg-slate-50 border-slate-200'
+                        : isSelected
                         ? 'bg-blue-50 border-blue text-text-heading ring-1 ring-blue'
                         : 'bg-white border-border text-text-muted hover:border-blue'
                     }`}
                   >
                     <Icon className="w-4 h-4 text-blue shrink-0 mt-0.5" />
                     <div>
-                      <div className="text-xs font-bold text-text-heading">{opt.label}</div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-bold text-text-heading">{opt.label}</span>
+                        {!isAvailable && (
+                          <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-slate-200 text-slate-600">
+                            Not available yet
+                          </span>
+                        )}
+                      </div>
                       <div className="text-[10px] text-text-muted mt-0.5 leading-snug">{opt.desc}</div>
                     </div>
                   </button>
@@ -397,7 +440,14 @@ export default function RegisterPage() {
           </div>
         )}
 
-        {/* Form Fields */}
+        {/* Form Fields: Solutions Provider uses specialized Form 1 */}
+        {mode === 'PARTNER' && partnerRole === 'SERVICE_PROVIDER' ? (
+          <ProviderRegisterFields
+            loading={loading}
+            onSubmit={handleProviderRegister}
+            onError={setError}
+          />
+        ) : (
         <form onSubmit={handleRegister} className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-text-heading mb-1.5 uppercase tracking-wider">
@@ -598,6 +648,7 @@ export default function RegisterPage() {
             <ArrowRight className="w-4 h-4" />
           </button>
         </form>
+        )}
 
         {/* Footer */}
         <div className="text-center pt-2 border-t border-border text-xs text-text-muted">

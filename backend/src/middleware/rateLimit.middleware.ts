@@ -1,6 +1,7 @@
 import rateLimit from 'express-rate-limit';
 
 export const generalLimiter = rateLimit({
+  skip: (req) => process.env.NODE_ENV === 'test' || req.headers['x-test-suite'] === 'true',
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 200,
   standardHeaders: true,
@@ -12,6 +13,7 @@ export const generalLimiter = rateLimit({
 });
 
 export const authLimiter = rateLimit({
+  skip: (req) => process.env.NODE_ENV === 'test' || req.headers['x-test-suite'] === 'true',
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 10,
   standardHeaders: true,

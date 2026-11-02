@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { Role, ProviderAccountType } from '@prisma/client';
+import { PARTNER_ROLES } from '../../config/constants';
 import { isCommonPassword } from '../../utils/password.utils';
 import { validatePhoneE164, normalizeToE164 } from '../../utils/phone.utils';
 
@@ -50,33 +51,87 @@ export const registerSchema = z.object({
   consentAt: z.string().optional(),
 });
 
-export const partnerRegisterSchema = z.object({
-  name: z.string().trim().min(2, 'Name must be at least 2 characters').max(100, 'Name cannot exceed 100 characters'),
-  email: emailValidation,
-  password: passwordValidation,
-  role: z.enum([Role.BROKER, Role.SIGNAL_PROVIDER, Role.TUTOR, Role.ACCOUNT_MANAGER, Role.SERVICE_PROVIDER], {
-    errorMap: () => ({ message: 'Invalid partner role. Allowed: BROKER, SIGNAL_PROVIDER, TUTOR, ACCOUNT_MANAGER, SERVICE_PROVIDER' }),
-  }),
-  phone: phoneValidation,
-  companyName: z.string().trim().optional(),
-  bio: z.string().trim().optional(),
-  website: z.string().trim().url('Website must be a valid URL').optional().or(z.literal('')),
-  consent: z.boolean().refine((val) => val === true, {
-    message: 'You must agree to the platform partnership terms.',
-  }),
-  consentVersion: z.string().optional().default('1.0'),
-  consentAt: z.string().optional(),
-  // Solutions Provider specific registration fields (Form 1)
-  accountType: z.nativeEnum(ProviderAccountType).optional(),
-  legalEntityName: z.string().trim().optional(),
-  contactFirstName: z.string().trim().optional(),
-  contactLastName: z.string().trim().optional(),
-  contactTitle: z.string().trim().optional(),
-  primaryEmail: emailValidation.optional(),
-  country: z.string().trim().optional(),
-  consentTerms: z.boolean().optional(),
-  consentPrivacy: z.boolean().optional(),
-});
+export const partnerRegisterSchema = z
+  .object({
+    name: z.string().trim().min(2, 'Name must be at least 2 characters').max(100, 'Name cannot exceed 100 characters'),
+    email: emailValidation,
+    password: passwordValidation,
+    role: z.enum(PARTNER_ROLES, {
+      errorMap: () => ({ message: `Invalid partner role. Allowed: ${PARTNER_ROLES.join(', ')}` }),
+    }),
+    phone: phoneValidation,
+    companyName: z.string().trim().optional(),
+    bio: z.string().trim().optional(),
+    website: z.string().trim().url('Website must be a valid URL').optional().or(z.literal('')),
+    consent: z.boolean().refine((val) => val === true, {
+      message: 'You must agree to the platform partnership terms.',
+    }),
+    consentVersion: z.string().optional().default('1.0'),
+    consentAt: z.string().optional(),
+    // Solutions Provider specific registration fields (Form 1)
+    accountType: z.nativeEnum(ProviderAccountType).optional(),
+    accountTypeOther: z.string().trim().max(100).optional(),
+    legalEntityName: z.string().trim().optional(),
+    contactFullName: z.string().trim().max(100).optional(),
+    contactFirstName: z.string().trim().optional(),
+    contactLastName: z.string().trim().optional(),
+    contactTitle: z.string().trim().max(100).optional(),
+    primaryEmail: emailValidation.optional(),
+    country: z.string().trim().optional(),
+    consentTerms: z.boolean().optional(),
+    consentPrivacy: z.boolean().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.role === Role.SERVICE_PROVIDER) {
+      if (!data.accountType) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Provider account type is required.',
+          path: ['accountType'],
+        });
+      }
+      if (data.accountType === ProviderAccountType.OTHER && !data.accountTypeOther?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Please specify your provider account type.',
+          path: ['accountTypeOther'],
+        });
+      }
+      const hasContactName = !!(
+        data.contactFullName?.trim() ||
+        (data.contactFirstName?.trim() && data.contactLastName?.trim()) ||
+        data.name?.trim()
+      );
+      if (!hasContactName) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Contact person's full name is required.",
+          path: ['contactFullName'],
+        });
+      }
+      if (!data.contactTitle?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Job title is required.',
+          path: ['contactTitle'],
+        });
+      }
+      if (data.consentTerms !== true) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'You must accept the Terms and Conditions.',
+          path: ['consentTerms'],
+        });
+      }
+      if (data.consentPrivacy !== true) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'You must accept the Privacy Policy.',
+          path: ['consentPrivacy'],
+        });
+      }
+    }
+  });
 
 export const adminCreateUserSchema = z.object({
   name: z.string().trim().min(2, 'Name must be at least 2 characters').max(50, 'Name cannot exceed 50 characters'),

@@ -7,22 +7,24 @@ interface TermsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAccept: () => void;
+  initialTab?: 'terms' | 'privacy' | 'risk';
 }
 
-export default function TermsAndConditionsModal({ isOpen, onClose, onAccept }: TermsModalProps) {
-  const [activeTab, setActiveTab] = useState<'terms' | 'privacy' | 'risk'>('terms');
+export default function TermsAndConditionsModal({ isOpen, onClose, onAccept, initialTab = 'terms' }: TermsModalProps) {
+  const [activeTab, setActiveTab] = useState<'terms' | 'privacy' | 'risk'>(initialTab);
   const [hasScrolledBottom, setHasScrolledBottom] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Reset scroll state on open or tab change
   useEffect(() => {
     if (isOpen) {
+      setActiveTab(initialTab);
       setHasScrolledBottom(false);
       if (scrollRef.current) {
         scrollRef.current.scrollTop = 0;
       }
     }
-  }, [isOpen, activeTab]);
+  }, [isOpen, initialTab]);
 
   const handleScroll = () => {
     if (!scrollRef.current) return;
@@ -94,113 +96,112 @@ export default function TermsAndConditionsModal({ isOpen, onClose, onAccept }: T
             onClick={() => setActiveTab('risk')}
             className={`flex items-center gap-1.5 py-2 px-3 rounded-xl transition whitespace-nowrap min-h-[38px] ${
               activeTab === 'risk'
-                ? 'bg-white text-red-600 shadow-sm font-bold border border-border'
+                ? 'bg-white text-blue shadow-sm font-bold border border-border'
                 : 'text-text-muted hover:text-text-heading'
             }`}
           >
-            <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
-            <span>3. Risk Warning</span>
+            <AlertTriangle className="w-3.5 h-3.5" />
+            <span>3. Risk Disclaimer</span>
           </button>
         </div>
 
-        {/* Content Body */}
+        {/* Scrollable Document Content */}
         <div
           ref={scrollRef}
           onScroll={handleScroll}
-          className="flex-1 overflow-y-auto p-4 sm:p-6 text-xs sm:text-sm text-text-body space-y-4 leading-relaxed"
+          tabIndex={0}
+          aria-label="Terms and conditions body"
+          className="flex-1 p-5 sm:p-6 overflow-y-auto space-y-4 text-xs sm:text-sm text-text-muted leading-relaxed focus:outline-none"
         >
           {activeTab === 'terms' && (
-            <div className="space-y-4">
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-blue-900 text-xs">
-                <strong>Platform Notice:</strong> EduTradeFX is an independent financial technology directory, community, and educational resource. EduTradeFX is not a broker, custodian, or investment advisor.
-              </div>
-              <h4 className="font-bold text-sm text-text-heading">1. Acceptance & Eligibility</h4>
+            <div className="space-y-3">
+              <h4 className="font-bold text-text-heading text-sm">EduTradeFX Terms of Service</h4>
               <p>
-                By registering an account on EduTradeFX, you certify that you are at least 18 years of age or the age of legal majority in your jurisdiction. You agree to be legally bound by these terms, and agree that all details provided during onboarding are accurate and true.
+                By creating an account on EduTradeFX (&quot;Platform&quot;), you acknowledge and agree that EduTradeFX is an independent educational marketplace and technology service aggregator.
               </p>
-              <h4 className="font-bold text-sm text-text-heading">2. Broker Directories & Reviews</h4>
               <p>
-                All ratings, broker directories, and fee specifications published on EduTradeFX are compiled for informational transparency. While we perform compliance audits of regulatory licenses, traders must perform their own due diligence before opening accounts or depositing capital.
+                EduTradeFX does not operate as a broker, financial advisor, or asset custodian. You are solely responsible for ensuring compliance with your local financial regulations before trading forex, CFDs, or accessing institutional services.
               </p>
-              <h4 className="font-bold text-sm text-text-heading">3. Account Integrity</h4>
+              <h5 className="font-semibold text-text-heading text-xs uppercase tracking-wider pt-2">User Conduct & Eligibility</h5>
               <p>
-                You are responsible for safeguarding your login credentials. You agree to notify us immediately of any unauthorized account activity. EduTradeFX will never ask you for your account password or payment card PIN via email or phone.
+                You warrant that you are at least 18 years of age and legally competent to enter into binding agreements. You must provide truthful, current, and verifiable information during registration.
               </p>
-              <h4 className="font-bold text-sm text-text-heading">4. Dispute Facilitation</h4>
+              <h5 className="font-semibold text-text-heading text-xs uppercase tracking-wider pt-2">Third-Party Listings</h5>
               <p>
-                The EduTradeFX Complaint Box and dispute assistance service facilitates dialogue between traders and financial brokers. EduTradeFX acts as an impartial community facilitator and does not guarantee financial recovery or legal damages.
+                Brokers, Signal Providers, Account Managers, and Solutions Providers listed on EduTradeFX operate independently. Listing on this platform does not constitute an endorsement, guarantee of solvency, or warranty of performance.
               </p>
             </div>
           )}
 
           {activeTab === 'privacy' && (
-            <div className="space-y-4">
-              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900 text-xs">
-                <strong>Data Protection:</strong> Your personal data is protected under modern encryption standards and is never sold to third-party telemarketers.
-              </div>
-              <h4 className="font-bold text-sm text-text-heading">1. Information We Collect</h4>
+            <div className="space-y-3">
+              <h4 className="font-bold text-text-heading text-sm">Privacy & Data Protection Policy</h4>
               <p>
-                We collect your name, email address, phone number (E.164 format), IP address, and optional trader profile data (city, country, social media links). For institutional partners, we collect company verification documents and regulatory licenses.
+                EduTradeFX is committed to safeguarding personal identifiable information (PII). We collect essential contact information, IP addresses, and verification evidence solely to administer accounts, satisfy AML/KYC obligations, and prevent fraud.
               </p>
-              <h4 className="font-bold text-sm text-text-heading">2. How We Use Your Data</h4>
               <p>
-                Your data is used to secure your account, verify your identity, send educational notifications, and route direct broker inquiries to the administrative compliance team. Broker inquiry data is held strictly by EdutradeFX and never automatically broadcasted.
+                Your registration data is stored securely and never sold to third-party marketing brokers. When you initiate an enquiry with an institutional provider, relevant contact fields are securely transmitted to facilitate that business connection.
               </p>
-              <h4 className="font-bold text-sm text-text-heading">3. Cookies & Security</h4>
+              <h5 className="font-semibold text-text-heading text-xs uppercase tracking-wider pt-2">Sensitive Documentation</h5>
               <p>
-                We use secure, HTTP-only cookies and cryptographic tokens to maintain your authentication state. All sessions are logged with audit trails for dispute resolution.
+                Regulatory licenses, ID cards, and incorporation certificates uploaded during partner verification are stored in isolated encrypted cloud vaults with restricted administrative access.
               </p>
             </div>
           )}
 
           {activeTab === 'risk' && (
-            <div className="space-y-4">
-              <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-red-900 text-xs">
-                <strong className="block text-red-700 font-bold mb-1">HIGH RISK INVESTMENT WARNING:</strong>
-                Trading Foreign Exchange (Forex) and Contracts for Difference (CFDs) involves a high level of risk and may not be suitable for all investors. Leverage can work against you as well as for you.
-              </div>
-              <h4 className="font-bold text-sm text-text-heading">1. Potential for Total Loss</h4>
-              <p>
-                Before deciding to trade foreign exchange or any other financial instrument you should carefully consider your investment objectives, level of experience, and risk appetite. There is a possibility that you may sustain a loss of some or all of your initial investment and therefore you should not invest money that you cannot afford to lose.
+            <div className="space-y-3">
+              <h4 className="font-bold text-text-heading text-sm text-orange flex items-center gap-1.5">
+                <AlertTriangle className="w-4 h-4 text-orange shrink-0" />
+                <span>High-Risk Investment Warning</span>
+              </h4>
+              <p className="font-semibold text-text-heading">
+                Trading Foreign Exchange (Forex) and Contracts for Difference (CFDs) carries a high degree of risk and can result in the loss of your entire capital.
               </p>
-              <h4 className="font-bold text-sm text-text-heading">2. No Financial Advice</h4>
               <p>
-                Nothing on EduTradeFX constitutes financial, legal, or tax advice. Past performance of signal providers, algorithms, or account managers is not an indicator of future results.
+                Between 74% and 89% of retail investor accounts lose money when trading CFDs with regulated brokers. Leverage can amplify both profits and losses exponentially.
+              </p>
+              <p>
+                Past performance of audited account managers or signal feeds is not indicative of future results. Never trade or invest funds that you cannot afford to lose completely.
               </p>
             </div>
           )}
+
+          <div className="p-3 bg-surface-tint rounded-xl border border-border text-[11px] text-text-muted">
+            <span className="font-semibold text-text-heading">Scroll requirement: </span>
+            Please scroll to the bottom of the section to unlock acceptance.
+          </div>
         </div>
 
-        {/* Footer with Actions */}
-        <div className="p-4 sm:p-5 border-t border-border bg-surface-tint flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="text-[11px] text-text-muted text-center sm:text-left">
+        {/* Footer Actions */}
+        <div className="p-4 sm:p-5 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 bg-white">
+          <div className="text-xs text-text-muted flex items-center gap-1.5">
             {hasScrolledBottom ? (
-              <span className="text-green font-semibold flex items-center gap-1 justify-center sm:justify-start">
-                <CheckCircle2 className="w-3.5 h-3.5" /> All legal sections reviewed
+              <span className="text-emerald-600 font-semibold flex items-center gap-1">
+                <CheckCircle2 className="w-4 h-4" /> Ready to accept
               </span>
             ) : (
-              <span>Scroll down or review tabs to acknowledge terms</span>
+              <span>Scroll down to enable acceptance</span>
             )}
           </div>
-
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 sm:flex-none px-4 py-2.5 rounded-full border border-border bg-white text-text-heading font-semibold text-xs hover:bg-slate-50 transition min-h-[42px]"
+              className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-border text-xs font-semibold text-text-muted hover:text-text-heading hover:bg-slate-50 transition"
             >
               Cancel
             </button>
             <button
               type="button"
+              disabled={!hasScrolledBottom}
               onClick={() => {
                 onAccept();
                 onClose();
               }}
-              className="flex-1 sm:flex-none px-6 py-2.5 rounded-full bg-blue hover:bg-blue-hover text-white font-bold text-xs transition shadow-soft flex items-center justify-center gap-1.5 min-h-[42px]"
+              className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-blue text-white text-xs font-bold hover:bg-blue-hover transition disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
             >
-              <CheckCircle2 className="w-4 h-4" />
-              <span>I Have Read & Agree</span>
+              I Accept & Agree
             </button>
           </div>
         </div>

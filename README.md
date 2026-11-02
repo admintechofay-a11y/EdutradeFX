@@ -191,3 +191,33 @@ npm --prefix frontend run build   # Output: next build -> 65 routes prerendered 
 ```
 
 All contractual deliverables required by SOW Section 1 through Section 19 are covered, tested, and ready for deployment.
+
+
+---
+
+## 9. After Every Pull (Local & Production Deployment Routine)
+
+Always run the following sequence after pulling new changes:
+
+```bash
+# 1. Backend: dependencies, Prisma client generation, migrations, build and test
+cd backend
+npm install
+npm run db:generate   # npx prisma generate
+npm run db:migrate    # npx prisma migrate deploy
+npm run build         # npx tsc
+npm test              # runs security, AM, SP, and Solutions Provider suites
+
+# 2. Frontend: dependencies and build
+cd ../frontend
+npm install
+npm run build
+
+# 3. Restart:
+# Docker:
+docker compose build --no-cache backend && docker compose up -d
+# Host / PM2:
+pm2 restart all
+```
+
+> **IMPORTANT:** Ensure `frontend` environment variable `NEXT_PUBLIC_API_URL` points directly at the backend deployment that has executed `npm run db:migrate`. If the frontend targets an out-of-date or un-migrated backend, partner registrations for roles like `SERVICE_PROVIDER` will fail with `Invalid partner role`.

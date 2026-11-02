@@ -14,6 +14,7 @@ router.use(authenticate, authorize('ADMIN'));
 // ── DASHBOARD ──────────────────────────────────────
 router.get('/dashboard', adminController.getDashboardStats);
 router.get('/stats', adminController.getDashboardStats);
+router.get('/system/status', adminController.getSystemStatus);
 
 // ── USERS ──────────────────────────────────────────
 router.post('/users', validate(adminCreateUserSchema), adminController.createUser);

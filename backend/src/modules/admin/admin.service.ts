@@ -33,6 +33,42 @@ import { generateSignedDocumentUrl } from '../../utils/cloudinary.utils';
 import { computeSPReviewFlags } from '../signal-providers/sp.utils';
 
 export class AdminService {
+  async getSystemStatus() {
+    const prismaRoles = Object.values(Role);
+    let dbRoles: string[] = [];
+    try {
+      const rows = await prisma.$queryRawUnsafe<{ r: string }[]>('SELECT unnest(enum_range(NULL::"Role")) as r');
+      dbRoles = rows.map((x) => x.r);
+    } catch {
+      dbRoles = [];
+    }
+
+    let appliedMigrations: { name: string; finishedAt: Date }[] = [];
+    try {
+      const rows = await prisma.$queryRawUnsafe<{ migration_name: string; finished_at: Date }[]>(
+        'SELECT migration_name, finished_at FROM _prisma_migrations WHERE rolled_back_at IS NULL ORDER BY finished_at DESC'
+      );
+      appliedMigrations = rows.map((r) => ({ name: r.migration_name, finishedAt: r.finished_at }));
+    } catch {
+      appliedMigrations = [];
+    }
+
+    const missingRoles = prismaRoles.filter((r) => !dbRoles.includes(r));
+    const inSync = missingRoles.length === 0 && dbRoles.length > 0;
+
+    return {
+      inSync,
+      prismaRoles,
+      dbRoles,
+      missingRoles,
+      appliedMigrationsCount: appliedMigrations.length,
+      latestMigration: appliedMigrations[0] || null,
+      serverTime: new Date().toISOString(),
+      commit: process.env.GIT_COMMIT || 'unknown',
+      builtAt: process.env.BUILD_TIME || 'unknown',
+    };
+  }
+
   // ── 1. DASHBOARD OVERVIEW & KPIS ───────────────────────────
 
   async getDashboardStats() {

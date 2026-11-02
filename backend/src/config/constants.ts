@@ -1,3 +1,15 @@
+import { Role } from '@prisma/client';
+
+export const PARTNER_ROLES = [
+  Role.BROKER,
+  Role.ACCOUNT_MANAGER,
+  Role.SIGNAL_PROVIDER,
+  Role.SERVICE_PROVIDER,
+  Role.TUTOR,
+] as const;
+
+export type PartnerRole = (typeof PARTNER_ROLES)[number];
+
 export const APP_CONSTANTS = {
   DEFAULT_PAGE: 1,
   DEFAULT_LIMIT: 10,

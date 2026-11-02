@@ -378,3 +378,4 @@ export function calculateCategoryCompletion(
     missingFields,
   };
 }
+

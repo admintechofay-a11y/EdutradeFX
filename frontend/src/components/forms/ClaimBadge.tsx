@@ -46,3 +46,4 @@ export const ClaimBadge: React.FC<ClaimBadgeProps> = ({
 };
 
 export default ClaimBadge;
+

@@ -238,16 +238,18 @@ export class ProviderPublicService {
   /**
    * Submits a B2B quote or demo enquiry to a provider.
    */
-  async submitEnquiry(providerId: string, data: any, userId?: string) {
-    const provider = await prisma.serviceProvider.findUnique({
-      where: { id: providerId },
+  async submitEnquiry(providerIdOrSlug: string, data: any, userId?: string) {
+    const provider = await prisma.serviceProvider.findFirst({
+      where: {
+        OR: [{ id: providerIdOrSlug }, { slug: providerIdOrSlug }],
+      },
       select: { id: true, brandName: true, legalName: true, companyEmail: true },
     });
     if (!provider) throw new AppError('Provider not found.', StatusCodes.NOT_FOUND);
 
     const enquiry = await prisma.providerEnquiry.create({
       data: {
-        providerId,
+        providerId: provider.id,
         productId: data.productId || null,
         categoryId: data.categoryId || null,
         type: data.type || 'GENERAL',
@@ -279,11 +281,19 @@ export class ProviderPublicService {
   /**
    * Submits a review for a provider or product.
    */
-  async submitReview(providerId: string, userId: string, data: any) {
+  async submitReview(providerIdOrSlug: string, userId: string, data: any) {
+    const provider = await prisma.serviceProvider.findFirst({
+      where: {
+        OR: [{ id: providerIdOrSlug }, { slug: providerIdOrSlug }],
+      },
+      select: { id: true },
+    });
+    if (!provider) throw new AppError('Provider not found.', StatusCodes.NOT_FOUND);
+
     const existing = await prisma.providerReview.findUnique({
       where: {
         providerId_userId_productId: {
-          providerId,
+          providerId: provider.id,
           userId,
           productId: data.productId || '',
         },
@@ -296,7 +306,7 @@ export class ProviderPublicService {
 
     return prisma.providerReview.create({
       data: {
-        providerId,
+        providerId: provider.id,
         userId,
         productId: data.productId || null,
         rating: data.rating,

@@ -98,3 +98,4 @@ export const submitCategorySchema = z.object({
   answers: z.record(z.any()),
   subcategoryId: z.string().uuid().optional().nullable(),
 });
+

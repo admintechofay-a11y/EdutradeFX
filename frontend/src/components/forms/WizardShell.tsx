@@ -193,3 +193,4 @@ export const WizardShell: React.FC<WizardShellProps> = ({
 };
 
 export default WizardShell;
+

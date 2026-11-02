@@ -1,13 +1,18 @@
 import { prisma } from '../../config/database';
 import { AppError } from '../../middleware/error.middleware';
 import { StatusCodes } from 'http-status-codes';
+import { AgreementAudience, ProviderStatus } from '@prisma/client';
 import path from 'path';
 import { uploadBufferToCloudinary } from '../../utils/cloudinary.utils';
 import {
   verifyImageMagicBytes,
   verifyDocumentMagicBytes,
 } from '../../middleware/upload.middleware';
-import { calculateOverallCompletion } from './provider.utils';
+import {
+  calculateOverallCompletion,
+  generateProviderCode,
+  generateApplicationRef,
+} from './provider.utils';
 
 export class ProviderCompanyService {
   /**
@@ -254,6 +259,221 @@ export class ProviderCompanyService {
     });
 
     return updated;
+  }
+
+  /**
+   * Retrieves authenticated provider's full profile including products, team, docs, and completion score.
+   */
+  async getMySummary(userId: string) {
+    const provider = await prisma.serviceProvider.findUnique({
+      where: { userId },
+      include: {
+        contacts: { orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }] },
+        addresses: { orderBy: { createdAt: 'asc' } },
+        socialLinks: { orderBy: { createdAt: 'asc' } },
+        categorySelections: {
+          where: { isSelected: true },
+          include: {
+            category: {
+              select: {
+                id: true,
+                number: true,
+                name: true,
+                slug: true,
+                icon: true,
+                shortDescription: true,
+              },
+            },
+            subcategory: {
+              select: {
+                id: true,
+                key: true,
+                label: true,
+              },
+            },
+          },
+          orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }],
+        },
+        products: {
+          where: { archivedAt: null },
+          include: {
+            categoryLinks: { include: { category: true } },
+            categoryDetails: { include: { category: true } },
+            technicalSpec: true,
+            integration: true,
+            pricing: true,
+            media: true,
+            documents: true,
+          },
+          orderBy: { createdAt: 'desc' },
+        },
+        teamMembers: { orderBy: [{ displayOrder: 'asc' }, { createdAt: 'asc' }] },
+        documents: { orderBy: { createdAt: 'desc' } },
+        reviews: { orderBy: { createdAt: 'desc' } },
+        enquiries: { orderBy: { createdAt: 'desc' } },
+      },
+    });
+
+    if (!provider) {
+      throw new AppError('Solutions Provider profile not found for this user.', StatusCodes.NOT_FOUND);
+    }
+
+    const completionScore = await calculateOverallCompletion(provider.id);
+
+    return {
+      ...provider,
+      completionScore,
+    };
+  }
+
+  /**
+   * Retrieves inbound B2B enquiries for the authenticated provider.
+   */
+  async getEnquiries(userId: string) {
+    const provider = await prisma.serviceProvider.findUnique({
+      where: { userId },
+      select: { id: true },
+    });
+    if (!provider) {
+      throw new AppError('Solutions Provider profile not found.', StatusCodes.NOT_FOUND);
+    }
+
+    return prisma.providerEnquiry.findMany({
+      where: { providerId: provider.id },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  /**
+   * Updates status of an inbound lead / enquiry.
+   */
+  async updateEnquiryStatus(userId: string, enquiryId: string, status: string) {
+    const provider = await prisma.serviceProvider.findUnique({
+      where: { userId },
+      select: { id: true },
+    });
+    if (!provider) {
+      throw new AppError('Solutions Provider profile not found.', StatusCodes.NOT_FOUND);
+    }
+
+    const enquiry = await prisma.providerEnquiry.findFirst({
+      where: { id: enquiryId, providerId: provider.id },
+    });
+    if (!enquiry) {
+      throw new AppError('Enquiry not found.', StatusCodes.NOT_FOUND);
+    }
+
+    return prisma.providerEnquiry.update({
+      where: { id: enquiry.id },
+      data: { status: status as any },
+    });
+  }
+
+  /**
+   * Retrieves reviews for the authenticated provider.
+   */
+  async getReviews(userId: string) {
+    const provider = await prisma.serviceProvider.findUnique({
+      where: { userId },
+      select: { id: true },
+    });
+    if (!provider) {
+      throw new AppError('Solutions Provider profile not found.', StatusCodes.NOT_FOUND);
+    }
+
+    return prisma.providerReview.findMany({
+      where: { providerId: provider.id },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  /**
+   * Retrieves legal agreements for Service Providers.
+   */
+  async getAgreements() {
+    return prisma.partnerAgreement.findMany({
+      where: {
+        audience: AgreementAudience.SERVICE_PROVIDER,
+        isActive: true,
+      },
+      orderBy: { createdAt: 'asc' },
+    });
+  }
+
+  /**
+   * Submits provider application for admin review (Form 8).
+   */
+  async submitProvider(
+    userId: string,
+    declarations: any,
+    meta?: { ipAddress?: string; userAgent?: string }
+  ) {
+    const provider = await prisma.serviceProvider.findUnique({
+      where: { userId },
+      select: { id: true, providerCode: true, applicationRef: true, status: true },
+    });
+    if (!provider) {
+      throw new AppError('Solutions Provider profile not found.', StatusCodes.NOT_FOUND);
+    }
+
+    let providerCode = provider.providerCode;
+    if (!providerCode) {
+      providerCode = await generateProviderCode();
+    }
+
+    let applicationRef = provider.applicationRef;
+    if (!applicationRef) {
+      applicationRef = await generateApplicationRef();
+    }
+
+    const updated = await prisma.serviceProvider.update({
+      where: { id: provider.id },
+      data: {
+        providerCode,
+        applicationRef,
+        status: ProviderStatus.SUBMITTED,
+        submittedAt: new Date(),
+        lastActivityAt: new Date(),
+      },
+    });
+
+    // Record agreement acceptances for active service provider agreements
+    const activeAgreements = await this.getAgreements();
+    for (const ag of activeAgreements) {
+      await prisma.partnerAgreementAcceptance.upsert({
+        where: {
+          partnerId_agreementKey_version: {
+            partnerId: provider.id,
+            agreementKey: ag.key,
+            version: ag.version,
+          },
+        },
+        update: {
+          acceptedAt: new Date(),
+          ipAddress: meta?.ipAddress || null,
+          userAgent: meta?.userAgent || null,
+        },
+        create: {
+          partnerType: AgreementAudience.SERVICE_PROVIDER,
+          partnerId: provider.id,
+          agreementKey: ag.key,
+          version: ag.version,
+          agreementId: ag.id,
+          userId,
+          ipAddress: meta?.ipAddress || null,
+          userAgent: meta?.userAgent || null,
+        },
+      }).catch(() => {});
+    }
+
+    await calculateOverallCompletion(provider.id);
+
+    return {
+      success: true,
+      providerCode: updated.providerCode,
+      applicationRef: updated.applicationRef,
+      status: updated.status,
+    };
   }
 }
 

@@ -207,6 +207,51 @@ export class ProviderController {
     const result = await providerDocsService.getSignedUrl(req.user!.userId, String(req.params.id));
     sendSuccess(res, result, 'Temporary signed download URL generated');
   };
+
+  // ── OVERVIEW / SUMMARY ──────────────────────────────────────────────────
+  getMySummary = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const summary = await providerCompanyService.getMySummary(req.user!.userId);
+    sendSuccess(res, summary, 'Solutions Provider summary retrieved successfully');
+  };
+
+  // ── INBOUND B2B ENQUIRIES ───────────────────────────────────────────────
+  getEnquiries = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const enquiries = await providerCompanyService.getEnquiries(req.user!.userId);
+    sendSuccess(res, enquiries, 'Inbound enquiries retrieved successfully');
+  };
+
+  updateEnquiryStatus = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const enquiry = await providerCompanyService.updateEnquiryStatus(
+      req.user!.userId,
+      String(req.params.id),
+      req.body.status
+    );
+    sendSuccess(res, enquiry, 'Enquiry status updated successfully');
+  };
+
+  // ── REVIEWS & RATINGS ───────────────────────────────────────────────────
+  getReviews = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const reviews = await providerCompanyService.getReviews(req.user!.userId);
+    sendSuccess(res, reviews, 'Reviews retrieved successfully');
+  };
+
+  // ── LEGAL AGREEMENTS & FORM 8 SUBMISSION ────────────────────────────────
+  getAgreements = async (_req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const agreements = await providerCompanyService.getAgreements();
+    sendSuccess(res, agreements, 'Active agreements retrieved successfully');
+  };
+
+  submitProvider = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const result = await providerCompanyService.submitProvider(
+      req.user!.userId,
+      req.body.declarations,
+      {
+        ipAddress: req.ip || req.socket.remoteAddress,
+        userAgent: req.headers['user-agent'],
+      }
+    );
+    sendSuccess(res, result, 'Solutions Provider application submitted for review', StatusCodes.OK);
+  };
 }
 
 export const providerController = new ProviderController();

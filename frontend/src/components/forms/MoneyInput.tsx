@@ -79,3 +79,4 @@ export const MoneyInput: React.FC<MoneyInputProps> = ({
 };
 
 export default MoneyInput;
+

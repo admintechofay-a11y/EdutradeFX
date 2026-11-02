@@ -122,3 +122,4 @@ export const createProductDocSchema = z.object({
   publicId: z.string().trim().min(1),
   visibility: z.nativeEnum(DocumentVisibility).default(DocumentVisibility.PUBLIC),
 });
+

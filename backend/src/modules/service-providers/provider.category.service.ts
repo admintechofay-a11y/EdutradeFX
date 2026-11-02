@@ -1,7 +1,7 @@
 import { prisma } from '../../config/database';
 import { AppError } from '../../middleware/error.middleware';
 import { StatusCodes } from 'http-status-codes';
-import { ProviderCategoryStatus, ProviderStatus } from '@prisma/client';
+import { ProviderCategoryStatus, ProviderStatus, Prisma } from '@prisma/client';
 import { formService } from '../provider-forms/form.service';
 import {
   buildAnswerSchema,
@@ -90,18 +90,28 @@ export class ProviderCategoryService {
     }
 
     await prisma.$transaction(async (tx) => {
-      // Deactivate categories not in selected list
-      await tx.providerCategorySelection.updateMany({
+      // Find categories not in selected list to deactivate
+      const toDeselect = await tx.providerCategorySelection.findMany({
         where: {
           providerId: provider.id,
           category: { number: { notIn: data.categoryNumbers } },
+          isSelected: true,
         },
-        data: {
-          isSelected: false,
-          isPrimary: false,
-          deselectedAt: new Date(),
-        },
+        select: { id: true },
       });
+
+      if (toDeselect.length > 0) {
+        await tx.providerCategorySelection.updateMany({
+          where: {
+            id: { in: toDeselect.map((s) => s.id) },
+          },
+          data: {
+            isSelected: false,
+            isPrimary: false,
+            deselectedAt: new Date(),
+          },
+        });
+      }
 
       // Upsert selected categories
       for (const cat of allCategories) {
@@ -137,7 +147,7 @@ export class ProviderCategoryService {
               subcategoryId: subId,
               status: ProviderCategoryStatus.DRAFT,
               completionPercent: 0,
-              answers: {},
+              answers: {} as Prisma.InputJsonObject,
             },
           });
         }
@@ -149,9 +159,32 @@ export class ProviderCategoryService {
   }
 
   /**
+   * Helper to resolve Category definition whether given a number or selection/category ID.
+   */
+  async resolveCategoryDef(categoryIdentifier: number | string) {
+    if (typeof categoryIdentifier === 'number' || /^\d+$/.test(String(categoryIdentifier))) {
+      return formService.getCategoryByNumber(parseInt(String(categoryIdentifier), 10));
+    }
+    const selection = await prisma.providerCategorySelection.findUnique({
+      where: { id: String(categoryIdentifier) },
+      include: { category: true },
+    });
+    if (selection) {
+      return formService.getCategoryByNumber(selection.category.number);
+    }
+    const directCat = await prisma.providerCategory.findUnique({
+      where: { id: String(categoryIdentifier) },
+    });
+    if (directCat) {
+      return formService.getCategoryByNumber(directCat.number);
+    }
+    throw new AppError('Category definition not found.', StatusCodes.NOT_FOUND);
+  }
+
+  /**
    * Retrieves category definition and current provider answers.
    */
-  async getCategoryForm(userId: string, categoryNumber: number) {
+  async getCategoryForm(userId: string, categoryNumber: number | string) {
     const provider = await prisma.serviceProvider.findUnique({
       where: { userId },
       select: { id: true },
@@ -160,7 +193,7 @@ export class ProviderCategoryService {
       throw new AppError('Solutions Provider profile not found.', StatusCodes.NOT_FOUND);
     }
 
-    const categoryDef = await formService.getCategoryByNumber(categoryNumber);
+    const categoryDef = await this.resolveCategoryDef(categoryNumber);
 
     const selection = await prisma.providerCategorySelection.findUnique({
       where: {
@@ -191,7 +224,7 @@ export class ProviderCategoryService {
    */
   async saveCategoryDraft(
     userId: string,
-    categoryNumber: number,
+    categoryNumber: number | string,
     answers: Record<string, any>,
     subcategoryId?: string | null
   ) {
@@ -203,7 +236,7 @@ export class ProviderCategoryService {
       throw new AppError('Solutions Provider profile not found.', StatusCodes.NOT_FOUND);
     }
 
-    const categoryDef = await formService.getCategoryByNumber(categoryNumber);
+    const categoryDef = await this.resolveCategoryDef(categoryNumber);
     const activeFields = categoryDef.sections.flatMap((s: any) => s.fields);
 
     // Validate partial draft
@@ -221,7 +254,7 @@ export class ProviderCategoryService {
         },
       },
       update: {
-        answers: parsedAnswers,
+        answers: parsedAnswers as Prisma.InputJsonObject,
         completionPercent: completion.percentage,
         isSelected: true,
         ...(subcategoryId && { subcategoryId }),
@@ -230,7 +263,7 @@ export class ProviderCategoryService {
       create: {
         providerId: provider.id,
         categoryId: categoryDef.id,
-        answers: parsedAnswers,
+        answers: parsedAnswers as Prisma.InputJsonObject,
         completionPercent: completion.percentage,
         subcategoryId: subcategoryId || null,
         isSelected: true,
@@ -251,7 +284,7 @@ export class ProviderCategoryService {
    */
   async submitCategory(
     userId: string,
-    categoryNumber: number,
+    categoryNumber: number | string,
     answers: Record<string, any>,
     subcategoryId?: string | null
   ) {
@@ -263,7 +296,7 @@ export class ProviderCategoryService {
       throw new AppError('Solutions Provider profile not found.', StatusCodes.NOT_FOUND);
     }
 
-    const categoryDef = await formService.getCategoryByNumber(categoryNumber);
+    const categoryDef = await this.resolveCategoryDef(categoryNumber);
     const activeFields = categoryDef.sections.flatMap((s: any) => s.fields);
 
     // Full submit validation
@@ -310,7 +343,7 @@ export class ProviderCategoryService {
         },
       },
       update: {
-        answers: parsedAnswers,
+        answers: parsedAnswers as Prisma.InputJsonObject,
         completionPercent: 100,
         status: ProviderCategoryStatus.SUBMITTED,
         submittedAt: new Date(),
@@ -320,7 +353,7 @@ export class ProviderCategoryService {
       create: {
         providerId: provider.id,
         categoryId: categoryDef.id,
-        answers: parsedAnswers,
+        answers: parsedAnswers as Prisma.InputJsonObject,
         completionPercent: 100,
         status: ProviderCategoryStatus.SUBMITTED,
         submittedAt: new Date(),

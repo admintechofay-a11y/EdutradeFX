@@ -56,3 +56,4 @@ router.patch('/claims/:targetId', validate(claimVerificationSchema), providerAdm
 router.patch('/reviews/:reviewId', validate(moderateReviewSchema), providerAdminController.moderateReview);
 
 export default router;
+

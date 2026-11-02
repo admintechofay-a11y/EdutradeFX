@@ -444,3 +444,4 @@ export default function CompanyProfilePage() {
     </PageContainer>
   );
 }
+

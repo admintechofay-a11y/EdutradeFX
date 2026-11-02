@@ -250,3 +250,4 @@ export default function CommercialTermsPage() {
     </PageContainer>
   );
 }
+

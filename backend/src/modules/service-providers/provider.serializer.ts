@@ -322,3 +322,4 @@ export function serializeProductPublic(product: any, options: SerializerOptions 
     }),
   };
 }
+

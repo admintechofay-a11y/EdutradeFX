@@ -242,3 +242,4 @@
 - **Frontend**:
   - `@tiptap/react`: Headless rich-text editor framework for React
   - `@tiptap/starter-kit`: Core TipTap extensions (headings, lists, bold, italic, blockquote)
+

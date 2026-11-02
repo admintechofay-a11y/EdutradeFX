@@ -3,7 +3,7 @@
 import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle, Loader2, CheckCircle } from 'lucide-react';
 import { api } from '../../../lib/api';
 import { useAuthStore } from '../../../store/authStore';
 
@@ -56,6 +56,13 @@ function LoginFormContent() {
           Access your verified trading dashboard & academy courses
         </p>
       </div>
+
+      {searchParams.get('registered') === 'true' && (
+        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-start gap-2.5 text-xs text-emerald-800">
+          <CheckCircle className="w-4 h-4 shrink-0 mt-0.5 text-emerald-600" />
+          <span>Registration successful! Your account is active. Please log in with your credentials.</span>
+        </div>
+      )}
 
       {/* Error Alert */}
       {error && (

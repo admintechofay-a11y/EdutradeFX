@@ -120,10 +120,11 @@ async function runAuthPartnerSuite() {
 
       const res = await request(server, 'POST', '/api/auth/register-partner', payload);
       assert(
-        res.status === 202,
-        `register-partner accepts valid partner role: ${allowedRole} (HTTP 202)`
+        res.status === 201 || res.status === 202,
+        `register-partner accepts valid partner role: ${allowedRole} (HTTP 201/202)`
       );
-      // Clean up pending registration
+      // Clean up test user
+      await prisma.user.deleteMany({ where: { email } }).catch(() => {});
       await prisma.pendingRegistration.deleteMany({ where: { email } }).catch(() => {});
     }
 
@@ -204,8 +205,8 @@ async function runAuthPartnerSuite() {
     });
     assert(resOtherWithoutText.status === 400, 'Reject accountType OTHER without accountTypeOther (HTTP 400)');
 
-    // ── 4. Verify Flow: Private Contact & Idempotency ───────────────────────
-    console.log('\n--- 4. Verify Flow, Private Contact & Idempotency ---');
+    // ── 4. Verify Flow: Direct Active Account, Private Contact & Idempotency ──
+    console.log('\n--- 4. Direct Active Registration, Private Contact & Safe Verification ---');
     const verifyEmail = `sp.verify.${Date.now()}@example.com`;
     const regRes = await request(server, 'POST', '/api/auth/register-partner', {
       ...baseSpPayload,
@@ -213,37 +214,13 @@ async function runAuthPartnerSuite() {
       contactFullName: 'Taylor Morgan',
       contactTitle: 'Chief Compliance Officer',
     });
-    assert(regRes.status === 202, 'Provider registration initiated (HTTP 202)');
+    assert(regRes.status === 201 || regRes.status === 202, 'Provider registration initiated (HTTP 201/202)');
 
-    // Assert NO user row before verification
-    const userBefore = await prisma.user.findUnique({ where: { email: verifyEmail } });
-    assert(userBefore === null, 'No User row exists before email verification');
-
-    // Retrieve pending token
-    const pending = await prisma.pendingRegistration.findUnique({ where: { email: verifyEmail } });
-    assert(pending !== null, 'PendingRegistration record exists in DB');
-
-    // Call verify
-    // Using authService.verifyEmail directly with raw token or simulate
-    const { authService } = await import('../modules/auth/auth.service');
-    // We know pending record has tokenHash; to verify cleanly, we can find the pending registration,
-    // or test verification via authService
-    // Let's create a known raw token
-    const { generateSecureToken, hashToken } = await import('../utils/bcrypt.utils');
-    const rawToken = generateSecureToken();
-    const hashedToken = hashToken(rawToken);
-
-    await prisma.pendingRegistration.update({
-      where: { id: pending!.id },
-      data: { tokenHash: hashedToken },
-    });
-
-    const verifyRes = await request(server, 'GET', `/api/auth/verify-email/${encodeURIComponent(rawToken)}`);
-    assert(verifyRes.status === 200, 'Email verification endpoint returns 200');
-
-    // Assert User created
+    // Assert user row exists immediately and is verified
     const userAfter = await prisma.user.findUnique({ where: { email: verifyEmail } });
+    assert(userAfter !== null, 'User row created immediately upon registration');
     assert(userAfter !== null && userAfter.role === Role.SERVICE_PROVIDER, 'User created with role SERVICE_PROVIDER');
+    assert(userAfter !== null && userAfter.isEmailVerified === true, 'User is active and isEmailVerified: true');
 
     // Assert ServiceProvider created with status DRAFT
     const provider = await prisma.serviceProvider.findUnique({
@@ -258,9 +235,9 @@ async function runAuthPartnerSuite() {
     assert(primaryContact?.fullName === 'Taylor Morgan', 'Primary contact uses contactFullName');
     assert(primaryContact?.isPublic === false, 'Primary ProviderContact isPublic is FALSE (private by default)');
 
-    // Double Verification Safety (Idempotency)
-    const doubleVerifyRes = await request(server, 'GET', `/api/auth/verify-email/${encodeURIComponent(rawToken)}`);
-    assert(doubleVerifyRes.status === 200 || doubleVerifyRes.status === 400 || doubleVerifyRes.status === 410, 'Double verification handled safely without 500 error');
+    // Verification endpoint handled safely without 500 error
+    const doubleVerifyRes = await request(server, 'GET', `/api/auth/verify-email/test-token-123`);
+    assert(doubleVerifyRes.status === 200 || doubleVerifyRes.status === 400 || doubleVerifyRes.status === 410, 'Verification link handled safely without 500 error');
 
     // Clean up test provider
     if (userAfter) {

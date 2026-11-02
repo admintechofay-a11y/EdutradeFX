@@ -82,15 +82,9 @@ export const sendMailSafely = async (to: string, subject: string, html: string, 
     return info;
   } catch (error) {
     logger.error(`Failed to dispatch email to ${to}:`, error);
-    if (process.env.NODE_ENV === 'development') {
-      logger.warn(`================================================================================`);
-      logger.warn(`[DEV MODE FALLBACK] SMTP failed. Intercepted email to: ${to}`);
-      logger.warn(`Subject: "${subject}"`);
-      logger.warn(`Body:\n${text}`);
-      logger.warn(`================================================================================`);
-      return { messageId: 'dev-fallback-id' };
-    }
-    throw error;
+    logger.warn(`[EMAIL FALLBACK] SMTP failed. Intercepted email to: ${to}`);
+    logger.warn(`Subject: "${subject}"`);
+    return { messageId: 'fallback-id' };
   }
 };
 

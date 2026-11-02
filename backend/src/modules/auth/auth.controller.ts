@@ -14,7 +14,17 @@ export class AuthController {
 
   register = async (req: Request, res: Response): Promise<void> => {
     const result = await authService.register(req.body);
-    sendSuccess(res, { email: result.email }, result.message, StatusCodes.ACCEPTED);
+    if (result.refreshToken) {
+      res.cookie('refreshToken', result.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        path: '/',
+      });
+    }
+    const { refreshToken: _, ...safeData } = result;
+    sendSuccess(res, safeData, result.message, StatusCodes.CREATED);
   };
 
   registerPartner = async (req: Request, res: Response): Promise<void> => {
@@ -22,7 +32,17 @@ export class AuthController {
       ipAddress: req.ip,
       userAgent: req.headers['user-agent'],
     });
-    sendSuccess(res, { email: result.email }, result.message, StatusCodes.ACCEPTED);
+    if (result.refreshToken) {
+      res.cookie('refreshToken', result.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        path: '/',
+      });
+    }
+    const { refreshToken: _, ...safeData } = result;
+    sendSuccess(res, safeData, result.message, StatusCodes.CREATED);
   };
 
   getPartnerRoles = async (_req: Request, res: Response): Promise<void> => {

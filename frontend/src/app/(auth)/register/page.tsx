@@ -28,9 +28,11 @@ import PhoneInput from '../../../components/common/PhoneInput';
 import PasswordStrengthMeter, { evaluatePasswordStrength } from '../../../components/common/PasswordStrengthMeter';
 import TermsAndConditionsModal from '../../../components/common/TermsAndConditionsModal';
 import ProviderRegisterFields from '../../../components/auth/ProviderRegisterFields';
+import { useAuthStore } from '../../../store/authStore';
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { setAuth } = useAuthStore();
 
   // Mode: 'TRADER' or 'PARTNER'
   const [mode, setMode] = useState<'TRADER' | 'PARTNER'>('TRADER');
@@ -169,13 +171,13 @@ export default function RegisterPage() {
     setError(null);
     try {
       const res = await api.post('/auth/register-partner', payload);
-      const devUrl = res.data?.data?.devVerificationUrl || res.data?.devVerificationUrl;
-      if (devUrl) {
-        setDevVerificationUrl(devUrl);
+      const { user, accessToken, refreshToken } = res.data?.data || {};
+      if (user && accessToken) {
+        setAuth(user, accessToken, refreshToken);
+        router.push('/dashboard/service-provider');
+      } else {
+        router.push('/login?registered=true');
       }
-      setEmail(payload.email);
-      setPendingVerification(true);
-      setResendCooldown(60);
     } catch (err: any) {
       setError(err.response?.data?.message || err.message || 'Registration failed. Please check your information.');
     } finally {
@@ -231,14 +233,19 @@ export default function RegisterPage() {
       }
 
       const res = await api.post(endpoint, payload);
-      const devUrl = res.data?.data?.devVerificationUrl || res.data?.devVerificationUrl;
-      if (devUrl) {
-        setDevVerificationUrl(devUrl);
+      const { user, accessToken, refreshToken } = res.data?.data || {};
+      if (user && accessToken) {
+        setAuth(user, accessToken, refreshToken);
+        if (user.role === 'SERVICE_PROVIDER') {
+          router.push('/dashboard/service-provider');
+        } else if (user.role === 'ADMIN') {
+          router.push('/admin');
+        } else {
+          router.push('/dashboard');
+        }
+      } else {
+        router.push('/login?registered=true');
       }
-
-      // Verify before create (A5) - account is pending email confirmation
-      setPendingVerification(true);
-      setResendCooldown(60);
     } catch (err: any) {
       setError(err.response?.data?.message || err.message || 'Registration failed. Please check your information.');
     } finally {

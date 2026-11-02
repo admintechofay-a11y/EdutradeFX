@@ -3,6 +3,7 @@ import { adminController } from './admin.controller';
 import { optionsController } from '../options/options.controller';
 import { authenticate } from '../../middleware/auth.middleware';
 import { authorize } from '../../middleware/role.middleware';
+import { guardDemoAdminAction } from '../../middleware/demo.middleware';
 import { validate } from '../../middleware/validate.middleware';
 import { adminCreateUserSchema } from '../auth/auth.schemas';
 
@@ -10,6 +11,7 @@ const router = Router();
 
 // Protect ALL admin routes with authentication and ADMIN role check
 router.use(authenticate, authorize('ADMIN'));
+router.use(guardDemoAdminAction);
 
 // ── DASHBOARD ──────────────────────────────────────
 router.get('/dashboard', adminController.getDashboardStats);

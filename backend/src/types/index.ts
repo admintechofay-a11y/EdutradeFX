@@ -4,6 +4,7 @@ import { Role } from '@prisma/client';
 export interface TokenPayload {
   userId: string;
   role: Role;
+  isDemoAccount?: boolean;
 }
 
 export interface RefreshTokenPayload {

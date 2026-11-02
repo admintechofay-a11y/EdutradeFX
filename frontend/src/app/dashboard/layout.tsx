@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { DashboardSidebar } from '../../components/layout/DashboardSidebar';
-import { Menu, X, LayoutDashboard } from 'lucide-react';
+import { Menu, X, LayoutDashboard, AlertTriangle } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useBodyScrollLock } from '../../lib/hooks/useBodyScrollLock';
 
@@ -22,6 +22,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen min-h-dvh bg-slate-50 flex flex-col">
+      {/* Demo Account Alert Banner */}
+      {user?.isDemoAccount && (
+        <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 text-xs font-semibold text-amber-900 flex items-center justify-center gap-2 shadow-xs text-center z-40">
+          <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse shrink-0" />
+          <span>Demo account — data is fictional and may be reset. Don&apos;t enter real personal information.</span>
+        </div>
+      )}
+
       {/* Top Mobile/Tablet Bar (< lg) */}
       <div className="lg:hidden bg-white border-b border-border px-4 py-3 sm:px-6 flex items-center justify-between sticky top-20 z-30 shadow-sm">
         <div className="flex items-center gap-2">

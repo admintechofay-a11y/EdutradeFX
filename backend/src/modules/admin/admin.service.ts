@@ -56,6 +56,14 @@ export class AdminService {
     const missingRoles = prismaRoles.filter((r) => !dbRoles.includes(r));
     const inSync = missingRoles.length === 0 && dbRoles.length > 0;
 
+    let demoWarning: string | null = null;
+    if (process.env.NODE_ENV === 'production' && process.env.DEMO_LOGIN_ENABLED === 'true') {
+      const realUsersCount = await prisma.user.count({ where: { isDemoAccount: false } });
+      if (realUsersCount > 0) {
+        demoWarning = 'Demo logins are enabled on a database with real users. Use a separate demo database.';
+      }
+    }
+
     return {
       inSync,
       prismaRoles,
@@ -63,6 +71,7 @@ export class AdminService {
       missingRoles,
       appliedMigrationsCount: appliedMigrations.length,
       latestMigration: appliedMigrations[0] || null,
+      demoWarning,
       serverTime: new Date().toISOString(),
       commit: process.env.GIT_COMMIT || 'unknown',
       builtAt: process.env.BUILD_TIME || 'unknown',

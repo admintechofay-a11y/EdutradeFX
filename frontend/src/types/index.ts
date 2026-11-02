@@ -59,6 +59,7 @@ export interface User {
   socialLinks?: Record<string, string> | null;
   isEmailVerified: boolean;
   isActive: boolean;
+  isDemoAccount?: boolean;
   createdAt: string;
   lastLoginAt?: string | null;
 }

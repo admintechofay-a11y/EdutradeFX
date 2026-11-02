@@ -31,6 +31,10 @@ export default function DashboardOverviewPage() {
   const [data, setData] = useState<any>(null);
 
   useEffect(() => {
+    if (role === 'SERVICE_PROVIDER') {
+      router.replace('/dashboard/service-provider');
+      return;
+    }
     if (role === 'ACCOUNT_MANAGER') {
       router.replace('/dashboard/account-manager');
       return;

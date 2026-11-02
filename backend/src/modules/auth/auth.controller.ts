@@ -4,6 +4,7 @@ import { authService } from './auth.service';
 import { sendSuccess } from '../../utils/response.utils';
 import { AuthenticatedRequest } from '../../types';
 import { AppError } from '../../middleware/error.middleware';
+import { getPublicDemoAccounts } from '../../config/demo-accounts.config';
 
 export class AuthController {
   checkEmail = async (req: Request, res: Response): Promise<void> => {
@@ -43,6 +44,11 @@ export class AuthController {
     }
     const { refreshToken: _, ...safeData } = result;
     sendSuccess(res, safeData, result.message, StatusCodes.CREATED);
+  };
+
+  getDemoAccounts = async (_req: Request, res: Response): Promise<void> => {
+    const data = getPublicDemoAccounts();
+    sendSuccess(res, data, 'Demo accounts configuration retrieved', StatusCodes.OK);
   };
 
   getPartnerRoles = async (_req: Request, res: Response): Promise<void> => {

@@ -68,6 +68,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="min-h-screen min-h-dvh bg-surface-tint flex flex-col">
+      {/* Demo Account Warning Banner */}
+      {user?.isDemoAccount && (
+        <div className="bg-amber-500 text-slate-950 px-4 py-2 text-xs font-bold flex items-center justify-center gap-2 border-b border-amber-600 text-center z-40">
+          <span className="w-2 h-2 rounded-full bg-slate-950 animate-ping shrink-0" />
+          <span>Demo Admin session — administrative actions on real data are blocked. Changes may be reset.</span>
+        </div>
+      )}
+
       {/* Top Mobile/Tablet Bar (< lg) */}
       <div className="lg:hidden bg-slate-900 border-b border-slate-800 px-4 py-3 sm:px-6 flex items-center justify-between sticky top-20 z-30 shadow-sm">
         <Link href="/admin" className="flex items-center gap-2.5">

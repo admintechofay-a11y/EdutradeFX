@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { authController } from './auth.controller';
 import { authenticate } from '../../middleware/auth.middleware';
+import { blockDemoAccountMutation } from '../../middleware/demo.middleware';
 import { validate } from '../../middleware/validate.middleware';
 import {
   authLimiter,
@@ -23,6 +24,7 @@ import {
 const router = Router();
 
 router.get('/partner-roles', authController.getPartnerRoles);
+router.get('/demo-accounts', authController.getDemoAccounts);
 router.get('/check-email', checkEmailLimiter, authController.checkEmail);
 router.post('/register', authLimiter, validate(registerSchema), authController.register);
 router.post('/register-partner', authLimiter, validate(partnerRegisterSchema), authController.registerPartner);
@@ -34,6 +36,6 @@ router.post('/forgot-password', forgotPasswordLimiter, validate(forgotPasswordSc
 router.post('/reset-password', resetPasswordLimiter, validate(resetPasswordSchema), authController.resetPassword);
 router.get('/verify-email/:token', authController.verifyEmail);
 router.get('/me', authenticate, authController.getMe);
-router.patch('/change-password', authenticate, validate(changePasswordSchema), authController.changePassword);
+router.patch('/change-password', authenticate, blockDemoAccountMutation, validate(changePasswordSchema), authController.changePassword);
 
 export default router;

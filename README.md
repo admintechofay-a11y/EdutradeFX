@@ -97,13 +97,29 @@ Access Points:
 
 ---
 
-## 4. Default Seed Administrative Accounts
+## 4. Demo Accounts & One-Click Showcase
 
-After running `npx prisma db seed`:
-- **Compliance Admin**: `admin@edutradefx.com` / `Password123!`
-- **Demo Broker**: `broker@exness-demo.com` / `Password123!`
-- **Demo Tutor**: `tutor@academy.com` / `Password123!`
-- **Demo Signal Provider**: `signals@elitepips.com` / `Password123!`
+To seed all verified demo accounts across all platform roles with published profiles, categories, and products:
+```bash
+cd backend
+npm run seed:demo
+# Or to reset all demo accounts and re-seed from scratch:
+npm run demo:reset
+```
+
+### Universal Demo Credentials
+All demo accounts use the standard password: **`Demo@1234!`** (or whatever `DEMO_PASSWORD` is configured to).
+
+| Role | Demo Email | Access Portal / Capability |
+| :--- | :--- | :--- |
+| **👑 Admin** | `admin@edutradefx.com` | `/admin` — Review queues, provider approvals, audit logs |
+| **🏢 Broker** | `broker@edutradefx.com` | `/dashboard/broker` — Pepperstone broker profile & spreads |
+| **💼 Account Manager** | `accountmanager@edutradefx.com` | `/dashboard/account-manager` — AUM, strategies & PAMM metrics |
+| **📡 Signal Provider** | `signals@edutradefx.com` | `/dashboard/signal-provider` — Alpha Trades live signals & win rate |
+| **🛠️ Solutions Provider** | `solutions@edutradefx.com` | `/dashboard/service-provider` — Demo Solutions Ltd: 3 categories & 2 products |
+| **🎓 Tutor** | `tutor@edutradefx.com` | `/dashboard/tutor` — Course creation, student enrollments & curriculum |
+| **📈 Trader / Student** | `trader@edutradefx.com` | `/dashboard` — Enrolled courses, saved bookmarks & reviews |
+| **⏳ Pending Provider** | `solutions-pending@edutradefx.com` | Admin review queue showcase account |
 
 ---
 

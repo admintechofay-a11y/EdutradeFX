@@ -1,11 +1,31 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle, Loader2, CheckCircle } from 'lucide-react';
 import { api } from '../../../lib/api';
 import { useAuthStore } from '../../../store/authStore';
+
+interface DemoAccountItem {
+  key: string;
+  role?: string;
+  label: string;
+  email: string;
+  hint?: string;
+  badgeColor?: string;
+  caption?: string;
+}
+
+const DEFAULT_DEMO_ACCOUNTS: DemoAccountItem[] = [
+  { key: 'admin', label: 'Admin', email: 'admin@edutradefx.com', badgeColor: 'bg-red-50 text-red-700 border-red-200' },
+  { key: 'broker', label: 'Broker', email: 'broker@edutradefx.com', badgeColor: 'bg-blue-50 text-blue-700 border-blue-200' },
+  { key: 'accountmanager', label: 'Account Mgr', email: 'accountmanager@edutradefx.com', badgeColor: 'bg-purple-50 text-purple-700 border-purple-200' },
+  { key: 'signals', label: 'Signal Provider', email: 'signals@edutradefx.com', badgeColor: 'bg-amber-50 text-amber-700 border-amber-200' },
+  { key: 'solutions', label: 'Solutions Provider', email: 'solutions@edutradefx.com', badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+  { key: 'tutor', label: 'Tutor', email: 'tutor@edutradefx.com', badgeColor: 'bg-teal-50 text-teal-700 border-teal-200' },
+  { key: 'trader', label: 'Trader', email: 'trader@edutradefx.com', badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+];
 
 function LoginFormContent() {
   const router = useRouter();
@@ -18,7 +38,38 @@ function LoginFormContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [demoAccounts, setDemoAccounts] = useState<DemoAccountItem[]>(DEFAULT_DEMO_ACCOUNTS);
+  const [demoPassword, setDemoPassword] = useState('Demo@1234!');
+  const [demoEnabled, setDemoEnabled] = useState(true);
+
   const { setAuth } = useAuthStore();
+
+  useEffect(() => {
+    let mounted = true;
+    api
+      .get('/auth/demo-accounts')
+      .then((res) => {
+        if (!mounted) return;
+        const data = res.data?.data;
+        if (data && data.enabled === false) {
+          setDemoEnabled(false);
+        } else if (data && data.accounts && Array.isArray(data.accounts)) {
+          setDemoEnabled(true);
+          setDemoAccounts(data.accounts);
+          if (data.password) setDemoPassword(data.password);
+        }
+      })
+      .catch(() => {
+        // In production, disable demo login if API is unreachable unless explicitly enabled via public env
+        if (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_ENABLE_DEMO_LOGIN !== 'true') {
+          if (mounted) setDemoEnabled(false);
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,6 +85,8 @@ function LoginFormContent() {
         router.push(redirectUrl);
       } else if (user.role === 'ADMIN') {
         router.push('/admin');
+      } else if (user.role === 'SERVICE_PROVIDER') {
+        router.push('/dashboard/service-provider');
       } else {
         router.push('/dashboard');
       }
@@ -85,22 +138,20 @@ function LoginFormContent() {
               required
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
-              placeholder="trader@example.com or +447911123456"
-              className="w-full pl-10 pr-4 py-2.5 sm:py-3 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
+              placeholder="e.g. trader@example.com or +1234567890"
+              className="w-full pl-10 pr-4 py-3 sm:py-3.5 border border-border rounded-xl text-sm focus:outline-none focus:border-blue transition bg-surface-tint"
             />
           </div>
         </div>
 
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label className="block text-xs font-semibold text-text-heading">
-              Password
-            </label>
+            <label className="block text-xs font-semibold text-text-heading uppercase tracking-wider">Password</label>
             <Link
               href="/forgot-password"
-              className="text-xs text-blue hover:text-blue-hover transition font-medium min-h-[36px] flex items-center"
+              className="text-xs font-bold text-blue hover:text-blue-hover transition inline-block py-1"
             >
-              Forgot password?
+              Forgot Password?
             </Link>
           </div>
           <div className="relative">
@@ -110,13 +161,12 @@ function LoginFormContent() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full pl-10 pr-12 py-2.5 sm:py-3 bg-white border border-border rounded-xl text-xs sm:text-sm text-text-heading placeholder-text-muted focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue transition"
+              placeholder="Enter your account password"
+              className="w-full pl-10 pr-12 py-3 sm:py-3.5 border border-border rounded-xl text-sm focus:outline-none focus:border-blue transition bg-surface-tint"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
               className="absolute right-1 top-1/2 -translate-y-1/2 p-2 text-text-muted hover:text-text-heading min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg"
             >
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -135,43 +185,43 @@ function LoginFormContent() {
       </form>
 
       {/* Demo Accounts Quick-Fill Section */}
-      <div className="pt-4 border-t border-border space-y-2.5">
-        <div className="flex items-center justify-between">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-text-muted flex items-center gap-1.5">
-            <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            Demo Test Accounts (Click to Fill)
-          </span>
-          <span className="text-[10px] text-text-muted font-mono bg-surface-tint px-2 py-0.5 rounded border border-border">
-            Password: Demo@1234!
-          </span>
-        </div>
+      {demoEnabled && demoAccounts.length > 0 && (
+        <div className="pt-4 border-t border-border space-y-2.5">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-text-muted flex items-center gap-1.5">
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              Demo Test Accounts (Click to Fill)
+            </span>
+            <span className="text-[10px] text-text-muted font-mono bg-surface-tint px-2 py-0.5 rounded border border-border">
+              Password: {demoPassword}
+            </span>
+          </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-          {[
-            { role: 'Admin', email: 'admin@edutradefx.com', badge: 'bg-red-50 text-red-700 border-red-200' },
-            { role: 'Broker', email: 'broker@edutradefx.com', badge: 'bg-blue-50 text-blue-700 border-blue-200' },
-            { role: 'Account Mgr', email: 'accountmanager@edutradefx.com', badge: 'bg-purple-50 text-purple-700 border-purple-200' },
-            { role: 'Signal Provider', email: 'signals@edutradefx.com', badge: 'bg-amber-50 text-amber-700 border-amber-200' },
-            { role: 'Tutor', email: 'tutor@edutradefx.com', badge: 'bg-teal-50 text-teal-700 border-teal-200' },
-            { role: 'Trader', email: 'trader@edutradefx.com', badge: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-          ].map((demo) => (
-            <button
-              key={demo.role}
-              type="button"
-              onClick={() => {
-                setIdentifier(demo.email);
-                setPassword('Demo@1234!');
-                setError(null);
-              }}
-              className={`p-2 rounded-xl border text-[11px] font-bold text-left transition hover:scale-[1.02] active:scale-[0.98] ${demo.badge}`}
-              title={`Click to fill ${demo.email}`}
-            >
-              <div className="truncate font-extrabold">{demo.role}</div>
-              <div className="text-[9px] opacity-75 truncate">{demo.email.split('@')[0]}</div>
-            </button>
-          ))}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+            {demoAccounts.map((demo, idx) => {
+              const isLastOdd = idx === demoAccounts.length - 1 && demoAccounts.length % 2 === 1;
+              return (
+                <button
+                  key={demo.key || demo.email}
+                  type="button"
+                  onClick={() => {
+                    setIdentifier(demo.email);
+                    setPassword(demoPassword);
+                    setError(null);
+                  }}
+                  className={`p-2 min-h-[48px] rounded-xl border text-[11px] font-bold text-left transition hover:scale-[1.02] active:scale-[0.98] ${
+                    demo.badgeColor || 'bg-slate-50 text-slate-700 border-slate-200'
+                  } ${isLastOdd ? 'col-span-2 sm:col-span-1' : ''}`}
+                  title={`Click to fill ${demo.email}`}
+                >
+                  <div className="truncate font-extrabold">{demo.label}</div>
+                  <div className="text-[9px] opacity-75 truncate">{demo.email.split('@')[0]}</div>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Footer */}
       <div className="text-center pt-2 border-t border-border text-xs text-text-muted">

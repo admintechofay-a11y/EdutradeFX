@@ -118,6 +118,7 @@ export class AuthService {
     const accessToken = generateAccessToken({
       userId: user.id,
       role: user.role,
+      isDemoAccount: user.isDemoAccount,
     });
     const refreshToken = generateRefreshToken({ userId: user.id });
     const hashedRefresh = hashToken(refreshToken);
@@ -471,6 +472,29 @@ export class AuthService {
       throw new AppError('Invalid email or password credentials.', StatusCodes.UNAUTHORIZED);
     }
 
+    if (user.isDemoAccount) {
+      const isProd = process.env.NODE_ENV === 'production';
+      const demoLoginEnabled = isProd
+        ? process.env.DEMO_LOGIN_ENABLED === 'true'
+        : process.env.DEMO_LOGIN_ENABLED !== 'false';
+
+      if (!demoLoginEnabled) {
+        throw new AppError('Invalid email or password credentials.', StatusCodes.UNAUTHORIZED);
+      }
+
+      if (user.role === Role.ADMIN) {
+        const demoAdminAllowed = isProd
+          ? process.env.DEMO_ALLOW_ADMIN === 'true'
+          : true;
+        if (!demoAdminAllowed) {
+          throw new AppError('Invalid email or password credentials.', StatusCodes.UNAUTHORIZED);
+        }
+      }
+    }
+    if (!isMatch) {
+      throw new AppError('Invalid email or password credentials.', StatusCodes.UNAUTHORIZED);
+    }
+
     // Auto-verify if an unverified user exists
     if (!user.isEmailVerified) {
       await prisma.user.update({
@@ -482,6 +506,7 @@ export class AuthService {
     const accessToken = generateAccessToken({
       userId: user.id,
       role: user.role,
+      isDemoAccount: user.isDemoAccount,
     });
 
     const refreshTokenString = generateRefreshToken({ userId: user.id });
@@ -855,6 +880,14 @@ export class AuthService {
     const isMatch = await comparePassword(currentPass, user.password);
     if (!isMatch) {
       throw new AppError('Current password is incorrect.', StatusCodes.BAD_REQUEST);
+    }
+
+    if (user.isDemoAccount) {
+      throw new AppError(
+        'This action is restricted for demo accounts.',
+        StatusCodes.FORBIDDEN,
+        'DEMO_ACCOUNT_RESTRICTED'
+      );
     }
 
     const hashedPassword = await hashPassword(newPass);

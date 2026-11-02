@@ -14,6 +14,7 @@ import {
   Package,
   Globe,
   SlidersHorizontal,
+  RefreshCw,
 } from 'lucide-react';
 import { api } from '../../../lib/api';
 import PageContainer from '../../../components/ui/PageContainer';
@@ -22,6 +23,7 @@ import ClaimBadge from '../../../components/forms/ClaimBadge';
 
 export default function SolutionsProvidersDirectoryPage() {
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [providers, setProviders] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
 
@@ -31,34 +33,109 @@ export default function SolutionsProvidersDirectoryPage() {
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [sortBy, setSortBy] = useState('featured');
 
+  const loadDirectoryData = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const [provResult, catResult] = await Promise.allSettled([
+        api.get('/solutions-providers'),
+        api.get('/solutions-providers/categories').catch(() => api.get('/provider-forms/categories')),
+      ]);
+
+      if (provResult.status === 'fulfilled') {
+        const rawProv = provResult.value?.data?.data;
+        const provList = Array.isArray(rawProv)
+          ? rawProv
+          : Array.isArray(rawProv?.items)
+          ? rawProv.items
+          : Array.isArray(rawProv?.providers)
+          ? rawProv.providers
+          : [];
+        setProviders(provList);
+      } else {
+        console.warn('Solutions providers fetch warning:', provResult.reason);
+        setProviders([]);
+      }
+
+      if (catResult.status === 'fulfilled') {
+        const rawCat = catResult.value?.data?.data;
+        const catList = Array.isArray(rawCat)
+          ? rawCat
+          : Array.isArray(rawCat?.categories)
+          ? rawCat.categories
+          : Array.isArray(rawCat?.items)
+          ? rawCat.items
+          : [];
+        setCategories(catList);
+      } else {
+        console.warn('Categories fetch warning:', catResult.reason);
+        setCategories([]);
+      }
+    } catch (err: any) {
+      console.error('Error loading solutions directory:', err);
+      setError('Unable to load directory at this time. Please try again.');
+      setProviders([]);
+      setCategories([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    Promise.all([
-      api.get('/solutions-providers'),
-      api.get('/provider-forms/categories'),
-    ])
-      .then(([provRes, catRes]) => {
-        if (provRes.data?.success) setProviders(provRes.data.data);
-        if (catRes.data?.success) setCategories(catRes.data.data);
-      })
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
+    loadDirectoryData();
   }, []);
 
-  const filteredProviders = useMemo(() => {
-    return providers.filter((p) => {
-      if (verifiedOnly && p.verificationStatus !== 'VERIFIED') return false;
-      if (selectedCategory) {
-        const matchesCat = (p.categories || []).some(
-          (c: any) => c.categoryNumber === Number(selectedCategory) || c.number === Number(selectedCategory)
-        );
-        if (!matchesCat) return false;
+  const safeCategories = useMemo(() => {
+    if (Array.isArray(categories)) return categories;
+    if (Array.isArray((categories as any)?.categories)) return (categories as any).categories;
+    if (Array.isArray((categories as any)?.items)) return (categories as any).items;
+    return [];
+  }, [categories]);
+
+  const categoryNameMap = useMemo(() => {
+    const map = new Map<number, string>();
+    safeCategories.forEach((c: any) => {
+      if (c && typeof c.number === 'number' && c.name) {
+        map.set(c.number, c.name);
       }
+    });
+    return map;
+  }, [safeCategories]);
+
+  const filteredProviders = useMemo(() => {
+    const list = Array.isArray(providers)
+      ? providers
+      : Array.isArray((providers as any)?.items)
+      ? (providers as any).items
+      : Array.isArray((providers as any)?.providers)
+      ? (providers as any).providers
+      : [];
+
+    return list.filter((p: any) => {
+      if (!p) return false;
+      const isVerified = Boolean(p.verified || p.verificationStatus === 'VERIFIED');
+      if (verifiedOnly && !isVerified) return false;
+
+      if (selectedCategory) {
+        const catNum = Number(selectedCategory);
+        const matchesCategoryNumbers =
+          Array.isArray(p.categoryNumbers) && p.categoryNumbers.includes(catNum);
+        const matchesCategories =
+          Array.isArray(p.categories) &&
+          p.categories.some(
+            (c: any) => c?.categoryNumber === catNum || c?.number === catNum
+          );
+        if (!matchesCategoryNumbers && !matchesCategories) return false;
+      }
+
       if (search.trim()) {
         const q = search.toLowerCase();
-        const nameMatch = (p.brandName || p.name || '').toLowerCase().includes(q);
-        const taglineMatch = (p.tagline || '').toLowerCase().includes(q);
-        if (!nameMatch && !taglineMatch) return false;
+        const brand = (p.brandName || p.name || '').toLowerCase();
+        const tagline = (p.tagline || p.summary || p.overview || '').toLowerCase();
+        if (!brand.includes(q) && !tagline.includes(q)) return false;
       }
+
       return true;
     });
   }, [providers, verifiedOnly, selectedCategory, search]);
@@ -101,8 +178,8 @@ export default function SolutionsProvidersDirectoryPage() {
                 className="px-3 py-2.5 text-sm border border-slate-200 rounded-xl bg-white text-slate-700 focus:outline-none"
               >
                 <option value="">All 10 Categories</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.number}>
+                {safeCategories.map((c: any) => (
+                  <option key={c.id || c.number} value={c.number}>
                     Cat {c.number}: {c.name}
                   </option>
                 ))}
@@ -133,26 +210,68 @@ export default function SolutionsProvidersDirectoryPage() {
             <Building2 className="w-12 h-12 text-slate-300 mx-auto" />
             <h3 className="text-lg font-bold text-slate-800">No Solutions Providers Found</h3>
             <p className="text-sm text-slate-500 max-w-sm mx-auto">
-              Try adjusting your search criteria or clearing filters.
+              {error || 'No providers match your filter criteria at this time.'}
             </p>
+            {error && (
+              <div className="pt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={loadDirectoryData}
+                  className="inline-flex items-center gap-1.5"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Retry</span>
+                </Button>
+              </div>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProviders.map((prov) => {
-              const cats = prov.categories || [];
-              const isVerified = prov.verificationStatus === 'VERIFIED';
-              const rating = prov.avgRating && prov.totalReviews >= 3 ? Number(prov.avgRating).toFixed(1) : null;
+            {filteredProviders.map((prov: any, index: number) => {
+              if (!prov) return null;
+
+              let cats: { number: number; name: string }[] = [];
+              if (Array.isArray(prov.categories) && prov.categories.length > 0) {
+                cats = prov.categories.map((c: any) => ({
+                  number: c?.categoryNumber || c?.number || 0,
+                  name:
+                    c?.categoryName ||
+                    c?.name ||
+                    categoryNameMap.get(c?.categoryNumber || c?.number) ||
+                    `Category ${c?.categoryNumber || c?.number || ''}`,
+                }));
+              } else if (Array.isArray(prov.categoryNumbers) && prov.categoryNumbers.length > 0) {
+                cats = prov.categoryNumbers.map((num: number) => ({
+                  number: num,
+                  name: categoryNameMap.get(num) || `Category ${num}`,
+                }));
+              }
+
+              const isVerified = Boolean(prov.verified || prov.verificationStatus === 'VERIFIED');
+              const rawRating = prov.ratingAvg ?? prov.avgRating;
+              const reviewCount = prov.ratingCount ?? prov.totalReviews ?? 0;
+              const rating =
+                rawRating && !isNaN(Number(rawRating)) && Number(rawRating) > 0
+                  ? Number(rawRating).toFixed(1)
+                  : null;
+
+              const brandName = prov.brandName || prov.name || 'Solutions Provider';
+              const tagline = prov.tagline || prov.summary || prov.overview || 'Enterprise solutions provider.';
+              const country = prov.headquartersCountryCode || prov.country || 'Global';
+              const slug = prov.slug || prov.providerId || prov.id || '';
+              const cardKey = prov.id || prov.providerId || prov.slug || `prov-${index}`;
 
               return (
                 <div
-                  key={prov.id}
+                  key={cardKey}
                   className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between hover:border-blue-400 hover:shadow-md transition-all group"
                 >
                   <div className="space-y-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="w-14 h-14 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center p-2 shrink-0 overflow-hidden">
                         {prov.logo ? (
-                          <img src={prov.logo} alt={prov.brandName} className="w-full h-full object-contain" />
+                          <img src={prov.logo} alt={brandName} className="w-full h-full object-contain" />
                         ) : (
                           <Building2 className="w-8 h-8 text-slate-400" />
                         )}
@@ -170,10 +289,10 @@ export default function SolutionsProvidersDirectoryPage() {
 
                     <div>
                       <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
-                        {prov.brandName || prov.name}
+                        {brandName}
                       </h3>
                       <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
-                        {prov.tagline || prov.overview || 'Enterprise solutions provider.'}
+                        {tagline}
                       </p>
                     </div>
 
@@ -182,10 +301,10 @@ export default function SolutionsProvidersDirectoryPage() {
                       <div className="flex flex-wrap gap-1.5 pt-1">
                         {cats.slice(0, 3).map((c: any) => (
                           <span
-                            key={c.categoryNumber || c.number}
+                            key={c.number || c.name}
                             className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700"
                           >
-                            {c.categoryName || c.name}
+                            {c.name}
                           </span>
                         ))}
                         {cats.length > 3 && (
@@ -208,11 +327,11 @@ export default function SolutionsProvidersDirectoryPage() {
                         <span className="text-slate-400 text-[11px]">Unrated</span>
                       )}
                       <span>•</span>
-                      <span>{prov.country || 'Global'}</span>
+                      <span>{country}</span>
                     </div>
 
                     <Link
-                      href={`/solutions-providers/${prov.slug}`}
+                      href={`/solutions-providers/${slug}`}
                       className="text-xs font-bold text-blue-600 hover:text-blue-800 inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform"
                     >
                       <span>View Profile</span>
@@ -228,4 +347,3 @@ export default function SolutionsProvidersDirectoryPage() {
     </div>
   );
 }
-

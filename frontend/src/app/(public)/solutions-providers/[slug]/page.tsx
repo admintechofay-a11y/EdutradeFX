@@ -108,13 +108,18 @@ export default function PublicProviderProfilePage() {
     );
   }
 
-  const p = provider;
-  const categories = p.categories || [];
-  const products = p.products || [];
-  const team = p.team || [];
-  const reviews = p.reviews || [];
-  const isVerified = p.verificationStatus === 'VERIFIED';
-  const rating = p.avgRating && p.totalReviews >= 3 ? Number(p.avgRating).toFixed(1) : null;
+  const p = provider || {};
+  const categories = Array.isArray(p.categories) ? p.categories : [];
+  const products = Array.isArray(p.products) ? p.products : [];
+  const team = Array.isArray(p.team) ? p.team : [];
+  const reviews = Array.isArray(p.reviews) ? p.reviews : [];
+  const isVerified = Boolean(p.verified || p.verificationStatus === 'VERIFIED');
+  const rawRating = p.ratingAvg ?? p.avgRating;
+  const reviewCount = p.ratingCount ?? p.totalReviews ?? 0;
+  const rating =
+    rawRating && !isNaN(Number(rawRating)) && Number(rawRating) > 0
+      ? Number(rawRating).toFixed(1)
+      : null;
 
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
@@ -278,7 +283,9 @@ export default function PublicProviderProfilePage() {
                   <h3 className="text-base font-bold text-slate-900">{prod.name}</h3>
                   <p className="text-xs text-slate-600 line-clamp-2">{prod.summary}</p>
                   <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-                    <span className="text-slate-400">Pricing: {prod.pricing?.model || 'Custom'}</span>
+                    <span className="text-slate-400">
+                      Pricing: {typeof prod.pricing === 'object' ? prod.pricing?.model || 'Custom' : prod.pricing || 'Custom'}
+                    </span>
                     <Link
                       href={`/solutions-providers/${slug}/products/${prod.slug || prod.id}`}
                       className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1"
@@ -310,9 +317,9 @@ export default function PublicProviderProfilePage() {
                 <div key={m.id || m.name} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-2">
                   <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-700 overflow-hidden">
                     {m.photoUrl ? (
-                      <img src={m.photoUrl} alt={m.name} className="w-full h-full object-cover" />
+                      <img src={m.photoUrl} alt={m.name || 'Member'} className="w-full h-full object-cover" />
                     ) : (
-                      <span>{m.name[0]}</span>
+                      <span>{(m.name || 'M').charAt(0)}</span>
                     )}
                   </div>
                   <h3 className="text-sm font-bold text-slate-900">{m.name}</h3>

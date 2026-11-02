@@ -102,10 +102,10 @@ export default function PublicProductDetailPage() {
     );
   }
 
-  const p = product;
-  const specs = p.specs || {};
-  const integrations = p.integrations || {};
-  const pricing = p.pricing || {};
+  const p = product || {};
+  const specs = typeof p.specs === 'object' && p.specs !== null ? p.specs : {};
+  const integrations = typeof p.integrations === 'object' && p.integrations !== null ? p.integrations : {};
+  const pricing = typeof p.pricing === 'object' && p.pricing !== null ? p.pricing : {};
 
   return (
     <div className="min-h-screen bg-slate-50 py-8 pb-20">
@@ -217,8 +217,10 @@ export default function PublicProductDetailPage() {
                 <div className="space-y-3">
                   <span className="text-xs font-semibold text-slate-500">Supported Platforms:</span>
                   <div className="flex flex-wrap gap-2">
-                    {(integrations.supportedPlatforms || ['MT4', 'MT5', 'cTrader', 'TradingView']).map(
-                      (plat: string) => (
+                    {(Array.isArray(integrations.supportedPlatforms)
+                      ? integrations.supportedPlatforms
+                      : ['MT4', 'MT5', 'cTrader', 'TradingView']
+                    ).map((plat: string) => (
                         <span
                           key={plat}
                           className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-lg border border-blue-200"

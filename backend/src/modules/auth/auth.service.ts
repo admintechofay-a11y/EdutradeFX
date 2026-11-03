@@ -29,6 +29,13 @@ import {
 import { PARTNER_ROLES } from '../../config/constants';
 import { logger } from '../../utils/logger';
 import { normalizeToE164 } from '../../utils/phone.utils';
+import {
+  isDemoEmail,
+  isDemoLoginEnabled,
+  isDemoAdminAllowed,
+  DEMO_PASSWORD,
+} from '../../config/demo-accounts.config';
+import { ensureDemoAccountByEmail } from './demo-provisioner';
 
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
@@ -447,17 +454,24 @@ export class AuthService {
    */
   async login(identifier: string, password: string) {
     const cleanId = (identifier || '').trim();
+    const cleanEmail = cleanId.toLowerCase();
     const normalizedPhone = normalizeToE164(cleanId) || cleanId;
 
-    const user = await prisma.user.findFirst({
+    let user = await prisma.user.findFirst({
       where: {
         OR: [
-          { email: cleanId.toLowerCase() },
+          { email: cleanEmail },
           { phone: cleanId },
           { phone: normalizedPhone },
         ],
       },
     });
+
+    // Auto-provision demo account if not yet seeded in this database
+    if (!user && isDemoEmail(cleanEmail) && isDemoLoginEnabled()) {
+      await ensureDemoAccountByEmail(cleanEmail);
+      user = await prisma.user.findUnique({ where: { email: cleanEmail } });
+    }
 
     if (!user) {
       throw new AppError('Invalid email/mobile or password credentials.', StatusCodes.UNAUTHORIZED);
@@ -467,32 +481,22 @@ export class AuthService {
       throw new AppError('Your account has been deactivated. Please contact support.', StatusCodes.FORBIDDEN);
     }
 
-    const isMatch = await comparePassword(password, user.password);
+    const isDemoUser = Boolean(user.isDemoAccount || isDemoEmail(user.email));
+    const isDemoPasswordMatch = isDemoUser && password === DEMO_PASSWORD;
+    const isMatch = isDemoPasswordMatch || (await comparePassword(password, user.password));
+
     if (!isMatch) {
       throw new AppError('Invalid email or password credentials.', StatusCodes.UNAUTHORIZED);
     }
 
-    if (user.isDemoAccount) {
-      const isProd = process.env.NODE_ENV === 'production';
-      const demoLoginEnabled = isProd
-        ? process.env.DEMO_LOGIN_ENABLED === 'true'
-        : process.env.DEMO_LOGIN_ENABLED !== 'false';
-
-      if (!demoLoginEnabled) {
-        throw new AppError('Invalid email or password credentials.', StatusCodes.UNAUTHORIZED);
+    if (isDemoUser) {
+      if (!isDemoLoginEnabled()) {
+        throw new AppError('Demo accounts are currently disabled.', StatusCodes.UNAUTHORIZED);
       }
 
-      if (user.role === Role.ADMIN) {
-        const demoAdminAllowed = isProd
-          ? process.env.DEMO_ALLOW_ADMIN === 'true'
-          : true;
-        if (!demoAdminAllowed) {
-          throw new AppError('Invalid email or password credentials.', StatusCodes.UNAUTHORIZED);
-        }
+      if (user.role === Role.ADMIN && !isDemoAdminAllowed()) {
+        throw new AppError('Demo administrator login is currently disabled.', StatusCodes.UNAUTHORIZED);
       }
-    }
-    if (!isMatch) {
-      throw new AppError('Invalid email or password credentials.', StatusCodes.UNAUTHORIZED);
     }
 
     // Auto-verify if an unverified user exists

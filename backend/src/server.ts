@@ -4,6 +4,8 @@ import { connectDB, prisma } from './config/database';
 import { checkSchemaSync } from './utils/schemaGuard';
 import { verifyEmailConnection } from './config/email';
 import { logger } from './utils/logger';
+import { ensureAllDemoAccounts } from './modules/auth/demo-provisioner';
+import { isDemoLoginEnabled } from './config/demo-accounts.config';
 
 const PORT = parseInt(process.env.PORT || '5000', 10);
 
@@ -15,12 +17,19 @@ const startServer = async () => {
     // 1.1 Verify Schema and Enum Sync (fail fast on missing enum values)
     await checkSchemaSync();
 
-    // 1.2 Safety audit: warn if demo logins are active on a DB with real users
+    // 1.2 Auto-provision verified demo accounts on boot if enabled
+    if (isDemoLoginEnabled()) {
+      ensureAllDemoAccounts().catch((err) => {
+        logger.warn('Non-fatal: could not auto-provision demo accounts on boot:', err);
+      });
+    }
+
+    // 1.3 Safety audit: warn if demo logins are active on a DB with real users
     if (process.env.NODE_ENV === 'production' && process.env.DEMO_LOGIN_ENABLED === 'true') {
       const nonDemoUsers = await prisma.user.count({ where: { isDemoAccount: false } });
       if (nonDemoUsers > 0) {
         logger.warn(
-          '⚠️ CRITICAL SECURITY WARNING: Demo logins are enabled on a database with real users. Use a separate demo database.'
+          'CRITICAL SECURITY WARNING: Demo logins are enabled on a database with real users. Use a separate demo database.'
         );
       }
     }

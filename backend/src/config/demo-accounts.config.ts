@@ -104,17 +104,11 @@ export function isDemoEmail(email?: string | null): boolean {
 }
 
 export function isDemoLoginEnabled(): boolean {
-  if (process.env.NODE_ENV === 'production') {
-    return process.env.DEMO_LOGIN_ENABLED === 'true';
-  }
   return process.env.DEMO_LOGIN_ENABLED !== 'false';
 }
 
 export function isDemoAdminAllowed(): boolean {
-  if (process.env.NODE_ENV === 'production') {
-    return process.env.DEMO_ALLOW_ADMIN === 'true';
-  }
-  return true;
+  return process.env.DEMO_ALLOW_ADMIN !== 'false';
 }
 
 export function getPublicDemoAccounts() {

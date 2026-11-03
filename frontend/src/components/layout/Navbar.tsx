@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   Scale,
   Search,
+  Sparkles,
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useCompareStore } from '../../store/compareStore';
@@ -335,6 +336,14 @@ export const Navbar: React.FC = () => {
             <div className="flex items-center gap-2.5">
               {/* Outline Login */}
               <Link
+                href="/demo"
+                className="hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 hover:bg-amber-100 transition shadow-2xs"
+                title="Test all 7 demo accounts"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                <span>Demo Hub</span>
+              </Link>
+              <Link
                 href="/login"
                 className="px-5 py-2.5 rounded-full text-xs font-bold text-blue border-2 border-blue hover:bg-blue-50 transition-all shadow-sm"
               >
@@ -457,7 +466,16 @@ export const Navbar: React.FC = () => {
                   </button>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-3 pt-1">
+                <div className="space-y-2 pt-1">
+                  <Link
+                    href="/demo"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="min-h-[44px] w-full flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                    <span>Demo Hub (All 7 Roles)</span>
+                  </Link>
+                  <div className="grid grid-cols-2 gap-3">
                   <Link
                     href="/login"
                     onClick={() => setMobileMenuOpen(false)}
@@ -472,6 +490,7 @@ export const Navbar: React.FC = () => {
                   >
                     Sign Up
                   </Link>
+                  </div>
                 </div>
               )}
             </div>
